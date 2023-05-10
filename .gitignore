@@ -1,0 +1,17 @@
+weather/node_modules/
+weather/.expo/
+weather/dist/
+weather/npm-debug.*
+weather/*.jks
+weather/*.p8
+weather/*.p12
+weather/*.key
+weather/*.mobileprovision
+weather/*.orig.*
+weather/web-build/
+
+# macOS
+weather/.DS_Store
+
+# Temporary files created by Metro to check the health of the file watcher
+weather/.metro-health-check*
