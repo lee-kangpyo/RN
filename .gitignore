@@ -9,6 +9,8 @@ weather/*.key
 weather/*.mobileprovision
 weather/*.orig.*
 weather/web-build/
+weather/.env
+weather/openWeather.txt
 
 # macOS
 weather/.DS_Store

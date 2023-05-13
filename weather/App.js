@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, Dimensions } from 'react-native';
 
 const { width:SCREEN_WIDTH } = Dimensions.get("window");
+//원래는 서버에서 호출해야되지만 앱에서 호출 하도록 설정 api키는 실행할때 새로 발급받아 사용
+const API_KEY="";
 
 export default function App() {
   const [posName, setPosName] = useState("Loading...");
@@ -16,12 +18,19 @@ export default function App() {
       setOk(false);
       return;
     }
+    
     let {coords:{latitude, longitude}} = await Location.getCurrentPositionAsync({accuracy:5});
     setLocation({latitude, longitude});
 
-    const location = await Location.reverseGeocodeAsync(location, {useGoogleMaps:false});
+    const location = await Location.reverseGeocodeAsync({latitude, longitude}, {useGoogleMaps:false});
     console.log(location);
     (location[0].city)?setPosName(location[0].city):setPosName(location[0].district);
+    //console.log(`https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${API_KEY}`)
+    const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&lang=kr&appid=${API_KEY}`);
+    
+    const json = await response.json();
+    //console.log(json.list)
+    setDays(json.list)
   };
 
   useEffect(() => {
@@ -33,6 +42,7 @@ export default function App() {
       <StatusBar style='dark' />
       <View style={styles.city}>
         <Text style={styles.cityName}>{posName}</Text>
+        <Text>{process.env.OPEN_WEATHER_API}df</Text>
       </View>
       <ScrollView 
         pagingEnabled
