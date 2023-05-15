@@ -9,11 +9,30 @@ weather/*.key
 weather/*.mobileprovision
 weather/*.orig.*
 weather/web-build/
-weather/.env
-weather/openWeather.txt
 
 # macOS
 weather/.DS_Store
 
 # Temporary files created by Metro to check the health of the file watcher
-weather/.metro-health-check*
+toDoList/.metro-health-check*
+
+toDoList/node_modules/
+toDoList/.expo/
+toDoList/dist/
+toDoList/npm-debug.*
+toDoList/*.jks
+toDoList/*.p8
+toDoList/*.p12
+toDoList/*.key
+toDoList/*.mobileprovision
+toDoList/*.orig.*
+toDoList/web-build/
+
+# macOS
+toDoList/.DS_Store
+
+# Temporary files created by Metro to check the health of the file watcher
+toDoList/.metro-health-check*
+
+
+weather/env.js
