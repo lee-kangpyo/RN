@@ -3,10 +3,11 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, Dimensions, ActivityIndicator } from 'react-native';
 import { Fontisto } from '@expo/vector-icons';
+import { API_KEY } from './env';
 
 const { width:SCREEN_WIDTH } = Dimensions.get("window");
-//원래는 서버에서 호출해야되지만 앱에서 호출 하도록 설정 api키는 실행할때 새로 발급받아 사용
-const API_KEY="0f2fcac7a6881c44782f71368d91bff6";
+//원래는 서버에서 호출해야되지만 앱에서 호출 하도록 설정 api키는 다르js 파일에 저장함
+const API_KEY=API_KEY;
 const icons = {
   Clouds:"cloudy",
   Clear:"day-sunny",
