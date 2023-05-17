@@ -12,10 +12,9 @@ weather/web-build/
 
 # macOS
 weather/.DS_Store
+weather/env.js
 
-# Temporary files created by Metro to check the health of the file watcher
 toDoList/.metro-health-check*
-
 toDoList/node_modules/
 toDoList/.expo/
 toDoList/dist/
@@ -27,12 +26,22 @@ toDoList/*.key
 toDoList/*.mobileprovision
 toDoList/*.orig.*
 toDoList/web-build/
-
-# macOS
 toDoList/.DS_Store
-
-# Temporary files created by Metro to check the health of the file watcher
 toDoList/.metro-health-check*
 
+albaManager/.metro-health-check*
+albaManager/node_modules/
+albaManager/.expo/
+albaManager/dist/
+albaManager/npm-debug.*
+albaManager/*.jks
+albaManager/*.p8
+albaManager/*.p12
+albaManager/*.key
+albaManager/*.mobileprovision
+albaManager/*.orig.*
+albaManager/web-build/
+albaManager/.DS_Store
+albaManager/.metro-health-check*
 
-weather/env.js
+

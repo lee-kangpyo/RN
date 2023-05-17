@@ -6,13 +6,20 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Fontisto } from '@expo/vector-icons'; 
 
 const STORAGE_KEY = "@toDos";
+const TAP_KEY = "@tap";
 
 export default function App() {
   const [tap, setTap] = useState(1);
   const [text, setText] = useState("");
   const [toDos, setToDos] = useState({})
-  const travel = () => setTap(2);
-  const work = () => setTap(1);
+  const travel = async () => {
+    setTap(2)
+    await AsyncStorage.setItem(TAP_KEY, "2");
+  };
+  const work = async () => {
+    setTap(1)
+    await AsyncStorage.setItem(TAP_KEY, "1");
+  };
   const onChangeText = (payLoad) => setText(payLoad);
   const saveToDos = async (todos) => {
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
@@ -21,8 +28,14 @@ export default function App() {
     const s = await AsyncStorage.getItem(STORAGE_KEY);
     if (s) setToDos(JSON.parse(s));
   }
+  const loadTap = async () => {
+    const s = await AsyncStorage.getItem(TAP_KEY);
+    if (s) setTap(Number(s));
+  }
+
   useEffect(() => {
-    loadToDos()
+    loadToDos();
+    loadTap();
   }, []);
   const addToDo = async () => {
     if(text === "") return;
@@ -47,9 +60,7 @@ export default function App() {
           }}
         ]
       )
-    
   }
-
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
