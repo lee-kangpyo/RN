@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "albaManager",
-    "slug": "albaManager",
+    "name": "alba",
+    "slug": "alba",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

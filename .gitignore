@@ -45,3 +45,19 @@ albaManager/.DS_Store
 albaManager/.metro-health-check*
 
 
+alba/.metro-health-check*
+alba/node_modules/
+alba/.expo/
+alba/dist/
+alba/npm-debug.*
+alba/*.jks
+alba/*.p8
+alba/*.p12
+alba/*.key
+alba/*.mobileprovision
+alba/*.orig.*
+alba/web-build/
+alba/.DS_Store
+alba/.metro-health-check*
+
+
