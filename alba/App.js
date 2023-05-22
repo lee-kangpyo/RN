@@ -1,37 +1,52 @@
-import { StatusBar } from 'expo-status-bar';
+
 import { StyleSheet, Text, View } from 'react-native';
-import Main from './src/screen/Main';
+import React, {useState} from 'react';
+
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-function HomeScreen() {
-  return (
-    <View style={styles.container}>
-      <Main/>
-    </View>
-  );
-}
+import { Provider, useSelector } from 'react-redux';
+import store from './redux/store';
+import Login from './src/screen/Login';
+import TermsDetailScreen from './src/screen/TermsDetailScreen';
+import MainScreen from './src/screen/MainScreen';
+import SignInScreen from './src/screen/SignInScreen';
 
 const Stack = createNativeStackNavigator();
 
-function App() {
+function Index() {
+  const isLoggedIn = useSelector((state) => state.login.isLogin);
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="Home" component={HomeScreen} options={{headerShown: false}}/>
+        {
+          isLoggedIn ? (
+            <>
+              <Stack.Screen  name="main" component={MainScreen} options={{headerShown: false}}/>
+            </>
+          ) : (
+            <>
+              <Stack.Screen name="Login" component={Login} options={{headerShown: false}}/>
+              <Stack.Screen name="SignIn" component={SignInScreen} options={{title:"계정 생성"}}/>
+              <Stack.Screen  name="TermsDetail" component={TermsDetailScreen} options={{title:"약관 상세"}}/>
+            </>
+          )
+        }
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'grey',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+
+
+function App() {
+  return (
+    <Provider store={store}>
+      <Index/>
+    </Provider>
+  );
+}
+
 
 export default App;
