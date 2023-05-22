@@ -28,7 +28,7 @@ function Index() {
           ) : (
             <>
               <Stack.Screen name="Login" component={Login} options={{headerShown: false}}/>
-              <Stack.Screen name="SignIn" component={SignInScreen} options={{title:"계정 생성"}}/>
+              <Stack.Screen name="SignIn" component={SignInScreen} options={{title:"회원 가입"}}/>
               <Stack.Screen  name="TermsDetail" component={TermsDetailScreen} options={{title:"약관 상세"}}/>
             </>
           )
