@@ -5,7 +5,7 @@ import Checkbox from 'expo-checkbox';
 import { theme } from '../../util/color';
 import { color } from 'react-native-reanimated';
 
-export default function Agreement({closesheet}){
+export default function Agreement({closesheet, navigation}){
     const [isTotChecked, setTotChecked] = useState(false);
     const [isUseChecked, setUseChecked] = useState(false);
     const [isPrivChecked, setPrivChecked] = useState(false);
@@ -57,20 +57,20 @@ export default function Agreement({closesheet}){
             </View>
             <View style={{...styles.totAgr, borderColor:(isTotChecked)?theme.primary:theme.grey}}>
                 <Checkbox style={styles.checkbox} value={isTotChecked} onValueChange={setTotCheckBox} color={(isTotChecked)?theme.primary:theme.grey} />
-                <Text style={styles.txt_dig}>전체 동의</Text>
+                <Text style={{...styles.txt_dig, fontWeight:500,}}>전체 동의</Text>
             </View>
 
             {
                 agrList.map((item, idx)=>{
                     return(
-                        <View style={styles.agree_comp}>
+                        <View key={idx} style={styles.agree_comp}>
                             <View style={styles.agree_cont}>
                                 <TouchableOpacity onPress={() => item.setState(!item.state)}>
                                     <AntDesign name="check" size={24} color={(item.state)?theme.primary:theme.grey} />
                                 </TouchableOpacity>
                                 <Text style={styles.txt_dig}>{item.text}</Text>
                             </View>
-                            <TouchableOpacity onPress={()=>alert("새로운 component 보여주기")}>
+                            <TouchableOpacity onPress={() => navigation.navigate('TermsDetail')}>
                                 <Feather name="chevron-right" size={24} color="black" />
                             </TouchableOpacity>
                         </View>
@@ -78,7 +78,7 @@ export default function Agreement({closesheet}){
                 })
             }
           
-            <TouchableOpacity onPress={() => alert("clk")} disabled={!(isUseChecked && isPrivChecked)} style={{...styles.btn, backgroundColor:(isUseChecked && isPrivChecked)?theme.primary:theme.grey}}>
+            <TouchableOpacity onPress={() => navigation.navigate("SignIn")} disabled={!(isUseChecked && isPrivChecked)} style={{...styles.btn, backgroundColor:(isUseChecked && isPrivChecked)?theme.primary:theme.grey}}>
                 <Text style={styles.btnTxt}>동의하고 계속하기</Text>
             </TouchableOpacity>
         </View>
@@ -106,10 +106,13 @@ const styles = StyleSheet.create({
     },
     checkbox: {
         margin: 8,
+        width:24,
+        height:24,
     },
     totAgr:{
         flexDirection:"row",
         alignItems:'center',
+        padding:8,
         borderWidth:2,
         marginBottom:16,
         borderRadius:8
@@ -125,10 +128,9 @@ const styles = StyleSheet.create({
         marginLeft:8
     },
     btn:{
-        
         padding:16,
         alignItems:"center",
-        marginTop:16,
+        marginTop:20,
     },
     btnTxt:{
         color:"white",
