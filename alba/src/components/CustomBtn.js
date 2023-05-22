@@ -10,7 +10,6 @@ export default function CustomBtn({onPress, txt, style, fSize=24, color="#fff"})
 
 const styles = StyleSheet.create({
    button: {
-      width: 100,
       height: 50,
       borderRadius:5,
       backgroundColor: "#fe5746",
