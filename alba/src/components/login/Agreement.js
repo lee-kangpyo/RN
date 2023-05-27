@@ -78,7 +78,7 @@ export default function Agreement({closesheet, navigation}){
                 })
             }
           
-            <TouchableOpacity onPress={() => navigation.navigate("SignIn")} disabled={!(isUseChecked && isPrivChecked)} style={{...styles.btn, backgroundColor:(isUseChecked && isPrivChecked)?theme.primary:theme.grey}}>
+            <TouchableOpacity onPress={()=>{closesheet();navigation.navigate("SignIn");}} disabled={!(isUseChecked && isPrivChecked)} style={{...styles.btn, backgroundColor:(isUseChecked && isPrivChecked)?theme.primary:theme.grey}}>
                 <Text style={styles.btnTxt}>동의하고 계속하기</Text>
             </TouchableOpacity>
         </View>
