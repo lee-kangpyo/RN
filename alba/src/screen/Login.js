@@ -98,7 +98,6 @@ const LoginForm = ({navigation}) => {
       />
       <CustomBtn txt="로그인" onPress={loginAction} style={styles.btn} color='black'/>
       <CustomBtn txt="구글 로그인" onPress={()=>{Alert.alert("알림", "준비중입니다.")}} style={styles.btn} color='black'/>
-      
     </View>
   )
 }
