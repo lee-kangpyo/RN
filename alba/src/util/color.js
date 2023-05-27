@@ -3,5 +3,7 @@ export const theme = {
     purple:"#7219ed",
     white:"#fff",
     grey:"#C4C4C4",
-    primary:"#375FFE"
+    primary:"#375FFE",
+    error:"#EB9AC3",
+    correct:"#A9BCE0"
 }
