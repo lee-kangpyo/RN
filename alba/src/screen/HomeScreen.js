@@ -1,6 +1,7 @@
 
 import { StyleSheet, Text, View } from 'react-native';
 import React, {useState, useEffect} from 'react';
+import GoogleMap from '../components/GoogleMap';
 
 export default function HomeScreen({navigation}) {
     useEffect(()=>{
@@ -9,7 +10,7 @@ export default function HomeScreen({navigation}) {
     
     return (
         <View style={styles.container}>
-        <Text>Home!</Text>
+            <GoogleMap/>
         </View>
     );
 }
