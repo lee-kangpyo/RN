@@ -40,7 +40,7 @@ const GoogleMap = () => {
                 latitude: test.latitude,
                 longitude: test.longitude,
               }}
-            radius={1000}
+            radius={50}
             strokeWidth={1}
             strokeColor='rgba(0,0,0,0.5)'
             fillColor='rgba(0,0,0,0.5)'
@@ -50,7 +50,6 @@ const GoogleMap = () => {
       </MapView>
   </View>
   )
-  
 }
 
 export default GoogleMap

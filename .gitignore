@@ -61,3 +61,8 @@ alba/.DS_Store
 alba/.metro-health-check*
 
 
+apiServer/static/jdbc.js
+apiServer/node_modules
+apiServer/logs
+apiServer/.env
+apiServer/build
