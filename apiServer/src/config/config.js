@@ -16,7 +16,7 @@ const config = {
     },
     options: {
       encrypt: false,
-      datebase: process.env.DB_DATEBASE,
+      database: process.env.DB_DATEBASE,
       trustServerCertificate: true,
     },
     authentication: {

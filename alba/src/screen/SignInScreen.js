@@ -15,18 +15,29 @@ import CustomBtn from '../components/CustomBtn';
 const windowWidth = Dimensions.get('window').width;
 
 export default function SignInScreen({navigation}) {
-
     const [step, setStep] = useState(1)
     const [userInfo, setUserInfo] = useState({});
     const updateState = (step, inputObj) => {
         setStep(step);
         setUserInfo({...userInfo, ...inputObj});
     }
+
+    const saveUser = async () => {
+        console.log("saveUser")
+        console.log(userInfo)
+        //const result = await axios();
+
+    }
     
     //첫번째 page
         //헤더
     useEffect(()=>{
-        navigation.setOptions({title:`회원가입 (${step} / 3)`})
+        navigation.setOptions({title:`회원가입 (${step} / 4)`})
+        if(step === 3){
+            console.log("여기서 저장");
+            setTimeout(() => setStep(4), 5000);
+            
+        }
     }, [navigation, step])
 
     return(
@@ -39,17 +50,13 @@ export default function SignInScreen({navigation}) {
                 <Step1 updateState={updateState} />
             :step == 2?
                 <Step2 updateState={updateState} />
-            :
-                <>
-                <Text>가입을 환영합니다 고객님</Text>
-                <TouchableOpacity onPress={()=>navigation.navigate('Login')}>
-                    <Text>로그인 하러가기</Text>    
-                </TouchableOpacity>
-                </>
+            :step == 3?
+                <Step3 />
+            :step == 4?
+                <Step4 updateState={updateState} />
+            :null
         
         }
-        
-        
         </>
     );
 }
@@ -57,6 +64,20 @@ const Step1 = ({updateState}) => {
     const[userType, setUserType] = useState(0)
 
     const validationSchema = yup.object().shape({
+        id:yup.string().required("아이디를 입력해주세요.")
+            .test('id-unique', '이미 사용 중인 아이디입니다.', async (value) => {
+                try {
+                    const response = await axios.post('http://192.168.21.103:8080/api/v1/isIdDuplicate', {
+                      id: value,
+                    });
+                    if (response.data.isDuplicate) {
+                      return false;
+                    }
+                } catch (error) {
+                    console.error('아이디 중복 체크 실패:', error);
+                }
+            return true;
+        }),
         userName: yup.string().required('이름을 입력해주세요.'),
         hpNo: yup.string().required("휴대폰 번호를 입력해주세요").min(10, "휴대폰 번호는 10-11 자리입니다.").max(11, "휴대폰 번호는 10-11 자리입니다."),
       });
@@ -79,12 +100,20 @@ const Step1 = ({updateState}) => {
             </View>
             <KeyboardAwareScrollView contentContainerStyle={styles.container} resetScrollToCoords={{ x: 0, y: 0 }} scrollEnabled={true}>
                 <Formik
-                    initialValues={{ userName: '', hpNo: '' }}
+                    initialValues={{ userName: '', hpNo: '', id:'' }}
                     validationSchema={validationSchema}
                     onSubmit={handleFormSubmit}
                 >
                     {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
                         <>
+                        <InputEl 
+                            label="아이디" 
+                            placeholder={"아이디"} 
+                            onChangeText={handleChange('id')}
+                            onBlur={handleBlur('id')}
+                            value={values.id}
+                            errorMsg={errors.id} 
+                        />
                         <InputEl 
                             label="이름" 
                             placeholder={"이름"} 
@@ -123,7 +152,7 @@ const Step2 = ({ updateState }) => {
         confirmPassword: yup.string().oneOf([yup.ref('password'), null], '비밀번호가 일치하지 않습니다.').required('비밀번호 확인을 입력해주세요.'),
       });
     
-      const handleFormSubmit = (values) => {
+      const handleFormSubmit = async (values) => {
         // 유효성 검사 통과 후 실행되는 함수
         updateState(3, values)
       };
@@ -164,6 +193,26 @@ const Step2 = ({ updateState }) => {
                 </Formik>
             </KeyboardAwareScrollView>
         </View>
+    )
+}
+
+const Step3 = () => {
+    return(
+        <>
+            <Text>가입 중입니다. 잠시만 기달려주세요.</Text>
+        </>
+    )
+}
+
+const Step4 = () => {
+
+    return(
+        <>
+            <Text>가입을 환영합니다 고객님</Text>
+            <TouchableOpacity onPress={()=>navigation.navigate('Login')}>
+                <Text>로그인 하러가기</Text>    
+            </TouchableOpacity>
+        </>
     )
 }
 
