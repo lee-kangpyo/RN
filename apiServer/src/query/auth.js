@@ -11,11 +11,16 @@ const test = `
     or USERID != @userId 
 `
 
-isIdDuplicate = `
+const isIdDuplicate = `
     SELECT count(*) cnt
     FROM PLYMUSER 
     WHERE USERID = @userId 
 `
+const saveUser = `
+    INSERT INTO PLYMUSER(USERID, USERNA, [PASSWORD], HPNO, STATCO, USEYN, IUSERID, IYMDHMD)
+    VALUES(@userId, @userName, @passWord, @hpNo, '00', 'Y', @userId, GETDATE())
+`
 
 
-module.exports = {login, test, isIdDuplicate}
+
+module.exports = {login, test, isIdDuplicate, saveUser}

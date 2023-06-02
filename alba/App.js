@@ -14,7 +14,7 @@ import SignInScreen from './src/screen/SignInScreen';
 import GetLocationPermission from './src/components/LocationPermission';
 
 const Stack = createNativeStackNavigator();
-  
+
 function Index() {
   const isLoggedIn = useSelector((state) => state.login.isLogin);
   return (

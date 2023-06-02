@@ -8,25 +8,33 @@ import * as yup from 'yup';
 import axios from 'axios';
 
 import React, {useState, useEffect} from 'react';
-import { setUserInfo } from '../../redux/slices/login';
+//import { setUserInfo } from '../../redux/slices/login';
+import { useSelector } from 'react-redux';
 
 import CustomBtn from '../components/CustomBtn';
 
 const windowWidth = Dimensions.get('window').width;
 
 export default function SignInScreen({navigation}) {
+    const url = useSelector((state) => state.config.url);    
     const [step, setStep] = useState(1)
     const [userInfo, setUserInfo] = useState({});
     const updateState = (step, inputObj) => {
-        setStep(step);
         setUserInfo({...userInfo, ...inputObj});
+        setStep(step);
     }
 
     const saveUser = async () => {
         console.log("saveUser")
         console.log(userInfo)
-        //const result = await axios();
-
+        const response = await axios.post(url+'/api/v1/saveUser', userInfo);
+        console.log(response.data.result);
+        if(response.data.result){
+            setStep(4);
+        }else{
+            Alert.alert("회원가입 실패", "알수 없는 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+            setStep(1);
+        }
     }
     
     //첫번째 page
@@ -34,9 +42,7 @@ export default function SignInScreen({navigation}) {
     useEffect(()=>{
         navigation.setOptions({title:`회원가입 (${step} / 4)`})
         if(step === 3){
-            console.log("여기서 저장");
-            setTimeout(() => setStep(4), 5000);
-            
+            saveUser();
         }
     }, [navigation, step])
 
@@ -53,21 +59,36 @@ export default function SignInScreen({navigation}) {
             :step == 3?
                 <Step3 />
             :step == 4?
-                <Step4 updateState={updateState} />
+                <Step4 navigation={navigation} />
             :null
         
         }
         </>
     );
 }
+const SelectUserType = ({userType, setUserType}) => {
+    // <SelectUserType userType={userType} setUserType={setUserType}/>
+    return(
+        <View style={styles.sep}>
+            <TouchableWithoutFeedback onPress={()=>setUserType(0)}>
+                <Text style={[styles.sepTxt, userType === 0 && styles.sepSelected]}>사장님</Text>
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback onPress={()=>setUserType(1)}>
+                <Text style={[styles.sepTxt, userType === 1 && styles.sepSelected]}>알바님</Text>
+            </TouchableWithoutFeedback>
+        </View>
+    )
+}
 const Step1 = ({updateState}) => {
+    const url = useSelector((state) => state.config.url);
+    console.log(url)
     const[userType, setUserType] = useState(0)
 
     const validationSchema = yup.object().shape({
         id:yup.string().required("아이디를 입력해주세요.")
             .test('id-unique', '이미 사용 중인 아이디입니다.', async (value) => {
                 try {
-                    const response = await axios.post('http://192.168.21.103:8080/api/v1/isIdDuplicate', {
+                    const response = await axios.post(url+'/api/v1/isIdDuplicate', {
                       id: value,
                     });
                     if (response.data.isDuplicate) {
@@ -90,14 +111,7 @@ const Step1 = ({updateState}) => {
     return(
         <View style={{flex:1, backgroundColor:"white", alignItems:"center"}}>
             <StatusBar style="auto" />
-            <View style={styles.sep}>
-                <TouchableWithoutFeedback onPress={()=>setUserType(0)}>
-                    <Text style={[styles.sepTxt, userType === 0 && styles.sepSelected]}>사장님</Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback onPress={()=>setUserType(1)}>
-                    <Text style={[styles.sepTxt, userType === 1 && styles.sepSelected]}>알바님</Text>
-                </TouchableWithoutFeedback>
-            </View>
+            
             <KeyboardAwareScrollView contentContainerStyle={styles.container} resetScrollToCoords={{ x: 0, y: 0 }} scrollEnabled={true}>
                 <Formik
                     initialValues={{ userName: '', hpNo: '', id:'' }}
@@ -204,7 +218,7 @@ const Step3 = () => {
     )
 }
 
-const Step4 = () => {
+const Step4 = ({navigation}) => {
 
     return(
         <>
