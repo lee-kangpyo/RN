@@ -9,11 +9,14 @@ import Agreement from '../components/login/Agreement';
 
 import { useDispatch } from 'react-redux';
 import { setUserInfo } from '../../redux/slices/login';
+import { useSelector } from 'react-redux';
+import axios from 'axios';
 
 const windowWidth = Dimensions.get('window').width;
 
 
 export default function Login({ navigation }) {
+  
   const sheetRef = useRef(null);
   const [isOpen, setIsOpen] = useState(true);
   const snapPoints = useMemo(() => ["48%"], []);
@@ -60,19 +63,27 @@ export default function Login({ navigation }) {
 }
 
 const LoginForm = ({navigation}) => {
+  const url = useSelector((state) => state.config.url); 
   const dispatch = useDispatch();
   const [id, onChangeId] = useState('');
   const [password, onChangePassWord] = useState('');
 
   const [loginInfo, setLoginInfo] = useState({id:"", password:""})
 
-  const loginAction = () => {
-    console.log(loginInfo);
+  const loginAction = async () => {
+    //console.log(loginInfo);
     //밸리데이션 -> 지금은 아이디 패스워드 공백 체크만 함
     if(loginInfo.id && loginInfo.password){
       // api 서버 요청 -> axios로 요청할예정
-      
-      if(true){
+      console.log("!@")
+      const response = await axios.post(url+'/api/v1/loginUser', loginInfo);
+      console.log(response)
+      if(response.data.length === 1){
+
+        // asyncstorage에 아이디 저장
+        // jwt 세션이든 auth든 해야됨.
+        // 서비스키가되었던.
+        // http 요청이니깐 앱에서 요청하는지 포스트맨이던 다른데서 요청하는지 체크
         // 성공시 메인 페이지 이동.
         dispatch(setUserInfo({isLogin:true, userId:loginInfo.id}));
       }else{
