@@ -16,10 +16,19 @@ router.get("/v1/login", async(req, res, next)=>{
     res.json({status_code:"00", result:result.recordset, length:result.rowsAffected}); 
 })
 
-router.post("/v1/login", async(req, res, next)=>{
-    const {id, passWord} = req.body;
-    const result = await execSql(login, {userId:id, passWord:passWord})
-    res.json({status_code:"00", result:result.recordset, length:result.rowsAffected}); 
+router.post("/v1/loginUser", async(req, res, next)=>{
+    console.log("/v1/loginUser")
+    const {id, password} = req.body;
+    const result = await execSql(login, {userId:id, passWord:password})
+    
+    let data = null
+    if(result.recordset[0]){
+        const {USERID, USERNA} = result.recordset[0]
+        data = {USERID, USERNA}
+    }
+    
+    console.log({status_code:"00", result:data, length:result.rowsAffected[0]})
+    res.json({status_code:"00", result:data, length:result.rowsAffected[0]}); 
 })
 
 router.post("/v1/isIdDuplicate", async(req, res, next)=>{
