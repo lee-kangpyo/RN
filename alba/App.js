@@ -13,6 +13,8 @@ import MainScreen from './src/screen/MainScreen';
 import SignInScreen from './src/screen/SignInScreen';
 import GetLocationPermission from './src/components/LocationPermission';
 
+import SearchAddress from './src/components/SearchAddress';
+
 const Stack = createNativeStackNavigator();
 
 function Index() {
@@ -30,6 +32,7 @@ function Index() {
               <Stack.Screen name="Login" component={Login} options={{headerShown: false}}/>
               <Stack.Screen name="SignIn" component={SignInScreen} options={{title:"회원 가입"}}/>
               <Stack.Screen  name="TermsDetail" component={TermsDetailScreen} options={{title:"약관 상세"}}/>
+              <Stack.Screen  name="SearchAddress" component={SearchAddress} options={{title:"주소 검색"}}/>
             </>
           )
         }

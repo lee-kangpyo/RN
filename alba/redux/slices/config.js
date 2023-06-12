@@ -1,8 +1,7 @@
 import {createSlice} from '@reduxjs/toolkit';
 
 const initialState = {
-  
-  url:"http://192.168.21.100:8080",
+  url:"http://192.168.1.122:8080",
 };
 
 const configSlice = createSlice({

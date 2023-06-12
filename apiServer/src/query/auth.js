@@ -21,6 +21,4 @@ const saveUser = `
     VALUES(@userId, @userName, @passWord, @hpNo, '00', 'Y', @userId, GETDATE())
 `
 
-
-
 module.exports = {login, test, isIdDuplicate, saveUser}

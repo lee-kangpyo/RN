@@ -25,41 +25,45 @@ export default function SignInScreen({navigation}) {
     }
 
     const saveUser = async () => {
-        console.log("saveUser")
-        console.log(userInfo)
         const response = await axios.post(url+'/api/v1/saveUser', userInfo);
-        console.log(response.data.result);
-        if(response.data.result){
-            setStep(4);
-        }else{
-            Alert.alert("회원가입 실패", "알수 없는 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
-            setStep(1);
-        }
+        setTimeout(() => {
+            if(response.data.result){
+                setStep(4);
+            }else{
+                Alert.alert("회원가입 실패", "알수 없는 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+                setStep(1);
+            }
+        }, 3000);
     }
     
     //첫번째 page
         //헤더
     useEffect(()=>{
         navigation.setOptions({title:`회원가입 (${step} / 4)`})
-        if(step === 3){
+
+        if(step === 3 && userInfo.userType !==0){
             saveUser();
+        }else if(step === 3.5 && userInfo.userType ==0){
+
         }
     }, [navigation, step])
 
     return(
         <>
         <TouchableOpacity onPress={()=>console.log(userInfo)}>
-            <Text>useInfo</Text>
+            <Text>테스트 코드 useInfo</Text>
         </TouchableOpacity>
         {
             step == 1?
                 <Step1 updateState={updateState} />
             :step == 2?
                 <Step2 updateState={updateState} />
-            :step == 3?
+            :step == 3 && userInfo.userType === 0?
+                <BusinessInfo navigation={navigation}/>
+            :step == 3 && userInfo.userType !== 0?
                 <Step3 />
             :step == 4?
-                <Step4 navigation={navigation} />
+                <Step4 navigation={navigation} userInfo={userInfo} />
             :null
         
         }
@@ -71,21 +75,25 @@ const SelectUserType = ({userType, setUserType}) => {
     return(
         <View style={styles.sep}>
             <TouchableWithoutFeedback onPress={()=>setUserType(0)}>
-                <Text style={[styles.sepTxt, userType === 0 && styles.sepSelected]}>사장님</Text>
+                <Text style={[styles.sepTxt, userType === 0 && styles.sepSelected]}>점주</Text>
             </TouchableWithoutFeedback>
             <TouchableWithoutFeedback onPress={()=>setUserType(1)}>
-                <Text style={[styles.sepTxt, userType === 1 && styles.sepSelected]}>알바님</Text>
+                <Text style={[styles.sepTxt, userType === 1 && styles.sepSelected]}>매니저</Text>
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback onPress={()=>setUserType(2)}>
+                <Text style={[styles.sepTxt, userType === 2 && styles.sepSelected]}>알바</Text>
             </TouchableWithoutFeedback>
         </View>
     )
 }
 const Step1 = ({updateState}) => {
     const url = useSelector((state) => state.config.url);
-    console.log(url)
     const[userType, setUserType] = useState(0)
 
+
+
     const validationSchema = yup.object().shape({
-        id:yup.string().required("아이디를 입력해주세요.")
+        id:yup.string().required("아이디를 입력해주세요.").max(20, "아이디는 20자리 이하이어야 합니다.").min(8, "아이디는 8자리 이상이어야 합니다.")
             .test('id-unique', '이미 사용 중인 아이디입니다.', async (value) => {
                 try {
                     const response = await axios.post(url+'/api/v1/isIdDuplicate', {
@@ -111,7 +119,7 @@ const Step1 = ({updateState}) => {
     return(
         <View style={{flex:1, backgroundColor:"white", alignItems:"center"}}>
             <StatusBar style="auto" />
-            
+            <SelectUserType userType={userType} setUserType={setUserType}/>
             <KeyboardAwareScrollView contentContainerStyle={styles.container} resetScrollToCoords={{ x: 0, y: 0 }} scrollEnabled={true}>
                 <Formik
                     initialValues={{ userName: '', hpNo: '', id:'' }}
@@ -162,7 +170,17 @@ const Step1 = ({updateState}) => {
 
 const Step2 = ({ updateState }) => {
     const validationSchema = yup.object().shape({
-        password: yup.string().required('비밀번호를 입력해주세요.'),
+        password: yup.string().required('비밀번호를 입력해주세요.').max(20, "비밀번호는 20자리 이하이어야 합니다.").min(8, "비밀번호는 8자리 이상이어야 합니다.")
+                              .test("password-validation", "영문, 숫자, 특수문자를 혼합해서 입력해주세요", (value) => {
+                                var num = value.search(/[0-9]/g);
+                                var eng = value.search(/[a-z]/ig);
+                                var spe = value.search(/[`~!@@#$%^&*|₩₩₩'₩";:₩/?]/gi);
+                                if(num < 0 || eng < 0 || spe < 0 ){
+                                    return false;
+                                }else {
+                                    return true;
+                                }
+                              }),
         confirmPassword: yup.string().oneOf([yup.ref('password'), null], '비밀번호가 일치하지 않습니다.').required('비밀번호 확인을 입력해주세요.'),
       });
     
@@ -218,14 +236,49 @@ const Step3 = () => {
     )
 }
 
-const Step4 = ({navigation}) => {
+const Step4 = ({navigation, userInfo}) => {
 
     return(
         <>
-            <Text>가입을 환영합니다 고객님</Text>
-            <TouchableOpacity onPress={()=>navigation.navigate('Login')}>
-                <Text>로그인 하러가기</Text>    
+        {
+            (userInfo.userType === 0)
+                ?
+                    <BusinessInfo navigation={navigation}/>
+                :
+                <>
+                    <Text>가입을 환영합니다 고객님</Text>
+                    <TouchableOpacity onPress={()=>navigation.navigate('Login')}>
+                        <Text>로그인 하러가기</Text>    
+                    </TouchableOpacity>
+                </>
+        }
+        </>
+    )
+}
+
+const BusinessInfo = ({navigation}) => {
+    const [data, setData] = useState({});
+
+    const setAdress = (transferData) => {
+        console.log(transferData);
+        setData(transferData);
+        console.log(data)
+    }
+
+    return(
+        <>
+            <View style={styles.number_text}>
+                <Text style={styles.text}>우편번호</Text>
+            </View>
+            <TouchableOpacity activeOpacity={0.8} style={styles.btn} onPress={()=>navigation.navigate('SearchAddress', {setAdress:setAdress})}>
+                <Text style={styles.btn_text}>우편번호 찾기</Text>
             </TouchableOpacity>
+            
+            <View style={styles.address_text}>
+                <Text style={styles.text}>주소</Text>
+            </View>
+
+            <TextInput style={styles.textInput} placeholder="상세 주소를 입력하세요"/>
         </>
     )
 }
@@ -379,7 +432,7 @@ const styles = StyleSheet.create({
         borderRadius:5,
         margin:16,
         padding:5,
-        width:"50%",
+        width:"70%",
     },
     sepTxt:{
         textAlign:"center",
@@ -388,7 +441,7 @@ const styles = StyleSheet.create({
         color:"#DBDCE1",
         fontSize:16,
         fontWeight:500,
-        width:"50%",
+        width:"33.33%",
     },
     sepSelected:{
         backgroundColor:"#FFFFFF", 
