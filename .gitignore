@@ -59,6 +59,7 @@ alba/*.orig.*
 alba/web-build/
 alba/.DS_Store
 alba/.metro-health-check*
+alba/app.json
 
 
 apiServer/static/jdbc.js
