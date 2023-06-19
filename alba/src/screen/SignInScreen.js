@@ -6,8 +6,9 @@ import { theme } from '../util/color';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import axios from 'axios';
+import { useFocusEffect } from '@react-navigation/native';
 
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 //import { setUserInfo } from '../../redux/slices/login';
 import { useSelector } from 'react-redux';
 
@@ -44,15 +45,13 @@ export default function SignInScreen({navigation}) {
         if(step === 3 && userInfo.userType !==0){
             saveUser();
         }else if(step === 3.5 && userInfo.userType ==0){
-
+            saveUser();
         }
     }, [navigation, step])
 
     return(
         <>
-        <TouchableOpacity onPress={()=>console.log(userInfo)}>
-            <Text>테스트 코드 useInfo</Text>
-        </TouchableOpacity>
+        
         {
             step == 1?
                 <Step1 updateState={updateState} />
@@ -228,6 +227,8 @@ const Step2 = ({ updateState }) => {
     )
 }
 
+
+
 const Step3 = () => {
     return(
         <>
@@ -258,30 +259,66 @@ const Step4 = ({navigation, userInfo}) => {
 
 const BusinessInfo = ({navigation}) => {
     const [data, setData] = useState({});
+    const detailAddress = useRef();
 
     const setAdress = (transferData) => {
         console.log(transferData);
         setData(transferData);
-        console.log(data)
+        //여기서 상세 주소 포커스
     }
 
+    useFocusEffect(
+        React.useCallback(() => {
+            if(data.zoneCode && data.address){
+                setTimeout(() => {
+                    detailAddress.current.focus();        
+                }, 500);
+            }   
+            return () => {};
+        }, [data.address, data.zoneCode])
+    );
+   
+
     return(
-        <>
-            <View style={styles.number_text}>
-                <Text style={styles.text}>우편번호</Text>
+        <View style={{backgroundColor:"white", padding:20, height:"100%"}}>
+            <View style={{...styles.bi_row, flexDirection:"row"}}>
+                <View style={{...styles.address_box, flex:4, marginRight:8}}>
+                    <Text style={{...styles.text_dig, color:(data.zoneCode)?"black":theme.grey}}>{(data.zoneCode)?data.zoneCode:"우편번호"}</Text>
+                </View>
+                <TouchableOpacity activeOpacity={0.8} style={{...styles.address_box, flex:2, backgroundColor:"orange"}} 
+                    onPress={()=>{
+                        navigation.navigate('SearchAddress', 
+                            {setAdress:(data) => {
+                                setAdress(data)
+                            }
+                        })
+                    }
+                }>
+                    <Text style={styles.text_btn_dig}>우편번호찾기</Text>
+                </TouchableOpacity>
             </View>
-            <TouchableOpacity activeOpacity={0.8} style={styles.btn} onPress={()=>navigation.navigate('SearchAddress', {setAdress:setAdress})}>
-                <Text style={styles.btn_text}>우편번호 찾기</Text>
-            </TouchableOpacity>
-            
-            <View style={styles.address_text}>
-                <Text style={styles.text}>주소</Text>
+            <View style={styles.bi_row}>
+                <View style={styles.address_box}>
+                    <Text style={{...styles.text_dig, color:(data.address)?"black":theme.grey}}>{(data.address)?data.address:"주소"}</Text>
+                </View>
+            </View>
+            <View style={styles.bi_row}>
+                <View style={styles.address_box}>
+                    <TextInput
+                        ref={detailAddress}
+                        style={{fontSize:16,}}
+                        placeholder={"상세주소"}
+                    />
+                </View>
             </View>
 
-            <TextInput style={styles.textInput} placeholder="상세 주소를 입력하세요"/>
-        </>
+            <View style={styles.bi_row}>
+                <CustomBtn txt="가입하기" onPress={()=>{}} style={styles.next} color='white'/>
+            </View>
+        </View>
     )
 }
+
 
 const emailCheck = ({ updateState }) => {
     
@@ -491,5 +528,25 @@ const styles = StyleSheet.create({
     },
     next:{
         backgroundColor:theme.purple,
+    },
+    bi_row:{
+        marginBottom:8,
+        width:"100%",
+        padding:4,
+        textAlign:"center",
+    },
+    address_box:{
+        padding:8,
+        borderColor:theme.grey,
+        borderWidth:1,
+        borderRadius:5,
+    },
+    text_dig:{
+        color:theme.grey,
+        fontSize:16,
+    },
+    text_btn_dig:{
+
     }
+
 })

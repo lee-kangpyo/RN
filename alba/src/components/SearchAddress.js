@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Postcode from '@actbase/react-daum-postcode';
 
-export default function SearchAddress({navigation, setAdress}){
+export default function SearchAddress({navigation, route}){
     const getAddressData = (data) => {
         let defaultAddress='';
         let zoneCode = "";
@@ -16,7 +16,8 @@ export default function SearchAddress({navigation, setAdress}){
         else{
             defaultAddress="("+data.buildingName+")";
         }
-        setAdress({address:data.address, zoneCode:data.zoneCode})
+        //console.log(data)
+        route.params.setAdress({address:data.address, zoneCode:data.zonecode})
         navigation.goBack();
         //this.props.navigation.navigate('Drawers',{screen:'Deliver', params:{zonecode:data.zonecode, address:data.address, defaultAddress:defaultAddress}});
     }
