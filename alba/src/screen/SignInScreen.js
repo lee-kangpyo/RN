@@ -17,16 +17,23 @@ import CustomBtn from '../components/CustomBtn';
 const windowWidth = Dimensions.get('window').width;
 
 export default function SignInScreen({navigation}) {
-    const url = useSelector((state) => state.config.url);    
+    const url = useSelector((state) => state.config.url);
     const [step, setStep] = useState(1)
     const [userInfo, setUserInfo] = useState({});
+    //const [businessPlace, setBusinessPlace] = useState({});
     const updateState = (step, inputObj) => {
         setUserInfo({...userInfo, ...inputObj});
         setStep(step);
     }
 
+    //const updateBusinessPlace = (businessPlace) => {
+    //    setBusinessPlace(businessPlace);
+    //    setStep(3.5)
+    //}
+
     const saveUser = async () => {
-        const response = await axios.post(url+'/api/v1/saveUser', userInfo);
+
+        const response = await axios.post(url+'/api/v1/saveUser', {...userInfo, ...getUserType()});
         setTimeout(() => {
             if(response.data.result){
                 setStep(4);
@@ -40,31 +47,49 @@ export default function SignInScreen({navigation}) {
     //첫번째 page
         //헤더
     useEffect(()=>{
-        navigation.setOptions({title:`회원가입 (${step} / 4)`})
-
+        navigation.setOptions({title:`회원가입 (${Math.floor(step)} / 4)`})
+        if(step === 3 ){
+            saveUser();
+        }
+        /*
         if(step === 3 && userInfo.userType !==0){
             saveUser();
         }else if(step === 3.5 && userInfo.userType ==0){
             saveUser();
         }
+        */
     }, [navigation, step])
+
+    const getUserType = () => {
+        const result = { ownrYn:"N", mnrgYn:"N", crewYn:"N"}
+        
+        if(userInfo["userType"] == 0){
+            result.ownrYn = "Y"
+        }else if(userInfo["userType"] == 1){
+            result.mnrgYn = "Y"
+        }else if(userInfo["userType"] == 2){
+            result.crewYn = "Y"
+        }
+        return result
+    }
 
     return(
         <>
-        
+        <TouchableOpacity onPress={() => {console.log(userInfo)}}><Text>asdf</Text></TouchableOpacity>
         {
             step == 1?
                 <Step1 updateState={updateState} />
             :step == 2?
                 <Step2 updateState={updateState} />
-            :step == 3 && userInfo.userType === 0?
-                <BusinessInfo navigation={navigation}/>
-            :step == 3 && userInfo.userType !== 0?
-                <Step3 />
+            :step == 3?
+                <WaitResponse />
+            //:step == 3 && userInfo.userType === 0?
+            //    <BusinessInfo navigation={navigation} updateBusiness={updateBusinessPlace}/>
+            //:step == 3 && userInfo.userType !== 0?
+            //    <WaitResponse />
             :step == 4?
                 <Step4 navigation={navigation} userInfo={userInfo} />
             :null
-        
         }
         </>
     );
@@ -229,7 +254,7 @@ const Step2 = ({ updateState }) => {
 
 
 
-const Step3 = () => {
+const WaitResponse = () => {
     return(
         <>
             <Text>가입 중입니다. 잠시만 기달려주세요.</Text>
@@ -242,22 +267,18 @@ const Step4 = ({navigation, userInfo}) => {
     return(
         <>
         {
-            (userInfo.userType === 0)
-                ?
-                    <BusinessInfo navigation={navigation}/>
-                :
-                <>
-                    <Text>가입을 환영합니다 고객님</Text>
-                    <TouchableOpacity onPress={()=>navigation.navigate('Login')}>
-                        <Text>로그인 하러가기</Text>    
-                    </TouchableOpacity>
-                </>
+            <>
+                <Text>가입을 환영합니다 고객님</Text>
+                <TouchableOpacity onPress={()=>navigation.navigate('Login')}>
+                    <Text>로그인 하러가기</Text>    
+                </TouchableOpacity>
+            </>
         }
         </>
     )
 }
 
-const BusinessInfo = ({navigation}) => {
+const BusinessInfo = ({navigation, updateBusiness}) => {
     const [data, setData] = useState({});
     const detailAddress = useRef();
 
@@ -313,7 +334,7 @@ const BusinessInfo = ({navigation}) => {
             </View>
 
             <View style={styles.bi_row}>
-                <CustomBtn txt="가입하기" onPress={()=>{}} style={styles.next} color='white'/>
+                <CustomBtn txt="가입하기" onPress={()=>{updateBusiness(data)}} style={styles.next} color='white'/>
             </View>
         </View>
     )
