@@ -2,8 +2,10 @@ const express = require('express')
 var router = express.Router();
 const execSql = require("../utils/excuteSql");
 const { login, test, isIdDuplicate, saveUser } = require('./../query/auth'); 
+const axios = require('axios');
 
-
+const dotenv = require('dotenv');
+dotenv.config();
 
 router.get("/v1/test", async (req, res, next)=>{
     const result = await execSql(test, {userId:'asdf'})
@@ -43,14 +45,44 @@ router.post("/v1/isIdDuplicate", async(req, res, next)=>{
 })
 
 router.post("/v1/saveUser", async(req, res, next)=>{
-    const {hpNo, id, password, userName} = req.body;
+    const {hpNo, id, password, userName, ownrYn, mnrgYn, crewYn} = req.body;
     console.log(id, hpNo, password, userName);
-    const result = await execSql(saveUser, {userId:id, passWord:password, hpNo:hpNo, userName:userName})
+    const result = await execSql(saveUser, {userId:id, passWord:password, hpNo:hpNo, userName:userName, ownrYn:ownrYn, mnrgYn:mnrgYn,crewYn:crewYn})
     const resultObj = {status_code:"00", result:true};
     if(result.rowsAffected[0] == 0){
         resultObj.result = false;
     }
     res.json(resultObj); 
+})
+
+router.get("/v1/getLatLon", async (req, res, next) => {
+    const {address, zoneCode} = req.query;
+    const key = process.env.KAKAO_API
+    let result = {resultCode:"-1", lat:null, lon:null}
+
+    await axios.get("https://dapi.kakao.com/v2/local/search/address", {
+        params: {
+            query: address
+        },
+        headers:{
+            "content-type":"application/json;charset=UTF-8",
+            "Authorization": `KakaoAK ${key}`
+        }
+    })
+    .then(function (response) {
+        result = {
+            resultCode:"00", 
+            lat:response.data.documents[0].y, 
+            lon:response.data.documents[0].x
+        }
+    }).catch(function (error) {
+        // 오류발생시 실행
+        console.log(error)
+    }).then(function() {
+        // 항상 실행
+        console.log("항상 실행")
+    });
+    res.json(result)
 })
 
 module.exports = router;
