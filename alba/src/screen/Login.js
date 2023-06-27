@@ -45,7 +45,7 @@ export default function Login({ navigation }) {
       <View style={styles.container}>
         <StatusBar style="auto" />
         <View style={styles.titleArea}>
-            <Text style={styles.title}>알바관리</Text>
+            <Text style={styles.title}>알로하</Text>
             <Text>Ver 0.01</Text>
         </View>
         <LoginForm navigation={navigation}/>
@@ -77,8 +77,8 @@ const LoginForm = ({navigation}) => {
       // api 서버 요청 -> axios로 요청할예정
       console.log("!@")
       const response = await axios.post(url+'/api/v1/loginUser', loginInfo);
-      console.log(response)
-      if(response.data.length === 1){
+      console.log(response.data.result)
+      if(response.data.result === 1){
 
         // asyncstorage에 아이디 저장
         // jwt 세션이든 auth든 해야됨.

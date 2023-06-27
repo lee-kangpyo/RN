@@ -1,8 +1,7 @@
 const login = `
-    SELECT * 
-    FROM PLYMUSER 
-    WHERE USERID = @userId 
-    and PASSWORD = @passWord 
+    SELECT	PWDCOMPARE(@passWord, a.CRPYPW) pwCheck
+    FROM	PLYMUSER a
+    WHERE	a.USERID = @userId
 `
 const test = `
     SELECT * 
