@@ -32,7 +32,6 @@ export default function SignInScreen({navigation}) {
     //}
 
     const saveUser = async () => {
-
         const response = await axios.post(url+'/api/v1/saveUser', {...userInfo, ...getUserType()});
         setTimeout(() => {
             if(response.data.result){
@@ -567,7 +566,7 @@ const styles = StyleSheet.create({
         fontSize:16,
     },
     text_btn_dig:{
-        
+
     }
 
 })

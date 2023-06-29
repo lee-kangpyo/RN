@@ -75,7 +75,7 @@ const LoginForm = ({navigation}) => {
   const saveUserInfo = async ({ownrYn, crewYn, mnrgYn, userNa}) => {
     try {
       await AsyncStorage.setItem('id', loginInfo.id);
-      await AsyncStorage.setItem('userNa', userNa);
+      await AsyncStorage.setItem('userNa', loginInfo.userNa);
       await AsyncStorage.setItem('ownrYn', ownrYn);
       await AsyncStorage.setItem('crewYn', crewYn);
       await AsyncStorage.setItem('mnrgYn', mnrgYn);

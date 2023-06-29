@@ -35,6 +35,7 @@ export default function MainScreen() {
         console.log("잘못된 접근")
       }
       setUserInfo({id:id, ownrYn:ownrYn, crewYn:crewYn})
+      console.log(id, ownrYn, crewYn)
     }
   }
 
