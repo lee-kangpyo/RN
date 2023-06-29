@@ -32,8 +32,6 @@ export default function HomeScreen({navigation}) {
 
     useEffect(()=>{
         navigation.setOptions({title:"출퇴근"})
-        
-        
     }, [navigation])
 
     useEffect(() => {
@@ -50,7 +48,7 @@ export default function HomeScreen({navigation}) {
                 {
                     trackingList.map((row, idx)=>{
                         return(
-                            <Text>{row.time}{row.content}</Text>
+                            <Text key={idx}>{row.time}{row.content}</Text>
                         )
                     }) 
                 }

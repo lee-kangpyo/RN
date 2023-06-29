@@ -16,7 +16,7 @@ const loginSlice = createSlice({
     },
     setUserInfo(state, action){
       state.isLogin = action.payload.isLogin
-      state.userId = action.payload.userid
+      state.userId = action.payload.userId
     }
   },
 });

@@ -12,11 +12,13 @@ import { setUserInfo } from '../../redux/slices/login';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const windowWidth = Dimensions.get('window').width;
 
 
 export default function Login({ navigation }) {
-  
+
   const sheetRef = useRef(null);
   const [isOpen, setIsOpen] = useState(true);
   const snapPoints = useMemo(() => ["48%"], []);
@@ -69,17 +71,27 @@ const LoginForm = ({navigation}) => {
   const [password, onChangePassWord] = useState('');
 
   const [loginInfo, setLoginInfo] = useState({id:"", password:""})
+  
+  const saveUserInfo = async ({ownrYn, crewYn, mnrgYn, userNa}) => {
+    try {
+      await AsyncStorage.setItem('id', loginInfo.id);
+      await AsyncStorage.setItem('userNa', userNa);
+      await AsyncStorage.setItem('ownrYn', ownrYn);
+      await AsyncStorage.setItem('crewYn', crewYn);
+      await AsyncStorage.setItem('mnrgYn', mnrgYn);
+    } catch (e) {
+      console.log(e)
+    }
+  }
 
   const loginAction = async () => {
     //console.log(loginInfo);
     //밸리데이션 -> 지금은 아이디 패스워드 공백 체크만 함
     if(loginInfo.id && loginInfo.password){
       // api 서버 요청 -> axios로 요청할예정
-      console.log("!@")
       const response = await axios.post(url+'/api/v1/loginUser', loginInfo);
-      console.log(response.data.result)
       if(response.data.result === 1){
-
+        saveUserInfo(response.data.info);
         // asyncstorage에 아이디 저장
         // jwt 세션이든 auth든 해야됨.
         // 서비스키가되었던.

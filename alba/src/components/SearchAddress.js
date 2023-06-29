@@ -22,14 +22,14 @@ export default function SearchAddress({navigation, route}){
         }
         const address = {address:data.address, zoneCode:data.zonecode}
 
-        const params = Object.entries(address).map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`).join("&");
+        //const params = Object.entries(address).map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`).join("&");
 
-        await axios.get(url+`/api/v1/getLatLon`, params)
-          .then(function (response) {
-               result = {...response.data}
-          }).catch(function (error) {
-               console.log(error)
-          });
+        await axios.get(url+`/api/v1/getLatLon`, { params: address })
+        .then(function (response) {
+            result = {...response.data}
+        }).catch(function (error) {
+            console.log(error)
+        });
         route.params.setAdress({...result, address:data.address, zoneCode:data.zonecode})
         navigation.goBack();
     }

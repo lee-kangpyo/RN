@@ -567,7 +567,7 @@ const styles = StyleSheet.create({
         fontSize:16,
     },
     text_btn_dig:{
-
+        
     }
 
 })
