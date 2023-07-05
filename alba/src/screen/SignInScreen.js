@@ -26,10 +26,6 @@ export default function SignInScreen({navigation}) {
         setStep(step);
     }
 
-    //const updateBusinessPlace = (businessPlace) => {
-    //    setBusinessPlace(businessPlace);
-    //    setStep(3.5)
-    //}
 
     const saveUser = async () => {
         const response = await axios.post(url+'/api/v1/saveUser', {...userInfo, ...getUserType()});
@@ -74,7 +70,12 @@ export default function SignInScreen({navigation}) {
 
     return(
         <>
-        <TouchableOpacity onPress={() => {console.log(userInfo)}}><Text>asdf</Text></TouchableOpacity>
+        {
+            1 == 2?
+                <TouchableOpacity onPress={() => {console.log(userInfo)}}><Text>asdf</Text></TouchableOpacity>
+            : 
+                null
+        }
         {
             step == 1?
                 <Step1 updateState={updateState} />
@@ -256,7 +257,9 @@ const Step2 = ({ updateState }) => {
 const WaitResponse = () => {
     return(
         <>
-            <Text>가입 중입니다. 잠시만 기달려주세요.</Text>
+            <View style={{flex:1, justifyContent:"center", alignItems:"center"}}>
+                <Text >가입 중입니다. 잠시만 기달려주세요.</Text>
+            </View>
         </>
     )
 }
@@ -266,12 +269,10 @@ const Step4 = ({navigation, userInfo}) => {
     return(
         <>
         {
-            <>
-                <Text>가입을 환영합니다 고객님</Text>
-                <TouchableOpacity onPress={()=>navigation.navigate('Login')}>
-                    <Text>로그인 하러가기</Text>    
-                </TouchableOpacity>
-            </>
+            <View style={{flex:1, justifyContent:"center", alignItems:"center"}}>
+                <Text style={{fontSize:16, marginBottom:16}}>가입을 환영합니다!!</Text>
+                <CustomBtn txt="로그인 하러가기" onPress={()=>navigation.navigate('Login')} style={{...styles.next, padding:8}} color='white'/>
+            </View>
         }
         </>
     )
