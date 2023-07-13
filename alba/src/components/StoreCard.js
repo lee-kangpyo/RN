@@ -2,12 +2,12 @@ import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
 import { theme } from '../util/color';
 import CustomBtn from '../components/CustomBtn';
 
-export default function StoreCard({store}) {
+export default function StoreCard({store, btntxt, onButtonPressed}) {
     return (
     <View style={styles.card}>
         <Text style={styles.card_title}>{store.CSTNA}</Text>
         <Text style={styles.card_txt}>{store.ZIPADDR} {store.ADDR}</Text>
-        <CustomBtn txt="수정하기" onPress={()=>{console.log(store.CSTCO)}} style={styles.btn} color='black' fSize={16}/>
+        <CustomBtn txt={btntxt} onPress={()=>{onButtonPressed(store.CSTCO)}} style={styles.btn} color='black' fSize={16}/>
     </View>
     );
 }

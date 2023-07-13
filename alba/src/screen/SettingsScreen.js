@@ -4,12 +4,12 @@ import React, {useState, useEffect} from 'react';
 
 export default function SettingsScreen({navigation}) {
     useEffect(()=>{
-        navigation.setOptions({title:"점포관리"})
+        navigation.setOptions({title:"급여"})
     }, [navigation])
 
     return (
         <View style={styles.container}>
-            <Text>setting!</Text>
+            <Text>이 페이지는 준비중입니다.</Text>
         </View>
     );
 }

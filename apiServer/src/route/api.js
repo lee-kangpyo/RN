@@ -2,7 +2,7 @@ const express = require('express')
 var router = express.Router();
 const {execSql, execTranSql} = require("../utils/excuteSql");
 
-const { login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER } = require('./../query/auth'); 
+const { login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL } = require('./../query/auth'); 
 const axios = require('axios');
 
 const dotenv = require('dotenv');
@@ -63,6 +63,14 @@ router.get("/v1/getStoreList", async (req, res, next) => {
     console.log(result.recordset);
     res.json({result:result.recordset, status_code:"00"});
 })
+
+router.get("/v1/getStoreListCrew", async (req, res, next) => {
+    const {cstNa} = req.query;
+    const result = await execSql(getStoreListCrew, {cstNa:cstNa})
+    console.log(result.recordset);
+    res.json({result:result.recordset, status_code:"00"});
+})
+
 
 router.get("/v1/getLatLon", async (req, res, next) => {
     const {address, zoneCode} = req.query;
@@ -135,11 +143,11 @@ router.post("/v1/addStore", transactionMiddleware, async (req, res, next) => {
         // SQL 쿼리 실행
         const cstCo = rlt.recordset[0].CSTCO;
         
-        const rlt2 = await execTranSql(request, insertMCSTUSER, {cstCo:cstCo, userId:userId, iUserId:userId, roleCl:"ownr"})
+        const rlt2 = await execTranSql(request, insertMCSTUSER, {cstCo:cstCo, userId:userId, iUserId:userId, roleCl:"ownr", rtCl:"N"})
         console.log(rlt2)
 
         // 트랜잭션 커밋
-        
+
         await transaction.commit();
     
         res.status(200).json({ resultCode:"00", result:rlt.rowsAffected[0] + rlt2.rowsAffected[0] });
@@ -151,7 +159,41 @@ router.post("/v1/addStore", transactionMiddleware, async (req, res, next) => {
       }
 })
 
+// 알바생 점포 지원
+router.post("/v1/applyStoreListCrew", async (req, res, next) => {
+    try{
+        const {cstCo, userId, iUserId, roleCl} = req.body;
+        const result = await execSql(insertMCSTUSER, {cstCo:cstCo, userId:userId, iUserId:iUserId, roleCl:roleCl, rtCl:"R"})
+        console.log({result:result.recordset, resultCode:"00"})
+        res.status(200).json({result:result.recordset, resultCode:"00"});
+    } catch (err) {
+        console.log("###"+err.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+})
 
+router.get("/v1/searchCrewList", async (req, res, next) => {
+    try {
+        const {userId} = req.query;
+        const result = await execSql(searchCrewList, {userId:userId}) 
+        console.log(result)
+        res.status(200).json({result:result.recordset, resultCode:"00"});
+    } catch (err) {
+        console.log("###"+err.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+})
+
+router.post("/v1/approvCrew", async (req, res, next)=>{
+    try {
+        const {cstCo, userId} = req.body;
+        const result = await execSql(changeCrewRTCL, {userId:userId, cstCo:cstCo, rtCl:"N"}) 
+        res.status(200).json({result:result.rowsAffected[0], resultCode:"00"});
+    } catch (error) {
+        console.log("###"+error.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+})
 
 module.exports = router;
 

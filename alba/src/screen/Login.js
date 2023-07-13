@@ -75,7 +75,7 @@ const LoginForm = ({navigation}) => {
   const saveUserInfo = async ({ownrYn, crewYn, mnrgYn, userNa}) => {
     try {
       await AsyncStorage.setItem('id', loginInfo.id);
-      await AsyncStorage.setItem('userNa', loginInfo.userNa);
+      await AsyncStorage.setItem('userNa', userNa);
       await AsyncStorage.setItem('ownrYn', ownrYn);
       await AsyncStorage.setItem('crewYn', crewYn);
       await AsyncStorage.setItem('mnrgYn', mnrgYn);
@@ -91,7 +91,8 @@ const LoginForm = ({navigation}) => {
       // api 서버 요청 -> axios로 요청할예정
       const response = await axios.post(url+'/api/v1/loginUser', loginInfo);
       if(response.data.result === 1){
-        saveUserInfo(response.data.info);
+        console.log(response.data.info)
+        await saveUserInfo(response.data.info);
         // asyncstorage에 아이디 저장
         // jwt 세션이든 auth든 해야됨.
         // 서비스키가되었던.
