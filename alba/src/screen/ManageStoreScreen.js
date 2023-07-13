@@ -45,7 +45,7 @@ export default function ManageStoreScreen({type, refresh, setRefresh}) {
                     ?
                         <ScrollView style={styles.scrollArea}>
                             {storeList.map((el, idx)=>{
-                                return <StoreCard key={idx} store={el}  />
+                                return <StoreCard key={idx} store={el}  btntxt={"수정하기"} onButtonPressed={(cstCo)=>alert("준비중 입니다.")}/>
                             })}
                         </ScrollView>
                     :
