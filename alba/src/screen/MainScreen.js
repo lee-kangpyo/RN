@@ -1,6 +1,6 @@
 //import * as React from 'react';
 import { Text, View, TouchableOpacity, StyleSheet } from 'react-native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons, FontAwesome5  } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
@@ -9,6 +9,8 @@ import SettingsScreen from './SettingsScreen';
 import BoardScreen from './BoardScreen';
 import ManageStoreScreen from './ManageStoreScreen';
 import AddStoreScreen from './AddStoreScreen';
+import SearchStoreScreen from './SearchStoreScreen';
+import ManageCrewScreen from './ManageCrewScreen';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -89,8 +91,8 @@ function OwnrScreen({userInfo}){
         tabBarInactiveTintColor: 'gray',
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: '출퇴근' }}/>
-      <Tab.Screen name="Settings" component={SettingsScreen} options={{ tabBarLabel: '세팅' }}/>
+      <Tab.Screen name="ManageCrew" component={ManageCrewScreen} options={{ tabBarLabel: '알바관리' }}/>
+      <Tab.Screen name="Settings" component={SettingsScreen} options={{ tabBarLabel: '급여' }}/>
       <Tab.Screen name="community" component={BoardScreen} options={{ tabBarLabel: '커뮤니티' }}/>
       <Tab.Screen name="manageStore" options={{ headerShown: false, tabBarLabel: '점포관리' }} >
         {() => (
@@ -118,12 +120,10 @@ function CrewScreen(){
         tabBarInactiveTintColor: 'gray',
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Settings" component={SettingsScreen} />
-      <Tab.Screen name="community" component={BoardScreen} />
-      <Tab.Screen name="manageStore" backBehavior={"none"}>
-        {() => <ManageStoreScreen type={"crew"} />}
-      </Tab.Screen>
+      <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: '출퇴근' }}/>
+      <Tab.Screen name="Settings" component={SettingsScreen} options={{ tabBarLabel: '급여' }}/>
+      <Tab.Screen name="community" component={BoardScreen} options={{ tabBarLabel: '커뮤니티' }}/>
+      <Tab.Screen name="manageStore" component={SearchStoreScreen} backBehavior={"none"} options={{ tabBarLabel: '점포검색' }} />
     </Tab.Navigator>
   )
 }
@@ -133,11 +133,14 @@ const setTabBarIcon = (focused, color, size, name) =>{
   let iconName;
   let icon;
   if (name === 'Home') {
-    iconName = focused ? 'ios-information-circle' : 'ios-information-circle-outline';
-    icon = "Ionicons"
+    iconName = focused ? 'coffee' : 'coffee-outline';
+    icon = "MaterialCommunityIcons"
+  }else if (name === 'ManageCrew'){
+    iconName = 'user-cog';
+    icon = "FontAwesome5"
   } else if (name === 'Settings') {
-    iconName = focused ? 'ios-list-circle' : 'ios-list-circle-outline';
-    icon = "Ionicons"
+    iconName = 'file-invoice-dollar';
+    icon = "FontAwesome5"
   } else if (name === 'community'){
     iconName = focused ? 'ios-people-sharp' : 'ios-people-outline';
     icon = "Ionicons"
@@ -150,8 +153,11 @@ const setTabBarIcon = (focused, color, size, name) =>{
     return <Ionicons name={iconName} size={size} color={color} />;
   }else if(icon == "MaterialCommunityIcons"){
     return <MaterialCommunityIcons name={iconName} size={size} color={color} />;
+  }else if(icon == "FontAwesome5"){
+    return <FontAwesome5 name={iconName} size={size} color={color} />;
   }
 }
+
 
 
 const styles = StyleSheet.create({
