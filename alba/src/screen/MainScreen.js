@@ -120,7 +120,7 @@ function CrewScreen(){
         tabBarInactiveTintColor: 'gray',
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: '출퇴근' }}/>
+      <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: '출퇴근', unmountOnBlur: true, }}/>
       <Tab.Screen name="Settings" component={SettingsScreen} options={{ tabBarLabel: '급여' }}/>
       <Tab.Screen name="community" component={BoardScreen} options={{ tabBarLabel: '커뮤니티' }}/>
       <Tab.Screen name="manageStore" component={SearchStoreScreen} backBehavior={"none"} options={{ tabBarLabel: '점포검색' }} />

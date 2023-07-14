@@ -2,7 +2,7 @@ const express = require('express')
 var router = express.Router();
 const {execSql, execTranSql} = require("../utils/excuteSql");
 
-const { login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL } = require('./../query/auth'); 
+const { login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList } = require('./../query/auth'); 
 const axios = require('axios');
 
 const dotenv = require('dotenv');
@@ -189,6 +189,17 @@ router.post("/v1/approvCrew", async (req, res, next)=>{
         const {cstCo, userId} = req.body;
         const result = await execSql(changeCrewRTCL, {userId:userId, cstCo:cstCo, rtCl:"N"}) 
         res.status(200).json({result:result.rowsAffected[0], resultCode:"00"});
+    } catch (error) {
+        console.log("###"+error.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+})
+
+router.get("/v1/searchMyAlbaList", async (req, res, next) => {
+    try {
+        const {userId} = req.query;
+        const result = await execSql(searchMyAlbaList, {userId:userId});
+        res.status(200).json({result:result.recordset, resultCode:"00"});
     } catch (error) {
         console.log("###"+error.message)
         res.status(200).json({ resultCode:"-1"});

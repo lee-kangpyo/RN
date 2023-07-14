@@ -11,6 +11,7 @@ import axios from 'axios';
 import { theme } from '../util/color';
 import SearchBar from '../components/SearchBar';
 
+
 export default function SearchStoreScreen({type, refresh, setRefresh}) {
     const userId = useSelector((state) => state.login.userId);
     const url = useSelector((state) => state.config.url);
