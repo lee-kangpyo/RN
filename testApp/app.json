@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "alloha",
-    "slug": "alloha",
+    "name": "testApp",
+    "slug": "testApp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,30 +15,23 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.akmz.alloha"
+      "supportsTablet": true
     },
     "android": {
-      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "config": {
-        "googleMaps": {
-          "apiKey": "AIzaSyCCvlEGnEw88Phinh5cBP0UHN2ZTg24o0E"
-        }
-      },
-      "package": "com.akmz.alloha"
+      "package": "com.akmz.testApp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "owner": "akmz",
     "extra": {
       "eas": {
-        "projectId": "0dd79bb6-37ee-41de-ab18-ae35b01e55a2"
+        "projectId": "d91e64eb-5fa1-4364-bf5f-d4382a34ec49"
       }
-    }
+    },
+    "owner": "akmz"
   }
 }
