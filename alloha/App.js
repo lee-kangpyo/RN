@@ -6,14 +6,14 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { Provider, useSelector } from 'react-redux';
-import store from '../alba/redux/store';
-import Login from '../alba/src/screen/Login';
-import TermsDetailScreen from '../alba/src/screen/TermsDetailScreen';
-import MainScreen from '../alba/src/screen/MainScreen';
-import SignInScreen from '../alba/src/screen/SignInScreen';
-import GetLocationPermission from '../alba/src/components/LocationPermission';
+import store from '../alloha/redux/store';
+import Login from '../alloha/src/screen/Login';
+import TermsDetailScreen from '../alloha/src/screen/TermsDetailScreen';
+import MainScreen from '../alloha/src/screen/MainScreen';
+import SignInScreen from '../alloha/src/screen/SignInScreen';
+import GetLocationPermission from '../alloha/src/components/LocationPermission';
 
-import SearchAddress from '../alba/src/components/SearchAddress';
+import SearchAddress from '../alloha/src/components/SearchAddress';
 
 const Stack = createNativeStackNavigator();
 
