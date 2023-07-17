@@ -1,10 +1,13 @@
 
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import {Picker} from '@react-native-picker/picker';
 import { theme } from '../util/color';
+
+import * as Location from 'expo-location';
+import CommuteRecordCard from '../components/CommuteRecordCard';
 
 //import GoogleMap from '../components/GoogleMap';
 
@@ -12,9 +15,22 @@ export default function HomeScreen({navigation}) {
     const userId = useSelector((state) => state.login.userId);    
     const url = useSelector((state) => state.config.url);
 
-    const [isLoading, setLoading] = useState(true);
-    const [selectedStore, setSelectedStore] = useState({});
-    const [myStores, setmyStores] = useState([]);
+    const scrollViewRef = useRef(null);
+    const handleScrollToEnd = () => {
+        scrollViewRef.current?.scrollToEnd({ animated: true });
+    };
+
+    const [isLoading, setLoading] = useState(true);                     // 점포 불러왔는지 체크
+    const [selectedStore, setSelectedStore] = useState({});             // 선택된 점포
+    const [selectedStoreLogs, setSelectedStoreLogs] = useState([]);    //선택된 점포의 출퇴근 기록
+    const [myStores, setmyStores] = useState([]);                       // 내 알바 점포들
+    const [myPosition, setmyPosition] = useState();                     // 현재 내위치
+    const [distance, setdistance] = useState();                         // 선택된 점포와 내위치의 거리
+
+    //DB에서 가져옴 => aixous => => 출근 상태를 확인하고  
+    const [inOutBtnTxt, setInOutBtnTxt] = useState("")
+    const [trackingList, setTrackingList] = useState([{content:"출근 기록리스트 샘플 1", time:"2023-06-04 17:50"}, {content:"췰퇴근 기록리스트 샘플 1", time:"2023-06-04 18:50"}])
+
     // 내가 요청한 점포는 어떻게 할지 결정해야함.
     // 점주가 승인한 점포는 셀렉트 박스로 선택할수 있게 해야함.
     // 여기서 필요한것은 위치 정보를 기반으로 근처에 갔는지 체크 후 출근, 퇴근 입력 가능하게...
@@ -33,28 +49,118 @@ export default function HomeScreen({navigation}) {
         const seconds = now.getSeconds();
         return `${YYYY}-${mm}-${dd} ${hour}:${minutes}:${seconds}`;
     }
+    const test = () => {
+        console.log(getDay());
+    }
+    const getDay = () => {
+        const day = new Date().getDay();
+        let result = ""
+        switch (day) {
+            case 1:
+                result = "MON";
+                break;
+            case 2:
+                result = "TUE";
+                break;
+            case 3:
+                result = "WEN";
+                break;
+            case 4:
+                result = "THR";
+                break;
+            case 5:
+                result = "FRI";
+                break;
+            case 6:
+                result = "SAT";
+                break;
+            case 7:
+                result = "SUN";
+                break;
+            default:
+                break;
+        }
+        return result
+    }
 
-    const onPressInOutBtn = () => {
-        //console.log("출퇴근 버튼 클릭")
-        // DB에 출근/퇴근 했을을 전달
-        if(inOutBtnTxt === "출근"){
-            setInOutBtnTxt("퇴근")
-            setTrackingList([...trackingList, {content:"출근", time:getCurTime()}])
+    const onPressInOutBtn = async () => {
+        // 거리 체크
+        if(distance > 50){
+            // console.log("출퇴근 버튼 클릭")
+            // 현재 내가 출근을 해야하는지? 퇴근을 해야하는지 체크가 필요...
+            // DB에 출근/퇴근 했을을 전달
+            const jobYn = (inOutBtnTxt === "출근")?"Y":"N"
+            await axios.post(url+"/api/v1/insertJobChk", {userId:userId, cstCo:selectedStore.CSTCO, day:getDay(), lat:myPosition.latitude, lon:myPosition.longitude, jobYn:jobYn, apvYn:"N"})
+            .then((res)=>{
+                if(res.data.resultCode === "00"){
+                    Alert.alert("알림", inOutBtnTxt + "기록 입력 완료.");
+                }else{
+                    Alert.alert("알림", "출퇴근 기록 입력 중 오류가 발생했습니다. 잠시후 다시 시도해 주세요.")
+                }
+            }).catch(function (error) {
+                console.log(error);
+                Alert.alert("오류", "출퇴근 기록 입력 중 알수없는 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
+            })
+            
+            // 데이터 가져와서 최신화...
+            getSelStoreRecords();
+
+            if(inOutBtnTxt === "출근"){
+                setInOutBtnTxt("퇴근")
+                //setTrackingList([...trackingList, {content:"출근", time:getCurTime()}])
+            }else{
+                setInOutBtnTxt("출근")
+                //setTrackingList([...trackingList, {content:"퇴근", time:getCurTime()}])
+            }
         }else{
-            setInOutBtnTxt("출근")
-            setTrackingList([...trackingList, {content:"퇴근", time:getCurTime()}])
+            Alert.alert("알림", "점포와 너무 멀리 떨어져있어서 출 퇴근 기록을 할수 없습니다.");
         }
     }
-    //DB에서 가져옴 => aixous => => 출근 상태를 확인하고  
-    const [inOutBtnTxt, setInOutBtnTxt] = useState("")
-    const [trackingList, setTrackingList] = useState([{content:"췰퇴근 기록리스트 샘플 1", time:"2023-06-04 17:50"}, {content:"췰퇴근 기록리스트 샘플 1", time:"2023-06-04 18:50"}])
+    const getLocationAsync = async() => {
+        let loc = await Location.watchPositionAsync({
+            accuracy: Location.Accuracy.BestForNavigation,
+            timeInterval: 10000,
+            distanceInterval : 20
+        }, (newLocation) => {
+            setmyPosition(newLocation.coords); 
+        });
+    };
+
+    const getDistanceFromLatLon = (lat1,lng1,lat2,lng2) => {
+        const deg2rad = (deg) => deg * (Math.PI/180)
+        var R = 6371; // Radius of the earth in km
+        var dLat = deg2rad(lat2-lat1);  // deg2rad below
+        var dLon = deg2rad(lng2-lng1);
+        var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon/2) * Math.sin(dLon/2);
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        var d = R * c; // Distance in km
+        return Math.round(d * 1000);
+
+    }
+
+    const getSelStoreRecords = async () =>{
+        await axios.get(url+"/api/v1/getSelStoreRecords", {params:{userId:userId, cstCo:selectedStore.CSTCO}})
+        .then((res)=>{
+            if(res.data.resultCode === "00"){
+                console.log(res.data.result);
+                setSelectedStoreLogs(res.data.result);
+                handleScrollToEnd();
+                //출근 데이터 저장하기... 아직 입력이 안되서 입력 후 개발하는걸로 하자.
+            }else{
+                Alert.alert("알림", "현재 점포 출퇴근 기록 호출 중 오류가 발생했습니다. 잠시후 다시 시도해 주세요.")
+            }
+        }).catch(function (error) {
+            console.log(error);
+            Alert.alert("오류", "현재 점포 출퇴근 기록 호출 중 알수없는 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
+        })
+    }
+
 
     useEffect(()=>{
         navigation.setOptions({title:"출퇴근"})
     }, [navigation])
 
     useEffect(() => {
-        // axios로 출퇴근 상태 체크
         async function searchMyAlbaList() {
             await axios.get(url+"/api/v1/searchMyAlbaList", {params:{userId:userId}})
             .then((res)=>{
@@ -72,21 +178,33 @@ export default function HomeScreen({navigation}) {
         }
         searchMyAlbaList();
         setInOutBtnTxt("출근")
+        getLocationAsync()
     }, [])
+
+
     useEffect(() => {
-        //console.log(selectedStore)
-        console.log(selectedStore)
-       
-        
         //여기서 현재 기록 가져오기
-        //그리고 출퇴근 상태 가져오기
-        //그리고 승인 대기 중이면 하단에 출근 없애기
+        if(selectedStore.RTCL === "N"){
+            getSelStoreRecords();
+        }
+
+        //그리고 출퇴근 상태 가져오기??(어쩌면 asyncstorage로 처리해야될수도있음..)
+        //그리고 승인 대기 중이면 하단에 출근 없애기(완료)
     }, [selectedStore])
+
+    useEffect(()=>{
+
+        if(myPosition && selectedStore && selectedStore.RTCL === "N"){
+            const distance = getDistanceFromLatLon(myPosition.latitude, myPosition.longitude, selectedStore.LAT, selectedStore.LON)
+            setdistance(distance);
+        }
+    }, [myPosition, selectedStore])
+
 
     return (
         <>
-            <TouchableOpacity onPress={() => {console.log(selectedStore)}}>
-                <Text>클릭해서 테스트 로그 출력</Text>
+            <TouchableOpacity onPress={() => {test()}}>
+                <Text>클릭해서 테스트 로그 출력(실제 배포시 삭제)</Text>
             </TouchableOpacity>
                 
             {
@@ -106,12 +224,12 @@ export default function HomeScreen({navigation}) {
                             }
                             >
                             {
-                            myStores.map((el)=>{
+                            myStores.map((el, idx)=>{
                                     return (el.RTCL === "N")
                                         ?
-                                            <Picker.Item label={el.CSTNA} value={el}/>
+                                            <Picker.Item key={idx} label={el.CSTNA} value={el}/>
                                         :(el.RTCL === "R")?
-                                            <Picker.Item label={el.CSTNA + "(승인 대기 중)"} value={el}/>
+                                            <Picker.Item key={idx} label={el.CSTNA + "(승인 대기 중)"} value={el}/>
                                         :  
                                             null
                                 })
@@ -125,13 +243,9 @@ export default function HomeScreen({navigation}) {
                                 <TouchableOpacity onPress={onPressInOutBtn} style={styles.in_out_btn}>
                                     <Text style={styles.in_out_btn_txt}>{inOutBtnTxt}</Text>
                                 </TouchableOpacity>
-                                <ScrollView>
+                                <ScrollView ref={scrollViewRef} style={{width:"100%"}} maintainVisibleContentPosition={5}>
                                     {
-                                        trackingList.map((row, idx)=>{
-                                            return(
-                                                <Text key={idx}>{row.time}{row.content}</Text>
-                                            )
-                                        }) 
+                                        selectedStoreLogs.map((row, idx)=> <CommuteRecordCard record={row} btntxt={"승인요청"} onButtonPressed={()=>{Alert.alert("승인요청", "이 버튼은 언제 보여야 할까요?")}} key={idx} /> ) 
                                     }
                                 </ScrollView>
                             </>
@@ -162,7 +276,9 @@ const styles = StyleSheet.create({
         height:150,
         borderRadius:100,
         justifyContent:"center",
-        alignItems:"center"
+        alignItems:"center",
+        marginBottom:16
+        
     },
     in_out_btn_txt:{
         fontSize:30

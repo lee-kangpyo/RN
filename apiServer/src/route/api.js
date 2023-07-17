@@ -2,7 +2,7 @@ const express = require('express')
 var router = express.Router();
 const {execSql, execTranSql} = require("../utils/excuteSql");
 
-const { login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList } = require('./../query/auth'); 
+const { login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, insertJobChk} = require('./../query/auth'); 
 const axios = require('axios');
 
 const dotenv = require('dotenv');
@@ -167,7 +167,7 @@ router.post("/v1/applyStoreListCrew", async (req, res, next) => {
         console.log({result:result.recordset, resultCode:"00"})
         res.status(200).json({result:result.recordset, resultCode:"00"});
     } catch (err) {
-        console.log("###"+err.message)
+        console.log(err.message)
         res.status(200).json({ resultCode:"-1"});
     }
 })
@@ -176,10 +176,9 @@ router.get("/v1/searchCrewList", async (req, res, next) => {
     try {
         const {userId} = req.query;
         const result = await execSql(searchCrewList, {userId:userId}) 
-        console.log(result)
         res.status(200).json({result:result.recordset, resultCode:"00"});
     } catch (err) {
-        console.log("###"+err.message)
+        console.log(err.message)
         res.status(200).json({ resultCode:"-1"});
     }
 })
@@ -190,7 +189,7 @@ router.post("/v1/approvCrew", async (req, res, next)=>{
         const result = await execSql(changeCrewRTCL, {userId:userId, cstCo:cstCo, rtCl:"N"}) 
         res.status(200).json({result:result.rowsAffected[0], resultCode:"00"});
     } catch (error) {
-        console.log("###"+error.message)
+        console.log(error.message)
         res.status(200).json({ resultCode:"-1"});
     }
 })
@@ -201,7 +200,32 @@ router.get("/v1/searchMyAlbaList", async (req, res, next) => {
         const result = await execSql(searchMyAlbaList, {userId:userId});
         res.status(200).json({result:result.recordset, resultCode:"00"});
     } catch (error) {
-        console.log("###"+error.message)
+        console.log(error.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+})
+
+router.get("/v1/getSelStoreRecords", async (req, res, next) => {
+    
+    try {
+        const {userId, cstCo} = req.query;
+        const result = await execSql(getSelStoreRecords, {userId:userId, cstCo:cstCo});
+        res.status(200).json({result:result.recordset, resultCode:"00"});
+    } catch (error) {
+        console.log(error.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+})
+
+router.post("/v1/insertJobChk", async (req,res,next)=>{
+    console.log("insertJobChk")
+    try {
+        const {cstCo, userId, day, lat, lon, jobYn, apvYn} = req.body;
+        const result = await execSql(insertJobChk, {userId:userId, cstCo:cstCo, day:day, lat:lat, lon:lon, jobYn:jobYn, apvYn:apvYn});
+        console.log(result)
+        res.status(200).json({result:result.recordset, resultCode:"00"});
+    } catch (error) {
+        console.log(error.message)
         res.status(200).json({ resultCode:"-1"});
     }
 })

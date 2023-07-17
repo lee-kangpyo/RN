@@ -25,7 +25,6 @@ export default function GetLocationPermission({Grant, Deny}){
       text = errorMsg;
     } else if (location) {
       text = JSON.stringify(location);
-      console.log(location)
     }
   
     return (
