@@ -106,13 +106,15 @@ const searchMyAlbaList = `
             , a.RTCL
             , ISNULL(MIN(JOBFR) + '~' + MAX(JOBTO),'등록전') as JOBDUR
             , ISNULL(SUM(DAYJOB),0) as WEEKJOB 
+            , b.LAT
+            , b.LON
     FROM   PLYMCSTUSER a
     inner join PLYMCST b On a.CSTCO = b.CSTCO
     inner join PLYMUSER c On a.USERID = c.USERID
     left join PLYAJOBDAY d On a.CSTCO = d.CSTCO AND a.USERID = d.USERID
     WHERE   a.USERID = @userId
     AND   a.RTCL not in ( 'Y' )      -- Y - 퇴직, N - 재직, R - 요청 <-- 추후 생성
-    GROUP   BY a.CSTCO, b.CSTNA, a.USERID, c.USERNA, ISNULL(c.NICKNA,''), a.JOBTYPE, a.WAGE, a.ROLECL, a.RTCL
+    GROUP   BY a.CSTCO, b.CSTNA, a.USERID, c.USERNA, ISNULL(c.NICKNA,''), a.JOBTYPE, a.WAGE, a.ROLECL, a.RTCL, b.lat, b.lon
 `
 
 const changeCrewRTCL=`
@@ -122,4 +124,21 @@ const changeCrewRTCL=`
     AND a.CSTCO = @cstCo 
 `
 
-module.exports = {login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList}
+const getSelStoreRecords=`
+    SELECT   dbo.FN_DATE(a.CHKTIME,1) CHKTIME
+        , a.JOBYN   -- 'Y' 출근, 'N' 퇴근, 'P' 긴급(추가작업)
+        , a.DAY
+        , a.APVYN   -- 점주 인정여부, 'Y' 자동승인, 'N' 자동불인, 'A' 점주승인, 'D' 점주불인
+    FROM   PLYAJOBCHK a
+    WHERE   a.CSTCO = @cstCo
+    AND   CONVERT(nvarchar(8),a.CHKTIME,11) = CONVERT(nvarchar(8),getdate(),11)
+    AND   a.USERID = @userId
+    ORDER   BY a.CHKTIME
+`
+// 출퇴근 기록
+const insertJobChk = `
+    INSERT	PLYAJOBCHK(CSTCO, USERID, DAY, LAT, LON, JOBYN, APVYN, CHKTIME)
+    VALUES ( @cstCo, @userId, @day, @lat, @lon, @jobYn, @apvYn, dateadd(MINUTE, -60, getdate()))
+`
+
+module.exports = {login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, insertJobChk}
