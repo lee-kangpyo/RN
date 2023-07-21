@@ -141,4 +141,9 @@ const insertJobChk = `
     VALUES ( @cstCo, @userId, @day, @lat, @lon, @jobYn, @apvYn, dateadd(MINUTE, -60, getdate()))
 `
 
-module.exports = {login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, insertJobChk}
+const geofencingTest = `
+    insert into GEOFENCINGTEST(name, lat, lon, day)
+    VALUES (@name, @lat, @lon, @day)
+`
+
+module.exports = {login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, insertJobChk, geofencingTest}

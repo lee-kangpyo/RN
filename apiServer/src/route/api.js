@@ -2,7 +2,7 @@ const express = require('express')
 var router = express.Router();
 const {execSql, execTranSql} = require("../utils/excuteSql");
 
-const { login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, insertJobChk} = require('./../query/auth'); 
+const { login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, insertJobChk, geofencingTest} = require('./../query/auth'); 
 const axios = require('axios');
 
 const dotenv = require('dotenv');
@@ -229,6 +229,20 @@ router.post("/v1/insertJobChk", async (req,res,next)=>{
         res.status(200).json({ resultCode:"-1"});
     }
 })
+
+
+router.get("/v1/testTaskManager", async (req, res, next) => {
+    try {
+        const {log, day, lat, lon} = req.query;
+        console.log(day+":::"+log+" "+lat+", "+lon )
+        const result = await execSql(geofencingTest, {name:log, day:day, lat:lat, lon:lon});
+        res.status(200).json({result:"테스트끝", resultCode:"00"});
+    } catch (error) {
+        console.log(error.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+})
+
 
 module.exports = router;
 
