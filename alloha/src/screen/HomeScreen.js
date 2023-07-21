@@ -85,7 +85,7 @@ export default function HomeScreen({navigation}) {
 
     const onPressInOutBtn = async () => {
         // 거리 체크
-        if(distance > 50){
+        if(distance < 50){
             // console.log("출퇴근 버튼 클릭")
             // 현재 내가 출근을 해야하는지? 퇴근을 해야하는지 체크가 필요...
             // DB에 출근/퇴근 했을을 전달
