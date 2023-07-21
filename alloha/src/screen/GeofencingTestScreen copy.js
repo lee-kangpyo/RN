@@ -19,7 +19,7 @@ const requestPermissions = async () => {
     console.log("백그라운드" + backgroundStatus)
     if (backgroundStatus === 'granted') {
       await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-        timeInterval: 1000,
+        timeInterval: 60000,
         deferredUpdatesInterval: 100,
         accuracy: Location.Accuracy.BestForNavigation,
         showsBackgroundLocationIndicator: true,

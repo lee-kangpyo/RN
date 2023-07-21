@@ -9,7 +9,6 @@ import { GeofencingEventType } from 'expo-location';
 
 import axios from 'axios';
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LOCATION_TASK_NAME = 'background-location-task';
 
@@ -27,19 +26,13 @@ function PermissionsButton () {
       console.log("백그라운드" + backgroundStatus)
       setBack(backgroundStatus)
       if (backgroundStatus === 'granted') {
-        await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-          timeInterval: 60000,
-          //deferredUpdatesDistance:1,
-          deferredUpdatesInterval: 100,
-          accuracy: Location.Accuracy.BestForNavigation,
-          showsBackgroundLocationIndicator: true,
-          foregroundService: {
-              notificationTitle: "알로하",
-              notificationBody: "알로하가 위치 기반으로 출퇴근을 여부를 체크하고 있습니다.",
-              notificationColor: "#fff",
-          },
-        });
-        console.log("내위치 추적 시작")
+        await Location.startGeofencingAsync(LOCATION_TASK_NAME, [{
+          identifier:"1",
+          latitude:37.5415495,
+          longitude:127.0928167,
+          radius:20
+        }]);
+        console.log("지오펜싱 시작")
       }
     }
   };
@@ -54,8 +47,7 @@ function PermissionsButton () {
   )
 };
 
-TaskManager.defineTask(LOCATION_TASK_NAME,  async ({ data, error } ) => {
-  
+TaskManager.defineTask(LOCATION_TASK_NAME,  async ({ data: { eventType, region }, error } ) => {
   const getCurrentTimeWithDate = () => {
     const currentDate = new Date();
     const year = currentDate.getFullYear();
@@ -73,15 +65,16 @@ TaskManager.defineTask(LOCATION_TASK_NAME,  async ({ data, error } ) => {
     // check `error.message` for more details.
     return;
   }
-  if(data){
-    let id = await AsyncStorage.getItem("id")
-    id = (id)?id:"테스트아이디"
-    const { locations } = data;
-    await axios.get("http://13.124.217.193:8546"+"/api/v1/testTaskManager", {params:{id:id, log:"You've move location[app]", lat:locations[0].coords.latitude, lon:locations[0].coords.longitude, day:getCurrentTimeWithDate()}})
+  
+  if (eventType === GeofencingEventType.Enter) {
+    //console.log("You've entered region:", region.latitude+", "+region.longitude)
+    await axios.get("http://13.124.217.193:8546"+"/api/v1/testTaskManager", {params:{log:"You've entered region[app1]", lat:region.latitude, lon:region.longitude, day:getCurrentTimeWithDate()}})
+    .catch((err)=>{console.log(err)})
+  } else if (eventType === GeofencingEventType.Exit) {
+    //console.log("You've left region:", region.latitude+", "+region.longitude)
+    await axios.get("http://13.124.217.193:8546"+"/api/v1/testTaskManager", {params:{log:"You've left region[app1]" + region.latitude+", "+region.longitude, day:getCurrentTimeWithDate()}})
     .catch((err)=>{console.log(err)})
   }
-  
-    
 });
 
 const styles = StyleSheet.create({
