@@ -142,8 +142,8 @@ const insertJobChk = `
 `
 
 const geofencingTest = `
-    insert into GEOFENCINGTEST(name, lat, lon, day)
-    VALUES (@name, @lat, @lon, @day)
+    insert into GEOFENCINGTEST(id, name, lat, lon, day)
+    VALUES (@id, @name, @lat, @lon, @day)
 `
 
 module.exports = {login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, insertJobChk, geofencingTest}
