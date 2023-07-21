@@ -77,7 +77,7 @@ alloha/*.orig.*
 alloha/web-build/
 alloha/.DS_Store
 alloha/.metro-health-check*
-alloha/app.json
+alloha/eas.json
 alloha/.env
 
 
