@@ -78,6 +78,7 @@ alloha/web-build/
 alloha/.DS_Store
 alloha/.metro-health-check*
 alloha/app.json
+alloha/.env
 
 
 apiServer/static/jdbc.js
