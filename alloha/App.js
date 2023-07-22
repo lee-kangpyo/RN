@@ -45,7 +45,7 @@ function Index() {
 
 
 
-function App() {
+function backGroundLocationTest() {
   return (
     <Provider store={store}>
       <Geofencing/>
@@ -53,13 +53,14 @@ function App() {
   );
 }
 
-function backup(){
+function App(){
+  //<GetLocationPermission Grant={Index}/>
   return (
     <Provider store={store}>
-      <GetLocationPermission Grant={Index}/>
+      <Index/>
     </Provider>
   );
 }
 
 
-export default App;
+export default backGroundLocationTest;
