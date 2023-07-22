@@ -18,8 +18,15 @@ function PermissionsButton () {
   const [fore, setFore] = useState("아직 안받음");
   const [back, setBack] = useState("아직 안받음");
 
+  const test = async () => {
+    console.log("테스트")
+    const result = await TaskManager.getRegisteredTasksAsync()
+    console.log(result);
+  }
+
   const requestPermissions = async () => {
     const { status: foregroundStatus } = await Location.requestForegroundPermissionsAsync();
+
     console.log("포그라운드" + foregroundStatus)
     setFore(foregroundStatus)
     if (foregroundStatus === 'granted') {
@@ -43,10 +50,11 @@ function PermissionsButton () {
       }
     }
   };
+
   return(
-    
       <View style={styles.container}>
           <Button onPress={requestPermissions} title="Enable background location" />
+          <Button onPress={test} title="test" />
           <Text>{fore}</Text>
           <Text>{back}</Text>
           <Text>{URL}</Text>
@@ -55,7 +63,6 @@ function PermissionsButton () {
 };
 
 TaskManager.defineTask(LOCATION_TASK_NAME,  async ({ data, error } ) => {
-  
   const getCurrentTimeWithDate = () => {
     const currentDate = new Date();
     const year = currentDate.getFullYear();
@@ -77,7 +84,7 @@ TaskManager.defineTask(LOCATION_TASK_NAME,  async ({ data, error } ) => {
     let id = await AsyncStorage.getItem("id")
     id = (id)?id:"테스트아이디"
     const { locations } = data;
-    await axios.get("http://13.124.217.193:8546"+"/api/v1/testTaskManager", {params:{id:id, log:"You've move location[app]", lat:locations[0].coords.latitude, lon:locations[0].coords.longitude, day:getCurrentTimeWithDate()}})
+    await axios.get("http://13.124.217.193:8546"+"/api/v1/testTaskManager", {params:{id:id, log:"You've move location[dev]", lat:locations[0].coords.latitude, lon:locations[0].coords.longitude, day:getCurrentTimeWithDate()}})
     .catch((err)=>{console.log(err)})
   }
   
