@@ -15,9 +15,10 @@ import { useSelector } from 'react-redux';
 import CustomBtn from '../components/CustomBtn';
 
 const windowWidth = Dimensions.get('window').width;
+import { URL } from "@env";
 
 export default function SignInScreen({navigation}) {
-    const url = useSelector((state) => state.config.url);
+    //const url = useSelector((state) => state.config.url);
     const [step, setStep] = useState(1)
     const [userInfo, setUserInfo] = useState({});
     //const [businessPlace, setBusinessPlace] = useState({});
@@ -28,7 +29,7 @@ export default function SignInScreen({navigation}) {
 
 
     const saveUser = async () => {
-        const response = await axios.post(url+'/api/v1/saveUser', {...userInfo, ...getUserType()});
+        const response = await axios.post(URL+'/api/v1/saveUser', {...userInfo, ...getUserType()});
         setTimeout(() => {
             if(response.data.result){
                 setStep(4);
@@ -111,7 +112,7 @@ const SelectUserType = ({userType, setUserType}) => {
     )
 }
 const Step1 = ({updateState}) => {
-    const url = useSelector((state) => state.config.url);
+    //const url = useSelector((state) => state.config.url);
     const[userType, setUserType] = useState(0)
 
 
@@ -120,7 +121,7 @@ const Step1 = ({updateState}) => {
         id:yup.string().required("아이디를 입력해주세요.").max(20, "아이디는 20자리 이하이어야 합니다.").min(8, "아이디는 8자리 이상이어야 합니다.")
             .test('id-unique', '이미 사용 중인 아이디입니다.', async (value) => {
                 try {
-                    const response = await axios.post(url+'/api/v1/isIdDuplicate', {
+                    const response = await axios.post(URL+'/api/v1/isIdDuplicate', {
                       id: value,
                     });
                     if (response.data.isDuplicate) {

@@ -2,7 +2,7 @@ const express = require('express')
 var router = express.Router();
 const {execSql, execTranSql} = require("../utils/excuteSql");
 
-const { login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, insertJobChk, geofencingTest} = require('./../query/auth'); 
+const { login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, insertJobChk, geofencingTest, checkJobChk} = require('./../query/auth'); 
 const axios = require('axios');
 
 const dotenv = require('dotenv');
@@ -241,6 +241,90 @@ router.get("/v1/testTaskManager", async (req, res, next) => {
         console.log(error.message)
         res.status(200).json({ resultCode:"-1"});
     }
+})
+
+router.get("/v1/checkStoreLocation", async (req, res, next) => {
+    console.log("checkStoreLocation")
+    
+    const deg2rad = (deg) => {
+        return deg * (Math.PI/180);
+    }
+
+    const distance = (lat1, lon1, lat2, lon2) => {
+        const R = 6371; // 지구 반지름 (단위: km)
+        const dLat = deg2rad(lat2 - lat1);
+        const dLon = deg2rad(lon2 - lon1);
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+                  Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        const distance = R * c; // 두 지점 간의 거리 (단위: km)
+        return distance * 1000;
+    }
+    
+    const getDay = () => {
+        const day = new Date().getDay();
+        let result = ""
+        switch (day) {
+            case 1:
+                result = "MON";
+                break;
+            case 2:
+                result = "TUE";
+                break;
+            case 3:
+                result = "WEN";
+                break;
+            case 4:
+                result = "THR";
+                break;
+            case 5:
+                result = "FRI";
+                break;
+            case 6:
+                result = "SAT";
+                break;
+            case 0:
+                result = "SUN";
+                break;
+            default:
+                break;
+        }
+        return result
+    }
+    try {
+        const {id, log, day, lat, lon} = req.query;
+        let apvYn = "N";
+        const curday = getDay();
+        const {recordset:jobChk} = await execSql(checkJobChk, {userId:id});
+        const {recordset:myAlbaList} = await execSql(searchMyAlbaList, {userId:id});
+        if(jobChk[0] && jobChk[0].JOBYN == "Y") { 
+            const cstCo = jobChk[0].CSTCO;
+            const alba = myAlbaList.filter((alba) => { return alba.CSTCO === cstCo })
+            const meter = distance(lat, lon, alba[0].LAT, alba[0].LON)
+            if(meter > 20){
+                const result = await execSql(insertJobChk, {userId:id, cstCo:cstCo, day:curday, lat:Math.floor(lat), lon:Math.floor(lon), jobYn:"N", apvYn:apvYn});
+                console.log(id+"가 퇴근을 완료함"+cstCo)
+            }
+        }else{
+            for (const alba of myAlbaList) {
+                if (alba.RTCL === "N") {
+                    const meter = distance(lat, lon, alba.LAT, alba.LON)
+                    if(meter < 20){
+                        const result = await execSql(insertJobChk, {userId:id, cstCo:alba.CSTCO, day:curday, lat:Math.floor(lat), lon:Math.floor(lon), jobYn:"Y", apvYn:apvYn});
+                        console.log(id+"가 출근을 완료함"+alba.CSTCO)
+                        break;
+                    }
+                }
+            }
+        }
+
+        res.status(200).json({result:"테스트끝", resultCode:"00"});
+    } catch (error) {
+        console.log(error.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+
 })
 
 

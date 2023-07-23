@@ -14,11 +14,13 @@ import axios from 'axios';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { URL } from "@env";
+
 const windowWidth = Dimensions.get('window').width;
 
 
 export default function Login({ navigation }) {
-
+  console.log(URL)
   const sheetRef = useRef(null);
   const [isOpen, setIsOpen] = useState(true);
   const snapPoints = useMemo(() => ["48%"], []);
@@ -65,7 +67,7 @@ export default function Login({ navigation }) {
 }
 
 const LoginForm = ({navigation}) => {
-  const url = useSelector((state) => state.config.url); 
+  //const url = useSelector((state) => state.config.url); 
   const dispatch = useDispatch();
   const [id, onChangeId] = useState('');
   const [password, onChangePassWord] = useState('');
@@ -89,7 +91,7 @@ const LoginForm = ({navigation}) => {
     //밸리데이션 -> 지금은 아이디 패스워드 공백 체크만 함
     if(loginInfo.id && loginInfo.password){
       // api 서버 요청 -> axios로 요청할예정
-      const response = await axios.post(url+'/api/v1/loginUser', loginInfo);
+      const response = await axios.post(URL+'/api/v1/loginUser', loginInfo);
       if(response.data.result === 1){
         console.log(response.data.info)
         await saveUserInfo(response.data.info);

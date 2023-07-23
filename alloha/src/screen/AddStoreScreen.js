@@ -9,9 +9,11 @@ import axios from 'axios';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { URL } from "@env";
+
 export default function AddStoreScreen ({ route }) {
     const { setRefresh } = route.params;
-    const url = useSelector((state) => state.config.url);
+    //const url = useSelector((state) => state.config.url);
 
     const [data, setData] = useState({taxNo:"", cstNa:"", detailAddress:""});
     const [isValidTaxNo, setValidTaxNo] = useState("");
@@ -34,7 +36,7 @@ export default function AddStoreScreen ({ route }) {
     );
    
     const checkTaxNo = async () => {
-        await axios.get(url+`/api/v1/checkTaxNo`, {params:{ taxNo: data.taxNo }})
+        await axios.get(URL+`/api/v1/checkTaxNo`, {params:{ taxNo: data.taxNo }})
         .then(function (response) {
             if(response.data.result.b_stt_cd){
                 setValidTaxNo(true);
@@ -63,7 +65,7 @@ export default function AddStoreScreen ({ route }) {
         
         //if(isValidTaxNo){
         if(true){
-            await axios.post(url+`/api/v1/addStore`, {...data, userId:userId, userNa:userNa})
+            await axios.post(URL+`/api/v1/addStore`, {...data, userId:userId, userNa:userNa})
             .then(function (response) {
                 if(response.data.result == 2 && response.data.resultCode == "00"){
                     Alert.alert("점포 추가", "점포 추가가 완료 되었습니다.");

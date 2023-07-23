@@ -11,10 +11,12 @@ import axios from 'axios';
 import { theme } from '../util/color';
 import SearchBar from '../components/SearchBar';
 
+import { URL } from "@env";
+
 
 export default function SearchStoreScreen({type, refresh, setRefresh}) {
     const userId = useSelector((state) => state.login.userId);
-    const url = useSelector((state) => state.config.url);
+    //const url = useSelector((state) => state.config.url);
     const [storeList, setStoreList] = useState([]);
     const navigation = useNavigation();
     const [searchWrd, setsearchWrd] = useState("");
@@ -24,7 +26,7 @@ export default function SearchStoreScreen({type, refresh, setRefresh}) {
     }, [navigation])
     
     const getStoreList = async () => {
-        await axios.get(url+`/api/v1/getStoreListCrew`, {params:{cstNa:searchWrd,}})
+        await axios.get(URL+`/api/v1/getStoreListCrew`, {params:{cstNa:searchWrd,}})
         .then((res)=>{
             setStoreList(res.data.result)
         }).catch(function (error) {
@@ -33,7 +35,7 @@ export default function SearchStoreScreen({type, refresh, setRefresh}) {
     }
     const applyStore = async (cstCo) => {
         const params = {cstCo:cstCo, userId:userId, iUserId:userId, roleCl:"CREW"};
-        await axios.post(url+`/api/v1/applyStoreListCrew`, params)
+        await axios.post(URL+`/api/v1/applyStoreListCrew`, params)
         .then((res)=>{
             console.log(res.data)
             if(res.data.resultCode === "00"){
