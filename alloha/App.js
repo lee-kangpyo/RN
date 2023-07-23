@@ -17,6 +17,10 @@ import SearchAddress from '../alloha/src/components/SearchAddress';
 
 import Geofencing from './src/screen/GeofencingTestScreen'
 
+import LocationPermissionBack from './src/components/LocationPermissionBack';
+
+
+
 const Stack = createNativeStackNavigator();
 
 function Index() {
@@ -55,6 +59,7 @@ function backGroundLocationTest() {
 
 function App(){
   //<GetLocationPermission Grant={Index}/>
+  //<LocationPermissionBack Grant ={Index}/>
   return (
     <Provider store={store}>
       <Index/>
@@ -63,4 +68,4 @@ function App(){
 }
 
 
-export default backGroundLocationTest;
+export default App;

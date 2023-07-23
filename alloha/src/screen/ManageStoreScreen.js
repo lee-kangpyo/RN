@@ -10,14 +10,16 @@ import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { theme } from '../util/color';
 
+import { URL } from "@env";
+
 export default function ManageStoreScreen({type, refresh, setRefresh}) {
-    const url = useSelector((state) => state.config.url);
+    //const url = useSelector((state) => state.config.url);
     const userId = useSelector((state) => state.login.userId);
     const [storeList, setStoreList] = useState([]);
     const navigation = useNavigation();
     
     const getStoreList = useCallback(async () => {
-        await axios.get(url+`/api/v1/getStoreList`, {params:{userId:userId,}})
+        await axios.get(URL+`/api/v1/getStoreList`, {params:{userId:userId,}})
         .then((res)=>{
             setStoreList(res.data.result)
         }).catch(function (error) {

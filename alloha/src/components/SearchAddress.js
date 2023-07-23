@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import Postcode from '@actbase/react-daum-postcode';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
+import { URL } from "@env";
 
 export default function SearchAddress({navigation, route}){
-    const url = useSelector((state) => state.config.url);
+    //const url = useSelector((state) => state.config.url);
     const getAddressData = async (data) => {
         let defaultAddress='';
         let zoneCode = "";
@@ -24,7 +25,7 @@ export default function SearchAddress({navigation, route}){
 
         //const params = Object.entries(address).map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`).join("&");
 
-        await axios.get(url+`/api/v1/getLatLon`, { params: address })
+        await axios.get(URL+`/api/v1/getLatLon`, { params: address })
         .then(function (response) {
             result = {...response.data}
         }).catch(function (error) {

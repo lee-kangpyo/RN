@@ -26,7 +26,6 @@ function PermissionsButton () {
 
   const requestPermissions = async () => {
     const { status: foregroundStatus } = await Location.requestForegroundPermissionsAsync();
-
     console.log("포그라운드" + foregroundStatus)
     setFore(foregroundStatus)
     if (foregroundStatus === 'granted') {

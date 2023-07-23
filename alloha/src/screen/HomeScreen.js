@@ -8,12 +8,15 @@ import { theme } from '../util/color';
 
 import * as Location from 'expo-location';
 import CommuteRecordCard from '../components/CommuteRecordCard';
+import { URL } from "@env";
 
+import { useNavigation } from '@react-navigation/native';
 //import GoogleMap from '../components/GoogleMap';
 
-export default function HomeScreen({navigation}) {
+export default function HomeScreen() {
+    const navigation = useNavigation();
     const userId = useSelector((state) => state.login.userId);    
-    const url = useSelector((state) => state.config.url);
+    //const url = useSelector((state) => state.config.url);
 
     const scrollViewRef = useRef(null);
     const handleScrollToEnd = () => {
@@ -90,7 +93,7 @@ export default function HomeScreen({navigation}) {
             // 현재 내가 출근을 해야하는지? 퇴근을 해야하는지 체크가 필요...
             // DB에 출근/퇴근 했을을 전달
             const jobYn = (inOutBtnTxt === "출근")?"Y":"N"
-            await axios.post(url+"/api/v1/insertJobChk", {userId:userId, cstCo:selectedStore.CSTCO, day:getDay(), lat:myPosition.latitude, lon:myPosition.longitude, jobYn:jobYn, apvYn:"N"})
+            await axios.post(URL+"/api/v1/insertJobChk", {userId:userId, cstCo:selectedStore.CSTCO, day:getDay(), lat:myPosition.latitude, lon:myPosition.longitude, jobYn:jobYn, apvYn:"N"})
             .then((res)=>{
                 if(res.data.resultCode === "00"){
                     Alert.alert("알림", inOutBtnTxt + "기록 입력 완료.");
@@ -139,7 +142,7 @@ export default function HomeScreen({navigation}) {
     }
 
     const getSelStoreRecords = async () =>{
-        await axios.get(url+"/api/v1/getSelStoreRecords", {params:{userId:userId, cstCo:selectedStore.CSTCO}})
+        await axios.get(URL+"/api/v1/getSelStoreRecords", {params:{userId:userId, cstCo:selectedStore.CSTCO}})
         .then((res)=>{
             if(res.data.resultCode === "00"){
                 console.log(res.data.result);
@@ -162,7 +165,7 @@ export default function HomeScreen({navigation}) {
 
     useEffect(() => {
         async function searchMyAlbaList() {
-            await axios.get(url+"/api/v1/searchMyAlbaList", {params:{userId:userId}})
+            await axios.get(URL+"/api/v1/searchMyAlbaList", {params:{userId:userId}})
             .then((res)=>{
                 if(res.data.resultCode === "00"){
                     setmyStores(res.data.result);

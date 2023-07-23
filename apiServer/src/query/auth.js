@@ -141,9 +141,18 @@ const insertJobChk = `
     VALUES ( @cstCo, @userId, @day, @lat, @lon, @jobYn, @apvYn, dateadd(MINUTE, -60, getdate()))
 `
 
+//출퇴근 상태 체크
+const checkJobChk = `
+    SELECT  top 1 a.JOBYN, a.CSTCO
+    FROM   PLYAJOBCHK a
+    WHERE   a.USERID = @userId
+    AND   dbo.FN_DATE(a.CHKTIME,4) =  dbo.FN_DATE(getdate(),4)
+    ORDER   BY a.CHKTIME desc
+`
+
 const geofencingTest = `
     insert into GEOFENCINGTEST(id, name, lat, lon, day)
     VALUES (@id, @name, @lat, @lon, @day)
 `
 
-module.exports = {login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, insertJobChk, geofencingTest}
+module.exports = {login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, insertJobChk, geofencingTest, checkJobChk}

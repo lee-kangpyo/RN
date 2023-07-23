@@ -9,15 +9,16 @@ import { useSelector } from 'react-redux';
 import { theme } from '../util/color';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { URL } from "@env";
 
 export default function ManageCrewScreen({navigation}) {
     const userId = useSelector((state) => state.login.userId);
-    const url = useSelector((state) => state.config.url);
+    //const url = useSelector((state) => state.config.url);
     const [searchWrd, setsearchWrd] = useState("");
     const [crewList, setCrewList] = useState([]);
 
     const onApprov = async (cstCo, userId) => {
-        await axios.post(url+`/api/v1/approvCrew`, {cstCo:cstCo, userId:userId})
+        await axios.post(URL+`/api/v1/approvCrew`, {cstCo:cstCo, userId:userId})
         .then((res)=>{
             if(res.data.result === 1){
                 Alert.alert("알림", "지원한 알바 승인이 완료되었습니다.")
@@ -32,7 +33,7 @@ export default function ManageCrewScreen({navigation}) {
     }
 
     const searchCrewList = async () => {
-        const response = await axios.get(url+'/api/v1/searchCrewList', {params:{userId:userId}});
+        const response = await axios.get(URL+'/api/v1/searchCrewList', {params:{userId:userId}});
         setCrewList(response.data.result);
         console.log(crewList);
     }
