@@ -77,7 +77,7 @@ export default function HomeScreen() {
             case 6:
                 result = "SAT";
                 break;
-            case 7:
+            case 0:
                 result = "SUN";
                 break;
             default:
@@ -203,13 +203,11 @@ export default function HomeScreen() {
         }
     }, [myPosition, selectedStore])
 
-
+            //<TouchableOpacity onPress={() => {test()}}>
+            //    <Text>클릭해서 테스트 로그 출력(실제 배포시 삭제)</Text>
+            //</TouchableOpacity>
     return (
         <>
-            <TouchableOpacity onPress={() => {test()}}>
-                <Text>클릭해서 테스트 로그 출력(실제 배포시 삭제)</Text>
-            </TouchableOpacity>
-                
             {
                 (isLoading)
                 ?
@@ -217,53 +215,52 @@ export default function HomeScreen() {
                         <ActivityIndicator size="large" color={theme.primary}/>
                     </View>
                 : (myStores.length > 0 )?
-                <View style={styles.container}>
-                    <View style={styles.pickerContainer}>
-                        <Picker
-                            style={{fontSize:"16"}}
-                            selectedValue={selectedStore}
-                            onValueChange={(itemValue, itemIndex) =>
-                                setSelectedStore(itemValue)
-                            }
-                            >
-                            {
-                            myStores.map((el, idx)=>{
-                                    return (el.RTCL === "N")
-                                        ?
-                                            <Picker.Item key={idx} label={el.CSTNA} value={el}/>
-                                        :(el.RTCL === "R")?
-                                            <Picker.Item key={idx} label={el.CSTNA + "(승인 대기 중)"} value={el}/>
-                                        :  
-                                            null
-                                })
-                            }
-                            
-                        </Picker>
+                    <View style={styles.container}>
+                        <View style={styles.pickerContainer}>
+                            <Picker
+                                style={{fontSize:"16"}}
+                                selectedValue={selectedStore}
+                                onValueChange={(itemValue, itemIndex) =>
+                                    setSelectedStore(itemValue)
+                                }
+                                >
+                                {
+                                myStores.map((el, idx)=>{
+                                        return (el.RTCL === "N")
+                                            ?
+                                                <Picker.Item key={idx} label={el.CSTNA} value={el}/>
+                                            :(el.RTCL === "R")?
+                                                <Picker.Item key={idx} label={el.CSTNA + "(승인 대기 중)"} value={el}/>
+                                            :  
+                                                null
+                                    })
+                                }
+                                
+                            </Picker>
+                        </View>
+                        {
+                            (selectedStore.RTCL === "asdfa")?
+                                <>
+                                    <TouchableOpacity onPress={onPressInOutBtn} style={styles.in_out_btn}>
+                                        <Text style={styles.in_out_btn_txt}>{inOutBtnTxt}</Text>
+                                    </TouchableOpacity>
+                                    <ScrollView ref={scrollViewRef} style={{width:"100%"}} maintainVisibleContentPosition={5}>
+                                        {
+                                            selectedStoreLogs.map((row, idx)=> <CommuteRecordCard record={row} btntxt={"승인요청"} onButtonPressed={()=>{Alert.alert("승인요청", "이 버튼은 언제 보여야 할까요?")}} key={idx} /> ) 
+                                        }
+                                    </ScrollView>
+                                </>
+                            :
+                                <View>
+                                    <Text>해당 점포는 아직 승인 대기중 입니다.</Text>
+                                </View>
+                        }
                     </View>
-                    {
-                        (selectedStore.RTCL === "N")?
-                            <>
-                                <TouchableOpacity onPress={onPressInOutBtn} style={styles.in_out_btn}>
-                                    <Text style={styles.in_out_btn_txt}>{inOutBtnTxt}</Text>
-                                </TouchableOpacity>
-                                <ScrollView ref={scrollViewRef} style={{width:"100%"}} maintainVisibleContentPosition={5}>
-                                    {
-                                        selectedStoreLogs.map((row, idx)=> <CommuteRecordCard record={row} btntxt={"승인요청"} onButtonPressed={()=>{Alert.alert("승인요청", "이 버튼은 언제 보여야 할까요?")}} key={idx} /> ) 
-                                    }
-                                </ScrollView>
-                            </>
-                        :
-                            <View>
-                                <Text>해당 점포는 아직 승인 대기중 입니다.</Text>
-                            </View>
-                    }
-                </View>
                 :
-                <View style={{flex:1, justifyContent:"center", alignItems:"center"}}>
-                    <Text style={{fontSize:16}}>등록된 알바 없음</Text>
-                    <Text style={{color:theme.grey}}>점포 검색 탭에서 점포 검색 후 지원해주세요</Text>
-                </View>
-                
+                    <View style={{flex:1, justifyContent:"center", alignItems:"center"}}>
+                        <Text style={{fontSize:16}}>등록된 알바 없음</Text>
+                        <Text style={{color:theme.grey}}>점포 검색 탭에서 점포 검색 후 지원해주세요</Text>
+                    </View>
             }
         </>
     );
