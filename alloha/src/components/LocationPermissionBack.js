@@ -4,6 +4,7 @@ import * as Location from 'expo-location';
 import { theme } from '../util/color';
 import * as TaskManager from 'expo-task-manager';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import axios from 'axios';
 
 import { URL } from "@env";
@@ -26,7 +27,7 @@ export default function GetLocationPermission({Grant, Deny}){
             if (backgroundStatus === 'granted') {
                 setBack("포그라운드 위치 권한 허용됨.")
                 await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-                timeInterval: 600000,
+                timeInterval: 6000,
                 //deferredUpdatesDistance:1,
                 deferredUpdatesInterval: 100,
                 accuracy: Location.Accuracy.BestForNavigation,
@@ -82,7 +83,7 @@ export default function GetLocationPermission({Grant, Deny}){
 };
 
 TaskManager.defineTask(LOCATION_TASK_NAME,  async ({ data, error } ) => {
-  const getCurrentTimeWithDate = () => {
+    const getCurrentTimeWithDate = () => {
     const currentDate = new Date();
     const year = currentDate.getFullYear();
     const month = String(currentDate.getMonth() + 1).padStart(2, '0');
@@ -93,19 +94,19 @@ TaskManager.defineTask(LOCATION_TASK_NAME,  async ({ data, error } ) => {
 
     const currentTimeWithDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     return currentTimeWithDate;
-  };
+    };
 
-  if (error) {
+    if (error) {
     // check `error.message` for more details.
     return;
-  }
-  if(data){
-    let id = await AsyncStorage.getItem("id")
-    id = (id)?id:"테스트아이디"
+    }
+    if(data){
+    const id = await AsyncStorage.getItem("id")
+    const uid = await SecureStore.getItemAsync("uuid");
     const { locations } = data;
-    await axios.get(URL+"/api/v1/checkStoreLocation", {params:{id:id, log:"You've move location[curdev]", lat:locations[0].coords.latitude, lon:locations[0].coords.longitude, day:getCurrentTimeWithDate()}})
+    await axios.get(URL+"/api/v1/checkStoreLocation", {params:{id:id, uuid:uid, lat:locations[0].coords.latitude, lon:locations[0].coords.longitude, day:getCurrentTimeWithDate()}})
     .catch((err)=>{console.log(err)})
-  }
+    }
 });
 
 const styles = StyleSheet.create({

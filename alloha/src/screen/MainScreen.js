@@ -26,6 +26,7 @@ const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 export default function MainScreen() {
+  console.log("메인")
   const [userInfo, setUserInfo] = useState({})
 
   const loadData = async () => {
@@ -33,6 +34,8 @@ export default function MainScreen() {
       const id = await AsyncStorage.getItem('id');
       const ownrYn = await AsyncStorage.getItem('ownrYn');
       const crewYn = await AsyncStorage.getItem('crewYn');
+      console.log("로드완료")
+      console.log(id, ownrYn, crewYn)
       if(!(id && ownrYn && crewYn)){
         //여기선 얼럿 후 로그인 창으로 이동
         console.log("잘못된 접근")

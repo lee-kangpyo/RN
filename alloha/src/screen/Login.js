@@ -16,11 +16,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { URL } from "@env";
 
+import uuid from 'react-native-uuid';
+import * as SecureStore from 'expo-secure-store';
+
 const windowWidth = Dimensions.get('window').width;
 
 
 export default function Login({ navigation }) {
-  console.log(URL)
+
+  
   const sheetRef = useRef(null);
   const [isOpen, setIsOpen] = useState(true);
   const snapPoints = useMemo(() => ["48%"], []);
@@ -67,22 +71,24 @@ export default function Login({ navigation }) {
 }
 
 const LoginForm = ({navigation}) => {
-  //const url = useSelector((state) => state.config.url); 
   const dispatch = useDispatch();
   const [id, onChangeId] = useState('');
   const [password, onChangePassWord] = useState('');
 
   const [loginInfo, setLoginInfo] = useState({id:"", password:""})
   
-  const saveUserInfo = async ({ownrYn, crewYn, mnrgYn, userNa}) => {
+  const saveUserInfo = async ({ownrYn, crewYn, mnrgYn, userNa, uuid}) => {
     try {
       await AsyncStorage.setItem('id', loginInfo.id);
       await AsyncStorage.setItem('userNa', userNa);
       await AsyncStorage.setItem('ownrYn', ownrYn);
       await AsyncStorage.setItem('crewYn', crewYn);
       await AsyncStorage.setItem('mnrgYn', mnrgYn);
+      await SecureStore.setItemAsync("uuid", uuid);
+      return true;
     } catch (e) {
       console.log(e)
+      return false;
     }
   }
 
@@ -90,23 +96,35 @@ const LoginForm = ({navigation}) => {
     //console.log(loginInfo);
     //밸리데이션 -> 지금은 아이디 패스워드 공백 체크만 함
     if(loginInfo.id && loginInfo.password){
+      const uid = uuid.v4();
       // api 서버 요청 -> axios로 요청할예정
-      const response = await axios.post(URL+'/api/v1/loginUser', loginInfo);
-      if(response.data.result === 1){
-        console.log(response.data.info)
-        await saveUserInfo(response.data.info);
-        // asyncstorage에 아이디 저장
-        // jwt 세션이든 auth든 해야됨.
-        // 서비스키가되었던.
-        // http 요청이니깐 앱에서 요청하는지 포스트맨이던 다른데서 요청하는지 체크
-        // 성공시 메인 페이지 이동.
-        dispatch(setUserInfo({isLogin:true, userId:loginInfo.id}));
-      }else{
-        // 실패 시 오류 알림.
-        Alert.alert("로그인 실패", "로그인에 실패하셨습니다.");
-      }
+      await axios.post(URL+'/api/v1/loginUser', {...loginInfo, uuid:uid})
+      .then( function  (response) {
+        if(response.data.result === 1){
+          //console.log(response.data.info)
+          saveUserInfo({...response.data.info, "uuid":uid})
+          .then((result)=>{
+            if(result){
+              dispatch(setUserInfo({isLogin:true, userId:loginInfo.id}));
+            }else{
+              Alert.alert("로그인 실패", "로그인에 실패하셨습니다. 다시 시도해주세요");
+            }
+          })
+          // asyncstorage에 아이디 저장
+          // jwt 세션이든 auth든 해야됨.
+          // 서비스키가되었던.
+          // http 요청이니깐 앱에서 요청하는지 포스트맨이던 다른데서 요청하는지 체크
+          // 성공시 메인 페이지 이동.
+        }else{
+          // 실패 시 오류 알림.
+          Alert.alert("로그인 실패", "로그인에 실패하셨습니다.");
+        }
+      }).catch(function (error) {
+          console.error(error)
+      });
     }
   }
+
   return (
     <View style={styles.btnGrp}>
       <TextInput

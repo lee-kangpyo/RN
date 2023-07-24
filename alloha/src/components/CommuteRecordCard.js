@@ -2,11 +2,11 @@ import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
 import { theme } from '../util/color';
 import CustomBtn from './CustomBtn';
 
-export default function CommuteRecordCard({record, btntxt, onButtonPressed, key}) {
+export default function CommuteRecordCard({record, btntxt, onButtonPressed}) {
     const name = (record.JOBYN === "Y")?"출근":"퇴근"
     return (
         <>
-            <View style={styles.card} key={key}>
+            <View style={styles.card}>
                 <Text style={styles.card_title}>상태 : {name}</Text>
                 <Text style={styles.card_txt}>시간 : {record.CHKTIME}</Text>
                 <Text style={styles.card_txt}>승인여부{record.APVYN}</Text>
