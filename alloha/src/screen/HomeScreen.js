@@ -11,6 +11,7 @@ import CommuteRecordCard from '../components/CommuteRecordCard';
 import { URL } from "@env";
 
 import { useNavigation } from '@react-navigation/native';
+import CheckTaskManager from '../components/CheckTaskManager';
 //import GoogleMap from '../components/GoogleMap';
 
 export default function HomeScreen() {
@@ -101,7 +102,7 @@ export default function HomeScreen() {
                     Alert.alert("알림", "출퇴근 기록 입력 중 오류가 발생했습니다. 잠시후 다시 시도해 주세요.")
                 }
             }).catch(function (error) {
-                console.log(error);
+                console.error(error);
                 Alert.alert("오류", "출퇴근 기록 입력 중 알수없는 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
             })
             
@@ -145,7 +146,7 @@ export default function HomeScreen() {
         await axios.get(URL+"/api/v1/getSelStoreRecords", {params:{userId:userId, cstCo:selectedStore.CSTCO}})
         .then((res)=>{
             if(res.data.resultCode === "00"){
-                console.log(res.data.result);
+                //console.log(res.data.result);
                 setSelectedStoreLogs(res.data.result);
                 handleScrollToEnd();
                 //출근 데이터 저장하기... 아직 입력이 안되서 입력 후 개발하는걸로 하자.
@@ -153,7 +154,7 @@ export default function HomeScreen() {
                 Alert.alert("알림", "현재 점포 출퇴근 기록 호출 중 오류가 발생했습니다. 잠시후 다시 시도해 주세요.")
             }
         }).catch(function (error) {
-            console.log(error);
+            console.error(error);
             Alert.alert("오류", "현재 점포 출퇴근 기록 호출 중 알수없는 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
         })
     }
@@ -215,47 +216,53 @@ export default function HomeScreen() {
                         <ActivityIndicator size="large" color={theme.primary}/>
                     </View>
                 : (myStores.length > 0 )?
-                    <View style={styles.container}>
-                        <View style={styles.pickerContainer}>
-                            <Picker
-                                style={{fontSize:"16"}}
-                                selectedValue={selectedStore}
-                                onValueChange={(itemValue, itemIndex) =>
-                                    setSelectedStore(itemValue)
-                                }
-                                >
-                                {
-                                myStores.map((el, idx)=>{
-                                        return (el.RTCL === "N")
-                                            ?
-                                                <Picker.Item key={idx} label={el.CSTNA} value={el}/>
-                                            :(el.RTCL === "R")?
-                                                <Picker.Item key={idx} label={el.CSTNA + "(승인 대기 중)"} value={el}/>
-                                            :  
-                                                null
-                                    })
-                                }
-                                
-                            </Picker>
+                        <View style={styles.container}>
+                            <View style={styles.pickerContainer}>
+                                <Picker
+                                    style={{fontSize:"16"}}
+                                    selectedValue={selectedStore}
+                                    onValueChange={(itemValue, itemIndex) =>
+                                        setSelectedStore(itemValue)
+                                    }
+                                    >
+                                    {
+                                    myStores.map((el, idx)=>{
+                                            return (el.RTCL === "N")
+                                                ?
+                                                    <Picker.Item key={idx} label={el.CSTNA} value={el}/>
+                                                :(el.RTCL === "R")?
+                                                    <Picker.Item key={idx} label={el.CSTNA + "(승인 대기 중)"} value={el}/>
+                                                :  
+                                                    null
+                                        })
+                                    }
+                                    
+                                </Picker>
+                            </View>
+                            {
+                                (selectedStore.RTCL === "N")?
+                                    <>
+                                    {
+                                        (false)?
+                                        <TouchableOpacity onPress={onPressInOutBtn} style={styles.in_out_btn}>
+                                            <Text style={styles.in_out_btn_txt}>{inOutBtnTxt}</Text>
+                                        </TouchableOpacity>
+                                        :
+                                        <CheckTaskManager/>
+                                    }
+                                        
+                                        <ScrollView ref={scrollViewRef} style={{width:"100%"}} maintainVisibleContentPosition={5}>
+                                            {
+                                                selectedStoreLogs.map((row, idx)=> <CommuteRecordCard key={idx} record={row} btntxt={"승인요청"} onButtonPressed={()=>{Alert.alert("승인요청", "이 버튼은 언제 보여야 할까요?")}} /> ) 
+                                            }
+                                        </ScrollView>
+                                    </>
+                                :
+                                    <View>
+                                        <Text>해당 점포는 아직 승인 대기중 입니다.</Text>
+                                    </View>
+                            }
                         </View>
-                        {
-                            (selectedStore.RTCL === "asdfa")?
-                                <>
-                                    <TouchableOpacity onPress={onPressInOutBtn} style={styles.in_out_btn}>
-                                        <Text style={styles.in_out_btn_txt}>{inOutBtnTxt}</Text>
-                                    </TouchableOpacity>
-                                    <ScrollView ref={scrollViewRef} style={{width:"100%"}} maintainVisibleContentPosition={5}>
-                                        {
-                                            selectedStoreLogs.map((row, idx)=> <CommuteRecordCard record={row} btntxt={"승인요청"} onButtonPressed={()=>{Alert.alert("승인요청", "이 버튼은 언제 보여야 할까요?")}} key={idx} /> ) 
-                                        }
-                                    </ScrollView>
-                                </>
-                            :
-                                <View>
-                                    <Text>해당 점포는 아직 승인 대기중 입니다.</Text>
-                                </View>
-                        }
-                    </View>
                 :
                     <View style={{flex:1, justifyContent:"center", alignItems:"center"}}>
                         <Text style={{fontSize:16}}>등록된 알바 없음</Text>
