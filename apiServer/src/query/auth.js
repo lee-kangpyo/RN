@@ -3,6 +3,12 @@ const login = `
     FROM	PLYMUSER a
     WHERE	a.USERID = @userId
 `
+const autoLogin = `
+    SELECT	a.ownrYn, a.mnrgYn, a.crewYn, a.userNa
+    FROM	PLYMUSER a
+    WHERE	a.USERID = @userId
+    AND     a.UUID = @uuid
+`
 const test = `
     SELECT * 
     FROM PLYMUSER 
@@ -138,7 +144,7 @@ const getSelStoreRecords=`
 // 출퇴근 기록
 const insertJobChk = `
     INSERT	PLYAJOBCHK(CSTCO, USERID, DAY, LAT, LON, JOBYN, APVYN, CHKTIME)
-    VALUES ( @cstCo, @userId, @day, @lat, @lon, @jobYn, @apvYn, dateadd(MINUTE, -60, getdate()))
+    VALUES ( @cstCo, @userId, @day, @lat, @lon, @jobYn, @apvYn, getdate())
 `
 
 //출퇴근 상태 체크
@@ -150,9 +156,17 @@ const checkJobChk = `
     ORDER   BY a.CHKTIME desc
 `
 
+const getUUID = `
+    select UUID from PLYMUSER WHERE USERID = @userId
+`
+
 const geofencingTest = `
     insert into GEOFENCINGTEST(id, name, lat, lon, day)
     VALUES (@id, @name, @lat, @lon, @day)
 `
+const insertUuid= `
+    UPDATE PLYMUSER SET UUID = @uuid
+    WHERE USERID = @userId
+`
 
-module.exports = {login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, insertJobChk, geofencingTest, checkJobChk}
+module.exports = {login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, insertJobChk, geofencingTest, checkJobChk, insertUuid, autoLogin, getUUID}

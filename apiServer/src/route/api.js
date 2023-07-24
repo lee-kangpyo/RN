@@ -2,7 +2,9 @@ const express = require('express')
 var router = express.Router();
 const {execSql, execTranSql} = require("../utils/excuteSql");
 
-const { login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, insertJobChk, geofencingTest, checkJobChk} = require('./../query/auth'); 
+const { login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, 
+        getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, 
+        insertJobChk, geofencingTest, checkJobChk, insertUuid, autoLogin, getUUID} = require('./../query/auth'); 
 const axios = require('axios');
 
 const dotenv = require('dotenv');
@@ -22,17 +24,35 @@ router.get("/v1/login", async(req, res, next)=>{
 
 router.post("/v1/loginUser", async(req, res, next)=>{
     console.log("/v1/loginUser")
-    const {id, password} = req.body;
-    const result = await execSql(login, {userId:id, passWord:password})
+    const {id, password, uuid} = req.body;
+    const result = await execSql(login, {userId:id, passWord:password});
+    console.log(result)
     let data = null;
     let info = {};
     if(result.recordset[0]){
         const {pwCheck, crewYn, ownrYn, mnrgYn, userNa} = result.recordset[0];
+        if (pwCheck === 1 ){ await execSql(insertUuid, {userId:id, uuid:uuid}); }
         data = pwCheck;
         info = {ownrYn:ownrYn, crewYn:crewYn, mnrgYn:mnrgYn, userNa:userNa}
     }
     
     res.json({status_code:"00", result:data, info:info, length:result.rowsAffected[0]}); 
+})
+
+router.post("/v1/autoLogin", async(req, res, next)=>{
+    const{userId, uuid} = req.body;
+    const result = await execSql(autoLogin, {userId:userId, uuid:uuid});
+    let info = {};
+    if(result.recordset[0]){
+        const {pwCheck, crewYn, ownrYn, mnrgYn, userNa} = result.recordset[0];
+        if (pwCheck === 1 ){ await execSql(insertUuid, {userId:id, uuid:uuid}); }
+        info = {ownrYn:ownrYn, crewYn:crewYn, mnrgYn:mnrgYn, userNa:userNa}
+        res.status(200).json({info:info, resultCode:"00"});
+    }else{
+        res.status(200).json({info:info, resultCode:"-1"});
+    }
+
+    
 })
 
 router.post("/v1/isIdDuplicate", async(req, res, next)=>{
@@ -293,33 +313,40 @@ router.get("/v1/checkStoreLocation", async (req, res, next) => {
         return result
     }
     try {
-        const {id, log, day, lat, lon} = req.query;
+
+        const {id, uuid, lat, lon} = req.query;
+        console.log("###TaskManager => "+id+"가 디바이스("+uuid+")로 출퇴근 체크중")
         let apvYn = "N";
         const curday = getDay();
-        const {recordset:jobChk} = await execSql(checkJobChk, {userId:id});
-        const {recordset:myAlbaList} = await execSql(searchMyAlbaList, {userId:id});
-        if(jobChk[0] && jobChk[0].JOBYN == "Y") { 
-            const cstCo = jobChk[0].CSTCO;
-            const alba = myAlbaList.filter((alba) => { return alba.CSTCO === cstCo })
-            const meter = distance(lat, lon, alba[0].LAT, alba[0].LON)
-            if(meter > 20){
-                const result = await execSql(insertJobChk, {userId:id, cstCo:cstCo, day:curday, lat:Math.floor(lat), lon:Math.floor(lon), jobYn:"N", apvYn:apvYn});
-                console.log(id+"가 퇴근을 완료함"+cstCo)
-            }
-        }else{
-            for (const alba of myAlbaList) {
-                if (alba.RTCL === "N") {
-                    const meter = distance(lat, lon, alba.LAT, alba.LON)
-                    if(meter < 20){
-                        const result = await execSql(insertJobChk, {userId:id, cstCo:alba.CSTCO, day:curday, lat:Math.floor(lat), lon:Math.floor(lon), jobYn:"Y", apvYn:apvYn});
-                        console.log(id+"가 출근을 완료함"+alba.CSTCO)
-                        break;
+        const {recordset:uuidInfo} = await execSql(getUUID, {userId:id});
+        console.log(uuidInfo[0].UUID)
+        if(uuidInfo[0].UUID === uuid){
+            const {recordset:jobChk} = await execSql(checkJobChk, {userId:id});    
+            const {recordset:myAlbaList} = await execSql(searchMyAlbaList, {userId:id});
+            if(jobChk[0] && jobChk[0].JOBYN == "Y") { 
+                const cstCo = jobChk[0].CSTCO;
+                const alba = myAlbaList.filter((alba) => { return alba.CSTCO === cstCo })
+                const meter = distance(lat, lon, alba[0].LAT, alba[0].LON)
+                if(meter > 20){
+                    const result = await execSql(insertJobChk, {userId:id, cstCo:cstCo, day:curday, lat:Math.floor(lat), lon:Math.floor(lon), jobYn:"N", apvYn:apvYn});
+                    console.log(id+"가 퇴근을 완료함"+cstCo)
+                }
+            }else{
+                for (const alba of myAlbaList) {
+                    if (alba.RTCL === "N") {
+                        const meter = distance(lat, lon, alba.LAT, alba.LON)
+                        if(meter < 20){
+                            const result = await execSql(insertJobChk, {userId:id, cstCo:alba.CSTCO, day:curday, lat:Math.floor(lat), lon:Math.floor(lon), jobYn:"Y", apvYn:apvYn});
+                            console.log(id+"가 출근을 완료함"+alba.CSTCO)
+                            break;
+                        }
                     }
                 }
             }
+        }else{
+            console.log("해당 디바이스는 출퇴근 기록용이 아님")
         }
-
-        res.status(200).json({result:"테스트끝", resultCode:"00"});
+        res.status(200).json({resultCode:"00"});
     } catch (error) {
         console.log(error.message)
         res.status(200).json({ resultCode:"-1"});
