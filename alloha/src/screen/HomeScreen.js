@@ -12,7 +12,9 @@ import { URL } from "@env";
 
 import { useNavigation } from '@react-navigation/native';
 import CheckTaskManager from '../components/CheckTaskManager';
+import CommuteTask from '../components/CommuteTask';
 //import GoogleMap from '../components/GoogleMap';
+
 
 export default function HomeScreen() {
     const navigation = useNavigation();
@@ -209,7 +211,9 @@ export default function HomeScreen() {
             //</TouchableOpacity>
     return (
         <>
+            <CommuteTask/>
             {
+                
                 (isLoading)
                 ?
                     <View style={styles.center}>
@@ -248,7 +252,8 @@ export default function HomeScreen() {
                                             <Text style={styles.in_out_btn_txt}>{inOutBtnTxt}</Text>
                                         </TouchableOpacity>
                                         :
-                                        <CheckTaskManager/>
+                                        null
+                                        
                                     }
                                         
                                         <ScrollView ref={scrollViewRef} style={{width:"100%"}} maintainVisibleContentPosition={5}>
@@ -292,3 +297,4 @@ const styles = StyleSheet.create({
     },
     pickerContainer:{borderWidth:1, borderRadius:8, borderColor:theme.purple, width:"100%", marginBottom:16}
 });
+
