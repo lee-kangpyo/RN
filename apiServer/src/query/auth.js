@@ -144,7 +144,7 @@ const getSelStoreRecords=`
 // 출퇴근 기록
 const insertJobChk = `
     INSERT	PLYAJOBCHK(CSTCO, USERID, DAY, LAT, LON, JOBYN, APVYN, CHKTIME)
-    VALUES ( @cstCo, @userId, @day, @lat, @lon, @jobYn, @apvYn, getdate())
+    VALUES ( @cstCo, @userId, @day, @lat, @lon, @jobYn, @apvYn, @chkTime)
 `
 
 //출퇴근 상태 체크
