@@ -44,6 +44,7 @@ router.post("/v1/autoLogin", async(req, res, next)=>{
     const{userId, uuid} = req.body;
     const result = await execSql(autoLogin, {userId:userId, uuid:uuid});
     let info = {};
+    console.log(result.recordset[0])
     if(result.recordset[0]){
         const {pwCheck, crewYn, ownrYn, mnrgYn, userNa} = result.recordset[0];
         if (pwCheck === 1 ){ await execSql(insertUuid, {userId:id, uuid:uuid}); }
