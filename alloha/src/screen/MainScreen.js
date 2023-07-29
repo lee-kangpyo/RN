@@ -19,6 +19,7 @@ import React, {useEffect, useState} from 'react';
 import { color } from 'react-native-reanimated';
 import SearchAddress from '../components/SearchAddress';
 import { useNavigation } from '@react-navigation/native';
+import WageScreen from './WageScreen';
 
 
 
@@ -96,8 +97,8 @@ function OwnrScreen({userInfo}){
       })}
     >
       <Tab.Screen name="ManageCrew" component={ManageCrewScreen} options={{ tabBarLabel: '알바관리' }}/>
-      <Tab.Screen name="Settings" component={SettingsScreen} options={{ tabBarLabel: '급여' }}/>
-      <Tab.Screen name="community" component={BoardScreen} options={{ tabBarLabel: '커뮤니티' }}/>
+      <Tab.Screen name="Wage" component={SettingsScreen} options={{ tabBarLabel: '급여' }}/>
+      <Tab.Screen name="community" component={SettingsScreen} options={{ tabBarLabel: '커뮤니티' }}/>
       <Tab.Screen name="manageStore" options={{ headerShown: false, tabBarLabel: '점포관리' }} >
         {() => (
           <Stack.Navigator>
@@ -131,14 +132,13 @@ function CrewScreen(){
         )}
       </Tab.Screen>
 
-
-      <Tab.Screen name="Settings" component={SettingsScreen} options={{ tabBarLabel: '급여' }}/>
-      <Tab.Screen name="community" component={BoardScreen} options={{ tabBarLabel: '커뮤니티' }}/>
+      <Tab.Screen name="Wage" component={WageScreen} options={{ tabBarLabel: '급여' }}/>
+      <Tab.Screen name="community" component={SettingsScreen} options={{ tabBarLabel: '커뮤니티' }}/>
       <Tab.Screen name="manageStore" component={SearchStoreScreen} backBehavior={"none"} options={{ tabBarLabel: '점포검색' }} />
     </Tab.Navigator>
   )
 }
-
+//<Tab.Screen name="community" component={BoardScreen} options={{ tabBarLabel: '커뮤니티' }}/>
 
 const setTabBarIcon = (focused, color, size, name) =>{
   let iconName;
@@ -149,7 +149,7 @@ const setTabBarIcon = (focused, color, size, name) =>{
   }else if (name === 'ManageCrew'){
     iconName = 'user-cog';
     icon = "FontAwesome5"
-  } else if (name === 'Settings') {
+  } else if (name === 'Wage') {
     iconName = 'file-invoice-dollar';
     icon = "FontAwesome5"
   } else if (name === 'community'){

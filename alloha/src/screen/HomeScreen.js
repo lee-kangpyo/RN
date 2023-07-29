@@ -11,24 +11,25 @@ import CommuteRecordCard from '../components/CommuteRecordCard';
 import { URL } from "@env";
 
 import { useNavigation } from '@react-navigation/native';
-import CheckTaskManager from '../components/CheckTaskManager';
 import CommuteTask from '../components/CommuteTask';
+import CommuteRecord from '../components/CommuteRecord';
+import Loading from '../components/Loding';
 //import GoogleMap from '../components/GoogleMap';
 
 
 export default function HomeScreen() {
     const navigation = useNavigation();
     const userId = useSelector((state) => state.login.userId);    
-    //const url = useSelector((state) => state.config.url);
 
     const scrollViewRef = useRef(null);
     const handleScrollToEnd = () => {
         scrollViewRef.current?.scrollToEnd({ animated: true });
     };
 
-    const [isLoading, setLoading] = useState(true);                     // 점포 불러왔는지 체크
+    const [isLoading, setLoading] = useState(true);                     // 초기 점포 불러왔는지 체크
+    const [isChangePickerLoad, setChangePickerLoad] = useState(false);         // 픽커 변경 여부 확인
     const [selectedStore, setSelectedStore] = useState({});             // 선택된 점포
-    const [selectedStoreLogs, setSelectedStoreLogs] = useState([]);    //선택된 점포의 출퇴근 기록
+    const [selectedStoreLogs, setSelectedStoreLogs] = useState([]);     //선택된 점포의 출퇴근 기록
     const [myStores, setmyStores] = useState([]);                       // 내 알바 점포들
     const [myPosition, setmyPosition] = useState();                     // 현재 내위치
     const [distance, setdistance] = useState();                         // 선택된 점포와 내위치의 거리
@@ -55,9 +56,7 @@ export default function HomeScreen() {
         const seconds = now.getSeconds();
         return `${YYYY}-${mm}-${dd} ${hour}:${minutes}:${seconds}`;
     }
-    const test = () => {
-        console.log(getDay());
-    }
+
     const getDay = () => {
         const day = new Date().getDay();
         let result = ""
@@ -141,10 +140,10 @@ export default function HomeScreen() {
         var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         var d = R * c; // Distance in km
         return Math.round(d * 1000);
-
     }
 
     const getSelStoreRecords = async () =>{
+        setChangePickerLoad(true)
         await axios.get(URL+"/api/v1/getSelStoreRecords", {params:{userId:userId, cstCo:selectedStore.CSTCO}})
         .then((res)=>{
             if(res.data.resultCode === "00"){
@@ -158,7 +157,9 @@ export default function HomeScreen() {
         }).catch(function (error) {
             console.error(error);
             Alert.alert("오류", "현재 점포 출퇴근 기록 호출 중 알수없는 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
-        })
+        }).finally(function () {
+            setChangePickerLoad(false);
+        });
     }
 
 
@@ -190,6 +191,7 @@ export default function HomeScreen() {
 
     useEffect(() => {
         //여기서 현재 기록 가져오기
+        setChangePickerLoad("true");
         if(selectedStore.RTCL === "N"){
             getSelStoreRecords();
         }
@@ -199,7 +201,6 @@ export default function HomeScreen() {
     }, [selectedStore])
 
     useEffect(()=>{
-
         if(myPosition && selectedStore && selectedStore.RTCL === "N"){
             const distance = getDistanceFromLatLon(myPosition.latitude, myPosition.longitude, selectedStore.LAT, selectedStore.LON)
             setdistance(distance);
@@ -255,12 +256,23 @@ export default function HomeScreen() {
                                         null
                                         
                                     }
-                                        
-                                        <ScrollView ref={scrollViewRef} style={{width:"100%"}} maintainVisibleContentPosition={5}>
-                                            {
-                                                selectedStoreLogs.map((row, idx)=> <CommuteRecordCard key={idx} record={row} btntxt={"승인요청"} onButtonPressed={()=>{Alert.alert("승인요청", "이 버튼은 언제 보여야 할까요?")}} /> ) 
-                                            }
-                                        </ScrollView>
+                                    {
+                                        (isChangePickerLoad)?
+                                                <Loading/>
+                                            :   
+                                            <>
+                                                <ScrollView ref={scrollViewRef} style={{width:"100%"}} maintainVisibleContentPosition={5}>
+                                                    {
+                                                        //selectedStoreLogs.map((row, idx)=> <CommuteRecordCard key={idx} record={row} btntxt={"승인요청"} onButtonPressed={()=>{Alert.alert("승인요청", "이 버튼은 언제 보여야 할까요?")}} /> ) 
+                                                        selectedStoreLogs.map((row, idx)=> <CommuteRecord key={idx} record={row} btntxt={"승인요청"} onButtonPressed={()=>{Alert.alert("승인요청", "이 버튼은 개발중입니다.")}} /> ) 
+                                                    }
+                                                </ScrollView>
+                                                <View style={{width:"100%"}}>
+                                                    <Text style={{fontSize:16}}>총 근무 시간 : 4 시간 27분(3시간 인정)</Text>
+                                                    <Text style={{fontSize:16}}>예상 급여액 : 3,000원(453,000원)</Text>
+                                                </View>
+                                            </>
+                                    }
                                     </>
                                 :
                                     <View>
@@ -274,6 +286,7 @@ export default function HomeScreen() {
                         <Text style={{color:theme.grey}}>점포 검색 탭에서 점포 검색 후 지원해주세요</Text>
                     </View>
             }
+            
         </>
     );
 }
