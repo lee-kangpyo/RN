@@ -212,8 +212,16 @@ export default function HomeScreen() {
             //</TouchableOpacity>
     return (
         <>
-            <View style={{}}>
+            <View style={{paddingHorizontal:20, marginTop:8, flexDirection:"row", justifyContent:"space-between"}}>
                 <CommuteTask/>
+                <TouchableOpacity style={{borderWidth:1, padding:2, borderRadius:5}} onPress={() => {
+                    setChangePickerLoad("true");
+                    if(selectedStore.RTCL === "N"){
+                        getSelStoreRecords();
+                    }
+                }}>
+                    <Text>리로드</Text>
+                </TouchableOpacity>
             </View>
             {
                 

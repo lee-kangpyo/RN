@@ -72,7 +72,7 @@ export default function WageScreen({navigation}) {
             </View>
             <View style={{margin:16}}>
                 <TouchableOpacity onPress={()=>{navigation.navigate("WageDetail", { title: '메가커피 선릉' })}}>
-                    <Text>메가커피 선릉</Text>
+                    <Text>메가커피 선릉 디테일 화면으로 이동</Text>
                 </TouchableOpacity>
 
             </View>
