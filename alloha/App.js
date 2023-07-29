@@ -51,7 +51,7 @@ TaskManager.defineTask(LOCATION_TASK_NAME,  async ({ data, error } ) => {
         const id = await AsyncStorage.getItem("id")
         const uid = await SecureStore.getItemAsync("uuid");
         const { locations } = data;
-        await axios.get(URL+"/api/v1/checkStoreLocation", {params:{id:id, uuid:uid, lat:locations[0].coords.latitude, lon:locations[0].coords.longitude, day:getCurrentTimeWithDate()}})
+        await axios.get(URL+"/api/v1/checkStoreLocation", {params:{id:id, uuid:uid, lat:locations[0].coords.latitude, lon:locations[0].coords.longitude, ymd:getCurrentTimeWithDate()}})
         .catch((err)=>{console.log(err)})
     }
 });

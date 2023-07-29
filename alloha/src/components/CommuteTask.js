@@ -16,10 +16,10 @@ export default function CommuteTask(){
         const isTaskStarted = await TaskManager.isTaskRegisteredAsync(LOCATION_TASK_NAME);
         if(forePerm && backPerm){
             await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-                timeInterval: 600000,
-                //deferredUpdatesDistance:1,
-                deferredUpdatesInterval: 100,
-                accuracy: Location.Accuracy.BestForNavigation,
+                distanceInterval:30,
+                timeInterval: 10000,
+                //deferredUpdatesInterval: 100,
+                accuracy: Location.Accuracy.High,
                 showsBackgroundLocationIndicator: true,
                 foregroundService: {
                     notificationTitle: "알로하",
