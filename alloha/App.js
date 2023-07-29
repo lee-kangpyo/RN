@@ -87,9 +87,12 @@ function Index() {
           }
         }).catch(function (error) {
             console.error(error)
+        }).finally(() => {
+          setReg(false);
         });
+      }else{
+        setReg(false);
       }
-      setReg(false);
     })();
   }, []);
   const isLoggedIn = useSelector((state) => state.login.isLogin);
