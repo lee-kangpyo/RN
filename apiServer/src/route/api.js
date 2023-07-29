@@ -338,9 +338,8 @@ router.get("/v1/checkStoreLocation", async (req, res, next) => {
         return result
     }
     try {
-
-        const {id, uuid, lat, lon} = req.query;
-        console.log("###TaskManager => "+id+"가 디바이스("+uuid+")로 출퇴근 체크중")
+        const {id, uuid, lat, lon, ymd} = req.query;
+        console.log(ymd + "###TaskManager => "+id+"가 디바이스("+uuid+")로 출퇴근 체크중")
         let apvYn = "N";
         const curday = getDay();
         const {recordset:uuidInfo} = await execSql(getUUID, {userId:id});
@@ -353,7 +352,7 @@ router.get("/v1/checkStoreLocation", async (req, res, next) => {
                 const alba = myAlbaList.filter((alba) => { return alba.CSTCO === cstCo })
                 const meter = distance(lat, lon, alba[0].LAT, alba[0].LON)
                 if(meter > 50){
-                    const result = await execSql(insertJobChk, {userId:id, cstCo:cstCo, day:curday, lat:Math.floor(lat), lon:Math.floor(lon), jobYn:"N", apvYn:apvYn, chkTime:getRoundedTime(getCurrentTime(), false)});
+                    const result = await execSql(insertJobChk, {userId:id, cstCo:cstCo, day:curday, lat:Math.floor(lat), lon:Math.floor(lon), jobYn:"N", apvYn:apvYn, chkTime:ymd});
                     console.log(id+"가 퇴근을 완료함"+cstCo)
                 }
             }else{
@@ -361,13 +360,14 @@ router.get("/v1/checkStoreLocation", async (req, res, next) => {
                     if (alba.RTCL === "N") {
                         const meter = distance(lat, lon, alba.LAT, alba.LON)
                         if(meter < 50){
-                            const result = await execSql(insertJobChk, {userId:id, cstCo:alba.CSTCO, day:curday, lat:Math.floor(lat), lon:Math.floor(lon), jobYn:"Y", apvYn:apvYn, chkTime:getRoundedTime(getCurrentTime(), true)});
+                            const result = await execSql(insertJobChk, {userId:id, cstCo:alba.CSTCO, day:curday, lat:Math.floor(lat), lon:Math.floor(lon), jobYn:"Y", apvYn:apvYn, chkTime:ymd});
                             console.log(id+"가 출근을 완료함"+alba.CSTCO)
                             break;
                         }
                     }
                 }
             }
+            console.log(id+" 출퇴근 체크 종료")
         }else{
             console.log("해당 디바이스는 출퇴근 기록용이 아님")
         }
