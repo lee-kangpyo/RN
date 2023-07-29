@@ -81,6 +81,7 @@ function Index() {
         await axios.post(URL+'/api/v1/autoLogin', {uuid:uid, userId:userId})
         .then( function  (response) {
           //console.log(response.data)
+          console.log(response.data)
           if(response.data.resultCode === "00"){
             dispatch(setUserInfo({isLogin:true, userId:userId}));
           }

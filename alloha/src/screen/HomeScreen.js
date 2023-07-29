@@ -212,7 +212,9 @@ export default function HomeScreen() {
             //</TouchableOpacity>
     return (
         <>
-            <CommuteTask/>
+            <View style={{}}>
+                <CommuteTask/>
+            </View>
             {
                 
                 (isLoading)

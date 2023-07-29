@@ -40,6 +40,7 @@ router.post("/v1/loginUser", async(req, res, next)=>{
 })
 
 router.post("/v1/autoLogin", async(req, res, next)=>{
+    console.log("autoLogin")
     const{userId, uuid} = req.body;
     const result = await execSql(autoLogin, {userId:userId, uuid:uuid});
     let info = {};

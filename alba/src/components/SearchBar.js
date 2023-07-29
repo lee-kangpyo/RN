@@ -3,12 +3,12 @@ import { View, TextInput, TouchableOpacity } from 'react-native';
 import CustomBtn from './CustomBtn';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-const SearchBar = ({ searchText, onSearch, onButtonPress, iconName}) => {
+const SearchBar = ({ searchText, onSearch, onButtonPress, iconName, ph="Search..."}) => {
   return (
     <View style={styles.container}>
       <TextInput
         style={styles.searchInput}
-        placeholder="Search..."
+        placeholder="adf"
         value={searchText}
         onChangeText={onSearch}
       />
