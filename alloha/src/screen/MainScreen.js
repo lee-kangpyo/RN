@@ -20,6 +20,7 @@ import { color } from 'react-native-reanimated';
 import SearchAddress from '../components/SearchAddress';
 import { useNavigation } from '@react-navigation/native';
 import WageScreen from './WageScreen';
+import WageDetailScreen from './WageDetailScreen';
 
 
 
@@ -27,7 +28,6 @@ const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 export default function MainScreen() {
-  console.log("메인")
   const [userInfo, setUserInfo] = useState({})
 
   const loadData = async () => {
@@ -132,7 +132,17 @@ function CrewScreen(){
         )}
       </Tab.Screen>
 
-      <Tab.Screen name="Wage" component={WageScreen} options={{ tabBarLabel: '급여' }}/>
+
+      <Tab.Screen name="Wage" options={{ headerShown: false, tabBarLabel: '급여' }} >
+        {() => (
+          <Stack.Navigator>
+            <Stack.Screen name="WageList" component={WageScreen} options={{ title: '급여' }}/>
+            <Stack.Screen  name="WageDetail" component={WageDetailScreen} options={{title:"급여 상세"}}/>
+          </Stack.Navigator>
+        )}
+      </Tab.Screen>
+
+
       <Tab.Screen name="community" component={SettingsScreen} options={{ tabBarLabel: '커뮤니티' }}/>
       <Tab.Screen name="manageStore" component={SearchStoreScreen} backBehavior={"none"} options={{ tabBarLabel: '점포검색' }} />
     </Tab.Navigator>
