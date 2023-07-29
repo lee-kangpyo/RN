@@ -68,7 +68,7 @@ function Index() {
       await AsyncStorage.setItem('crewYn', crewYn);
       await AsyncStorage.setItem('mnrgYn', mnrgYn);
     } catch (e) {
-      console.log(e)
+      console.error(e)
     }
   }
 
@@ -80,12 +80,12 @@ function Index() {
       if(uid && userId){
         await axios.post(URL+'/api/v1/autoLogin', {uuid:uid, userId:userId})
         .then( function  (response) {
-          console.log(response.data)
+          //console.log(response.data)
           if(response.data.resultCode === "00"){
             dispatch(setUserInfo({isLogin:true, userId:userId}));
           }
         }).catch(function (error) {
-            console.log(error)
+            console.error(error)
         });
       }
       setReg(false);

@@ -6,5 +6,6 @@ export const theme = {
     primary:"#375FFE",
     error:"#EB9AC3",
     correct:"#A9BCE0",
-    darkGrey:"#A9A9A9"
+    darkGrey:"#A9A9A9",
+    black:"#000"
 }

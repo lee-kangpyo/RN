@@ -1,0 +1,407 @@
+[33mcommit 2eb6dca2eac8578281dffe3530bb41f173b7a18c[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Thu Jul 27 20:54:18 2023 +0900
+
+    태스크 매니저 실행 안되는 이슈 픽스
+
+[33mcommit 7a402d3a3da6c12ace92ffd04febe36e525a8e43[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Thu Jul 27 20:53:50 2023 +0900
+
+    출퇴근 기록 10분단위로 끊기
+
+[33mcommit 84520ebaa1c4c076c7bfde953372bba750355978[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Mon Jul 24 15:46:32 2023 +0900
+
+    자동 로그인 기능
+
+[33mcommit 5aff93a8f863e33ffaff35641975efb3ab3d93d8[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Mon Jul 24 15:40:34 2023 +0900
+
+    api 서버 자동로그인
+
+[33mcommit 72869270b1b37ee82af6613eb5e832e072a3d1f8[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Sun Jul 23 20:52:59 2023 +0900
+
+    코드 오류 수정
+
+[33mcommit 10e6e395e5ccc88c54d955fd8a4b43b6f2f528f2[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Sun Jul 23 20:40:09 2023 +0900
+
+    출퇴근 백그라운드로 변경
+
+[33mcommit f282d854496e39babc9a21c9ce4b5d385b6208fb[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Sat Jul 22 15:15:36 2023 +0900
+
+    eas.json
+
+[33mcommit b6729b0e7496b2cf894936a39fab4a482a142f69[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Sat Jul 22 15:01:08 2023 +0900
+
+    정리
+
+[33mcommit 78ab99203ce3b318f70d044e5e377e4a2e1f0136[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Sat Jul 22 14:47:13 2023 +0900
+
+    테스트 함수 추가 및 App.js 테스트 스크린 이름 변경
+
+[33mcommit c9949507e7c499db8282f5e18c13f0d1916abcd0[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Sat Jul 22 01:17:12 2023 +0900
+
+    위치 테스트
+
+[33mcommit c796591666910b0dc6781e8b69c1a78d1a243772[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Sat Jul 22 00:57:13 2023 +0900
+
+    테스트에 유저 아이디 추가
+
+[33mcommit 39ce0af7cf887b42598dd5c1f5049c90d9ae84cc[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Fri Jul 21 18:17:14 2023 +0900
+
+    지오펜싱 테스트
+
+[33mcommit c07e2653e409ff9c0cd7a1e6e058024522249a0c[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Fri Jul 21 18:16:10 2023 +0900
+
+    지오 펜싱 테스트를 위해 api 서버 라우터 추가
+
+[33mcommit 7385fc06aac9fd00607ec061b9482a43af8c027a[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Fri Jul 21 00:01:35 2023 +0900
+
+    taskmanager 위치 테스트
+
+[33mcommit d37cc908e60e05c5636601d5971432e94421c8c6[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Mon Jul 17 23:32:26 2023 +0900
+
+    알바 출퇴근 기록 하기 개발
+
+[33mcommit 9143c76877c0c2f2545be459b81c809bc8f206a6[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Sun Jul 16 23:12:20 2023 +0900
+
+    배포 오류로 프로젝트 이전
+
+[33mcommit 9602e620569262f5a8bef44a5416317939296bee[m[33m ([m[1;32mserver[m[33m)[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Sat Jul 15 20:19:47 2023 +0900
+
+    picker 적용하기
+
+[33mcommit f007637c1b21bb7af650e3b5fda6ccb947ba2e43[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Sat Jul 15 02:49:11 2023 +0900
+
+    알바생 출퇴근 관리시 내 점포 가져오기
+
+[33mcommit 9dab4ed8d1a0ef852437bb24eedbad87b77935eb[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Thu Jul 13 22:31:29 2023 +0900
+
+    메인화면 수정
+
+[33mcommit 7d5438f48f80a8694831a107c710c39ffa51541f[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Thu Jul 13 22:31:08 2023 +0900
+
+    점포 검색 페이지 추가
+
+[33mcommit 2fefc8f095d9a600a300467011499d0511ca1a6a[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Thu Jul 13 22:30:57 2023 +0900
+
+    점포관리 페이지 추가
+
+[33mcommit e48a2e2ff246cbf6419b9b6f0e3e77c2cbeb607d[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Thu Jul 13 22:30:42 2023 +0900
+
+    직원 관리 페이지 추가
+
+[33mcommit e1f41787547dc94f70592f287aaccd38ffc746cd[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Thu Jul 13 22:30:22 2023 +0900
+
+    검색바 컴포넌트 추가
+
+[33mcommit 014eb0a68bba26604dbc8761d599634598f7a51f[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Thu Jul 13 22:30:04 2023 +0900
+
+    직원 관리 컴포넌트 추가
+
+[33mcommit a04c9b3c18cd04d8f2a1c5d0d4655a8f48f5db24[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Thu Jul 13 22:29:44 2023 +0900
+
+    자잘한 이슈 수정
+
+[33mcommit be8a1dfb6b37c2c7963f29545eb2d280e44fb899[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Wed Jul 5 18:24:47 2023 +0900
+
+    ui 수정
+
+[33mcommit 8e8947e93c0a601746a735701ce2a312559bd7bf[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Thu Jun 29 17:41:40 2023 +0900
+
+    회원 가입 시 오류 수정
+
+[33mcommit c552efc31331028c2b3cee4eaf18f5c7dcb0476a[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Thu Jun 29 17:27:46 2023 +0900
+
+    점주 점포 등록
+
+[33mcommit 4cb32f9f7ace18954823e2edb0710992d1e5bfb9[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Wed Jun 28 03:38:25 2023 +0900
+
+    로그인시 사용 되는 쿼리 수정
+
+[33mcommit dfefbb33c4031a27944826631442aeacc6fe64a9[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Mon Jun 26 18:43:10 2023 +0900
+
+    의존성 커밋
+
+[33mcommit f83164dbb43386ed99531abc5f957fe95acb586b[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Mon Jun 26 18:42:50 2023 +0900
+
+    카카오 api key 환경변수로 옮김
+
+[33mcommit d60bdf539ac9ab19b6128faa1ab70e27c3e41517[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Mon Jun 26 18:42:23 2023 +0900
+
+    회원 가입 쿼리 변경
+
+[33mcommit f3b5e907f21dc3464a683261429b9d561bfce339[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Mon Jun 26 18:42:12 2023 +0900
+
+    사업장 주소 입력은 로그인 후 하기로 해서 사업장 주소 입력 들어냄 추후 컴포넌트로 이전
+
+[33mcommit 347ad8eb2daa97dec51bfeb0b3d039d90dd28830[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Mon Jun 26 18:41:00 2023 +0900
+
+    다음 주소 검색에 경도 위도 값 가져기 추가
+
+[33mcommit 6f172ad46a0c6859e01500ffdc1d5920b0f52eb1[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Mon Jun 19 17:17:48 2023 +0900
+
+    app.json ignore에 추가
+
+[33mcommit c2724bbe53286911c222356ba7a557d8a7f58916[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Mon Jun 19 17:15:58 2023 +0900
+
+    주소 검색 후 필드에 담기
+
+[33mcommit ac8955fc4c98d465006dcf8add6c95f6fb8b93e3[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Mon Jun 12 16:30:34 2023 +0900
+
+    express body-parser 제거, 다음 주소 검색 api 적용
+
+[33mcommit d0542ba8d3c499259bb9be37d0b11d40c283f216[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Thu Jun 8 16:21:23 2023 +0900
+
+    로그인 백엔드 서버 구현
+
+[33mcommit 18fb2ef92c10a3194aab5f8040b882abad720f37[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Thu Jun 8 16:20:56 2023 +0900
+
+    로그인시 api 서버에 다녀오기
+
+[33mcommit 0ebf4848c3bf08077c279f4ce4045ca8a08351d9[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Thu Jun 8 16:20:30 2023 +0900
+
+    출퇴근 버튼 클릭시 화면에 현재 날짜와 출근, 퇴근 찍히게
+
+[33mcommit a3bb28685bbdc7056edb05fb6fb9f422090a081b[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Thu Jun 8 16:19:27 2023 +0900
+
+    async storage 설치
+
+[33mcommit d0e39dc97503fcde5253af03be599e4a880bc0cd[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Fri Jun 2 15:44:33 2023 +0900
+
+    회원 가입 구현 및 redux에 api서버 ip 저장
+
+[33mcommit f49106bc45b82622667ec4898740d97570521827[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Fri Jun 2 04:27:10 2023 +0900
+
+    앱에서 api 서버에 아이디 중복체크 및 회원 가입 페이지 수정
+
+[33mcommit 678a10a780dc2e70813c6835e673d55e51d212aa[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Thu Jun 1 00:19:47 2023 +0900
+
+    알바 api 서버 생성
+
+[33mcommit 83dab97a3f77456bd543232c7090b68fb99fe622[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Mon May 29 15:47:34 2023 +0900
+
+    구글맵 사용하기
+
+[33mcommit 91744d1e9aa6a456e967c963e91a726731767e6b[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Sat May 27 22:30:59 2023 +0900
+
+    사용자에게 위치 권한 얻기 적용준비
+
+[33mcommit cd697eeadf45f2ef3281d62885caa859788b8402[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Sat May 27 22:29:47 2023 +0900
+
+    동의하고 계속하기 했을경우 바텀 시트 닫히게 수정
+
+[33mcommit 7f557dadee184b0501effb17d0907bb9a81ed65f[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Sat May 27 22:29:08 2023 +0900
+
+    메인 화면에 탭 네비게이션으로 기본 홈화면, 셋팅화면 적용
+
+[33mcommit 7c537f2917829e38d8694ea2f16ec7a771c75ce4[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Sat May 27 22:27:59 2023 +0900
+
+    회원가입에 밸리데이션 적용 및 db 저장 전 까지 적용
+
+[33mcommit 09c60a71b6ee5920d1a7cecf8ca009c150de20ec[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Sat May 27 22:26:45 2023 +0900
+
+    색상 추가
+
+[33mcommit 52ec7429df85524a80e82146b98e487ab6ca2962[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Mon May 22 22:42:44 2023 +0900
+
+    회원 가입 페이지 생성 및 이메일 TextInput
+
+[33mcommit 9c94bae84af60eed6e8c0c2160106a8e37827fde[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Mon May 22 15:32:20 2023 +0900
+
+    의존성 관리 및 파일 이름 변경
+
+[33mcommit 00d16721c56da525079c2610e5d253b6c51155f8[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Mon May 22 15:31:39 2023 +0900
+
+    약관 상세 보기 페이지로 navigation 하는 코드 추가
+
+[33mcommit 293a48644acc5bb58a1a93af387db0cae8210181[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Mon May 22 15:30:32 2023 +0900
+
+    스택 네비게이션 설정 및 리덕스 셋팅
+
+[33mcommit 0734c8608720c3d202042e8c7f57db4ba3dd1149[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Sun May 21 16:32:14 2023 +0900
+
+    바텀 시트 적용, 약관 동의 디자인, 리액트 네비게이션 라이브러리 설치
+
+[33mcommit 267950960d9804a2ea4cb18cf25d8d9415e7365a[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Thu May 18 16:41:25 2023 +0900
+
+    바텀 시트 라이브러리 패키지 설정이 꼬여서 새로운 프로젝트로 이전
+
+[33mcommit 60d940062d082d88f0956fbcfc0f2305343df95b[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Wed May 17 14:50:47 2023 +0900
+
+    알바관리 프로젝트 생성
+
+[33mcommit f0498f08237836d16c650914bab162c5e33942f0[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Tue May 16 15:27:14 2023 +0900
+
+    투두 리스트
+
+[33mcommit 5bcccf8a97f6c489bdb0ab3ab93d4bbf6a7e6f0a[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Mon May 15 15:20:19 2023 +0900
+
+    toDoLIst 앱 생성 및 헤더 생성
+
+[33mcommit ec140dd08cbff420d7553cd29123fd588491ed7b[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Mon May 15 15:17:07 2023 +0900
+
+    api key 분리
+
+[33mcommit 738c2fef7753e20c864854fd7ce9435478de961e[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Mon May 15 02:48:04 2023 +0900
+
+    날씨 앱에 아이콘 추가하기
+
+[33mcommit 841b7778a8639230741b791d6ce78c84038b4cd4[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Mon May 15 01:51:49 2023 +0900
+
+    map 함수로 3시간 단위 일기예보 컴포넌트 생성
+
+[33mcommit 1c026a6e785a7c95b14980733d8b0d19ab868dfc[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Sun May 14 04:44:15 2023 +0900
+
+    openWeather api 호출 및 3시간 단위 일기예보 state에 저장
+
+[33mcommit ffa0bbfdb37fd6a05ac454c9df8fb874b99bdeab[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Sun May 14 02:25:14 2023 +0900
+
+    위치 정보를 알기위해 expo-location 사용하기
+
+[33mcommit bcf1729f233d9a54f4c19ce3bbd36355cd88e7a2[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Sun May 14 01:35:39 2023 +0900
+
+    ScrollView 사용해보기
+
+[33mcommit 7fe375c4edec0ed525f1b228b8bb2bc7099a2e28[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Fri May 12 15:55:42 2023 +0900
+
+    날짜앱을 위한 프론트 디자인
+
+[33mcommit 37133872bc118b1a78cb40ee89fa57106a0af97c[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Fri May 12 15:28:16 2023 +0900
+
+    레이아웃 시스템 실습
+
+[33mcommit 1127a6f932c88c853770fe8e4d4ddb4d26d9e875[m
+Author: 그램 <darkzhon@hanmail.net>
+Date:   Wed May 10 23:36:36 2023 +0900
+
+    리액트 네이티브 expo
