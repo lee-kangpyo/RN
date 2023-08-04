@@ -378,6 +378,7 @@ router.get("/v1/checkStoreLocation", async (req, res, next) => {
             console.log(id+" 출퇴근 체크 종료")
         }else{
             console.log("해당 디바이스는 출퇴근 기록용이 아님")
+            res.status(200).json({resultCode:"-2"});
         }
         res.status(200).json({resultCode:"00"});
     } catch (error) {
