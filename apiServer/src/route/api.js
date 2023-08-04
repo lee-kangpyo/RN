@@ -4,7 +4,7 @@ const {execSql, execTranSql} = require("../utils/excuteSql");
 
 const { login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, 
         getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, 
-        insertJobChk, geofencingTest, checkJobChk, insertUuid, autoLogin, getUUID} = require('./../query/auth'); 
+        insertJobChk, geofencingTest, checkJobChk, insertUuid, autoLogin, getUUID, checkjobtotal} = require('./../query/auth'); 
 const axios = require('axios');
 
 const dotenv = require('dotenv');
@@ -228,11 +228,19 @@ router.get("/v1/searchMyAlbaList", async (req, res, next) => {
 })
 
 router.get("/v1/getSelStoreRecords", async (req, res, next) => {
-    
+    function getDate() {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        return `${year}${month}${day}`;
+    }
     try {
         const {userId, cstCo} = req.query;
-        const result = await execSql(getSelStoreRecords, {userId:userId, cstCo:cstCo});
-        res.status(200).json({result:result.recordset, resultCode:"00"});
+        const params = {userId:userId, cstCo:cstCo}
+        const result = await execSql(getSelStoreRecords, params);
+        const result2 = await execSql(checkjobtotal, {...params, cls:"jobdaytotal", ymd:getDate()})
+        res.status(200).json({result:result.recordset, totalJobMin:result2.recordset[0].TotalJobMin, resultCode:"00"});
     } catch (error) {
         console.log(error.message)
         res.status(200).json({ resultCode:"-1"});
@@ -339,7 +347,7 @@ router.get("/v1/checkStoreLocation", async (req, res, next) => {
     }
     try {
         const {id, uuid, lat, lon, ymd} = req.query;
-        console.log(ymd + "###TaskManager => "+id+"가 디바이스("+uuid+")로 출퇴근 체크중")
+        console.log("###TaskManager => "+id+"가 디바이스("+uuid+")로 출퇴근 체크중")
         let apvYn = "N";
         const curday = getDay();
         const {recordset:uuidInfo} = await execSql(getUUID, {userId:id});
