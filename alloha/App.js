@@ -72,9 +72,9 @@ function Index() {
     }
   }
 
-
   useEffect(() => {
     (async () => {
+      //dispatch(setUserInfo({isLogin:false}));
       const uid = await SecureStore.getItemAsync("uuid");
       const userId = await AsyncStorage.getItem("id");
       if(uid && userId){
