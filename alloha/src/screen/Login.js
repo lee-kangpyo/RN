@@ -93,7 +93,7 @@ const LoginForm = ({navigation}) => {
   }
 
   const loginAction = async () => {
-    //console.log(loginInfo);
+    console.log(loginInfo);
     //밸리데이션 -> 지금은 아이디 패스워드 공백 체크만 함
     if(loginInfo.id && loginInfo.password){
       const uid = uuid.v4();

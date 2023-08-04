@@ -27,12 +27,14 @@ export default function HomeScreen() {
     };
 
     const [isLoading, setLoading] = useState(true);                     // 초기 점포 불러왔는지 체크
-    const [isChangePickerLoad, setChangePickerLoad] = useState(false);         // 픽커 변경 여부 확인
+    const [isChangePickerLoad, setChangePickerLoad] = useState(false);  // 픽커 변경 여부 확인
     const [selectedStore, setSelectedStore] = useState({});             // 선택된 점포
-    const [selectedStoreLogs, setSelectedStoreLogs] = useState([]);     //선택된 점포의 출퇴근 기록
+    const [selectedStoreLogs, setSelectedStoreLogs] = useState([]);     // 선택된 점포의 출퇴근 기록
+    const [totalJobTime, setTotalJobTime] = useState("");               // 선택된 점포의 출퇴근 시각
     const [myStores, setmyStores] = useState([]);                       // 내 알바 점포들
     const [myPosition, setmyPosition] = useState();                     // 현재 내위치
-    const [distance, setdistance] = useState();                         // 선택된 점포와 내위치의 거리
+
+    const [distance, setdistance] = useState();                         // 선택된 점포와 내위치의 거리 아마 안쓸껄?
 
     //DB에서 가져옴 => aixous => => 출근 상태를 확인하고  
     const [inOutBtnTxt, setInOutBtnTxt] = useState("")
@@ -142,6 +144,24 @@ export default function HomeScreen() {
         return Math.round(d * 1000);
     }
 
+    function convertMinToHours(min) {
+        if (min === 0) {
+            return "0분";
+        }
+        const hours = Math.floor(min / 60);
+        const minutes = min % 60;
+        const hoursText = hours === 1 ? '시간' : '시간';
+        const minutesText = minutes === 1 ? '분' : '분';
+        let result = '';
+        if (hours > 0) {
+            result += `${hours} ${hoursText} `;
+        }
+        if (minutes > 0) {
+            result += `${minutes} ${minutesText}`;
+        }
+        return result.trim();
+    }
+
     const getSelStoreRecords = async () =>{
         setChangePickerLoad(true)
         await axios.get(URL+"/api/v1/getSelStoreRecords", {params:{userId:userId, cstCo:selectedStore.CSTCO}})
@@ -149,8 +169,8 @@ export default function HomeScreen() {
             if(res.data.resultCode === "00"){
                 //console.log(res.data.result);
                 setSelectedStoreLogs(res.data.result);
+                setTotalJobTime(convertMinToHours(res.data.totalJobMin));
                 handleScrollToEnd();
-                //출근 데이터 저장하기... 아직 입력이 안되서 입력 후 개발하는걸로 하자.
             }else{
                 Alert.alert("알림", "현재 점포 출퇴근 기록 호출 중 오류가 발생했습니다. 잠시후 다시 시도해 주세요.")
             }
@@ -169,6 +189,7 @@ export default function HomeScreen() {
 
     useEffect(() => {
         async function searchMyAlbaList() {
+            //console.log("SDAf")
             await axios.get(URL+"/api/v1/searchMyAlbaList", {params:{userId:userId}})
             .then((res)=>{
                 if(res.data.resultCode === "00"){
@@ -278,8 +299,7 @@ export default function HomeScreen() {
                                                     }
                                                 </ScrollView>
                                                 <View style={{width:"100%"}}>
-                                                    <Text style={{fontSize:16}}>총 근무 시간 : 4 시간 27분(3시간 인정)</Text>
-                                                    <Text style={{fontSize:16}}>예상 급여액 : 3,000원(453,000원)</Text>
+                                                    <Text style={{fontSize:16}}>총 근무 시간 : {totalJobTime}</Text>
                                                 </View>
                                             </>
                                     }

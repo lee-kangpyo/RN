@@ -13,11 +13,10 @@ export default function CommuteTask(){
       (async () => {
         const {granted:forePerm} = await Location.getForegroundPermissionsAsync()
         const {granted:backPerm} = await Location.getBackgroundPermissionsAsync()
-        const isTaskStarted = await TaskManager.isTaskRegisteredAsync(LOCATION_TASK_NAME);
         if(forePerm && backPerm){
             await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-                distanceInterval:30,
-                timeInterval: 10000,
+                distanceInterval:20,
+                timeInterval: 20000,
                 //deferredUpdatesInterval: 100,
                 accuracy: Location.Accuracy.High,
                 showsBackgroundLocationIndicator: true,
@@ -27,6 +26,8 @@ export default function CommuteTask(){
                     notificationColor: "#fff",
                 },  
             });
+            const isTaskStarted = await TaskManager.isTaskRegisteredAsync(LOCATION_TASK_NAME);
+            setTaskStart(isTaskStarted)
         }
       })();
     }, []);
@@ -35,9 +36,10 @@ export default function CommuteTask(){
         <>
         {
             (isTaskStart)?
-                <Text>태스크 매니저가 실행되지 않고 있습니다.</Text>
-            :
                 <Text>자동 출퇴근 기록 동작중....</Text>
+            :
+                <Text>태스크 매니저가 실행되지 않고 있습니다.</Text>
+                
         }
         </>
     );
