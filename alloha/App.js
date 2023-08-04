@@ -1,10 +1,10 @@
 
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, AppState } from 'react-native';
 //import React, {useEffect, useState} from 'react';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import { Provider, useSelector } from 'react-redux';
 import store from '../alloha/redux/store';
 import Login from '../alloha/src/screen/Login';
@@ -31,34 +31,43 @@ import * as TaskManager from 'expo-task-manager';
 const LOCATION_TASK_NAME = 'background-location-task';
 
 TaskManager.defineTask(LOCATION_TASK_NAME,  async ({ data, error } ) => {
-    const getCurrentTimeWithDate = () => {
-        const currentDate = new Date();
-        const year = currentDate.getFullYear();
-        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-        const day = String(currentDate.getDate()).padStart(2, '0');
-        const hours = String(currentDate.getHours()).padStart(2, '0');
-        const minutes = String(currentDate.getMinutes()).padStart(2, '0');
-        const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+  const getCurrentTimeWithDate = () => {
+      const currentDate = new Date();
+      const year = currentDate.getFullYear();
+      const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+      const day = String(currentDate.getDate()).padStart(2, '0');
+      const hours = String(currentDate.getHours()).padStart(2, '0');
+      const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+      const seconds = String(currentDate.getSeconds()).padStart(2, '0');
 
-        const currentTimeWithDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-        return currentTimeWithDate;
-    };
+      const currentTimeWithDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+      return currentTimeWithDate;
+  };
 
-    if (error) {
-        return;
-    }
-    if(data){
-        const id = await AsyncStorage.getItem("id")
-        const uid = await SecureStore.getItemAsync("uuid");
-        const { locations } = data;
-        await axios.get(URL+"/api/v1/checkStoreLocation", {params:{id:id, uuid:uid, lat:locations[0].coords.latitude, lon:locations[0].coords.longitude, ymd:getCurrentTimeWithDate()}})
-        .catch((err)=>{console.log(err)})
-    }
+  if (error) {
+      return;
+  }
+  if(data){
+      const id = await AsyncStorage.getItem("id")
+      const uid = await SecureStore.getItemAsync("uuid");
+      const { locations } = data;
+      await axios.get(URL+"/api/v1/checkStoreLocation", {params:{id:id, uuid:uid, lat:locations[0].coords.latitude, lon:locations[0].coords.longitude, ymd:getCurrentTimeWithDate()}})
+      .then((res)=>{
+        if(res.data.resultCode === "-2"){
+          TaskManager.unregisterTaskAsync(LOCATION_TASK_NAME)
+        }
+      })
+      .catch((err)=>{console.log(err)})
+  }
 });
 
 const Stack = createNativeStackNavigator();
 
 function Index() {
+  const appState = useRef(AppState.currentState);
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
+
+
   const dispatch = useDispatch();
   const [isReg, setReg] = useState(true);
   const saveUserInfo = async ({ownrYn, crewYn, mnrgYn, userNa}) => {
@@ -72,18 +81,19 @@ function Index() {
     }
   }
 
-  useEffect(() => {
-    (async () => {
-      //dispatch(setUserInfo({isLogin:false}));
-      const uid = await SecureStore.getItemAsync("uuid");
+  const autoLogin = async ()=>{
+    const uid = await SecureStore.getItemAsync("uuid");
       const userId = await AsyncStorage.getItem("id");
       if(uid && userId){
         await axios.post(URL+'/api/v1/autoLogin', {uuid:uid, userId:userId})
         .then( function  (response) {
           //console.log(response.data)
-          console.log(response.data)
+          //console.log(response.data)
           if(response.data.resultCode === "00"){
             dispatch(setUserInfo({isLogin:true, userId:userId}));
+          }else{
+            TaskManager.unregisterTaskAsync(LOCATION_TASK_NAME)
+            dispatch(setUserInfo({isLogin:false, userId:""}));
           }
         }).catch(function (error) {
             console.error(error)
@@ -93,9 +103,36 @@ function Index() {
       }else{
         setReg(false);
       }
-    })();
+  }
+
+  useEffect(() => {
+    autoLogin()
   }, []);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === 'active'
+      ) {
+        console.log('App has come to the foreground!');
+        autoLogin()
+      }
+
+      appState.current = nextAppState;
+      setAppStateVisible(appState.current);
+      console.log('AppState', appState.current);
+      //if(appState.current === "active" )
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [setAppStateVisible]);
+
+  
   const isLoggedIn = useSelector((state) => state.login.isLogin);
+
   return (
     <NavigationContainer>
       <Stack.Navigator>
