@@ -156,6 +156,12 @@ const checkJobChk = `
     ORDER   BY a.CHKTIME desc
 `
 
+//근무시간 체크
+const checkjobtotal=`
+    exec PR_JOBCHECK_PROCESS @cls, @ymd, @cstCo, @userId
+`
+
+
 const getUUID = `
     select UUID from PLYMUSER WHERE USERID = @userId
 `
@@ -169,4 +175,4 @@ const insertUuid= `
     WHERE USERID = @userId
 `
 
-module.exports = {login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, insertJobChk, geofencingTest, checkJobChk, insertUuid, autoLogin, getUUID}
+module.exports = {login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, insertJobChk, geofencingTest, checkJobChk, insertUuid, autoLogin, getUUID, checkjobtotal}
