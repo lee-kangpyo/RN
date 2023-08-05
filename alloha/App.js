@@ -81,14 +81,13 @@ function Index() {
     }
   }
 
-  const autoLogin = async ()=>{
+  const autoLogin = async (flag)=>{
     const uid = await SecureStore.getItemAsync("uuid");
       const userId = await AsyncStorage.getItem("id");
       if(uid && userId){
-        await axios.post(URL+'/api/v1/autoLogin', {uuid:uid, userId:userId})
+        await axios.post(URL+'/api/v1/autoLogin', {uuid:uid, userId:userId, flag:flag})
         .then( function  (response) {
-          //console.log(response.data)
-          //console.log(response.data)
+          //console.log(response.data.resultCode)
           if(response.data.resultCode === "00"){
             dispatch(setUserInfo({isLogin:true, userId:userId}));
           }else{
@@ -106,7 +105,7 @@ function Index() {
   }
 
   useEffect(() => {
-    autoLogin()
+    autoLogin("start")
   }, []);
 
   useEffect(() => {
@@ -116,7 +115,7 @@ function Index() {
         nextAppState === 'active'
       ) {
         console.log('App has come to the foreground!');
-        autoLogin()
+        autoLogin("foreground")
       }
 
       appState.current = nextAppState;
