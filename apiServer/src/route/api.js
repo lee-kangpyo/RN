@@ -260,11 +260,10 @@ router.post("/v1/insertJobChk", async (req,res,next)=>{
 })
 
 
-router.get("/v1/testTaskManager", async (req, res, next) => {
+router.get("/v1/testLog", async (req, res, next) => {
     try {
-        const {id, log, day, lat, lon} = req.query;
-        console.log(day+":::"+log+" "+lat+", "+lon )
-        const result = await execSql(geofencingTest, {id:id, name:log, day:day, lat:lat, lon:lon});
+        const {log} = req.query;
+        console.log(log)
         res.status(200).json({result:"테스트끝", resultCode:"00"});
     } catch (error) {
         console.log(error.message)

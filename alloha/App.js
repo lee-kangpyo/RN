@@ -25,8 +25,8 @@ import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loading from './src/components/Loding';
 
-
 import * as TaskManager from 'expo-task-manager';
+import { testLog } from './src/util/testLog';
 
 const LOCATION_TASK_NAME = 'background-location-task';
 
@@ -82,11 +82,16 @@ function Index() {
   }
 
   const autoLogin = async (flag)=>{
+    testLog("test 시작")
     const uid = await SecureStore.getItemAsync("uuid");
-      const userId = await AsyncStorage.getItem("id");
+    const userId = await AsyncStorage.getItem("id");
+    testLog("uid : " + uid);
+    testLog("userId : " + userId);
       if(uid && userId){
+        testLog("autoLogin 요청")
         await axios.post(URL+'/api/v1/autoLogin', {uuid:uid, userId:userId, flag:flag})
         .then( function  (response) {
+          testLog("resultCode : "+resultCode)
           //console.log(response.data.resultCode)
           if(response.data.resultCode === "00"){
             dispatch(setUserInfo({isLogin:true, userId:userId}));
@@ -97,9 +102,11 @@ function Index() {
         }).catch(function (error) {
             console.error(error)
         }).finally(() => {
+          testLog("finally");
           setReg(false);
         });
       }else{
+        testLog("udi 또는 userId가 없음");
         setReg(false);
       }
   }
@@ -131,7 +138,8 @@ function Index() {
 
   
   const isLoggedIn = useSelector((state) => state.login.isLogin);
-
+  testLog("isLoggedIn : " + isLoggedIn)
+  testLog("isReg : " + isReg)
   return (
     <NavigationContainer>
       <Stack.Navigator>
