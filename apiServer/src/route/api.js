@@ -40,21 +40,20 @@ router.post("/v1/loginUser", async(req, res, next)=>{
 })
 
 router.post("/v1/autoLogin", async(req, res, next)=>{
-    console.log("autoLogin")
-    const{userId, uuid} = req.body;
+    const{userId, uuid, flag} = req.body;
+    console.log("autoLogin : "+flag);
     const result = await execSql(autoLogin, {userId:userId, uuid:uuid});
     let info = {};
-    console.log(result.recordset[0])
     if(result.recordset[0]){
+        console.log("해당 기기는 자동 로그인")
         const {pwCheck, crewYn, ownrYn, mnrgYn, userNa} = result.recordset[0];
         if (pwCheck === 1 ){ await execSql(insertUuid, {userId:id, uuid:uuid}); }
         info = {ownrYn:ownrYn, crewYn:crewYn, mnrgYn:mnrgYn, userNa:userNa}
         res.status(200).json({info:info, resultCode:"00"});
     }else{
+        console.log("해당 기기는 자동 안됨")
         res.status(200).json({info:info, resultCode:"-1"});
     }
-
-    
 })
 
 router.post("/v1/isIdDuplicate", async(req, res, next)=>{
@@ -346,6 +345,7 @@ router.get("/v1/checkStoreLocation", async (req, res, next) => {
         return result
     }
     try {
+        let resultCode = "00"
         const {id, uuid, lat, lon, ymd} = req.query;
         console.log("###TaskManager => "+id+"가 디바이스("+uuid+")로 출퇴근 체크중")
         let apvYn = "N";
@@ -375,14 +375,14 @@ router.get("/v1/checkStoreLocation", async (req, res, next) => {
                     }
                 }
             }
-            console.log(id+" 출퇴근 체크 종료")
+            console.log(id+" 출퇴근 체크 종료");
         }else{
-            console.log("해당 디바이스는 출퇴근 기록용이 아님")
-            res.status(200).json({resultCode:"-2"});
+            console.log("해당 디바이스는 출퇴근 기록용이 아님");
+            resultCode = "-2";
         }
-        res.status(200).json({resultCode:"00"});
+        res.status(200).json({resultCode:resultCode});
     } catch (error) {
-        console.log(error.message)
+        console.log(error.message);
         res.status(200).json({ resultCode:"-1"});
     }
 
