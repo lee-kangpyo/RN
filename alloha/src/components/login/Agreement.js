@@ -30,19 +30,22 @@ export default function Agreement({closesheet, navigation}){
             text:"[필수] 이용 약관 동의",
             state:isUseChecked,
             setState:setUseChecked,
-            detail:<view><text>1</text></view>
+            detail:<view><text>1</text></view>,
+            termId:"1001"
         },
         {
             text:"[필수] 개인 정보 처리방침 동의",
             state:isPrivChecked,
             setState:setPrivChecked,
-            detail:<view><text>2</text></view>
+            detail:<view><text>2</text></view>,
+            termId:"1002"
         },
         {
             text:"[선택] 이벤트 및 마케팅 활용 동의",
             state:isenvtChecked,
             setState:setenvtChecked,
-            detail:<view><text>3</text></view>
+            detail:<view><text>3</text></view>,
+            termId:"1003"
         },
     ]
 
@@ -70,7 +73,7 @@ export default function Agreement({closesheet, navigation}){
                                 </TouchableOpacity>
                                 <Text style={styles.txt_dig}>{item.text}</Text>
                             </View>
-                            <TouchableOpacity onPress={() => navigation.navigate('TermsDetail')}>
+                            <TouchableOpacity onPress={() => navigation.navigate('TermsDetail', {termId:item.termId})}>
                                 <Feather name="chevron-right" size={24} color="black" />
                             </TouchableOpacity>
                         </View>

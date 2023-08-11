@@ -174,5 +174,12 @@ const insertUuid= `
     UPDATE PLYMUSER SET UUID = @uuid
     WHERE USERID = @userId
 `
+const getTermsDetail = `
+    SELECT TITLE, CONTS
+    FROM PLYSINFSHRAGRCONTS
+    WHERE USEYN = 'Y'
+    AND   INFSHRDIV = 'PLY'
+    AND   INFSHRCO = @INFSHRCO
+`
 
-module.exports = {login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, insertJobChk, geofencingTest, checkJobChk, insertUuid, autoLogin, getUUID, checkjobtotal}
+module.exports = {login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, insertJobChk, geofencingTest, checkJobChk, insertUuid, autoLogin, getUUID, checkjobtotal, getTermsDetail}
