@@ -79,6 +79,7 @@ alloha/.DS_Store
 alloha/.metro-health-check*
 alloha/eas.json
 alloha/.env
+alloha/google-services.json
 
 
 

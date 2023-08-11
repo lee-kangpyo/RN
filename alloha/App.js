@@ -27,6 +27,7 @@ import Loading from './src/components/Loding';
 
 import * as TaskManager from 'expo-task-manager';
 import { testLog } from './src/util/testLog';
+import PushPermission from './src/components/PushPermission';
 
 const LOCATION_TASK_NAME = 'background-location-task';
 
@@ -82,16 +83,20 @@ function Index() {
   }
 
   const autoLogin = async (flag)=>{
-    testLog("test 시작")
-    const uid = await SecureStore.getItemAsync("uuid");
-    const userId = await AsyncStorage.getItem("id");
-    testLog("uid : " + uid);
-    testLog("userId : " + userId);
+    try {
+      //testLog("test2 시작")
+      const isAvailable = await SecureStore.isAvailableAsync()
+      //testLog("secureStore is Available : " + isAvailable);
+      const uid = await SecureStore.getItemAsync("uuid");
+      //testLog("uid : " + uid);
+      const userId = await AsyncStorage.getItem("id");
+      //testLog("userId : " + userId);
+
       if(uid && userId){
-        testLog("autoLogin 요청")
+        //testLog("autoLogin 요청")
         await axios.post(URL+'/api/v1/autoLogin', {uuid:uid, userId:userId, flag:flag})
         .then( function  (response) {
-          testLog("resultCode : "+resultCode)
+          //testLog("resultCode : "+response.data.resultCode)
           //console.log(response.data.resultCode)
           if(response.data.resultCode === "00"){
             dispatch(setUserInfo({isLogin:true, userId:userId}));
@@ -100,15 +105,20 @@ function Index() {
             dispatch(setUserInfo({isLogin:false, userId:""}));
           }
         }).catch(function (error) {
+            //testLog("error : " + error.message);
             console.error(error)
         }).finally(() => {
-          testLog("finally");
+          //testLog("finally : setReg(false) 호출함.");
           setReg(false);
         });
       }else{
-        testLog("udi 또는 userId가 없음");
+        //testLog("udi 또는 userId가 없음 axios 실행안함 : setReg(false) 호출함.");
         setReg(false);
-      }
+      }  
+    } catch (error) {
+      setReg(false);
+    }
+    
   }
 
   useEffect(() => {
@@ -128,18 +138,13 @@ function Index() {
       appState.current = nextAppState;
       setAppStateVisible(appState.current);
       console.log('AppState', appState.current);
-      //if(appState.current === "active" )
     });
 
     return () => {
       subscription.remove();
     };
   }, [setAppStateVisible]);
-
-  
   const isLoggedIn = useSelector((state) => state.login.isLogin);
-  testLog("isLoggedIn : " + isLoggedIn)
-  testLog("isReg : " + isReg)
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -178,6 +183,7 @@ function backGroundLocationTest() {
 function App(){
   //<GetLocationPermission Grant={Index}/>
   //<LocationPermissionBack Grant ={Index}/>
+  //<PushPermission/>
   return (
     <Provider store={store}>
       <Index/>
