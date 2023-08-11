@@ -3,6 +3,7 @@ import { theme } from '../util/color';
 import CustomBtn from '../components/CustomBtn';
 
 export default function StoreCard({store, btntxt, onButtonPressed}) {
+    
     return (
     <View style={styles.card}>
         <Text style={styles.card_title}>{store.CSTNA}</Text>

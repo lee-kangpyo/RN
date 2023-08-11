@@ -86,8 +86,8 @@ router.get("/v1/getStoreList", async (req, res, next) => {
 })
 
 router.get("/v1/getStoreListCrew", async (req, res, next) => {
-    const {cstNa} = req.query;
-    const result = await execSql(getStoreListCrew, {cstNa:cstNa})
+    const {cstNa, userId} = req.query;
+    const result = await execSql(getStoreListCrew, {cstNa:cstNa, userId:userId})
     console.log(result.recordset);
     res.json({result:result.recordset, status_code:"00"});
 })
@@ -208,6 +208,17 @@ router.post("/v1/approvCrew", async (req, res, next)=>{
     try {
         const {cstCo, userId} = req.body;
         const result = await execSql(changeCrewRTCL, {userId:userId, cstCo:cstCo, rtCl:"N"}) 
+        res.status(200).json({result:result.rowsAffected[0], resultCode:"00"});
+    } catch (error) {
+        console.log(error.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+})
+
+router.post("/v1/changeCrew", async (req, res, next)=>{
+    try {
+        const {cstCo, userId, rtCl} = req.body;
+        const result = await execSql(changeCrewRTCL, {userId:userId, cstCo:cstCo, rtCl:rtCl}) 
         res.status(200).json({result:result.rowsAffected[0], resultCode:"00"});
     } catch (error) {
         console.log(error.message)

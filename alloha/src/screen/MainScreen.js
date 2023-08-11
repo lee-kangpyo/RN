@@ -5,7 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import HomeScreen from './HomeScreen';
-import SettingsScreen from './SettingsScreen';
+import SettingsScreen from './ComunityScreen';
 import BoardScreen from './BoardScreen';
 import ManageStoreScreen from './ManageStoreScreen';
 import AddStoreScreen from './AddStoreScreen';
@@ -21,6 +21,7 @@ import SearchAddress from '../components/SearchAddress';
 import { useNavigation } from '@react-navigation/native';
 import WageScreen from './WageScreen';
 import WageDetailScreen from './WageDetailScreen';
+import ComunityScreen from './ComunityScreen';
 
 
 
@@ -35,14 +36,14 @@ export default function MainScreen() {
       const id = await AsyncStorage.getItem('id');
       const ownrYn = await AsyncStorage.getItem('ownrYn');
       const crewYn = await AsyncStorage.getItem('crewYn');
-      console.log("로드완료")
-      console.log(id, ownrYn, crewYn)
+      //console.log("로드완료")
+      //console.log(id, ownrYn, crewYn)
       if(!(id && ownrYn && crewYn)){
         //여기선 얼럿 후 로그인 창으로 이동
         console.log("잘못된 접근")
       }
       setUserInfo({id:id, ownrYn:ownrYn, crewYn:crewYn})
-      console.log(id, ownrYn, crewYn)
+      //console.log(id, ownrYn, crewYn)
     }
   }
 
@@ -97,8 +98,8 @@ function OwnrScreen({userInfo}){
       })}
     >
       <Tab.Screen name="ManageCrew" component={ManageCrewScreen} options={{ tabBarLabel: '알바관리' }}/>
-      <Tab.Screen name="Wage" component={SettingsScreen} options={{ tabBarLabel: '급여' }}/>
-      <Tab.Screen name="community" component={SettingsScreen} options={{ tabBarLabel: '커뮤니티' }}/>
+      <Tab.Screen name="Wage" component={WageScreen} options={{ tabBarLabel: '급여' }}/>
+      <Tab.Screen name="community" component={ComunityScreen} options={{ tabBarLabel: '커뮤니티' }}/>
       <Tab.Screen name="manageStore" options={{ headerShown: false, tabBarLabel: '점포관리' }} >
         {() => (
           <Stack.Navigator>
@@ -143,7 +144,7 @@ function CrewScreen(){
       </Tab.Screen>
 
 
-      <Tab.Screen name="community" component={SettingsScreen} options={{ tabBarLabel: '커뮤니티' }}/>
+      <Tab.Screen name="community" component={ComunityScreen} options={{ tabBarLabel: '커뮤니티' }}/>
       <Tab.Screen name="manageStore" component={SearchStoreScreen} backBehavior={"none"} options={{ tabBarLabel: '점포검색' }} />
     </Tab.Navigator>
   )

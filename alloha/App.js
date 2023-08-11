@@ -144,6 +144,7 @@ function Index() {
       subscription.remove();
     };
   }, [setAppStateVisible]);
+  
   const isLoggedIn = useSelector((state) => state.login.isLogin);
   return (
     <NavigationContainer>

@@ -7,5 +7,6 @@ export const theme = {
     error:"#EB9AC3",
     correct:"#A9BCE0",
     darkGrey:"#A9A9A9",
-    black:"#000"
+    black:"#000",
+    red:"#f3444f"
 }

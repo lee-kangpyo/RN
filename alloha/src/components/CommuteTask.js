@@ -15,7 +15,7 @@ export default function CommuteTask(){
         const {granted:backPerm} = await Location.getBackgroundPermissionsAsync()
         if(forePerm && backPerm){
             await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-                distanceInterval:20,
+                //distanceInterval:20,
                 timeInterval: 20000,
                 //deferredUpdatesInterval: 100,
                 accuracy: Location.Accuracy.Highest,
