@@ -4,7 +4,7 @@ const {execSql, execTranSql} = require("../utils/excuteSql");
 
 const { login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, 
         getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, 
-        insertJobChk, geofencingTest, checkJobChk, insertUuid, autoLogin, getUUID, checkjobtotal} = require('./../query/auth'); 
+        insertJobChk, geofencingTest, checkJobChk, insertUuid, autoLogin, getUUID, checkjobtotal, getTermsDetail} = require('./../query/auth'); 
 const axios = require('axios');
 
 const dotenv = require('dotenv');
@@ -259,6 +259,16 @@ router.post("/v1/insertJobChk", async (req,res,next)=>{
     }
 })
 
+router.get("/v1/getTermsDetail", async(req, res, next)=>{
+    try {
+        const {termId} = req.query;
+        const result = await execSql(getTermsDetail, { INFSHRCO:termId });
+        res.status(200).json({result:result.recordset, resultCode:"00"});
+    } catch (error) {
+        console.error(error.message);
+        res.status(200).json({ resultCode:"-1"});
+    }
+})
 
 router.get("/v1/testLog", async (req, res, next) => {
     try {

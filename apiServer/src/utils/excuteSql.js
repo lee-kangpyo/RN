@@ -14,7 +14,7 @@ async function execSql(query, params) {
         return result;
       } catch (err) {
         //logger.info(err);
-        throw new Error(err);
+        console.log(err);
       };
 };
 
