@@ -10,6 +10,7 @@ import { theme } from '../util/color';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { URL } from "@env";
+import { Confirm } from '../util/confirm';
 
 export default function ManageCrewScreen({navigation}) {
     const userId = useSelector((state) => state.login.userId);
@@ -17,18 +18,54 @@ export default function ManageCrewScreen({navigation}) {
     const [searchWrd, setsearchWrd] = useState("");
     const [crewList, setCrewList] = useState([]);
 
-    const onApprov = async (cstCo, userId) => {
-        await axios.post(URL+`/api/v1/approvCrew`, {cstCo:cstCo, userId:userId})
-        .then((res)=>{
-            if(res.data.result === 1){
-                Alert.alert("알림", "지원한 알바 승인이 완료되었습니다.")
-                searchCrewList();
-            }else{
-                Alert.alert("알림", "승인 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
-            }
-        }).catch(function (error) {
-            console.log(error);
-            Alert.alert("오류", "요청중 알수없는 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
+    const onApprov = (userNa, cstCo, userId) => {
+        Confirm("승인", `지원 하신${userNa}님을 승인하시겠습니까?`, "아니오", "네", async ()=>{
+            await axios.post(URL+`/api/v1/changeCrew`, {cstCo:cstCo, userId:userId, rtCl:"N"})
+            .then((res)=>{
+                if(res.data.result === 1){
+                    Alert.alert("알림", "승인 하였습니다..")
+                    searchCrewList();
+                }else{
+                    Alert.alert("알림", "승인 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
+                }
+            }).catch(function (error) {
+                console.log(error);
+                Alert.alert("오류", "요청중 알수없는 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
+            })
+        })
+    }
+
+    const onRetirement = (userNa, cstCo, userId) => {
+        Confirm("퇴사", `${userNa}님의 퇴사를 진행 하시겠습니까?`, "아니오", "네", async ()=>{
+            await axios.post(URL+`/api/v1/changeCrew`, {cstCo:cstCo, userId:userId, rtCl:"Y"})
+            .then((res)=>{
+                if(res.data.result === 1){
+                    Alert.alert("알림", "[퇴사] 요청을 완료 하였습니다.")
+                    searchCrewList();
+                }else{
+                    Alert.alert("알림", "퇴사 요청 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
+                }
+            }).catch(function (error) {
+                console.log(error);
+                Alert.alert("오류", "요청 중 알수없는 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
+            })
+        })
+    }
+
+    const onDeny = (userNa, cstCo, userId) => {
+        Confirm("거절", `지원하신 ${userNa}님을 거절 하시겠습니까?`, "아니오", "네", async ()=>{
+            await axios.post(URL+`/api/v1/changeCrew`, {cstCo:cstCo, userId:userId, rtCl:"D"})
+            .then((res)=>{
+                if(res.data.result === 1){
+                    Alert.alert("알림", "[거절] 요청을 완료 하였습니다.")
+                    searchCrewList();
+                }else{
+                    Alert.alert("알림", "거절 요청 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
+                }
+            }).catch(function (error) {
+                console.log(error);
+                Alert.alert("오류", "요청 중 알수없는 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
+            })
         })
     }
 
@@ -55,7 +92,16 @@ export default function ManageCrewScreen({navigation}) {
                     ?
                         <ScrollView style={styles.scrollArea}>
                             {crewList.map((el, idx)=>{
-                                return <CrewCard key={idx} crew={el} btntxt={"승인하기"} onButtonPressed={(cstCo, userId)=>{onApprov(cstCo, userId)}}  />
+                                return <CrewCard 
+                                            key={idx} 
+                                            crew={el} 
+                                            applyBtntxt={"승인"} 
+                                            onApplyButtonPressed={(cstCo, userId)=>{onApprov(el.USERNA, cstCo, userId)}}
+                                            retirementBtnTxt={"퇴직"}
+                                            onRetirementButtonPressed={(cstCo, userId)=>{onRetirement(el.USERNA, cstCo, userId)}}
+                                            denyBtnTxt={"거절"}
+                                            onDenyButtonPressed={(cstCo, userId)=>{onDeny(el.USERNA, cstCo, userId)}}    
+                                        />
                             })}
                         </ScrollView>
                     :

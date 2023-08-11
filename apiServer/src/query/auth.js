@@ -61,9 +61,16 @@ const getStoreListCrew = `
     , ISNULL(a.LON,0) as LON
     , ISNULL(a.MNGNA,'') as MNGNA
     , ISNULL(b.CNT,0)+95   as CNT      -- 조회수
+    , CASE  WHEN d.RTCL is null THEN '지원하기' 
+            WHEN d.RTCL = 'N' THEN '근무중'
+            WHEN d.RTCL = 'R' THEN '요청중'
+            WHEN d.RTCL = 'Y' THEN '퇴직'
+            WHEN d.RTCL = 'D' THEN '거절됨'
+            ELSE '지원중' END STAT
     FROM   PLYMCST a
     left join (SELECT a.CSTCO, COUNT(1) CNT FROM PLYMCSTCHK a GROUP   BY a.CSTCO) b On a.CSTCO = b.CSTCO
-    inner join PLYMCSTUSER c On a.CSTCO = c.CSTCO
+    inner join PLYMCSTUSER c On a.CSTCO = c.CSTCO and c.ROLECL = 'ownr'
+    left join PLYMCSTUSER d On a.CSTCO = d.CSTCO and d.USERID = @userId
     WHERE   a.CSTNA like '%'+@cstNa+'%'
 `
 
@@ -96,7 +103,7 @@ const searchCrewList = `
     left join PLYAJOBDAY d On a.CSTCO = d.CSTCO AND a.USERID = d.USERID
     WHERE   a.CSTCO in (SELECT CSTCO FROM PLYMCSTUSER a WHERE a.USERID = @userId AND a.ROLECL in ('OWNR','MNGR'))      -- 거래처코드
     AND   a.USERID != @userId
-    AND   a.RTCL not in ( 'Y' )        -- Y - 퇴직, N - 재직, R - 요청 <-- 추후 생성
+    AND   a.RTCL not in ( 'Y', 'D' )        -- Y - 퇴직, N - 재직, R - 요청, D - 거절 <-- 추후 생성
     GROUP   BY a.CSTCO, b.CSTNA, a.USERID, c.USERNA, ISNULL(c.NICKNA,''), a.JOBTYPE, a.WAGE, a.ROLECL, a.RTCL
 `
 

@@ -17,7 +17,6 @@ export default function ManageStoreScreen({type, refresh, setRefresh}) {
     const userId = useSelector((state) => state.login.userId);
     const [storeList, setStoreList] = useState([]);
     const navigation = useNavigation();
-    
     const getStoreList = useCallback(async () => {
         await axios.get(URL+`/api/v1/getStoreList`, {params:{userId:userId,}})
         .then((res)=>{

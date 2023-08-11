@@ -63,8 +63,8 @@ export default function AddStoreScreen ({ route }) {
           return;
         }
         
-        //if(isValidTaxNo){
-        if(true){
+        if(isValidTaxNo){
+        //if(true){
             await axios.post(URL+`/api/v1/addStore`, {...data, userId:userId, userNa:userNa})
             .then(function (response) {
                 if(response.data.result == 2 && response.data.resultCode == "00"){
@@ -86,8 +86,12 @@ export default function AddStoreScreen ({ route }) {
                 <View style={{...styles.bi_row, flexDirection:"row", marginBottom:(isValidTaxNo === "")?8:0}}>
                     <View style={{...styles.address_box, flex:4, marginRight:8}}>
                         <TextInput
+                            maxLength={10}
                             value={data.taxNo}
-                            onChangeText={(txt)=>setData({...data, taxNo:txt})} 
+                            onChangeText={(txt)=>{
+                                setData({...data, taxNo:txt});
+                                setValidTaxNo("");
+                            }} 
                             style={{fontSize:16,}}
                             placeholder={"사업자 번호"}
                             placeholderTextColor={theme.grey}
@@ -122,7 +126,6 @@ export default function AddStoreScreen ({ route }) {
                         />
                     </View>
                 </View>
-
                 <View style={{...styles.bi_row, flexDirection:"row"}}>
                     <View style={{...styles.address_box, flex:4, marginRight:8,}}>
                         <Text style={{...styles.text_dig, color:(data.zoneCode)?"black":theme.grey}}>{(data.zoneCode)?data.zoneCode:"우편번호"}</Text>

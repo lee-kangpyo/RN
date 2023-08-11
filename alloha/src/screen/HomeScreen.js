@@ -213,7 +213,7 @@ export default function HomeScreen() {
     useEffect(() => {
         //여기서 현재 기록 가져오기
         setChangePickerLoad("true");
-        if(selectedStore.RTCL === "N"){
+        if(selectedStore && selectedStore.RTCL === "N"){
             getSelStoreRecords();
         }
 
@@ -233,17 +233,22 @@ export default function HomeScreen() {
             //</TouchableOpacity>
     return (
         <>
-            <View style={{paddingHorizontal:20, marginTop:8, flexDirection:"row", justifyContent:"space-between"}}>
-                <CommuteTask/>
-                <TouchableOpacity style={{borderWidth:1, padding:2, borderRadius:5}} onPress={() => {
-                    setChangePickerLoad("true");
-                    if(selectedStore.RTCL === "N"){
-                        getSelStoreRecords();
-                    }
-                }}>
-                    <Text>리로드</Text>
-                </TouchableOpacity>
-            </View>
+            {
+                (myStores.length > 0)?
+                    <View style={{paddingHorizontal:20, marginTop:8, flexDirection:"row", justifyContent:"space-between"}}>
+                        <CommuteTask/>
+                        <TouchableOpacity style={{borderWidth:1, padding:2, borderRadius:5}} onPress={() => {
+                            setChangePickerLoad("true");
+                            if(selectedStore.RTCL === "N"){
+                                getSelStoreRecords();
+                            }
+                        }}>
+                            <Text>리로드</Text>
+                        </TouchableOpacity>
+                    </View>
+                :
+                    null
+            }
             {
                 
                 (isLoading)
@@ -312,7 +317,7 @@ export default function HomeScreen() {
                         </View>
                 :
                     <View style={{flex:1, justifyContent:"center", alignItems:"center"}}>
-                        <Text style={{fontSize:16}}>등록된 알바 없음</Text>
+                        <Text style={{fontSize:16}}>등록된 점포 없음</Text>
                         <Text style={{color:theme.grey}}>점포 검색 탭에서 점포 검색 후 지원해주세요</Text>
                     </View>
             }
