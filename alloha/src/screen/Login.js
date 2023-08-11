@@ -122,6 +122,8 @@ const LoginForm = ({navigation}) => {
       }).catch(function (error) {
           console.error(error)
       });
+    }else{
+      Alert.alert("로그인 실패", "아아디 비밀번호를 입력해주세요");
     }
   }
 

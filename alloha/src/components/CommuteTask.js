@@ -18,7 +18,7 @@ export default function CommuteTask(){
                 distanceInterval:20,
                 timeInterval: 20000,
                 //deferredUpdatesInterval: 100,
-                accuracy: Location.Accuracy.High,
+                accuracy: Location.Accuracy.Highest,
                 showsBackgroundLocationIndicator: true,
                 foregroundService: {
                     notificationTitle: "알로하",
