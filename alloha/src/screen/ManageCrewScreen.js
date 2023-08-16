@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, Alert } from 'react-native';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import SearchBar from '../components/SearchBar';
 import StoreCard from '../components/StoreCard';
 import CrewCard from '../components/CrewCard';
@@ -11,11 +11,12 @@ import { theme } from '../util/color';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { URL } from "@env";
 import { Confirm } from '../util/confirm';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function ManageCrewScreen({navigation}) {
     const userId = useSelector((state) => state.login.userId);
-    //const url = useSelector((state) => state.config.url);
     const [searchWrd, setsearchWrd] = useState("");
+    const [filterWrd, setfilterWrd] = useState("");
     const [crewList, setCrewList] = useState([]);
 
     const onApprov = (userNa, cstCo, userId) => {
@@ -68,42 +69,59 @@ export default function ManageCrewScreen({navigation}) {
             })
         })
     }
-
+    
     const searchCrewList = async () => {
         const response = await axios.get(URL+'/api/v1/searchCrewList', {params:{userId:userId}});
-        setCrewList(response.data.result);
-        console.log(crewList);
-    }
+        if(JSON.stringify(crewList) !=  JSON.stringify(response.data.result)) setCrewList(response.data.result);
+    };
 
     useEffect(()=>{
         navigation.setOptions({title:"알바관리"})
-        searchCrewList();
     }, [navigation])
 
+    useEffect(()=>{
+        searchCrewList()
+    }, [filterWrd])
+    
+    useFocusEffect(
+        useCallback(() => {
+            // Do something when the screen is focused
+            searchCrewList()
+            return () => {
+              // Do something when the screen is unfocused
+              // Useful for cleanup functions
+            };
+          }, [])
+    )
+    
+    const filterList = (filterWrd == "")?crewList:crewList.filter((el)=>el.USERNA == filterWrd);
     return (
         <>
             <View style={{margin:16,}}>
-                <SearchBar searchText={searchWrd} onSearch={setsearchWrd} onButtonPress={()=>{}} iconName={"account-search-outline"} />
+                <SearchBar placeHolder='이름 조회' searchText={searchWrd} onSearch={setsearchWrd} onButtonPress={()=>{setfilterWrd(searchWrd)}} iconName={"account-search-outline"} />
             </View>
             <View style={styles.container}>
-                
                 {
                     (crewList.length > 0)
                     ?
-                        <ScrollView style={styles.scrollArea}>
-                            {crewList.map((el, idx)=>{
-                                return <CrewCard 
-                                            key={idx} 
-                                            crew={el} 
-                                            applyBtntxt={"승인"} 
-                                            onApplyButtonPressed={(cstCo, userId)=>{onApprov(el.USERNA, cstCo, userId)}}
-                                            retirementBtnTxt={"퇴직"}
-                                            onRetirementButtonPressed={(cstCo, userId)=>{onRetirement(el.USERNA, cstCo, userId)}}
-                                            denyBtnTxt={"거절"}
-                                            onDenyButtonPressed={(cstCo, userId)=>{onDeny(el.USERNA, cstCo, userId)}}    
-                                        />
-                            })}
-                        </ScrollView>
+                        (filterList.length > 0)
+                        ?
+                            <ScrollView style={styles.scrollArea}>
+                                {filterList.map((el, idx)=>{
+                                    return <CrewCard 
+                                                key={idx} 
+                                                crew={el} 
+                                                applyBtntxt={"승인"} 
+                                                onApplyButtonPressed={(cstCo, userId)=>{onApprov(el.USERNA, cstCo, userId)}}
+                                                retirementBtnTxt={"퇴직"}
+                                                onRetirementButtonPressed={(cstCo, userId)=>{onRetirement(el.USERNA, cstCo, userId)}}
+                                                denyBtnTxt={"거절"}
+                                                onDenyButtonPressed={(cstCo, userId)=>{onDeny(el.USERNA, cstCo, userId)}}    
+                                            />
+                                })}
+                            </ScrollView>
+                        :
+                        <Text style={{fontSize:16}}>조회 결과가 없습니다.</Text>
                     :
                     <>
                         <Text style={{fontSize:16}}>등록된 알바생이 없습니다.</Text>

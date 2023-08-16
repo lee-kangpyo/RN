@@ -3,8 +3,6 @@ import { theme } from '../util/color';
 import CustomBtn from './CustomBtn';
 
 export default function CrewCard({crew, applyBtntxt, denyBtnTxt, retirementBtnTxt, onApplyButtonPressed, onDenyButtonPressed, onRetirementButtonPressed}) {
-    console.log(crew);
-
     const statNa = (crew.RTCL == "R")?"요청중":(crew.RTCL == "N")?"재직":"퇴직";
     return (
         <>
@@ -23,10 +21,7 @@ export default function CrewCard({crew, applyBtntxt, denyBtnTxt, retirementBtnTx
                         </>
                         :
                         <CustomBtn txt={retirementBtnTxt} onPress={()=>{onRetirementButtonPressed(crew.CSTCO, crew.USERID)}} style={{...styles.btn, ...styles.retireBtn}} color='white' fSize={16}/>
-                        
                     }
-                    
-                    
                 </View>
             </View>
         </>

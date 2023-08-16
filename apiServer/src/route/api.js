@@ -204,6 +204,7 @@ router.get("/v1/searchCrewList", async (req, res, next) => {
     }
 })
 
+// 다음 버전에서 지울 라우터
 router.post("/v1/approvCrew", async (req, res, next)=>{
     try {
         const {cstCo, userId} = req.body;
