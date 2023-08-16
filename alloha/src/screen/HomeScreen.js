@@ -1,6 +1,6 @@
 
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import {Picker} from '@react-native-picker/picker';
@@ -10,7 +10,7 @@ import * as Location from 'expo-location';
 import CommuteRecordCard from '../components/CommuteRecordCard';
 import { URL } from "@env";
 
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import CommuteTask from '../components/CommuteTask';
 import CommuteRecord from '../components/CommuteRecord';
 import Loading from '../components/Loding';
@@ -33,12 +33,8 @@ export default function HomeScreen() {
     const [totalJobTime, setTotalJobTime] = useState("");               // 선택된 점포의 출퇴근 시각
     const [myStores, setmyStores] = useState([]);                       // 내 알바 점포들
     const [myPosition, setmyPosition] = useState();                     // 현재 내위치
-
     const [distance, setdistance] = useState();                         // 선택된 점포와 내위치의 거리 아마 안쓸껄?
-
-    //DB에서 가져옴 => aixous => => 출근 상태를 확인하고  
     const [inOutBtnTxt, setInOutBtnTxt] = useState("")
-    const [trackingList, setTrackingList] = useState([{content:"출근 기록리스트 샘플 1", time:"2023-06-04 17:50"}, {content:"췰퇴근 기록리스트 샘플 1", time:"2023-06-04 18:50"}])
 
     // 내가 요청한 점포는 어떻게 할지 결정해야함.
     // 점주가 승인한 점포는 셀렉트 박스로 선택할수 있게 해야함.
@@ -114,10 +110,8 @@ export default function HomeScreen() {
 
             if(inOutBtnTxt === "출근"){
                 setInOutBtnTxt("퇴근")
-                //setTrackingList([...trackingList, {content:"출근", time:getCurTime()}])
             }else{
                 setInOutBtnTxt("출근")
-                //setTrackingList([...trackingList, {content:"퇴근", time:getCurTime()}])
             }
         }else{
             Alert.alert("알림", "점포와 너무 멀리 떨어져있어서 출 퇴근 기록을 할수 없습니다.");
@@ -167,7 +161,6 @@ export default function HomeScreen() {
         await axios.get(URL+"/api/v1/getSelStoreRecords", {params:{userId:userId, cstCo:selectedStore.CSTCO}})
         .then((res)=>{
             if(res.data.resultCode === "00"){
-                //console.log(res.data.result);
                 setSelectedStoreLogs(res.data.result);
                 setTotalJobTime(convertMinToHours(res.data.totalJobMin));
                 handleScrollToEnd();
@@ -188,8 +181,7 @@ export default function HomeScreen() {
     }, [navigation])
 
     useEffect(() => {
-        async function searchMyAlbaList() {
-            //console.log("SDAf")
+        (async ()=>{
             await axios.get(URL+"/api/v1/searchMyAlbaList", {params:{userId:userId}})
             .then((res)=>{
                 if(res.data.resultCode === "00"){
@@ -203,9 +195,7 @@ export default function HomeScreen() {
                 console.log(error);
                 Alert.alert("오류", "알바 리스트 요청 중 알수없는 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
             })
-        }
-        searchMyAlbaList();
-        setInOutBtnTxt("출근")
+        })()
         getLocationAsync()
     }, [])
 
@@ -216,10 +206,19 @@ export default function HomeScreen() {
         if(selectedStore && selectedStore.RTCL === "N"){
             getSelStoreRecords();
         }
-
         //그리고 출퇴근 상태 가져오기??(어쩌면 asyncstorage로 처리해야될수도있음..)
         //그리고 승인 대기 중이면 하단에 출근 없애기(완료)
     }, [selectedStore])
+
+    useFocusEffect(
+        useCallback(() => { // Do something when the screen is focused
+            console.log("useFocus")
+            if(selectedStore && selectedStore.RTCL === "N"){
+                getSelStoreRecords();
+            }
+            return () => { /* Do something when the screen is unfocused (cleanup functions)*/};
+        }, [])
+    )
 
     useEffect(()=>{
         if(myPosition && selectedStore && selectedStore.RTCL === "N"){

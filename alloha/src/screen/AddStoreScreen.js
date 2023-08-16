@@ -96,6 +96,8 @@ export default function AddStoreScreen ({ route }) {
                             placeholder={"사업자 번호"}
                             placeholderTextColor={theme.grey}
                             keyboardType='number-pad'
+                            onSubmitEditing={() => {checkTaxNo()}}
+                            onBlur={checkTaxNo}
                         />
                     </View>
 
@@ -136,7 +138,7 @@ export default function AddStoreScreen ({ route }) {
                                 {setAdress:(data) => {
                                     setAdress(data)
                                 }
-                            })
+                            })  
                         }
                     }>
                         <Text style={styles.text_btn_dig}>우편번호 찾기</Text>
