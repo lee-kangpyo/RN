@@ -82,9 +82,14 @@ alloha/.env
 alloha/google-services.json
 
 
-
 apiServer/static/jdbc.js
 apiServer/node_modules
 apiServer/logs
 apiServer/.env
 apiServer/build
+
+taskManager/static/jdbc.js
+taskManager/node_modules
+taskManager/logs
+taskManager/.env
+taskManager/build
