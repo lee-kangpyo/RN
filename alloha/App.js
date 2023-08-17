@@ -17,7 +17,7 @@ import SearchAddress from '../alloha/src/components/SearchAddress';
 
 import Geofencing from './src/screen/GeofencingTestScreen'
 
-import { URL } from "@env";
+import { URL, TASK_URL } from "@env";
 import { useDispatch } from 'react-redux';
 import { setUserInfo } from './redux/slices/login';
 import axios from "axios"
@@ -52,7 +52,7 @@ TaskManager.defineTask(LOCATION_TASK_NAME,  async ({ data, error } ) => {
       const id = await AsyncStorage.getItem("id")
       const uid = await SecureStore.getItemAsync("uuid");
       const { locations } = data;
-      await axios.get(URL+"/api/v1/checkStoreLocation", {params:{id:id, uuid:uid, lat:locations[0].coords.latitude, lon:locations[0].coords.longitude, ymd:getCurrentTimeWithDate()}})
+      await axios.get(TASK_URL+"/api/v1/task/checkStoreLocation", {params:{id:id, uuid:uid, lat:locations[0].coords.latitude, lon:locations[0].coords.longitude, ymd:getCurrentTimeWithDate()}})
       .then((res)=>{
         if(res.data.resultCode === "-2"){
           TaskManager.unregisterTaskAsync(LOCATION_TASK_NAME)
