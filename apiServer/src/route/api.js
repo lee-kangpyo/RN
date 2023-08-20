@@ -3,7 +3,7 @@ var router = express.Router();
 const {execSql, execTranSql} = require("../utils/excuteSql");
 
 const { login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, 
-        getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, 
+        getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, jobChk, salary,
         insertJobChk, geofencingTest, checkJobChk, insertUuid, autoLogin, getUUID, checkjobtotal, getTermsDetail} = require('./../query/auth'); 
 const axios = require('axios');
 
@@ -230,7 +230,7 @@ router.post("/v1/changeCrew", async (req, res, next)=>{
 router.get("/v1/searchMyAlbaList", async (req, res, next) => {
     try {
         const {userId} = req.query;
-        const result = await execSql(searchMyAlbaList, {userId:userId});
+        const result = await execSql(searchMyAlbaList, {userId:userId, execptRtcl:"Y"});
         res.status(200).json({result:result.recordset, resultCode:"00"});
     } catch (error) {
         console.log(error.message)
@@ -249,8 +249,9 @@ router.get("/v1/getSelStoreRecords", async (req, res, next) => {
     try {
         const {userId, cstCo} = req.query;
         const params = {userId:userId, cstCo:cstCo}
-        const result = await execSql(getSelStoreRecords, params);
-        const result2 = await execSql(checkjobtotal, {...params, cls:"jobdaytotal", ymd:getDate()})
+        const ymd = getDate();
+        const result = await execSql(jobChk, {...params, cls:"jobchksearch", ymd:ymd});
+        const result2 = await execSql(jobChk, {...params, cls:"jobdaytotal", ymd:ymd});
         res.status(200).json({result:result.recordset, totalJobMin:result2.recordset[0].TotalJobMin, resultCode:"00"});
     } catch (error) {
         console.log(error.message)
@@ -407,6 +408,37 @@ router.get("/v1/checkStoreLocation", async (req, res, next) => {
         res.status(200).json({ resultCode:"-1"});
     }
 
+})
+
+router.get("/v1/getMyStoreForSalary", async (req, res, next) => {
+
+    const {userType, userId} = req.query
+    var result;
+    if(userType === "crew"){
+        result = await execSql(searchMyAlbaList, {userId:userId, execptRtcl:""});
+    }else if(userType === "owner"){
+        //테스트안함.
+        result = await execSql(getStoreList, {userId:userId})
+    }
+    
+    console.log(result.recordset);
+
+    res.status(200).json({resultCode:"00", storeList:result.recordset});
+})
+
+router.get("/v1/getSalary", async (req, res, next) => {
+
+    const {userType, ymdFr, ymdTo,  userId} = req.query
+    const cls = (userType === "crew")?"salary2":(userType === "owner")?"salary1":"";
+
+    const result = await execSql(salary, {userId:userId, cls:cls, ymdFr:ymdFr, ymdTo:ymdTo, cstCo:""});
+    res.status(200).json({resultCode:"00", salary:result.recordset});
+})
+
+router.get("/v1/getSalaryDetail", async (req, res, next) => {
+    const {ymdFr, ymdTo,  userId, cstCo} = req.query
+    const result = await execSql(salary, {userId:userId, cls:"salaryDetail", ymdFr:ymdFr, ymdTo:ymdTo, cstCo:cstCo});
+    res.status(200).json({resultCode:"00", salaryDetail:result.recordset});
 })
 
 

@@ -1,5 +1,5 @@
 
-import { StyleSheet, Text, View, AppState } from 'react-native';
+import { StyleSheet, Text, View, AppState, Alert } from 'react-native';
 //import React, {useEffect, useState} from 'react';
 
 import { NavigationContainer } from '@react-navigation/native';
@@ -17,10 +17,11 @@ import SearchAddress from '../alloha/src/components/SearchAddress';
 
 import Geofencing from './src/screen/GeofencingTestScreen'
 
-import { URL, TASK_URL } from "@env";
+import { URL, TASK_URL, LOCATION_TASK } from "@env";
 import { useDispatch } from 'react-redux';
 import { setUserInfo } from './redux/slices/login';
 import axios from "axios"
+import HTTP from "./src/util/http"
 import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loading from './src/components/Loding';
@@ -29,9 +30,7 @@ import * as TaskManager from 'expo-task-manager';
 import { testLog } from './src/util/testLog';
 import PushPermission from './src/components/PushPermission';
 
-const LOCATION_TASK_NAME = 'background-location-task';
-
-TaskManager.defineTask(LOCATION_TASK_NAME,  async ({ data, error } ) => {
+TaskManager.defineTask(LOCATION_TASK,  async ({ data, error } ) => {
   const getCurrentTimeWithDate = () => {
       const currentDate = new Date();
       const year = currentDate.getFullYear();
@@ -55,7 +54,7 @@ TaskManager.defineTask(LOCATION_TASK_NAME,  async ({ data, error } ) => {
       await axios.get(TASK_URL+"/api/v1/task/checkStoreLocation", {params:{id:id, uuid:uid, lat:locations[0].coords.latitude, lon:locations[0].coords.longitude, ymd:getCurrentTimeWithDate()}})
       .then((res)=>{
         if(res.data.resultCode === "-2"){
-          TaskManager.unregisterTaskAsync(LOCATION_TASK_NAME)
+          TaskManager.unregisterTaskAsync(LOCATION_TASK)
         }
       })
       .catch((err)=>{console.log(err)})
@@ -84,35 +83,28 @@ function Index() {
 
   const autoLogin = async (flag)=>{
     try {
-      //testLog("test2 시작")
       const isAvailable = await SecureStore.isAvailableAsync()
-      //testLog("secureStore is Available : " + isAvailable);
       const uid = await SecureStore.getItemAsync("uuid");
-      //testLog("uid : " + uid);
       const userId = await AsyncStorage.getItem("id");
-      //testLog("userId : " + userId);
 
       if(uid && userId){
-        //testLog("autoLogin 요청")
-        await axios.post(URL+'/api/v1/autoLogin', {uuid:uid, userId:userId, flag:flag})
+        await axios.post(URL+'/api/v1/autoLogin', {uuid:uid, userId:userId, flag:flag},  { timeout: 3000 })
         .then( function  (response) {
-          //testLog("resultCode : "+response.data.resultCode)
-          //console.log(response.data.resultCode)
           if(response.data.resultCode === "00"){
             dispatch(setUserInfo({isLogin:true, userId:userId}));
           }else{
-            TaskManager.unregisterTaskAsync(LOCATION_TASK_NAME)
+            TaskManager.unregisterTaskAsync(LOCATION_TASK)
             dispatch(setUserInfo({isLogin:false, userId:""}));
           }
         }).catch(function (error) {
-            //testLog("error : " + error.message);
-            console.error(error)
+            console.error(error.message)
+            if(axios.isAxiosError(error) && error.message.includes('timeout')){
+              Alert.alert("타임아웃", "서버와 연결이 원할하지 않습니다.")
+            }
         }).finally(() => {
-          //testLog("finally : setReg(false) 호출함.");
           setReg(false);
         });
       }else{
-        //testLog("udi 또는 userId가 없음 axios 실행안함 : setReg(false) 호출함.");
         setReg(false);
       }  
     } catch (error) {

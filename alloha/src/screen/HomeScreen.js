@@ -1,5 +1,5 @@
 
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
+import { Platform, StyleSheet, Text, View, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import React, {useState, useEffect, useRef, useCallback} from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
@@ -18,6 +18,7 @@ import Loading from '../components/Loding';
 
 
 export default function HomeScreen() {
+    //console.log(Platform.OS);
     const navigation = useNavigation();
     const userId = useSelector((state) => state.login.userId);    
 
@@ -139,7 +140,7 @@ export default function HomeScreen() {
     }
 
     function convertMinToHours(min) {
-        if (min === 0) {
+        if (min === 0 || min === null) {
             return "0분";
         }
         const hours = Math.floor(min / 60);
@@ -212,7 +213,6 @@ export default function HomeScreen() {
 
     useFocusEffect(
         useCallback(() => { // Do something when the screen is focused
-            console.log("useFocus")
             if(selectedStore && selectedStore.RTCL === "N"){
                 getSelStoreRecords();
             }
@@ -295,17 +295,22 @@ export default function HomeScreen() {
                                         (isChangePickerLoad)?
                                                 <Loading/>
                                             :   
-                                            <>
-                                                <ScrollView ref={scrollViewRef} style={{width:"100%"}} maintainVisibleContentPosition={5}>
-                                                    {
-                                                        //selectedStoreLogs.map((row, idx)=> <CommuteRecordCard key={idx} record={row} btntxt={"승인요청"} onButtonPressed={()=>{Alert.alert("승인요청", "이 버튼은 언제 보여야 할까요?")}} /> ) 
-                                                        selectedStoreLogs.map((row, idx)=> <CommuteRecord key={idx} record={row} btntxt={"승인요청"} onButtonPressed={()=>{Alert.alert("승인요청", "이 버튼은 개발중입니다.")}} /> ) 
-                                                    }
-                                                </ScrollView>
-                                                <View style={{width:"100%"}}>
-                                                    <Text style={{fontSize:16}}>총 근무 시간 : {totalJobTime}</Text>
-                                                </View>
-                                            </>
+                                            (selectedStoreLogs.length > 0)?
+                                                <>
+                                                    <ScrollView ref={scrollViewRef} style={{width:"100%"}} maintainVisibleContentPosition={5}>
+                                                        {
+                                                            //selectedStoreLogs.map((row, idx)=> <CommuteRecordCard key={idx} record={row} btntxt={"승인요청"} onButtonPressed={()=>{Alert.alert("승인요청", "이 버튼은 언제 보여야 할까요?")}} /> ) 
+                                                            selectedStoreLogs.map((row, idx)=> <CommuteRecord key={idx} record={row} btntxt={"승인요청"} onButtonPressed={()=>{Alert.alert("승인요청", "이 버튼은 개발중입니다.")}} /> ) 
+                                                        }
+                                                    </ScrollView>
+                                                    <View style={{width:"100%"}}>
+                                                        <Text style={{fontSize:16}}>총 근무 시간 : {totalJobTime}</Text>
+                                                    </View>
+                                                </>
+                                            :
+                                            <View>
+                                                <Text>출퇴근 기록이 없습니다.</Text>
+                                            </View>
                                     }
                                     </>
                                 :

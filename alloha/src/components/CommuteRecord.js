@@ -3,13 +3,17 @@ import { theme } from '../util/color';
 import CustomBtn from './CustomBtn';
 
 export default function CommuteRecord({record, btntxt, onButtonPressed}) {
-    const name = (record.JOBYN === "Y")?"출근":"퇴근"
-    const color = (record.JOBYN === "Y")?theme.primary:theme.error
+    const jobClNa = (record.jobCl === "G")?"일반":(record.jobCl === "S")?"특근":"야근"
+    const name = (record.stat === "I")?"출근":"퇴근"
+    const color = (record.stat === "I")?theme.primary:theme.error
     return (
         <>
             <View style={styles.card}>
                 <Text style={{...styles.card_txt, color:color}}>{name}</Text>
-                <Text style={{...styles.card_txt, color:color}}>{record.CHKTIME}</Text>
+                <View style={{flexDirection:"row"}}>
+                    <Text style={{...styles.card_txt, color:color, marginRight:8}}>{jobClNa}</Text>
+                    <Text style={{...styles.card_txt, color:color}}>{record.chkTime}</Text>
+                </View>
             </View>
         </>
     );

@@ -3,9 +3,8 @@ import React, {useEffect, useState} from 'react';
 import * as Location from 'expo-location';
 import { theme } from '../util/color';
 import * as TaskManager from 'expo-task-manager';
+import { LOCATION_TASK } from "@env";
 
-
-const LOCATION_TASK_NAME = 'background-location-task';
 
 export default function CommuteTask(){
     const [isTaskStart, setTaskStart] = useState(false)
@@ -14,7 +13,7 @@ export default function CommuteTask(){
         const {granted:forePerm} = await Location.getForegroundPermissionsAsync()
         const {granted:backPerm} = await Location.getBackgroundPermissionsAsync()
         if(forePerm && backPerm){
-            await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+            await Location.startLocationUpdatesAsync(LOCATION_TASK, {
                 distanceInterval:20,
                 timeInterval: 20000,
                 deferredUpdatesInterval: 500,
@@ -26,7 +25,7 @@ export default function CommuteTask(){
                     notificationColor: "#fff",
                 },  
             });
-            const isTaskStarted = await TaskManager.isTaskRegisteredAsync(LOCATION_TASK_NAME);
+            const isTaskStarted = await TaskManager.isTaskRegisteredAsync(LOCATION_TASK);
             setTaskStart(isTaskStarted)
         }
       })();

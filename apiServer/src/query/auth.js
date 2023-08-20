@@ -126,7 +126,7 @@ const searchMyAlbaList = `
     inner join PLYMUSER c On a.USERID = c.USERID
     left join PLYAJOBDAY d On a.CSTCO = d.CSTCO AND a.USERID = d.USERID
     WHERE   a.USERID = @userId
-    AND   a.RTCL not in ( 'Y' )      -- Y - 퇴직, N - 재직, R - 요청 <-- 추후 생성
+    AND   a.RTCL not in ( @execptRtcl )      -- Y - 퇴직, N - 재직, R - 요청 <-- 추후 생성
     GROUP   BY a.CSTCO, b.CSTNA, a.USERID, c.USERNA, ISNULL(c.NICKNA,''), a.JOBTYPE, a.WAGE, a.ROLECL, a.RTCL, b.lat, b.lon
 `
 
@@ -148,6 +148,7 @@ const getSelStoreRecords=`
     AND   a.USERID = @userId
     ORDER   BY a.CHKTIME
 `
+
 // 출퇴근 기록
 const insertJobChk = `
     INSERT	PLYAJOBCHK(CSTCO, USERID, DAY, LAT, LON, JOBYN, APVYN, CHKTIME)
@@ -163,11 +164,10 @@ const checkJobChk = `
     ORDER   BY a.CHKTIME desc
 `
 
-//근무시간 체크
-const checkjobtotal=`
-    exec PR_JOBCHECK_PROCESS @cls, @ymd, @cstCo, @userId
-`
+//근무시간 체크, 일변 근무이력
+const jobChk=`exec PR_PLYC01_JOBCHECK @cls, @ymd, @cstCo, @userId`
 
+const salary=`exec PR_PLYD01_SALARY @cls, @ymdFr, @ymdTo, @cstCo, '', @userId, '', ''`
 
 const getUUID = `
     select UUID from PLYMUSER WHERE USERID = @userId
@@ -189,4 +189,4 @@ const getTermsDetail = `
     AND   INFSHRCO = @INFSHRCO
 `
 
-module.exports = {login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, insertJobChk, geofencingTest, checkJobChk, insertUuid, autoLogin, getUUID, checkjobtotal, getTermsDetail}
+module.exports = {login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, insertJobChk, geofencingTest, checkJobChk, insertUuid, autoLogin, getUUID, jobChk, salary, getTermsDetail}

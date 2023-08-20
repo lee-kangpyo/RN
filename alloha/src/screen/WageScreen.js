@@ -5,12 +5,20 @@ import SearchBar from '../components/SearchBar';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { AntDesign } from '@expo/vector-icons';
 import { theme } from '../util/color';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSelector } from 'react-redux';
+import { HTTP } from '../util/http';
+import {Picker} from '@react-native-picker/picker';
+import WageCard from '../components/WageCard';
 
-export default function WageScreen({navigation}) {
-    const [searchWrd, setSearchWrd] = useState("");
-    useEffect(()=>{
-        navigation.setOptions({title:"급여"})
-    }, [navigation])
+export default function WageScreen({navigation, route}) {
+    const userType = route.params.userType
+    const userId = useSelector((state)=>state.login.userId)
+    const [myStore, setMyStore] = useState([]);
+    const [selectLIst, setSelectList] = useState([]);
+    const [selectedStore, setSelectedStore] = useState({});
+
+
 
     const getDate = (isFirstDay) => {
         const currentDate = new Date();
@@ -26,11 +34,53 @@ export default function WageScreen({navigation}) {
         return targetDate;
     }
     
+    
+    const [searchWrd, setSearchWrd] = useState("");
     const [date, setDate] = useState(getDate(true));
     const [date2, setDate2] = useState(getDate(false));
     const [mode, setMode] = useState('date');
     const [startShow, setStartShow] = useState(false);
     const [endShow, setEndShow] = useState(false);
+
+    
+
+    const getStoreForSalary = async () => {
+        await HTTP("GET", "/api/v1/getMyStoreForSalary", {"userType":userType, "userId":userId,})
+            .then((res)=>{
+                setSelectList(res.data.storeList);
+            }
+        )
+    }
+    const getSalary = async (cstCo) => {
+        const ymdFr = date.getFullYear()+String(date.getMonth() + 1).padStart(2, '0')+String(date.getDate()).padStart(2, '0');
+        const ymdTo = date2.getFullYear()+String(date2.getMonth() + 1).padStart(2, '0')+String(date2.getDate()).padStart(2, '0');
+        await HTTP("GET", "/api/v1/getSalary", {"userType":userType, "ymdFr":ymdFr, "ymdTo":ymdTo, "userId":userId, "cstCo":cstCo})
+            .then((res)=>{
+                setMyStore(res.data.salary)
+            }
+        )
+    }
+
+    useEffect(()=>{
+        if(userType === "crew"){
+            getSalary("");
+        }else if(userType === "owner"){
+            getStoreForSalary();
+        }
+    }, [])
+
+    useEffect(()=>{
+        if(userType === "owner"){
+            getSalary(selectedStore.CSTCO);
+        }
+    }, [selectedStore])
+
+    
+    useEffect(()=>{
+        navigation.setOptions({title:"급여"})
+    }, [navigation])
+
+
 
     const onChange = (event, selectedDate) => {
         const currentDate = selectedDate;
@@ -43,6 +93,8 @@ export default function WageScreen({navigation}) {
         const currentDate = selectedDate;
         setEndShow(false);
         setDate2(currentDate);
+        // 조회 시작
+        getSalary()
     };
 
     const showMode = (currentMode) => {
@@ -54,12 +106,48 @@ export default function WageScreen({navigation}) {
         showMode('date');
     };
 
+    const navigateWageDetail = ({title, cstCo, userId}) => {
+        const ymdFr = date.getFullYear()+String(date.getMonth() + 1).padStart(2, '0')+String(date.getDate()).padStart(2, '0');
+        const ymdTo = date2.getFullYear()+String(date2.getMonth() + 1).padStart(2, '0')+String(date2.getDate()).padStart(2, '0');
+        navigation.navigate("WageDetail", { title: title, cstCo:cstCo, userId:userId, ymdFr:ymdFr, ymdTo:ymdTo});
+    }
 
     return (
         <>
             <View style={{margin:16}}>
                 <SearchBar searchText={searchWrd} onSearch={setSearchWrd} onButtonPress={()=>{}} iconName={"magnify"} placeHolder={"점포 검색"} />
             </View>
+            {
+                (userType === "owner")?
+                    <View style={{borderColor:theme.primary, borderWidth:1, margin:16, borderRadius:16}}>
+                        <Picker
+                            style={{fontSize:"16"}}
+                            selectedValue={selectedStore}
+                            onValueChange={(itemValue, itemIndex) =>{
+                                    console.log(itemValue)
+                                    setSelectedStore(itemValue);
+                                }
+                            }
+                        >
+                            {
+                            selectLIst.map((el, idx)=>{
+                                    return (el.RTCL === "N")
+                                        ?
+                                            <Picker.Item key={idx} label={el.CSTNA} value={el}/>
+                                        :(el.RTCL === "Y")?
+                                            <Picker.Item key={idx} label={el.CSTNA + "(퇴직)"} value={el}/>
+                                        : 
+                                            null
+                                })
+                            }
+                            
+                        </Picker>
+                    </View>
+                :
+                    null
+
+            }
+            
             <View style={styles.dateBox}>
                 <View style={{flexDirection:"row"}}>
                     <Text style={styles.dateBox_txt}>{date.getFullYear()}-{String(date.getMonth() + 1).padStart(2, '0')}-{String(date.getDate()).padStart(2, '0')}</Text>
@@ -70,32 +158,38 @@ export default function WageScreen({navigation}) {
                     <AntDesign name="calendar" size={24} color="white" />
                 </TouchableOpacity>
             </View>
-            <View style={{margin:16}}>
-                <TouchableOpacity onPress={()=>{navigation.navigate("WageDetail", { title: '메가커피 선릉' })}}>
-                    <Text>메가커피 선릉 디테일 화면으로 이동</Text>
-                </TouchableOpacity>
-
-            </View>
 
             {startShow && (
+                <>
+                
                 <DateTimePicker
-                testID="dateTimePicker"
-                value={date}
-                mode={mode}
-                is24Hour={true}
-                onChange={onChange}
+                    testID="dateTimePicker"
+                    value={date}
+                    mode={mode}
+                    is24Hour={true}
+                    onChange={onChange}
                 />
+                </>
             )}
             {endShow && (
                 <DateTimePicker
-                testID="dateTimePicker2"
-                value={date2}
-                minimumDate={date}
-                mode={mode}
-                is24Hour={true}
-                onChange={onChange2}
+                    testID="dateTimePicker2"
+                    value={date2}
+                    minimumDate={date}
+                    mode={mode}
+                    is24Hour={true}
+                    onChange={onChange2}
                 />
             )}
+
+            <View style={{padding:8}}>
+                {
+                    myStore.map((el, idx)=>{
+                        return<WageCard key={idx} item={el} userType={userType} onPress = {navigateWageDetail} />;
+                    })
+                }
+
+            </View>
             
         </>
     );
