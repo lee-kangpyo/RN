@@ -6,8 +6,7 @@ import * as TaskManager from 'expo-task-manager';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-import { URL } from "@env";
-const LOCATION_TASK_NAME = 'background-location-task';
+import { URL, LOCATION_TASK } from "@env";
 
 export default function CheckTaskManager(){
 
@@ -15,7 +14,7 @@ export default function CheckTaskManager(){
     useEffect(() => {
       (async () => {
 
-        const result = await TaskManager.isTaskRegisteredAsync(LOCATION_TASK_NAME);
+        const result = await TaskManager.isTaskRegisteredAsync(LOCATION_TASK);
 
         setIsRegister(result);
         
@@ -23,7 +22,7 @@ export default function CheckTaskManager(){
     }, []);
   
     const stopTaskManager = async () => {
-        await TaskManager.unregisterTaskAsync(LOCATION_TASK_NAME);
+        await TaskManager.unregisterTaskAsync(LOCATION_TASK);
     }
     return (
         <>

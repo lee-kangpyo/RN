@@ -19,6 +19,7 @@
         "expo-location",
         {
           "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location.",
+          "isIosBackgroundLocationEnabled":true,
           "isAndroidBackgroundLocationEnabled":true
         }
       ]
@@ -27,7 +28,8 @@
       "bundleIdentifier": "com.akmz.alloha",
       "supportsTablet": true,
       "infoPlist": {
-        "UIBackgroundModes": ["location"]
+        "UIBackgroundModes": ["location", "fetch"],
+        "NSLocationAlwaysAndWhenInUseUsageDescription":"출퇴근 체크를 위한 위치권한이 필요합니다."
       },
       "config": {
         "usesNonExemptEncryption": false

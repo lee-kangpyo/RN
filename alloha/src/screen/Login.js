@@ -23,7 +23,6 @@ const windowWidth = Dimensions.get('window').width;
 
 
 export default function Login({ navigation }) {
-
   
   const sheetRef = useRef(null);
   const [isOpen, setIsOpen] = useState(true);
@@ -76,6 +75,7 @@ const LoginForm = ({navigation}) => {
   const [password, onChangePassWord] = useState('');
 
   const [loginInfo, setLoginInfo] = useState({id:"", password:""})
+  const [isLoginButtonDisabled, setLoginButtonDisabled] = useState(false);
   
   const saveUserInfo = async ({ownrYn, crewYn, mnrgYn, userNa, uuid}) => {
     try {
@@ -93,15 +93,14 @@ const LoginForm = ({navigation}) => {
   }
 
   const loginAction = async () => {
-    //console.log("loginAction");
     //밸리데이션 -> 지금은 아이디 패스워드 공백 체크만 함
     if(loginInfo.id && loginInfo.password){
+      setLoginButtonDisabled(true);
+      console.log("시작")
       const uid = uuid.v4();
-      // api 서버 요청 -> axios로 요청할예정
-      await axios.post(URL+'/api/v1/loginUser', {...loginInfo, uuid:uid})
+      await axios.post(URL+'/api/v1/loginUser', {...loginInfo, uuid:uid}, {timeout:5000})
       .then( function  (response) {
         if(response.data.result === 1){
-          //console.log(response.data.info)
           saveUserInfo({...response.data.info, "uuid":uid})
           .then((result)=>{
             if(result){
@@ -121,6 +120,11 @@ const LoginForm = ({navigation}) => {
         }
       }).catch(function (error) {
           console.error(error)
+          if(axios.isAxiosError(error) && error.message.includes('timeout')){
+            Alert.alert("타임아웃", "서버와 연결이 원할하지 않습니다.")
+          }
+      }).finally(function(){
+        setLoginButtonDisabled(false);
       });
     }else{
       Alert.alert("로그인 실패", "아아디 비밀번호를 입력해주세요");
@@ -142,7 +146,7 @@ const LoginForm = ({navigation}) => {
         secureTextEntry={true}
         placeholder="비밀번호를 입력해 주세요"
       />
-      <CustomBtn txt="로그인" onPress={loginAction} style={styles.btn} color='black'/>
+      <CustomBtn txt="로그인" onPress={loginAction} style={styles.btn} color='black' disabled={isLoginButtonDisabled}/>
       <CustomBtn txt="구글 로그인" onPress={()=>{Alert.alert("알림", "준비중입니다.")}} style={styles.btn} color='black'/>
     </View>
   )

@@ -70,6 +70,7 @@ export default function MainScreen() {
 
 
 function OwnrScreen({userInfo}){
+  
   const [refresh, setRefresh] = useState("false")
   const navigation = useNavigation();
   const storeOption = () => {
@@ -98,7 +99,14 @@ function OwnrScreen({userInfo}){
       })}
     >
       <Tab.Screen name="ManageCrew" component={ManageCrewScreen} options={{ tabBarLabel: '알바관리' }}/>
-      <Tab.Screen name="Wage" component={WageScreen} options={{ tabBarLabel: '급여' }}/>
+      <Tab.Screen name="Wage" options={{ headerShown: false, tabBarLabel: '급여' }} >
+        {() => (
+          <Stack.Navigator>
+            <Stack.Screen name="WageList" component={WageScreen} options={{ title: '급여' }} initialParams={{userType:"owner"}} />
+            <Stack.Screen  name="WageDetail" component={WageDetailScreen} options={{title:"급여 상세"}}/>
+          </Stack.Navigator>
+        )}
+      </Tab.Screen>
       <Tab.Screen name="community" component={ComunityScreen} options={{ tabBarLabel: '커뮤니티' }}/>
       <Tab.Screen name="manageStore" options={{ headerShown: false, tabBarLabel: '점포관리' }} >
         {() => (
@@ -137,7 +145,7 @@ function CrewScreen(){
       <Tab.Screen name="Wage" options={{ headerShown: false, tabBarLabel: '급여' }} >
         {() => (
           <Stack.Navigator>
-            <Stack.Screen name="WageList" component={WageScreen} options={{ title: '급여' }}/>
+            <Stack.Screen name="WageList" component={WageScreen} options={{ title: '급여' }} initialParams={{userType:"crew"}}/>
             <Stack.Screen  name="WageDetail" component={WageDetailScreen} options={{title:"급여 상세"}}/>
           </Stack.Navigator>
         )}
