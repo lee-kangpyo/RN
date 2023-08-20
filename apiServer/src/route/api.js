@@ -427,11 +427,10 @@ router.get("/v1/getMyStoreForSalary", async (req, res, next) => {
 })
 
 router.get("/v1/getSalary", async (req, res, next) => {
-
-    const {userType, ymdFr, ymdTo,  userId} = req.query
+    const {userType, ymdFr, ymdTo, userId, cstCo} = req.query
     const cls = (userType === "crew")?"salary2":(userType === "owner")?"salary1":"";
 
-    const result = await execSql(salary, {userId:userId, cls:cls, ymdFr:ymdFr, ymdTo:ymdTo, cstCo:""});
+    const result = await execSql(salary, {userId:userId, cls:cls, ymdFr:ymdFr, ymdTo:ymdTo, cstCo:cstCo});
     res.status(200).json({resultCode:"00", salary:result.recordset});
 })
 
