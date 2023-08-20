@@ -52,10 +52,12 @@ export default function WageScreen({navigation, route}) {
         )
     }
     const getSalary = async (cstCo) => {
+        console.log("cstco:"+cstCo)
         const ymdFr = date.getFullYear()+String(date.getMonth() + 1).padStart(2, '0')+String(date.getDate()).padStart(2, '0');
         const ymdTo = date2.getFullYear()+String(date2.getMonth() + 1).padStart(2, '0')+String(date2.getDate()).padStart(2, '0');
         await HTTP("GET", "/api/v1/getSalary", {"userType":userType, "ymdFr":ymdFr, "ymdTo":ymdTo, "userId":userId, "cstCo":cstCo})
             .then((res)=>{
+                console.log(res.data.salary)
                 setMyStore(res.data.salary)
             }
         )
@@ -131,13 +133,7 @@ export default function WageScreen({navigation, route}) {
                         >
                             {
                             selectLIst.map((el, idx)=>{
-                                    return (el.RTCL === "N")
-                                        ?
-                                            <Picker.Item key={idx} label={el.CSTNA} value={el}/>
-                                        :(el.RTCL === "Y")?
-                                            <Picker.Item key={idx} label={el.CSTNA + "(퇴직)"} value={el}/>
-                                        : 
-                                            null
+                                    return <Picker.Item key={idx} label={el.CSTNA} value={el}/>
                                 })
                             }
                             
