@@ -26,9 +26,9 @@ export default function HomeScreen() {
     const handleScrollToEnd = () => {
         scrollViewRef.current?.scrollToEnd({ animated: true });
     };
-
     const [isLoading, setLoading] = useState(true);                     // 초기 점포 불러왔는지 체크
     const [isChangePickerLoad, setChangePickerLoad] = useState(false);  // 픽커 변경 여부 확인
+    const [selCstCo, setSelCstco] = useState();
     const [selectedStore, setSelectedStore] = useState({});             // 선택된 점포
     const [selectedStoreLogs, setSelectedStoreLogs] = useState([]);     // 선택된 점포의 출퇴근 기록
     const [totalJobTime, setTotalJobTime] = useState("");               // 선택된 점포의 출퇴근 시각
@@ -188,6 +188,7 @@ export default function HomeScreen() {
                 if(res.data.resultCode === "00"){
                     setmyStores(res.data.result);
                     setSelectedStore(res.data.result[0]);
+                    setSelCstco(res.data.result[0].CSTCO);
                     setLoading(false);
                 }else{
                     Alert.alert("알림", "내 알바 리스트 요청 중 오류가 발생했습니다. 잠시후 다시 시도해 주세요.")
@@ -219,14 +220,14 @@ export default function HomeScreen() {
             return () => { /* Do something when the screen is unfocused (cleanup functions)*/};
         }, [])
     )
-
+/*
     useEffect(()=>{
         if(myPosition && selectedStore && selectedStore.RTCL === "N"){
             const distance = getDistanceFromLatLon(myPosition.latitude, myPosition.longitude, selectedStore.LAT, selectedStore.LON)
             setdistance(distance);
         }
     }, [myPosition, selectedStore])
-
+*/
             //<TouchableOpacity onPress={() => {test()}}>
             //    <Text>클릭해서 테스트 로그 출력(실제 배포시 삭제)</Text>
             //</TouchableOpacity>
@@ -260,18 +261,20 @@ export default function HomeScreen() {
                             <View style={styles.pickerContainer}>
                                 <Picker
                                     style={{fontSize:"16"}}
-                                    selectedValue={selectedStore}
-                                    onValueChange={(itemValue, itemIndex) =>
-                                        setSelectedStore(itemValue)
+                                    selectedValue={selCstCo}
+                                    onValueChange={ (itemValue, itemIndex) =>{
+                                        setSelectedStore(myStores.filter((el)=>{return el.CSTCO === itemValue})[0]);
+                                        setSelCstco(itemValue)
+                                    }
                                     }
                                     >
                                     {
                                     myStores.map((el, idx)=>{
                                             return (el.RTCL === "N")
                                                 ?
-                                                    <Picker.Item key={idx} label={el.CSTNA} value={el}/>
+                                                    <Picker.Item key={idx} label={el.CSTNA} value={el.CSTCO}/>
                                                 :(el.RTCL === "R")?
-                                                    <Picker.Item key={idx} label={el.CSTNA + "(승인 대기 중)"} value={el}/>
+                                                    <Picker.Item key={idx} label={el.CSTNA + "(승인 대기 중)"} value={el.CSTCO}/>
                                                 :  
                                                     null
                                         })
@@ -299,7 +302,6 @@ export default function HomeScreen() {
                                                 <>
                                                     <ScrollView ref={scrollViewRef} style={{width:"100%"}} maintainVisibleContentPosition={5}>
                                                         {
-                                                            //selectedStoreLogs.map((row, idx)=> <CommuteRecordCard key={idx} record={row} btntxt={"승인요청"} onButtonPressed={()=>{Alert.alert("승인요청", "이 버튼은 언제 보여야 할까요?")}} /> ) 
                                                             selectedStoreLogs.map((row, idx)=> <CommuteRecord key={idx} record={row} btntxt={"승인요청"} onButtonPressed={()=>{Alert.alert("승인요청", "이 버튼은 개발중입니다.")}} /> ) 
                                                         }
                                                     </ScrollView>
@@ -316,6 +318,7 @@ export default function HomeScreen() {
                                 :
                                     <View>
                                         <Text>해당 점포는 아직 승인 대기중 입니다.</Text>
+                                        <Text>asdf{selectedStore.RTCL}</Text>
                                     </View>
                             }
                         </View>

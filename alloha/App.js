@@ -52,9 +52,11 @@ TaskManager.defineTask(LOCATION_TASK,  async ({ data, error } ) => {
       const uid = await SecureStore.getItemAsync("uuid");
       const { locations } = data;
       await axios.get(TASK_URL+"/api/v1/task/checkStoreLocation", {params:{id:id, uuid:uid, lat:locations[0].coords.latitude, lon:locations[0].coords.longitude, ymd:getCurrentTimeWithDate()}})
-      .then((res)=>{
+      .then(async (res)=>{
         if(res.data.resultCode === "-2"){
-          TaskManager.unregisterTaskAsync(LOCATION_TASK)
+          if( TaskManager.isTaskDefined(LOCATION_TASK)){
+            await TaskManager.unregisterTaskAsync(LOCATION_TASK)
+          }
         }
       })
       .catch((err)=>{console.log(err)})
@@ -89,11 +91,13 @@ function Index() {
 
       if(uid && userId){
         await axios.post(URL+'/api/v1/autoLogin', {uuid:uid, userId:userId, flag:flag},  { timeout: 3000 })
-        .then( function  (response) {
+        .then(async function (response) {
           if(response.data.resultCode === "00"){
             dispatch(setUserInfo({isLogin:true, userId:userId}));
           }else{
-            TaskManager.unregisterTaskAsync(LOCATION_TASK)
+            if(TaskManager.isTaskDefined(LOCATION_TASK)){
+              await TaskManager.unregisterTaskAsync(LOCATION_TASK)
+            }
             dispatch(setUserInfo({isLogin:false, userId:""}));
           }
         }).catch(function (error) {
