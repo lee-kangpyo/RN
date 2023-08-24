@@ -17,6 +17,7 @@ export default function WageScreen({navigation, route}) {
     const [myStore, setMyStore] = useState([]);
     const [selectLIst, setSelectList] = useState([]);
     const [selectedStore, setSelectedStore] = useState({});
+    const [selCstCo, setSelCstco] = useState();
 
 
 
@@ -73,9 +74,9 @@ export default function WageScreen({navigation, route}) {
 
     useEffect(()=>{
         if(userType === "owner"){
-            getSalary(selectedStore.CSTCO);
+            getSalary(selCstCo);
         }
-    }, [selectedStore])
+    }, [selCstCo])
 
     
     useEffect(()=>{
@@ -124,16 +125,18 @@ export default function WageScreen({navigation, route}) {
                     <View style={{borderColor:theme.primary, borderWidth:1, margin:16, borderRadius:16}}>
                         <Picker
                             style={{fontSize:"16"}}
-                            selectedValue={selectedStore}
+                            selectedValue={selCstCo}
                             onValueChange={(itemValue, itemIndex) =>{
-                                    console.log(itemValue)
-                                    setSelectedStore(itemValue);
+                                console.log("@!@#!$!")
+                                console.log(selectLIst.filter((el)=>{return el.CSTCO == itemValue}))
+                                    setSelCstco(itemValue)
+                                    setSelectedStore(selectLIst.filter((el)=>{return el.CSTCO == itemValue})[0])
                                 }
                             }
                         >
                             {
                             selectLIst.map((el, idx)=>{
-                                    return <Picker.Item key={idx} label={el.CSTNA} value={el}/>
+                                    return <Picker.Item key={idx} label={el.CSTNA} value={el.CSTCO}/>
                                 })
                             }
                             
