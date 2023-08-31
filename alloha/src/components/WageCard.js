@@ -35,8 +35,13 @@ export default function WageCard({item, userType, onPress}) {
                     </View>
 
                     <View style={styles.card_block}>
+                        <Text style={styles.card_txt}>주휴수당 : </Text>
+                        <Text style={styles.card_txt}>{addComma(item.weekWage)}원</Text>
+                    </View>
+
+                    <View style={styles.card_block}>
                         <Text style={styles.card_txt}>총급여 : </Text>
-                        <Text style={styles.card_txt}>{item.salary}원(추가수당 : {addComma(item.incentive)}원)</Text>
+                        <Text style={styles.card_txt}>{addComma(item.salary)}원(추가수당 : {addComma(item.incentive)}원)</Text>
                     </View>
                     
                 </View>
