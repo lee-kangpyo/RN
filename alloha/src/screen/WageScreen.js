@@ -22,6 +22,7 @@ export default function WageScreen({navigation, route}) {
 
 
     const getDate = (isFirstDay) => {
+        /*
         const currentDate = new Date();
         const targetDate = new Date(currentDate);
       
@@ -31,8 +32,21 @@ export default function WageScreen({navigation, route}) {
           targetDate.setMonth(targetDate.getMonth() + 1);
           targetDate.setDate(0);
         }
-      
+        
         return targetDate;
+        */
+        const currentDate = new Date();
+        const targetDate = new Date(currentDate);
+    
+        if (isFirstDay) {
+            targetDate.setDate(1);
+        } else {
+            const nextMonth = targetDate.getMonth() + 1;
+            targetDate.setMonth(nextMonth, 0);
+        }
+    
+        return targetDate;
+
     }
     
     
