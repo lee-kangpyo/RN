@@ -1,15 +1,16 @@
 import { StyleSheet, Text, View, Alert } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import * as Location from 'expo-location';
 import { theme } from '../util/color';
 import * as TaskManager from 'expo-task-manager';
 import { LOCATION_TASK } from "@env";
+import { useFocusEffect } from '@react-navigation/native';
 
 
 export default function CommuteTask(){
     const [isTaskStart, setTaskStart] = useState(false)
-    useEffect(() => {
-      (async () => {
+
+    const registerTask = async () => {
         const {granted:forePerm} = await Location.getForegroundPermissionsAsync()
         const {granted:backPerm} = await Location.getBackgroundPermissionsAsync()
         if(forePerm && backPerm){
@@ -28,8 +29,30 @@ export default function CommuteTask(){
             const isTaskStarted = await TaskManager.isTaskRegisteredAsync(LOCATION_TASK);
             setTaskStart(isTaskStarted)
         }
-      })();
+    }
+
+    useEffect(() => {
+        registerTask();
     }, []);
+
+
+    
+    useFocusEffect(
+        useCallback(() => { // Do something when the screen is focused
+            focusin();
+            return () => { /* Do something when the screen is unfocused (cleanup functions)*/};
+        }, [])
+    )
+
+    const focusin = async () => {
+        console.log("포커스인");
+        var isTaskRegistered = await TaskManager.isTaskRegisteredAsync(LOCATION_TASK);
+        setTaskStart(isTaskRegistered)
+        if(!isTaskStart){
+            registerTask();
+        }
+        
+    }
   
     return (
         <>

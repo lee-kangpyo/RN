@@ -54,12 +54,17 @@ TaskManager.defineTask(LOCATION_TASK,  async ({ data, error } ) => {
       await axios.get(TASK_URL+"/api/v1/task/checkStoreLocation", {params:{id:id, uuid:uid, lat:locations[0].coords.latitude, lon:locations[0].coords.longitude, ymd:getCurrentTimeWithDate()}})
       .then(async (res)=>{
         if(res.data.resultCode === "-2"){
+          console.log("기기 변경됨")
           if( TaskManager.isTaskDefined(LOCATION_TASK)){
             await TaskManager.unregisterTaskAsync(LOCATION_TASK)
           }
         }
       })
-      .catch((err)=>{console.log(err)})
+      .catch(async (err)=>{
+        console.log(err)
+        console.log("다른 에러 발생")
+        await TaskManager.unregisterTaskAsync(LOCATION_TASK)
+      })
   }
 });
 
@@ -93,11 +98,10 @@ function Index() {
         await axios.post(URL+'/api/v1/autoLogin', {uuid:uid, userId:userId, flag:flag},  { timeout: 3000 })
         .then(async function (response) {
           if(response.data.resultCode === "00"){
+            if(flag == "start") await TaskManager.unregisterAllTasksAsync();
             dispatch(setUserInfo({isLogin:true, userId:userId}));
           }else{
-            if(TaskManager.isTaskDefined(LOCATION_TASK)){
-              await TaskManager.unregisterTaskAsync(LOCATION_TASK)
-            }
+            TaskManager.unregisterAllTasksAsync();
             dispatch(setUserInfo({isLogin:false, userId:""}));
           }
         }).catch(function (error) {

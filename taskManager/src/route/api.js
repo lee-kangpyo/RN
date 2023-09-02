@@ -88,19 +88,23 @@ router.get("/v1/checkStoreLocation", async (req, res, next) => {
         let apvYn = "N";
         const curday = getDay();
         const {recordset:uuidInfo} = await execSql(getUUID, {userId:id});
-        console.log(uuidInfo[0].UUID)
+        //console.log(uuidInfo[0].UUID)
         if(uuidInfo[0].UUID === uuid){
             const {recordset:jobChk} = await execSql(checkJobChk, {userId:id});    
             const {recordset:myAlbaList} = await execSql(searchMyAlbaList, {userId:id});
             if(jobChk[0] && jobChk[0].JOBYN == "Y") { 
+                console.log("퇴근 체크...")
                 const cstCo = jobChk[0].CSTCO;
                 const alba = myAlbaList.filter((alba) => { return alba.CSTCO === cstCo })
                 const meter = distance(lat, lon, alba[0].LAT, alba[0].LON)
                 if(meter > 50){
                     const result = await execSql(insertJobChk, {userId:id, cstCo:cstCo, day:curday, lat:Math.floor(lat), lon:Math.floor(lon), jobYn:"N", apvYn:apvYn, chkTime:ymd});
                     console.log(id+"가 퇴근을 완료함"+cstCo)
+                }else{
+                    console.log("아직 출근중...")
                 }
             }else{
+                console.log("출근체크...(내 알바 리스트)")
                 for (const alba of myAlbaList) {
                     if (alba.RTCL === "N") {
                         const meter = distance(lat, lon, alba.LAT, alba.LON)
@@ -111,6 +115,7 @@ router.get("/v1/checkStoreLocation", async (req, res, next) => {
                         }
                     }
                 }
+                console.log("출근 체크 끝")
             }
             console.log(id+" 출퇴근 체크 종료");
         }else{

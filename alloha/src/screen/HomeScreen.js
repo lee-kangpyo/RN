@@ -16,6 +16,8 @@ import CommuteRecord from '../components/CommuteRecord';
 import Loading from '../components/Loding';
 //import GoogleMap from '../components/GoogleMap';
 
+import * as TaskManager from 'expo-task-manager';
+
 
 export default function HomeScreen() {
     //console.log(Platform.OS);
@@ -176,19 +178,15 @@ export default function HomeScreen() {
         });
     }
 
-
-    useEffect(()=>{
-        navigation.setOptions({title:"출퇴근"})
-    }, [navigation])
-
-    useEffect(() => {
-        (async ()=>{
-            await axios.get(URL+"/api/v1/searchMyAlbaList", {params:{userId:userId}})
+    const searchMyAlbaList = async (init) => {
+        await axios.get(URL+"/api/v1/searchMyAlbaList", {params:{userId:userId}})
             .then((res)=>{
                 if(res.data.resultCode === "00"){
                     setmyStores(res.data.result);
-                    setSelectedStore(res.data.result[0]);
-                    setSelCstco(res.data.result[0].CSTCO);
+                    if(res.data.result.length > 0 && init == true){
+                        setSelectedStore(res.data.result[0]);
+                        setSelCstco(res.data.result[0].CSTCO);
+                    }
                     setLoading(false);
                 }else{
                     Alert.alert("알림", "내 알바 리스트 요청 중 오류가 발생했습니다. 잠시후 다시 시도해 주세요.")
@@ -197,7 +195,15 @@ export default function HomeScreen() {
                 console.log(error);
                 Alert.alert("오류", "알바 리스트 요청 중 알수없는 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
             })
-        })()
+    }
+
+
+    useEffect(()=>{
+        navigation.setOptions({title:"출퇴근"})
+    }, [navigation])
+
+    useEffect(() => {
+        searchMyAlbaList(true);
         getLocationAsync()
     }, [])
 
@@ -214,6 +220,7 @@ export default function HomeScreen() {
 
     useFocusEffect(
         useCallback(() => { // Do something when the screen is focused
+            searchMyAlbaList(false);
             if(selectedStore && selectedStore.RTCL === "N"){
                 getSelStoreRecords();
             }
@@ -233,6 +240,7 @@ export default function HomeScreen() {
             //</TouchableOpacity>
     return (
         <>
+            
             {
                 (myStores.length > 0)?
                     <View style={{paddingHorizontal:20, marginTop:8, flexDirection:"row", justifyContent:"space-between"}}>
@@ -306,7 +314,7 @@ export default function HomeScreen() {
                                                         }
                                                     </ScrollView>
                                                     <View style={{width:"100%"}}>
-                                                        <Text style={{fontSize:16}}>총 근무 시간 : {totalJobTime}</Text>
+                                                        <Text style={{fontSize:16}}>총 근무시간 : {totalJobTime}</Text>
                                                     </View>
                                                 </>
                                             :
@@ -318,7 +326,6 @@ export default function HomeScreen() {
                                 :
                                     <View>
                                         <Text>해당 점포는 아직 승인 대기중 입니다.</Text>
-                                        <Text>asdf{selectedStore.RTCL}</Text>
                                     </View>
                             }
                         </View>
