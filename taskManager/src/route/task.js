@@ -2,10 +2,11 @@ const express = require('express')
 var router = express.Router();
 const {execSql, execTranSql} = require("../utils/excuteSql");
 
-const { searchMyAlbaList, insertJobChk, checkJobChk, getUUID } = require('../query/taskManager'); 
+const { searchMyAlbaList, insertJobChk, checkJobChk, getUUID, MyuserTrace } = require('../query/taskManager'); 
 const axios = require('axios');
 
 const dotenv = require('dotenv');
+const runMyQuery = require('../utils/MySqlQuery');
 dotenv.config();
 
 router.get("/checkStoreLocation", async (req, res, next) => {
@@ -83,37 +84,47 @@ router.get("/checkStoreLocation", async (req, res, next) => {
     try {
         let resultCode = "00"
         const {id, uuid, lat, lon, ymd} = req.query;
+
         console.log("###TaskManager => "+id+"가 디바이스("+uuid+")로 출퇴근 체크중... 현재 위치 : "+lat+", "+lon)
         let apvYn = "N";
         const curday = getDay();
         const {recordset:uuidInfo} = await execSql(getUUID, {userId:id});
-        console.log(uuidInfo[0].UUID)
+        //console.log(uuidInfo[0].UUID)
+
         if(uuidInfo[0].UUID === uuid){
             const {recordset:jobChk} = await execSql(checkJobChk, {userId:id});    
             const {recordset:myAlbaList} = await execSql(searchMyAlbaList, {userId:id});
             if(jobChk[0] && jobChk[0].JOBYN == "Y") { 
                 console.log("퇴근 체크...")
+                let jobYn = '';
                 const cstCo = jobChk[0].CSTCO;
                 const alba = myAlbaList.filter((alba) => { return alba.CSTCO === cstCo })
                 const meter = distance(lat, lon, alba[0].LAT, alba[0].LON)
                 if(meter > 50){
-                    const result = await execSql(insertJobChk, {userId:id, cstCo:cstCo, day:curday, lat:lat, lon:lon, jobYn:"N", apvYn:apvYn, chkTime:ymd});
+                    jobYn="N"
+                    const result = await execSql(insertJobChk, {userId:id, cstCo:cstCo, day:curday, lat:lat, lon:lon, jobYn:jobYn, apvYn:apvYn, chkTime:ymd});
                     console.log(id+"가 퇴근을 완료함"+cstCo)
                 }else{
                     console.log("아직 출근중...")
                 }
+                runMyQuery(MyuserTrace, [id, cstCo, jobYn, lat, lon])
             }else{
                 console.log("출근체크...(내 알바 리스트)")
+                let jobYn = '';
+                let cstCo = null;
                 for (const alba of myAlbaList) {
                     if (alba.RTCL === "N") {
                         const meter = distance(lat, lon, alba.LAT, alba.LON)
                         if(meter < 50){
-                            const result = await execSql(insertJobChk, {userId:id, cstCo:alba.CSTCO, day:curday, lat:lat, lon:lon, jobYn:"Y", apvYn:apvYn, chkTime:ymd});
+                            jobYn = 'Y'
+                            cstCo = alba.CSTCO;
+                            const result = await execSql(insertJobChk, {userId:id, cstCo:cstCo, day:curday, lat:lat, lon:lon, jobYn:jobYn, apvYn:apvYn, chkTime:ymd});
                             console.log(id+"가 출근을 완료함"+alba.CSTCO)
                             break;
                         }
                     }
                 }
+                runMyQuery(MyuserTrace, [id, cstCo, jobYn, lat, lon])
                 console.log("출근 체크 끝")
             }
             console.log(id+" 출퇴근 체크 종료");
