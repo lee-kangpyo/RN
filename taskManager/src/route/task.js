@@ -107,7 +107,7 @@ router.get("/checkStoreLocation", async (req, res, next) => {
                 }else{
                     console.log("아직 출근중...")
                 }
-                runMyQuery(MyuserTrace, [id, cstCo, jobYn, lat, lon])
+                runMyQuery(MyuserTrace, [id, cstCo, jobYn, lat, lon, uuid])
             }else{
                 console.log("출근체크...(내 알바 리스트)")
                 let jobYn = '';
@@ -124,7 +124,7 @@ router.get("/checkStoreLocation", async (req, res, next) => {
                         }
                     }
                 }
-                runMyQuery(MyuserTrace, [id, cstCo, jobYn, lat, lon])
+                runMyQuery(MyuserTrace, [id, cstCo, jobYn, lat, lon, uuid])
                 console.log("출근 체크 끝")
             }
             console.log(id+" 출퇴근 체크 종료");
