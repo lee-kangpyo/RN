@@ -40,4 +40,9 @@ const getUUID = `
     select UUID from PLYMUSER WHERE USERID = @userId
 `
 
-module.exports = {searchMyAlbaList, insertJobChk, checkJobChk, getUUID}
+const MyuserTrace = `
+    INSERT INTO PLYUSERTRACE(USERID, CSTCO, JOBYN, LAT, LON, CHKTIME)
+    VALUES (?, ?, ?, ?, ?, NOW())
+`
+
+module.exports = {searchMyAlbaList, insertJobChk, checkJobChk, getUUID, MyuserTrace}
