@@ -15,7 +15,9 @@ function runQuery(sql, params) {
       } 
       reject(err);
     } finally {
-      conn.release();
+      if (conn !== null) {
+        conn.release();
+      }
     }
   })  
 }
