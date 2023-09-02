@@ -83,7 +83,7 @@ router.get("/checkStoreLocation", async (req, res, next) => {
     try {
         let resultCode = "00"
         const {id, uuid, lat, lon, ymd} = req.query;
-        console.log("###TaskManager => "+id+"가 디바이스("+uuid+")로 출퇴근 체크중")
+        console.log("###TaskManager => "+id+"가 디바이스("+uuid+")로 출퇴근 체크중... 현재 위치 : "+lat+", "+lon)
         let apvYn = "N";
         const curday = getDay();
         const {recordset:uuidInfo} = await execSql(getUUID, {userId:id});
