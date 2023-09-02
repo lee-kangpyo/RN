@@ -41,8 +41,8 @@ const getUUID = `
 `
 
 const MyuserTrace = `
-    INSERT INTO PLYUSERTRACE(USERID, CSTCO, JOBYN, LAT, LON, CHKTIME)
-    VALUES (?, ?, ?, ?, ?, NOW())
+    INSERT INTO PLYUSERTRACE(USERID, CSTCO, JOBYN, LAT, LON, UUID, CHKTIME)
+    VALUES (?, ?, ?, ?, ?, ?, NOW())
 `
 
 module.exports = {searchMyAlbaList, insertJobChk, checkJobChk, getUUID, MyuserTrace}
