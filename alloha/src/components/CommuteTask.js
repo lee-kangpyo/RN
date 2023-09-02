@@ -5,10 +5,22 @@ import { theme } from '../util/color';
 import * as TaskManager from 'expo-task-manager';
 import { LOCATION_TASK } from "@env";
 import { useFocusEffect } from '@react-navigation/native';
+import * as Notifications from 'expo-notifications';
+
 
 
 export default function CommuteTask(){
     const [isTaskStart, setTaskStart] = useState(false)
+    const [isNotification, setNotivication] = useState(false)
+
+    const allowsNotificationsAsync = async () => {
+        const settings = await Notifications.getPermissionsAsync();
+        console.log("알림허용?")
+        console.log(settings.granted || settings.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL);
+        setNotivication(settings.granted || settings.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL)
+    }
+    
+    
 
     const registerTask = async () => {
         const {granted:forePerm} = await Location.getForegroundPermissionsAsync()
@@ -32,7 +44,9 @@ export default function CommuteTask(){
     }
 
     useEffect(() => {
+        allowsNotificationsAsync();
         registerTask();
+        
     }, []);
 
 
@@ -51,18 +65,23 @@ export default function CommuteTask(){
         if(!isTaskStart){
             registerTask();
         }
+
+        allowsNotificationsAsync()
         
     }
   
     return (
         <>
         {
-            (isTaskStart)?
-                <Text>자동 출퇴근 기록 동작중....</Text>
-            :
+            (!isTaskStart)?
                 <Text>태스크 매니저가 실행되지 않고 있습니다.</Text>
+            : (!isNotification)?
+                <Text>알로하 앱의 알림을 허용 해주세요.</Text>
+            : 
+                <Text>자동 출퇴근 기록 동작중....</Text>
                 
         }
+        
         </>
     );
 };
