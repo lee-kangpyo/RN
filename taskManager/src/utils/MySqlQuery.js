@@ -17,11 +17,12 @@ function runQuery(sql, params) {
         const [ result ] = await conn.query(sql);
         value = result;
       }
-      
+      console.log("mysql 커밋");
       await conn.commit(); //커밋
       resolve(value);
     } catch (err) {
       if (conn !== null) {
+        console.log("mysql 롤백");
         await conn.rollback(); //롤백
       } 
       reject(err);
