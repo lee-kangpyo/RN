@@ -5,11 +5,11 @@ import SearchBar from '../components/SearchBar';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { AntDesign } from '@expo/vector-icons';
 import { theme } from '../util/color';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSelector } from 'react-redux';
 import { HTTP } from '../util/http';
 import {Picker} from '@react-native-picker/picker';
 import WageCard from '../components/WageCard';
+import { DatePiker } from '../components/DateTimePicker';
 
 export default function WageScreen({navigation, route}) {
     const userType = route.params.userType
@@ -22,19 +22,7 @@ export default function WageScreen({navigation, route}) {
 
 
     const getDate = (isFirstDay) => {
-        /*
-        const currentDate = new Date();
-        const targetDate = new Date(currentDate);
-      
-        if (isFirstDay) {
-          targetDate.setDate(1);
-        } else {
-          targetDate.setMonth(targetDate.getMonth() + 1);
-          targetDate.setDate(0);
-        }
-        
-        return targetDate;
-        */
+       
         const currentDate = new Date();
         const targetDate = new Date(currentDate);
     
@@ -161,11 +149,12 @@ export default function WageScreen({navigation, route}) {
 
             }
             
+
             <View style={styles.dateBox}>
                 <View style={{flexDirection:"row"}}>
-                    <Text style={styles.dateBox_txt}>{date.getFullYear()}-{String(date.getMonth() + 1).padStart(2, '0')}-{String(date.getDate()).padStart(2, '0')}</Text>
+                    <DatePiker date={date} mode={"date"} onChanged={(day)=>setDate(day)} txtStyle={styles.dateBox_txt} />
                     <Text style={styles.dateBox_txt}> ~ </Text>
-                    <Text style={styles.dateBox_txt}>{date2.getFullYear()}-{String(date2.getMonth() + 1).padStart(2, '0')}-{String(date2.getDate()).padStart(2, '0')}</Text>
+                    <DatePiker date={date2} mode={"date"} onChanged={(day)=>setDate2(day)} txtStyle={styles.dateBox_txt} />
                 </View>
                 <TouchableOpacity onPress={showDatepicker}>
                     <AntDesign name="calendar" size={24} color="white" />
@@ -176,6 +165,7 @@ export default function WageScreen({navigation, route}) {
                 <>
                 
                 <DateTimePicker
+                    locale="ko-kr"
                     testID="dateTimePicker"
                     value={date}
                     mode={mode}
@@ -186,6 +176,7 @@ export default function WageScreen({navigation, route}) {
             )}
             {endShow && (
                 <DateTimePicker
+                    locale="ko-kr"
                     testID="dateTimePicker2"
                     value={date2}
                     minimumDate={date}
