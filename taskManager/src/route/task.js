@@ -109,7 +109,7 @@ router.get("/checkStoreLocation", async (req, res, next) => {
                 }
                 console.log("mysql")
                 console.log(id, cstCo, jobYn, lat, lon, uuid);
-                runMyQuery(MyuserTrace, [id, cstCo, jobYn, lat, lon, uuid])
+                runMyQuery(MyuserTrace, [id, cstCo, jobYn, lat, lon, uuid, ymd])
             }else{
                 console.log("출근체크...(내 알바 리스트)")
                 let jobYn = '';
@@ -128,7 +128,7 @@ router.get("/checkStoreLocation", async (req, res, next) => {
                 }
                 console.log("mysql")
                 console.log(id, cstCo, jobYn, lat, lon, uuid);
-                runMyQuery(MyuserTrace, [id, cstCo, jobYn, lat, lon, uuid])
+                runMyQuery(MyuserTrace, [id, cstCo, jobYn, lat, lon, uuid, ymd])
                 console.log("출근 체크 끝")
             }
             console.log(id+" 출퇴근 체크 종료");
