@@ -1,9 +1,11 @@
 
 
 const getTraceUserList = `
-    SELECT DISTINCT USERID, UUID 
+    SELECT USERID, UUID, MIN(DATE_FORMAT(CHKTIME, '%Y-%m-%d %H:%i:%s')) MIN, MAX(DATE_FORMAT(CHKTIME, '%Y-%m-%d %H:%i:%s')) MAX
     FROM PLYUSERTRACE 
     WHERE UUID != ''
+    GROUP BY USERID, UUID
+    ORDER BY USERID, MIN(CHKTIME)
 `;
 
 const getMyusersTrace = `
