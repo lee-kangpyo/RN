@@ -25,6 +25,7 @@
       ]
     ],
     "ios": {
+      "buildNumber": "2",
       "bundleIdentifier": "com.akmz.alloha",
       "supportsTablet": true,
       "infoPlist": {
