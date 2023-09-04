@@ -227,20 +227,8 @@ export default function HomeScreen() {
             return () => { /* Do something when the screen is unfocused (cleanup functions)*/};
         }, [])
     )
-/*
-    useEffect(()=>{
-        if(myPosition && selectedStore && selectedStore.RTCL === "N"){
-            const distance = getDistanceFromLatLon(myPosition.latitude, myPosition.longitude, selectedStore.LAT, selectedStore.LON)
-            setdistance(distance);
-        }
-    }, [myPosition, selectedStore])
-*/
-            //<TouchableOpacity onPress={() => {test()}}>
-            //    <Text>클릭해서 테스트 로그 출력(실제 배포시 삭제)</Text>
-            //</TouchableOpacity>
     return (
         <>
-            
             {
                 (myStores.length > 0)?
                     <View style={{paddingHorizontal:20, marginTop:8, flexDirection:"row", justifyContent:"space-between"}}>
@@ -284,7 +272,7 @@ export default function HomeScreen() {
                                                 :(el.RTCL === "R")?
                                                     <Picker.Item key={idx} label={el.CSTNA + "(승인 대기 중)"} value={el.CSTCO}/>
                                                 :  
-                                                    null
+                                                    null;
                                         })
                                     }
                                     
@@ -308,7 +296,7 @@ export default function HomeScreen() {
                                             :   
                                             (selectedStoreLogs.length > 0)?
                                                 <>
-                                                    <ScrollView ref={scrollViewRef} style={{width:"100%"}} maintainVisibleContentPosition={5}>
+                                                    <ScrollView ref={scrollViewRef} style={{width:"100%"}}>
                                                         {
                                                             selectedStoreLogs.map((row, idx)=> <CommuteRecord key={idx} record={row} btntxt={"승인요청"} onButtonPressed={()=>{Alert.alert("승인요청", "이 버튼은 개발중입니다.")}} /> ) 
                                                         }
