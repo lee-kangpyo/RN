@@ -30,7 +30,9 @@
       "supportsTablet": true,
       "infoPlist": {
         "UIBackgroundModes": ["location", "fetch"],
-        "NSLocationAlwaysAndWhenInUseUsageDescription":"출퇴근 체크를 위한 위치권한이 필요합니다."
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "출퇴근 체크를 위한 위치권한이 필요합니다.",
+        "NSLocationAlwaysUsageDescription": "App requires geolocation to improve the quality of the service",
+        "NSLocationWhenInUseUsageDescription": "출퇴근 체크를 위한 위치권한이 필요합니다."
       },
       "config": {
         "usesNonExemptEncryption": false
