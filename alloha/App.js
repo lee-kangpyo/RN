@@ -63,7 +63,8 @@ TaskManager.defineTask(LOCATION_TASK,  async ({ data, error } ) => {
       .catch(async (err)=>{
         console.log(err)
         console.log("다른 에러 발생")
-        await TaskManager.unregisterTaskAsync(LOCATION_TASK)
+        //testLog(err);
+        //await TaskManager.unregisterTaskAsync(LOCATION_TASK)
       })
   }
 });
