@@ -8,11 +8,10 @@ import Loading from '../components/Loding';
 export default function WageDetailScreen({navigation, route}) {
     const [loading, setisLoading] = useState(true)
     const [detailInfo, setDetailInfo] = useState([])
-    const [totalWorkHours, setTotalWorkHours] = useState(0)
-    const [totalSalary, setTotalSalary] = useState(0)
+    const [total, setTotal] = useState({})
     
     
-
+    
 
     const getSalaryDetail = async () => {
         setisLoading(true);
@@ -26,6 +25,8 @@ export default function WageDetailScreen({navigation, route}) {
         await HTTP("GET", "/api/v1/getSalaryDetail", params)
             .then((res)=>{
                 setDetailInfo(res.data.salaryDetail);
+                setTotal(res.data.salaryTotal);
+                console.log(res.data.salaryTotal);
             }).finally(()=>{
                 setisLoading(false);
             })
@@ -40,21 +41,6 @@ export default function WageDetailScreen({navigation, route}) {
         getSalaryDetail();
     }, [])
 
-    useEffect(()=>{
-
-        let totalWorkHours = 0;
-        let totalSalary = 0;
-
-        // 배열 순회하면서 합산
-        detailInfo.forEach(item => {
-        totalWorkHours += item["jobDure"];
-        totalSalary += item["jobWage"];
-        });
-
-        setTotalWorkHours(totalWorkHours);
-        setTotalSalary(totalSalary);
-
-    }, [detailInfo])
 
     const convertYMD = (ymd) => {
         const year = ymd.slice(0, 4);
@@ -93,9 +79,10 @@ export default function WageDetailScreen({navigation, route}) {
                         })
                     }
                     </ScrollView>
-                    <View>
-                        <Text>총 근무 시간 : {totalWorkHours}시간</Text>
-                        <Text>총 급여 : {addComma(totalSalary)}원</Text>
+                    <View style={styles.totalSalary}>
+                        <Text>근무시간 : {total.aDure} / {total.nDure} - {addComma(total.gSalary)}원</Text>
+                        <Text>특근시간 : {addComma(total.sSalary)}원</Text>
+                        <Text>총급여 : {addComma(total.salary)}원</Text>
                     </View>
                 </>
             }
@@ -113,5 +100,12 @@ const styles = StyleSheet.create({
     detailList:{
         marginBottom:8,
         padding:8,
+    },
+    totalSalary:{
+        padding:8,
+        borderStyle: 'solid',  
+        borderWidth: 1 ,
+        borderRadius:8,
+        margin:10,
     }
 });
