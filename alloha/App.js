@@ -29,6 +29,7 @@ import Loading from './src/components/Loding';
 import * as TaskManager from 'expo-task-manager';
 import { testLog } from './src/util/testLog';
 import PushPermission from './src/components/PushPermission';
+import NotificationTest from './src/components/NotificationTest';
 
 TaskManager.defineTask(LOCATION_TASK,  async ({ data, error } ) => {
   const getCurrentTimeWithDate = () => {
@@ -188,7 +189,7 @@ function App(){
   //<PushPermission/>
   return (
     <Provider store={store}>
-      <Index/>
+      <NotificationTest/>
     </Provider>
   );
 }

@@ -5,7 +5,7 @@ const { pool } = require('../config/pool');
 async function execSql(query, params) {
     try {
         console.log(query + JSON.stringify(params)+ "\n\n");
-        const poool = await pool;    
+        const poool = await pool;
         const request = poool.request();
         Object.entries(params).forEach(([key, value]) => {
           request.input(key, value);
