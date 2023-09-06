@@ -9,16 +9,26 @@ import * as Notifications from 'expo-notifications';
 
 
 
+
 export default function CommuteTask(){
     const [isTaskStart, setTaskStart] = useState(false)
     const [isNotification, setNotivication] = useState(false)
 
     const allowsNotificationsAsync = async () => {
         const settings = await Notifications.getPermissionsAsync();
-        console.log("알림허용?")
-        console.log(settings.granted || settings.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL);
+
+        if(!(settings.granted || settings.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL)){
+            console.log("asdf");
+        }
         setNotivication(settings.granted || settings.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL)
     }
+
+    // 알림 허용
+    // 알로하 자동 출퇴근을 위해 알림 허용이 필요합니다. 비 허용 시 백그라운드에서 정상적으로 작동을 하지 않습니다.
+    // 설정 > 애플리케이션 > 알로하 > 알림에서 변경
+    // 알림없이 시작
+    // 알림 허용
+    
     
     
 
@@ -30,7 +40,7 @@ export default function CommuteTask(){
                 distanceInterval:20,
                 timeInterval: 20000,
                 deferredUpdatesInterval: 500,
-                accuracy: Location.Accuracy.BestForNavigation,
+                accuracy: Location.Accuracy.Highest,
                 showsBackgroundLocationIndicator: true,
                 foregroundService: {
                     notificationTitle: "알로하",
