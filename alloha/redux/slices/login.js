@@ -4,6 +4,7 @@ const initialState = {
   isLogin:false,
   userId:"",
 };
+
 const loginSlice = createSlice({
   name: 'isLogin',
   initialState,

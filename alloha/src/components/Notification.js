@@ -4,6 +4,8 @@ import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Loading from './Loding';
 import Constants from 'expo-constants';
+import { useDispatch, useSelector } from 'react-redux';
+import { setToken } from '../../redux/slices/push';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -14,18 +16,18 @@ Notifications.setNotificationHandler({
 });
 
 
-
 export default function Notification({ children }) {
-  const [expoPushToken, setExpoPushToken] = useState('');
   const [isShowChildComponent, setShowChildComponent] = useState(false);
-  const appState = useRef(AppState.currentState);
-
-  console.log(isShowChildComponent);
-
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+    //registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+    registerForPushNotificationsAsync().then( token => {
+      dispatch(setToken(token));
+    });
+    
 
+    //const appState = useRef(AppState.currentState);
     // if (Platform.OS === 'ios') {
     //   registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
     // }
@@ -84,7 +86,6 @@ export default function Notification({ children }) {
       })).data;
 
       token = tokenCompression(token); 
-      console.log(token);
 
     } else {
       alert('Must use physical device for Push Notifications');
@@ -94,9 +95,7 @@ export default function Notification({ children }) {
   }
 
   const tokenCompression = (token) => {
-    console.log(token)
     const match = token.match(/\[(.*?)\]/);
-
     if (match) {
       const randomString = match[1]; // 22개의 무작위 문자열
       return randomString

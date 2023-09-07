@@ -7,9 +7,9 @@ import BottomSheet, {BottomSheetView, BottomSheetBackdrop} from '@gorhom/bottom-
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Agreement from '../components/login/Agreement';
 
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setUserInfo } from '../../redux/slices/login';
-import { useSelector } from 'react-redux';
+
 import axios from 'axios';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -23,19 +23,24 @@ const windowWidth = Dimensions.get('window').width;
 
 
 export default function Login({ navigation }) {
+
+
   
   const sheetRef = useRef(null);
   const [isOpen, setIsOpen] = useState(true);
   const snapPoints = useMemo(() => ["48%"], []);
+  
   const handleSnapPress = useCallback((index) => {
     sheetRef.current.snapToIndex(index);
     setIsOpen(true);
     Keyboard.dismiss();
   }, []);
+
   const closesheet = useCallback(() => {
     sheetRef.current.close();
     setIsOpen(false)
   });
+
   const renderBackdrop = useCallback(
     props => (
       <BottomSheetBackdrop
@@ -47,7 +52,9 @@ export default function Login({ navigation }) {
     ),
     []
   );
+
   return (
+    
     <GestureHandlerRootView style={{flex:1}}>
       <View style={styles.container}>
         <StatusBar style="auto" />
@@ -76,6 +83,8 @@ const LoginForm = ({navigation}) => {
 
   const [loginInfo, setLoginInfo] = useState({id:"", password:""})
   const [isLoginButtonDisabled, setLoginButtonDisabled] = useState(false);
+
+  const pushToken = useSelector((state) => state.push.token);
   
   const saveUserInfo = async ({ownrYn, crewYn, mnrgYn, userNa, uuid}) => {
     try {
@@ -98,7 +107,7 @@ const LoginForm = ({navigation}) => {
       setLoginButtonDisabled(true);
       console.log("시작")
       const uid = uuid.v4();
-      await axios.post(URL+'/api/v1/loginUser', {...loginInfo, uuid:uid}, {timeout:5000})
+      await axios.post(URL+'/api/v1/loginUser', {...loginInfo, uuid:uid, pushToken:pushToken}, {timeout:5000})
       .then( function  (response) {
         if(response.data.result === 1){
           saveUserInfo({...response.data.info, "uuid":uid})
