@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Alert } from 'react-native';
+import { StyleSheet, Text, View, Alert, Linking } from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import * as Location from 'expo-location';
 import { theme } from '../util/color';
@@ -18,7 +18,14 @@ export default function CommuteTask(){
         const settings = await Notifications.getPermissionsAsync();
 
         if(!(settings.granted || settings.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL)){
-            console.log("asdf");
+            Alert.alert('알림 허용', '알로하 자동 출퇴근을 위해 알림 허용이 필요합니다. 비 허용 시 백그라운드에서 정상적으로 작동을 하지 않습니다.\n설정 > 애플리케이션 > 알로하 > 알림에서 변경\n', [
+                {
+                text: '알림없이 시작',
+                onPress: () => {},
+                style: 'cancel',
+                },
+                {text: '알림 허용', onPress: () => Linking.openSettings()},
+            ]);
         }
         setNotivication(settings.granted || settings.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL)
     }
