@@ -8,8 +8,6 @@ import { useFocusEffect } from '@react-navigation/native';
 import * as Notifications from 'expo-notifications';
 
 
-
-
 export default function CommuteTask(){
     const [isTaskStart, setTaskStart] = useState(false)
     const [isNotification, setNotivication] = useState(false)

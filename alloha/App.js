@@ -31,6 +31,7 @@ import { testLog } from './src/util/testLog';
 import PushPermission from './src/components/PushPermission';
 import Notification from './src/components/Notification';
 
+// 태스크 매니저
 TaskManager.defineTask(LOCATION_TASK,  async ({ data, error } ) => {
   const getCurrentTimeWithDate = () => {
       const currentDate = new Date();
@@ -79,6 +80,7 @@ function Index() {
 
   const dispatch = useDispatch();
   const [isReg, setReg] = useState(true);
+  
   const saveUserInfo = async ({ownrYn, crewYn, mnrgYn, userNa}) => {
     try {
       await AsyncStorage.setItem('userNa', userNa);
@@ -174,15 +176,6 @@ function Index() {
 }
 
 
-
-function backGroundLocationTest() {
-  return (
-    <Provider store={store}>
-      <Geofencing/>
-    </Provider>
-  );
-}
-
 function App(){
   //<GetLocationPermission Grant={Index}/>
   //<LocationPermissionBack Grant ={Index}/>
@@ -195,6 +188,5 @@ function App(){
     </Provider>
   );
 }
-
 
 export default App;
