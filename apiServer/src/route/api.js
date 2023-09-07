@@ -4,7 +4,7 @@ const {execSql, execTranSql} = require("../utils/excuteSql");
 
 const { login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, 
         getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, jobChk, salary,
-        insertJobChk, geofencingTest, checkJobChk, insertUuid, autoLogin, getUUID, checkjobtotal, getTermsDetail} = require('./../query/auth'); 
+        insertJobChk, geofencingTest, checkJobChk, insert_Uuid_Token, autoLogin, getUUID, checkjobtotal, getTermsDetail} = require('./../query/auth'); 
 const axios = require('axios');
 
 const dotenv = require('dotenv');
@@ -24,14 +24,14 @@ router.get("/v1/login", async(req, res, next)=>{
 
 router.post("/v1/loginUser", async(req, res, next)=>{
     console.log("/v1/loginUser")
-    const {id, password, uuid} = req.body;
+    const {id, password, uuid, pushToken} = req.body;
     const result = await execSql(login, {userId:id, passWord:password});
     console.log(result)
     let data = null;
     let info = {};
     if(result.recordset[0]){
         const {pwCheck, crewYn, ownrYn, mnrgYn, userNa} = result.recordset[0];
-        if (pwCheck === 1 ){ await execSql(insertUuid, {userId:id, uuid:uuid}); }
+        if (pwCheck === 1 ){ await execSql(insert_Uuid_Token, {userId:id, uuid:uuid, token:pushToken}); }
         data = pwCheck;
         info = {ownrYn:ownrYn, crewYn:crewYn, mnrgYn:mnrgYn, userNa:userNa}
     }

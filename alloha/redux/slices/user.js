@@ -5,6 +5,7 @@ const initialState = {
   email: '',
   accessToken: '',
 };
+
 const userSlice = createSlice({
   name: 'user',
   initialState,
@@ -28,5 +29,7 @@ const userSlice = createSlice({
   // extraReducers: builder => {},
 });
 
+//외부에서 reducer를 사용하기위해 export
+export let { setUser, setName } = userSlice.actions
 
 export default userSlice;

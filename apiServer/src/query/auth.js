@@ -177,8 +177,8 @@ const geofencingTest = `
     insert into GEOFENCINGTEST(id, name, lat, lon, day)
     VALUES (@id, @name, @lat, @lon, @day)
 `
-const insertUuid= `
-    UPDATE PLYMUSER SET UUID = @uuid
+const insert_Uuid_Token= `
+    UPDATE PLYMUSER SET UUID = @uuid, TOKEN = @token
     WHERE USERID = @userId
 `
 const getTermsDetail = `
@@ -189,4 +189,4 @@ const getTermsDetail = `
     AND   INFSHRCO = @INFSHRCO
 `
 
-module.exports = {login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, insertJobChk, geofencingTest, checkJobChk, insertUuid, autoLogin, getUUID, jobChk, salary, getTermsDetail}
+module.exports = {login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, insertJobChk, geofencingTest, checkJobChk, insert_Uuid_Token, autoLogin, getUUID, jobChk, salary, getTermsDetail}

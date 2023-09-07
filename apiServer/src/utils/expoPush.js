@@ -1,5 +1,6 @@
 const { Expo } = require('expo-server-sdk');
 
+
 async function sendPush(tokens){
     // Create a new Expo SDK client
     // optionally providing an access token if you have enabled push security
@@ -9,7 +10,7 @@ async function sendPush(tokens){
     let messages = [];
     for (let pushToken of tokens) {
         // Each push token looks like ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]
-
+        pushToken = `ExponentPushToken[${pushToken}]`
         // Check that all your push tokens appear to be valid Expo push tokens
         if (!Expo.isExpoPushToken(pushToken)) {
             console.error(`Push token ${pushToken} is not a valid Expo push token`);

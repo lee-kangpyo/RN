@@ -19,8 +19,8 @@
         "expo-location",
         {
           "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location.",
-          "isIosBackgroundLocationEnabled":true,
-          "isAndroidBackgroundLocationEnabled":true
+          "isIosBackgroundLocationEnabled": true,
+          "isAndroidBackgroundLocationEnabled": true
         }
       ]
     ],
@@ -29,7 +29,10 @@
       "bundleIdentifier": "com.akmz.alloha",
       "supportsTablet": true,
       "infoPlist": {
-        "UIBackgroundModes": ["location", "fetch"],
+        "UIBackgroundModes": [
+          "location",
+          "fetch"
+        ],
         "NSLocationAlwaysAndWhenInUseUsageDescription": "출퇴근 체크를 위한 위치권한이 필요합니다.",
         "NSLocationAlwaysUsageDescription": "App requires geolocation to improve the quality of the service",
         "NSLocationWhenInUseUsageDescription": "출퇴근 체크를 위한 위치권한이 필요합니다."
@@ -62,6 +65,8 @@
         "projectId": "0dd79bb6-37ee-41de-ab18-ae35b01e55a2"
       }
     },
-    "owner": "akmz"
-  }
+    "owner": "akmz",
+    "sdkVersion": "48.0.0"
+  },
+  "name": "alloha"
 }
