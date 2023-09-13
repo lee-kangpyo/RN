@@ -1,7 +1,7 @@
 const express = require('express')
 var router = express.Router();
 
-const { getTraceUserList, getMyuserTrace } = require('../query/admin'); 
+const { getTraceUserList, getMyuserTrace, getStoreInfo } = require('../query/admin'); 
 
 const runMyQuery = require('../utils/MySqlQuery');
 
@@ -22,7 +22,12 @@ router.get("/getMyuserTrace", async (req, res, next) => {
     console.log("getMyuserTrace")
     const {userId, uuid} = req.query;
     const result = await runMyQuery(getMyuserTrace, [userId, uuid]);
-    console.log(result)
+    res.status(200).json({ result:result});
+})
+
+router.get("/getStoreInfo", async (req, res, next)=>{
+    console.log("getStoreInfo")
+    const result = await runMyQuery(getStoreInfo);
     res.status(200).json({ result:result});
 })
 
