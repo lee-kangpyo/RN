@@ -188,5 +188,14 @@ const getTermsDetail = `
     AND   INFSHRDIV = 'PLY'
     AND   INFSHRCO = @INFSHRCO
 `
+const updateTaxNo = `
+    UPDATE PLYMCST SET TAXNO = @taxNo,  MUSERID = @userId,  MYMDHMD = getdate()
+    WHERE CSTCO = @cstCo
+`
 
-module.exports = {login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, insertJobChk, geofencingTest, checkJobChk, insert_Uuid_Token, autoLogin, getUUID, jobChk, salary, getTermsDetail}
+const modifyStoreInfo = `
+    UPDATE PLYMCST SET CSTNA = @cstNa, ZIPNO=@zipNo, ZIPADDR=@zipAddr, ADDR=@addr, LAT=@lat, LON=@lon,  MUSERID = @userId,  MYMDHMD = getdate()
+    WHERE CSTCO = @cstCo
+`
+
+module.exports = {login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, insertJobChk, geofencingTest, checkJobChk, insert_Uuid_Token, autoLogin, getUUID, jobChk, salary, getTermsDetail, updateTaxNo, modifyStoreInfo}
