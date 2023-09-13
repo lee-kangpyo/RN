@@ -12,7 +12,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { URL } from "@env";
 
 export default function AddStoreScreen ({ route }) {
-    const { setRefresh } = route.params;
+    //const { setRefresh } = route.params;
     //const url = useSelector((state) => state.config.url);
 
     const [data, setData] = useState({taxNo:"", cstNa:"", detailAddress:""});
@@ -69,7 +69,7 @@ export default function AddStoreScreen ({ route }) {
             .then(function (response) {
                 if(response.data.result == 2 && response.data.resultCode == "00"){
                     Alert.alert("점포 추가", "점포 추가가 완료 되었습니다.");
-                    setRefresh(true);
+                    //setRefresh(true);
                     navigation.goBack();
                 }
             }).catch(function (error) {
