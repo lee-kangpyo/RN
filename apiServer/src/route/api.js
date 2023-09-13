@@ -4,7 +4,8 @@ const {execSql, execTranSql} = require("../utils/excuteSql");
 
 const { login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, 
         getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, jobChk, salary,
-        insertJobChk, geofencingTest, checkJobChk, insert_Uuid_Token, autoLogin, getUUID, checkjobtotal, getTermsDetail} = require('./../query/auth'); 
+        insertJobChk, geofencingTest, checkJobChk, insert_Uuid_Token, autoLogin, getUUID, checkjobtotal, 
+        getTermsDetail, updateTaxNo, modifyStoreInfo} = require('./../query/auth'); 
 const axios = require('axios');
 
 const dotenv = require('dotenv');
@@ -176,6 +177,32 @@ router.post("/v1/addStore", transactionMiddleware, async (req, res, next) => {
         // 트랜잭션 롤백
         console.log(error)
         await transaction.rollback();
+        res.status(200).json({ resultCode:"-1"});
+      }
+})
+
+
+router.post("/v1/saveTaxNo", async (req, res, next) => {
+    try {
+        const {taxNo, cstCo, userId} = req.body;
+        const result = await execSql(updateTaxNo, {cstCo:cstCo, taxNo:taxNo, userId:userId})
+        res.status(200).json({ resultCode:"00", result:result.rowsAffected[0] });
+      } catch (err) {
+        console.log(err.message)
+        res.status(200).json({ resultCode:"-1"});
+      }
+})
+
+router.post("/v1/modifyStore", async (req, res, next) => {
+    console.log("수정하기")
+    try {
+        const {cstNa, zoneCode, address, detailAddress, lat, lon, userId, cstCo} = req.body;
+        let result = {resultCode:"-1", result:""}
+    
+        const rlt = await execSql(modifyStoreInfo, {cstNa:cstNa, zipNo:zoneCode, zipAddr:address, addr:detailAddress, lat:lat, lon:lon, lat:lat, userId:userId, cstCo,cstCo})
+        res.status(200).json({ resultCode:"00", result:rlt.rowsAffected[0] });
+      } catch (err) {
+        console.log(err.message)
         res.status(200).json({ resultCode:"-1"});
       }
 })
@@ -437,9 +464,10 @@ router.get("/v1/getSalary", async (req, res, next) => {
 router.get("/v1/getSalaryDetail", async (req, res, next) => {
     const {ymdFr, ymdTo,  userId, cstCo} = req.query
     const result = await execSql(salary, {userId:userId, cls:"salaryDetail", ymdFr:ymdFr, ymdTo:ymdTo, cstCo:cstCo});
+    const result3 = await execSql(salary, {userId:userId, cls:"salaryWeek", ymdFr:ymdFr, ymdTo:ymdTo, cstCo:cstCo});
     const result2 = await execSql(salary, {userId:userId, cls:"salaryTotal", ymdFr:ymdFr, ymdTo:ymdTo, cstCo:cstCo});
 
-    res.status(200).json({resultCode:"00", salaryDetail:result.recordset, salaryTotal:result2.recordset[0]});
+    res.status(200).json({resultCode:"00", salaryDetail:result.recordset, slalryWeek:result3.recordset, salaryTotal:result2.recordset[0]});
 })
 
 

@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Image, ScrollView } from 'react-native';
 import React, {useState, useEffect, useCallback} from 'react';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
 import StoreCard from '../components/StoreCard';
 import { useSelector } from 'react-redux';
@@ -17,6 +17,9 @@ export default function ManageStoreScreen({type, refresh, setRefresh}) {
     const userId = useSelector((state) => state.login.userId);
     const [storeList, setStoreList] = useState([]);
     const navigation = useNavigation();
+    
+
+
     const getStoreList = useCallback(async () => {
         await axios.get(URL+`/api/v1/getStoreList`, {params:{userId:userId,}})
         .then((res)=>{
@@ -31,12 +34,18 @@ export default function ManageStoreScreen({type, refresh, setRefresh}) {
         navigation.setOptions({title:title})
     }, [navigation])
 
-    useEffect( () => {
-        if(refresh){
-            getStoreList();
-            setRefresh(false);
-        }
-    }, [refresh])
+    // useEffect( () => {
+    //     if(refresh){
+    //         getStoreList();
+    //         setRefresh(false);
+    //     }
+    // }, [refresh])
+
+    useFocusEffect(
+        React.useCallback(() => {
+          getStoreList();
+        }, [])
+      );
 
     return (
         <>
@@ -46,7 +55,7 @@ export default function ManageStoreScreen({type, refresh, setRefresh}) {
                     ?
                         <ScrollView style={styles.scrollArea}>
                             {storeList.map((el, idx)=>{
-                                return <StoreCard key={idx} store={el}  btntxt={"수정하기"} onButtonPressed={(cstCo)=>alert("준비중 입니다.")}/>
+                                return <StoreCard key={idx} store={el}  btntxt={"수정하기"} onButtonPressed={(store)=>navigation.navigate('modifyStore', {store:store, key:Date.now()})}/>
                             })}
                         </ScrollView>
                     :

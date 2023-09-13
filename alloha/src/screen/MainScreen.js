@@ -22,8 +22,7 @@ import { useNavigation } from '@react-navigation/native';
 import WageScreen from './WageScreen';
 import WageDetailScreen from './WageDetailScreen';
 import ComunityScreen from './ComunityScreen';
-
-
+import ModifyStoreScreen from './ModifyStoreScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -36,14 +35,11 @@ export default function MainScreen() {
       const id = await AsyncStorage.getItem('id');
       const ownrYn = await AsyncStorage.getItem('ownrYn');
       const crewYn = await AsyncStorage.getItem('crewYn');
-      //console.log("로드완료")
-      //console.log(id, ownrYn, crewYn)
       if(!(id && ownrYn && crewYn)){
         //여기선 얼럿 후 로그인 창으로 이동
         console.log("잘못된 접근")
       }
       setUserInfo({id:id, ownrYn:ownrYn, crewYn:crewYn})
-      //console.log(id, ownrYn, crewYn)
     }
   }
 
@@ -67,10 +63,7 @@ export default function MainScreen() {
   );
 }
 
-
-
 function OwnrScreen({userInfo}){
-  
   const [refresh, setRefresh] = useState("false")
   const navigation = useNavigation();
   const storeOption = () => {
@@ -115,6 +108,7 @@ function OwnrScreen({userInfo}){
               {() => <ManageStoreScreen type={"ownr"} refresh={refresh} setRefresh={setRefresh} />}
             </Stack.Screen>
             <Stack.Screen name="addStore" component={AddStoreScreen} options={{ title: '점포추가' }}/>
+            <Stack.Screen name="modifyStore" component={ModifyStoreScreen} options={{ title: '점포수정' }}/>
             <Stack.Screen  name="SearchAddress" component={SearchAddress} options={{title:"주소 검색"}}/>
           </Stack.Navigator>
         )}
@@ -122,8 +116,6 @@ function OwnrScreen({userInfo}){
     </Tab.Navigator>
   )
 }
-
-
 
 function CrewScreen(){
   return(
@@ -134,14 +126,11 @@ function CrewScreen(){
         tabBarInactiveTintColor: 'gray',
       })}
     >
-      
       <Tab.Screen name="Home" options={{ tabBarLabel: '출퇴근' }} >
         {() => (
           <LocationPermission Grant={HomeScreen}/>
         )}
       </Tab.Screen>
-
-
       <Tab.Screen name="Wage" options={{ headerShown: false, tabBarLabel: '급여' }} >
         {() => (
           <Stack.Navigator>
@@ -150,8 +139,6 @@ function CrewScreen(){
           </Stack.Navigator>
         )}
       </Tab.Screen>
-
-
       <Tab.Screen name="community" component={ComunityScreen} options={{ tabBarLabel: '커뮤니티' }}/>
       <Tab.Screen name="manageStore" component={SearchStoreScreen} backBehavior={"none"} options={{ tabBarLabel: '점포검색' }} />
     </Tab.Navigator>
@@ -187,8 +174,6 @@ const setTabBarIcon = (focused, color, size, name) =>{
     return <FontAwesome5 name={iconName} size={size} color={color} />;
   }
 }
-
-
 
 const styles = StyleSheet.create({
   header_btn:{marginRight:16},
