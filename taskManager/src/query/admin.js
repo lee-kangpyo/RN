@@ -22,4 +22,12 @@ const getMyuserTrace = `
     ORDER BY CHkTime
 `;
 
-module.exports = { getTraceUserList, getMyuserTrace, getMyuserTrace};
+const getStoreInfo = `
+    SELECT CSTCO, CSTNA, ZIPADDR, ADDR, LAT, LON
+    FROM PLYMCST
+    WHERE USEYN = 'Y'
+    AND LAT is not null
+    AND LON is not null
+`;
+
+module.exports = { getTraceUserList, getMyuserTrace, getMyuserTrace, getStoreInfo};
