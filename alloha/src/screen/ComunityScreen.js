@@ -25,10 +25,7 @@ export default function ComunityScreen({navigation}) {
     return (
         <ScrollView style={{height:500}}>
             <View style={styles.container}>
-                <ImageBackground source={require("../../assets/community.png")} style={styles.image}>
                     <Text style={styles.image_txt}>이 페이지는 준비중입니다.</Text>
-                </ImageBackground>
-                
             </View>
             <TouchableOpacity style={{padding:16}} onPress={logOut}>
                 <Text>로그아웃</Text>
