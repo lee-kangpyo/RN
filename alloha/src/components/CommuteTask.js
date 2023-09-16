@@ -47,10 +47,12 @@ export default function CommuteTask(){
                 deferredUpdatesInterval: 500,
                 accuracy: Location.Accuracy.Highest,
                 showsBackgroundLocationIndicator: true,
+                pausesUpdatesAutomatically: false,
                 foregroundService: {
                     notificationTitle: "알로하",
                     notificationBody: "알로하가 위치 기반으로 출퇴근을 여부를 체크하고 있습니다.",
                     notificationColor: "#fff",
+                    killServiceOnDestroy: false,
                 },  
             });
             const isTaskStarted = await TaskManager.isTaskRegisteredAsync(LOCATION_TASK);
