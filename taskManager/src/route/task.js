@@ -81,35 +81,60 @@ router.get("/checkStoreLocation", async (req, res, next) => {
         }
         return result
     }
+    const insertDB = async (req, jobYn, cstCo) => {
+        const {id, lat, lon, ymd} = req.query;
+        const result = await execSql(insertJobChk, {userId:id, cstCo:cstCo, day:getDay(), lat:lat, lon:lon, jobYn:jobYn, apvYn:"N", chkTime:ymd});
+        if(jobYn == "Y"){
+            console.log(id+"가 출근을 완료함"+cstCo)
+        }else if(jobYn == "N"){
+            console.log(id+"가 퇴근을 완료함"+cstCo)
+        }
+        
+        return result;
+    }
     try {
         let resultCode = "00"
         const {id, uuid, lat, lon, ymd} = req.query;
 
         console.log("###TaskManager => "+id+"가 디바이스("+uuid+")로 출퇴근 체크중... 현재 위치 : "+lat+", "+lon)
-        let apvYn = "N";
-        const curday = getDay();
         const {recordset:uuidInfo} = await execSql(getUUID, {userId:id});
-        //console.log(uuidInfo[0].UUID)
-
         if(uuidInfo[0].UUID === uuid){
+
             const {recordset:jobChk} = await execSql(checkJobChk, {userId:id});    
             const {recordset:myAlbaList} = await execSql(searchMyAlbaList, {userId:id});
             if(jobChk[0] && jobChk[0].JOBYN == "Y") { 
                 console.log("퇴근 체크...")
-                let jobYn = '';
-                const cstCo = jobChk[0].CSTCO;
-                const alba = myAlbaList.filter((alba) => { return alba.CSTCO === cstCo })
+                //let jobYn = '';
+                //const cstCo = jobChk[0].CSTCO;
+                const alba = myAlbaList.filter((alba) => { return alba.CSTCO === jobChk[0].CSTCO })
                 const meter = distance(lat, lon, alba[0].LAT, alba[0].LON)
-                if(meter > 50){
-                    jobYn="N"
-                    const result = await execSql(insertJobChk, {userId:id, cstCo:cstCo, day:curday, lat:lat, lon:lon, jobYn:jobYn, apvYn:apvYn, chkTime:ymd});
-                    console.log(id+"가 퇴근을 완료함"+cstCo)
-                }else{
-                    console.log("아직 출근중...")
+                
+                if(meter > 50 && meter < 100){
+                    console.log("50미터 초과, 100미터 미만")
+                    for (const alba of myAlbaList) {
+                        if (alba.RTCL === "N") {
+                            const meter2 = distance(lat, lon, alba.LAT, alba.LON)
+                            if(meter2 <= 50){
+                                insertDB(req, "N", jobChk[0].CSTCO);
+                                //jobYn = 'Y'
+                                insertDB(req, "Y", alba.CSTCO);
+                                //const result = await execSql(insertJobChk, {userId:id, cstCo:cstCo, day:getDay(), lat:lat, lon:lon, jobYn:jobYn, apvYn:"N", chkTime:ymd});
+                                //console.log(id+"가 출근을 완료함"+alba.CSTCO)
+                                runMyQuery(MyuserTrace, [id, jobChk[0].CSTCO, "N", lat, lon, uuid, ymd])            
+                                runMyQuery(MyuserTrace, [id, alba.CSTCO, "Y", lat, lon, uuid, ymd])            
+                                break;
+                            }
+                        }
+                    }
+                }else if(meter <= 50){
+                    console.log("50미터 이하 -- 아직 출근중...")
+                    runMyQuery(MyuserTrace, [id, null, "", lat, lon, uuid, ymd])            
+                }else if(meter >= 100){
+                    console.log("100미터 이상 -- 퇴근")
+                    const result = insertDB(req, "N", jobChk[0].CSTCO);
+                    runMyQuery(MyuserTrace, [id, jobChk[0].CSTCO, "N", lat, lon, uuid, ymd])
                 }
-                console.log("mysql")
-                console.log(id, cstCo, jobYn, lat, lon, uuid);
-                runMyQuery(MyuserTrace, [id, cstCo, jobYn, lat, lon, uuid, ymd])
+                
             }else{
                 console.log("출근체크...(내 알바 리스트)")
                 let jobYn = '';
@@ -117,18 +142,18 @@ router.get("/checkStoreLocation", async (req, res, next) => {
                 for (const alba of myAlbaList) {
                     if (alba.RTCL === "N") {
                         const meter = distance(lat, lon, alba.LAT, alba.LON)
-                        if(meter < 50){
+                        if(meter <= 50){
                             jobYn = 'Y'
                             cstCo = alba.CSTCO;
-                            const result = await execSql(insertJobChk, {userId:id, cstCo:cstCo, day:curday, lat:lat, lon:lon, jobYn:jobYn, apvYn:apvYn, chkTime:ymd});
-                            console.log(id+"가 출근을 완료함"+alba.CSTCO)
+                            insertDB(req, "Y", cstCo);
+                            
+                            //const result = await execSql(insertJobChk, {userId:id, cstCo:cstCo, day:getDay(), lat:lat, lon:lon, jobYn:jobYn, apvYn:"N", chkTime:ymd});
+                            //console.log(id+"가 출근을 완료함"+alba.CSTCO)
                             break;
                         }
                     }
                 }
-                console.log("mysql")
-                console.log(id, cstCo, jobYn, lat, lon, uuid);
-                runMyQuery(MyuserTrace, [id, cstCo, jobYn, lat, lon, uuid, ymd])
+                runMyQuery(MyuserTrace, [id, cstCo, jobYn, lat, lon, uuid, ymd])            
                 console.log("출근 체크 끝")
             }
             console.log(id+" 출퇴근 체크 종료");
@@ -141,9 +166,7 @@ router.get("/checkStoreLocation", async (req, res, next) => {
         console.log(error.message);
         res.status(200).json({ resultCode:"-1"});
     }
-
 })
-
 
 module.exports = router;
 
