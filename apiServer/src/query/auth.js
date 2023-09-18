@@ -95,12 +95,12 @@ const searchCrewList = `
             , a.WAGE
             , a.ROLECL
             , a.RTCL
-            , ISNULL(MIN(JOBFR) + '~' + MAX(JOBTO),'등록전') as JOBDUR
-            , ISNULL(SUM(DAYJOB),0) as WEEKJOB 
+            --, ISNULL(MIN(JOBFR) + '~' + MAX(JOBTO),'등록전') as JOBDUR
+            --, ISNULL(SUM(DAYJOB),0) as WEEKJOB 
     FROM   PLYMCSTUSER a
     inner join PLYMCST b On a.CSTCO = b.CSTCO
     inner join PLYMUSER c On a.USERID = c.USERID
-    left join PLYAJOBDAY d On a.CSTCO = d.CSTCO AND a.USERID = d.USERID
+    --left join PLYAJOBDAY d On a.CSTCO = d.CSTCO AND a.USERID = d.USERID
     WHERE   a.CSTCO in (SELECT CSTCO FROM PLYMCSTUSER a WHERE a.USERID = @userId AND a.ROLECL in ('OWNR','MNGR'))      -- 거래처코드
     AND   a.USERID != @userId
     AND   a.RTCL not in ( 'Y', 'D' )        -- Y - 퇴직, N - 재직, R - 요청, D - 거절 <-- 추후 생성
@@ -117,14 +117,14 @@ const searchMyAlbaList = `
             , a.WAGE
             , a.ROLECL
             , a.RTCL
-            , ISNULL(MIN(JOBFR) + '~' + MAX(JOBTO),'등록전') as JOBDUR
-            , ISNULL(SUM(DAYJOB),0) as WEEKJOB 
+            --, ISNULL(MIN(JOBFR) + '~' + MAX(JOBTO),'등록전') as JOBDUR
+            --, ISNULL(SUM(DAYJOB),0) as WEEKJOB 
             , b.LAT
             , b.LON
     FROM   PLYMCSTUSER a
     inner join PLYMCST b On a.CSTCO = b.CSTCO
     inner join PLYMUSER c On a.USERID = c.USERID
-    left join PLYAJOBDAY d On a.CSTCO = d.CSTCO AND a.USERID = d.USERID
+    --left join PLYAJOBDAY d On a.CSTCO = d.CSTCO AND a.USERID = d.USERID
     WHERE   a.USERID = @userId
     AND   a.RTCL not in ( @execptRtcl )      -- Y - 퇴직, N - 재직, R - 요청 <-- 추후 생성
     GROUP   BY a.CSTCO, b.CSTNA, a.USERID, c.USERNA, ISNULL(c.NICKNA,''), a.JOBTYPE, a.WAGE, a.ROLECL, a.RTCL, b.lat, b.lon
