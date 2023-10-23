@@ -23,6 +23,8 @@ import WageScreen from './WageScreen';
 import WageDetailScreen from './WageDetailScreen';
 import ComunityScreen from './ComunityScreen';
 import ModifyStoreScreen from './ModifyStoreScreen';
+import EtcScreen from './EtcScreen';
+import ScheduleScreen from './ScheduleScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -91,7 +93,7 @@ function OwnrScreen({userInfo}){
         tabBarInactiveTintColor: 'gray',
       })}
     >
-      <Tab.Screen name="ManageCrew" component={ManageCrewScreen} options={{ tabBarLabel: '알바관리' }}/>
+      <Tab.Screen name="schedule" component={ScheduleScreen} options={{ tabBarLabel: '시간표' }}/>
       <Tab.Screen name="Wage" options={{ headerShown: false, tabBarLabel: '급여' }} >
         {() => (
           <Stack.Navigator>
@@ -101,9 +103,13 @@ function OwnrScreen({userInfo}){
         )}
       </Tab.Screen>
       <Tab.Screen name="community" component={ComunityScreen} options={{ tabBarLabel: '커뮤니티' }}/>
-      <Tab.Screen name="manageStore" options={{ headerShown: false, tabBarLabel: '점포관리' }} >
+      
+
+      <Tab.Screen name="etc" options={{ headerShown: false, }}>
         {() => (
-          <Stack.Navigator>
+          <Stack.Navigator initialRouteName="etc3">
+            <Stack.Screen name="etc3" component={EtcScreen} options={{ tabBarLabel: '기타' }}/>
+            <Stack.Screen name="ManageCrew" component={ManageCrewScreen} options={{ tabBarLabel: '알바관리' }}/>
             <Stack.Screen name="storeList" options={storeOption} backBehavior={"none"}>
               {() => <ManageStoreScreen type={"ownr"} refresh={refresh} setRefresh={setRefresh} />}
             </Stack.Screen>
@@ -113,6 +119,7 @@ function OwnrScreen({userInfo}){
           </Stack.Navigator>
         )}
       </Tab.Screen>
+
     </Tab.Navigator>
   )
 }
@@ -126,6 +133,7 @@ function CrewScreen(){
         tabBarInactiveTintColor: 'gray',
       })}
     >
+      
       <Tab.Screen name="Home" options={{ tabBarLabel: '출퇴근' }} >
         {() => (
           <LocationPermission Grant={HomeScreen}/>
@@ -164,6 +172,9 @@ const setTabBarIcon = (focused, color, size, name) =>{
   }else if (name === 'manageStore'){
     iconName = focused ? 'store' : 'store-outline';
     icon = "MaterialCommunityIcons"
+  }else if(name === "etc"){
+    iconName = focused ? 'ellipsis-vertical-sharp' : 'ellipsis-vertical-outline';
+    icon = "Ionicons"
   }
 
   if (icon == "Ionicons"){

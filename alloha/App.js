@@ -97,6 +97,7 @@ function Index() {
       const isAvailable = await SecureStore.isAvailableAsync()
       const uid = await SecureStore.getItemAsync("uuid");
       const userId = await AsyncStorage.getItem("id");
+      
 
       if(uid && userId){
         await axios.post(URL+'/api/v1/autoLogin', {uuid:uid, userId:userId, flag:flag},  { timeout: 3000 })
