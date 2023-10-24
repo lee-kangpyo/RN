@@ -1,6 +1,13 @@
 import {createSlice} from '@reduxjs/toolkit';
+import { getNextWeek, getWeekNumber, movePrevWeek, moveNextWeek } from '../../src/util/moment';
+
+const week = getNextWeek()
 
 const initialState = {
+  
+  // 시간표
+  week : week,
+  weekNumber:getWeekNumber(week),
   albas: [
         {
             name:"이하나", 
@@ -31,6 +38,8 @@ const initialState = {
             ]
         },
     ],
+    // 시간표 일별 등록
+    timeBox:new Array(48).fill(null).map(() => [0, 0, 0, 0, 0, 0, 0]),
 };
 
 const scheduleSlice = createSlice({
@@ -40,10 +49,28 @@ const scheduleSlice = createSlice({
     setAlba(state, action) {
         state.albas = action.payload;
     },
+    prevWeek(state, action){
+        console.log("prevWeek");
+        const prev = movePrevWeek(state.week);
+        state.week = prev;
+        state.weekNumber = getWeekNumber(prev)
+    },
+    nextWeek(state, action){
+        const next = moveNextWeek(state.week);
+        state.week = next;
+        state.weekNumber = getWeekNumber(next)
+    },
+
+    onTabCheckTIme(state, action){
+        const obj = action.payload;
+        const value = (obj.val == 2)?0:obj.val+1;
+        state.timeBox[obj.x][obj.y] = value;
+    }
+
   },
 });
 
 //외부에서 reducer를 사용하기위해 export
-export let { setAlba } = scheduleSlice.actions
+export let { setAlba, prevWeek, nextWeek, onTabCheckTIme } = scheduleSlice.actions
 
 export default scheduleSlice;
