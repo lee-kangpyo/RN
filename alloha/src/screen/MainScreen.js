@@ -25,6 +25,7 @@ import ComunityScreen from './ComunityScreen';
 import ModifyStoreScreen from './ModifyStoreScreen';
 import EtcScreen from './EtcScreen';
 import ScheduleScreen from './ScheduleScreen';
+import ScheduleAddScreen from './ScheduleAddScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -93,7 +94,9 @@ function OwnrScreen({userInfo}){
         tabBarInactiveTintColor: 'gray',
       })}
     >
-      <Tab.Screen name="schedule" component={ScheduleScreen} options={{ tabBarLabel: '시간표' }}/>
+      <Tab.Screen name="schedule" component={ScheduleStack} options={{ headerShown:false }}/>
+
+
       <Tab.Screen name="Wage" options={{ headerShown: false, tabBarLabel: '급여' }} >
         {() => (
           <Stack.Navigator>
@@ -122,6 +125,15 @@ function OwnrScreen({userInfo}){
 
     </Tab.Navigator>
   )
+}
+
+function ScheduleStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="scheduleMain" component={ScheduleScreen} />
+      <Stack.Screen name="scheduleAdd" component={ScheduleAddScreen} />
+    </Stack.Navigator>
+  );
 }
 
 function CrewScreen(){
