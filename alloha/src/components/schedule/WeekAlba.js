@@ -29,7 +29,7 @@ function ContentBox({item}){
 function NameBox({name}){
     const boxWidth = Dimensions.get('window').width / 9; // 박스의 너비
     return (
-        <View style={{...styles.box, flex:2, width:boxWidth}}>
+        <View style={{...styles.box, flex:2, width:boxWidth, backgroundColor:"#D2E0FB"}}>
             <Text>{name}</Text>
         </View>
     );
@@ -38,7 +38,7 @@ function NameBox({name}){
 function TotalBox({sum, sumSub}){
     const boxWidth = Dimensions.get('window').width / 9; // 박스의 너비
     return (
-        <View style={{...styles.box, width:boxWidth}}>
+        <View style={{...styles.box, flex:2, width:boxWidth, backgroundColor:"#F9F3CC"}}>
             <Text style={{fontSize:boxWidth*0.3}}>{sum}</Text>
             <Text style={{fontSize:boxWidth*0.3, color:"red"}}>{sumSub}</Text>
         </View>

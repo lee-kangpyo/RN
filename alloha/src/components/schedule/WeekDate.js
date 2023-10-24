@@ -1,20 +1,33 @@
 import { StyleSheet, Dimensions , Text, View } from 'react-native';
-import { getCurrentWeek } from '../../util/moment';
+import { useSelector } from 'react-redux';
+import { getWeekList } from '../../util/moment';
 
-export default function WeekDate() {
-    const currentWeek = getCurrentWeek();
-    console.log(currentWeek);
-    console.log(currentWeek[0].format('YYYY년 MM월 DD일'));
+export default function WeekDate({sBlank, eBlank}) {
+    const week = useSelector((state)=>state.schedule.week)
+    const weekList = getWeekList(week);
 
-  return (
+    return (
     <View style={styles.container}>
-        <BlankBox flex={2}/>
-        {currentWeek.map((el, idx)=>{
-            return <WeekBox key={idx} item={el}/>
-        })}
-        <BlankBox flex={1}/>
+        {
+            (sBlank)?
+                <BlankBox flex={sBlank}/>
+            :
+                null
+        }
+        {
+            weekList.map((el, idx)=>{
+                return <WeekBox key={idx} item={el}/>
+            })
+        }
+        {
+            (eBlank)?
+                <BlankBox flex={eBlank}/>
+            :
+                null
+        }
+        
     </View>
-  );
+    );
 }
 
 function WeekBox({item}){
