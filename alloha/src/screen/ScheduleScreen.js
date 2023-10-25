@@ -5,7 +5,7 @@ import { getWeekNumber } from '../util/moment';
 import WeekDate from '../components/schedule/WeekDate';
 import WeekAlba from '../components/schedule/WeekAlba';
 import { useSelector, useDispatch } from 'react-redux';
-import { nextWeek, prevWeek, setAlba } from '../../redux/slices/schedule';
+import { initTimeBox, nextWeek, prevWeek, setAlba } from '../../redux/slices/schedule';
 import { ScrollView } from 'react-native-gesture-handler';
 
 export default function ScheduleScreen({navigation}) {
@@ -70,7 +70,10 @@ export default function ScheduleScreen({navigation}) {
                     {albas.map((item, idx)=>{
                         return <WeekAlba key={idx} alba={item} />
                     })}
-                    <TouchableOpacity onPress={()=>navigation.push("scheduleAdd")}>
+                    <TouchableOpacity onPress={()=>{
+                            dispatch(initTimeBox());
+                            navigation.push("scheduleAdd");
+                        }}>
                         <View style={styles.box}>
                             <Text style={{fontSize:24}}>+</Text>
                         </View>

@@ -1,5 +1,5 @@
 //import * as React from 'react';
-import { Text, View, TouchableOpacity, StyleSheet } from 'react-native';
+import { Text, View, TouchableOpacity, StyleSheet, Button } from 'react-native';
 import { Ionicons, MaterialCommunityIcons, FontAwesome5  } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -26,6 +26,7 @@ import ModifyStoreScreen from './ModifyStoreScreen';
 import EtcScreen from './EtcScreen';
 import ScheduleScreen from './ScheduleScreen';
 import ScheduleAddScreen from './ScheduleAddScreen';
+import ScheduleViewScreen from './ScheduleViewScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -128,13 +129,27 @@ function OwnrScreen({userInfo}){
 }
 
 function ScheduleStack() {
+  const navigation = useNavigation();
   return (
     <Stack.Navigator>
-      <Stack.Screen name="scheduleMain" component={ScheduleScreen} />
+      <Stack.Screen name="scheduleMain" component={ScheduleScreen} 
+        options={
+          {
+            headerRight: () => (
+              <TouchableOpacity onPress={() => navigation.navigate("scheduleView")}>
+                <Ionicons name="reader-outline" size={24} color="black" />
+              </TouchableOpacity>
+            ),
+          }
+        }
+      />
       <Stack.Screen name="scheduleAdd" component={ScheduleAddScreen} />
+      <Stack.Screen name="scheduleView" component={ScheduleViewScreen} />
+      
     </Stack.Navigator>
   );
 }
+//<Ionicons name="download-outline" size={32} color="black" />
 
 function CrewScreen(){
   return(
