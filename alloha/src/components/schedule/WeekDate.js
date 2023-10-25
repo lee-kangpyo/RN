@@ -56,13 +56,12 @@ const styles = StyleSheet.create({
         flex:1,
         paddingVertical:5,
         margin:1,
-        borderWidth: 0.5, // 테두리 두께
+        borderWidth: 1, // 테두리 두께
         borderColor: 'gray', // 테두리 색상
         borderRadius: 0, // 테두리 모서리 둥글게 
         alignItems:"center",
     },
     blank:{
-        flex:1,
         paddingVertical:15,
         margin:2,
         alignItems:"center",

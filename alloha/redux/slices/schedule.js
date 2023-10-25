@@ -40,6 +40,8 @@ const initialState = {
     ],
     // 시간표 일별 등록
     timeBox:new Array(48).fill(null).map(() => [0, 0, 0, 0, 0, 0, 0]),
+    totalTime:0.0,
+    totalCoverTime:0.0,
 };
 
 const scheduleSlice = createSlice({
@@ -65,12 +67,25 @@ const scheduleSlice = createSlice({
         const obj = action.payload;
         const value = (obj.val == 2)?0:obj.val+1;
         state.timeBox[obj.x][obj.y] = value;
+        if(value == 1){
+            state.totalTime = state.totalTime + 0.5
+        }else if (value == 2){
+            state.totalTime = state.totalTime - 0.5
+            state.totalCoverTime = state.totalCoverTime + 0.5
+        }else{
+            state.totalCoverTime = state.totalCoverTime - 0.5
+        }
+    },
+    initTimeBox(state, action){
+        state.totalTime = 0;
+        state.totalCoverTime = 0;
+        state.timeBox = new Array(48).fill(null).map(() => [0, 0, 0, 0, 0, 0, 0]);
     }
 
   },
 });
 
 //외부에서 reducer를 사용하기위해 export
-export let { setAlba, prevWeek, nextWeek, onTabCheckTIme } = scheduleSlice.actions
+export let { setAlba, prevWeek, nextWeek, onTabCheckTIme, initTimeBox } = scheduleSlice.actions
 
 export default scheduleSlice;
