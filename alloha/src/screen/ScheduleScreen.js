@@ -1,18 +1,38 @@
 
 import { StyleSheet, Text, View, TouchableOpacity} from 'react-native';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import { getWeekNumber } from '../util/moment';
 import WeekDate from '../components/schedule/WeekDate';
 import WeekAlba from '../components/schedule/WeekAlba';
 import { useSelector, useDispatch } from 'react-redux';
-import { initTimeBox, nextWeek, prevWeek, setAlba } from '../../redux/slices/schedule';
+import { initTimeBox, nextWeek, prevWeek, setAlba, setScheduleCstCo, setScheduleStoreList } from '../../redux/slices/schedule';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
+import { Picker } from '@react-native-picker/picker';
+import axios from 'axios';
+import { URL } from "@env";
 
 export default function ScheduleScreen({navigation}) {
-    const albas = useSelector((state)=>state.schedule.albas)
-    const weekNumber = useSelector((state)=>state.schedule.weekNumber)
+    const userId = useSelector((state) => state.login.userId);
+    const albas = useSelector((state)=>state.schedule.albas);
+    const weekNumber = useSelector((state)=>state.schedule.weekNumber);
+    const cstCo = useSelector((state)=>state.schedule.cstCo);
+    const storeList = useSelector((state)=>state.schedule.storeList);
     const dispatch = useDispatch();
+
+
+    const getStoreList = async () => {
+        await axios.get(URL+`/api/v1/getStoreList`, {params:{userId:userId,}})
+        .then((res)=>{
+            dispatch(setScheduleStoreList({storeList:res.data.result}));
+        }).catch(function (error) {
+            console.log(error);
+            alert("점포를 조회하는중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
+        })
+    }
+    useEffect(()=>{
+        getStoreList();
+    }, [])
 
     useEffect(()=>{
         navigation.setOptions({title:"시간표"})
@@ -50,9 +70,28 @@ export default function ScheduleScreen({navigation}) {
             ]
         },
     ];
-
+    const [category, setCategory] = useState(1003);
     return (
         <View style={styles.container}>
+            <Picker
+                selectedValue = {cstCo}
+                onValueChange = {(itemValue, itemIndex) => 
+                    dispatch(setScheduleCstCo({cstCo:value}))
+                }
+                style = {{
+                    width: 200,
+                    height: 50,
+                }}>
+                {
+                    storeList.map((el, idx)=>{
+                        console.log("ASdfsadf");
+                        console.log(el);
+                        return <Picker.Item key={idx} label={el.ADDR} value={el.CSTCO}/>
+                    })
+                }
+            </Picker>
+           
+            
             <View style={{...styles.card, padding:5, width:"100%"}}>
                 <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:15}}>
                     <View style={{flexDirection:"row"}}>

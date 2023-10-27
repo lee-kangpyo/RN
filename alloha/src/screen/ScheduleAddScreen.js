@@ -12,6 +12,7 @@ export default function ScheduleAddScreen({navigation}) {
     const totalCoverTime = useSelector((state)=>state.schedule.totalCoverTime);
     const weekNumber = useSelector((state)=>state.schedule.weekNumber);
 
+
     useEffect(()=>{
         navigation.setOptions({title:"시간표 일별 등록"});
     }, [navigation]);

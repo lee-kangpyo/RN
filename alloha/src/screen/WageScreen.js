@@ -129,8 +129,6 @@ export default function WageScreen({navigation, route}) {
                             style={{fontSize:"16"}}
                             selectedValue={selCstCo}
                             onValueChange={(itemValue, itemIndex) =>{
-                                console.log("@!@#!$!")
-                                console.log(selectLIst.filter((el)=>{return el.CSTCO == itemValue}))
                                     setSelCstco(itemValue)
                                     setSelectedStore(selectLIst.filter((el)=>{return el.CSTCO == itemValue})[0])
                                 }
