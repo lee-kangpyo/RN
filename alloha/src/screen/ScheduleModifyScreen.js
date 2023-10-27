@@ -6,12 +6,13 @@ import WeekDate from '../components/schedule/WeekDate';
 import WeekCheckTime from '../components/schedule/WeekCheckTime';
 import { Ionicons } from '@expo/vector-icons';
 
-export default function ScheduleAddScreen({navigation}) {
+export default function ScheduleModifyScreen({navigation, route}) {
     const checkBox = useSelector((state)=>state.schedule.timeBox);
     const totalTime = useSelector((state)=>state.schedule.totalTime);
     const totalCoverTime = useSelector((state)=>state.schedule.totalCoverTime);
     const weekNumber = useSelector((state)=>state.schedule.weekNumber);
-
+    const { alba } = route.params;
+    console.log(alba);
 
     useEffect(()=>{
         navigation.setOptions({title:"시간표 일별 등록"});
@@ -33,13 +34,13 @@ export default function ScheduleAddScreen({navigation}) {
         
     return (
         <View style={styles.container}>
-            <Text>알바이름 등록</Text>
-            <TextInput style={styles.input}/>
-            <View style={{flexDirection:"row", justifyContent:"space-between", width:"100%", paddingHorizontal:15}}>
-                <Text>{weekNumber.month}월 {weekNumber.number}주차 시간표</Text>
-                <View style={{flexDirection:"row"}}>
-                    <Text>주간 총 근무시간 : {totalTime}, </Text>
-                    <Text style={{color:"red"}}>대타근무 : {totalCoverTime}</Text>
+            <View style={{padding:15}}>
+                <Text>{alba.name}님의 {weekNumber.month}월 {weekNumber.number}주차 시간표</Text>
+                <View style={{flexDirection:"row", justifyContent:"space-between", width:"100%", paddingTop:10}}>
+                    <View style={{flexDirection:"row"}}>
+                        <Text>주간 총 근무시간 : {totalTime}, </Text>
+                        <Text style={{color:"red"}}>대타근무 : {totalCoverTime}</Text>
+                    </View>
                 </View>
             </View>
             <WeekDate sBlank={1.45}/>
