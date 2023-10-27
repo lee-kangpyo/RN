@@ -18,6 +18,7 @@ export default function ScheduleScreen({navigation}) {
     const weekNumber = useSelector((state)=>state.schedule.weekNumber);
     const cstCo = useSelector((state)=>state.schedule.cstCo);
     const storeList = useSelector((state)=>state.schedule.storeList);
+    const isScheduleEditable = useSelector((state)=>state.schedule.week == state.schedule.eweek)
     const dispatch = useDispatch();
 
 
@@ -103,23 +104,37 @@ export default function ScheduleScreen({navigation}) {
                             <Ionicons name="caret-forward-outline" size={20} color="black" />
                         </TouchableOpacity>
                     </View>
-                    <TouchableOpacity onPress={()=>dispatch(setAlba(alba))}>
-                        <Text>지난 시간표 가져오기</Text>
-                    </TouchableOpacity>
+                    {
+                        (isScheduleEditable)?
+                            <TouchableOpacity onPress={()=>dispatch(setAlba(alba))}>
+                                <Text>지난 시간표 가져오기</Text>
+                            </TouchableOpacity>
+
+                        :
+                            null
+                    }
                 </View>
                 <WeekDate sBlank={2} eBlank={2}/>
                 <ScrollView>
                     {albas.map((item, idx)=>{
                         return <WeekAlba key={idx} alba={item} />
                     })}
-                    <TouchableOpacity onPress={()=>{
-                            dispatch(initTimeBox());
-                            navigation.push("scheduleAdd");
-                        }}>
-                        <View style={styles.box}>
-                            <Text style={{fontSize:24}}>+</Text>
-                        </View>
-                    </TouchableOpacity>
+
+                    {
+                        (isScheduleEditable)?
+                            <TouchableOpacity onPress={()=>{
+                                    dispatch(initTimeBox());
+                                    navigation.push("scheduleAdd");
+                                }}>
+                                <View style={styles.box}>
+                                    <Text style={{fontSize:24}}>+</Text>
+                                </View>
+                            </TouchableOpacity>
+
+                        :
+                            null
+                    }
+                    
                 </ScrollView>
             </View>
             <View>
