@@ -1,19 +1,20 @@
 
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, FlatList} from 'react-native';
-import React, { useEffect, Suspense, useRef, useMemo } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, FlatList} from 'react-native';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import WeekDate from '../components/schedule/WeekDate';
 import WeekCheckTime from '../components/schedule/WeekCheckTime';
-import { Ionicons } from '@expo/vector-icons'; 
-
+import { Ionicons } from '@expo/vector-icons';
 
 export default function ScheduleAddScreen({navigation}) {
-    const checkBox = useSelector((state)=>state.schedule.timeBox)
-    const totalTime = useSelector((state)=>state.schedule.totalTime)
-    const totalCoverTime = useSelector((state)=>state.schedule.totalCoverTime)
+    const checkBox = useSelector((state)=>state.schedule.timeBox);
+    const totalTime = useSelector((state)=>state.schedule.totalTime);
+    const totalCoverTime = useSelector((state)=>state.schedule.totalCoverTime);
+    const weekNumber = useSelector((state)=>state.schedule.weekNumber);
+
     useEffect(()=>{
-        navigation.setOptions({title:"시간표 일별 등록"})
-    }, [navigation])
+        navigation.setOptions({title:"시간표 일별 등록"});
+    }, [navigation]);
 
     function arraysAreEqual(arr1, arr2) {
         if (arr1.length !== arr2.length) {
@@ -22,7 +23,7 @@ export default function ScheduleAddScreen({navigation}) {
         
         for (let i = 0; i < arr1.length; i++) {
             if (arr1[i] !== arr2[i]) {
-            return false; // 최소한 하나의 값이 다르면 다른 배열
+                return false; // 최소한 하나의 값이 다르면 다른 배열
             }
         }
         
@@ -33,8 +34,13 @@ export default function ScheduleAddScreen({navigation}) {
         <View style={styles.container}>
             <Text>알바이름 등록</Text>
             <TextInput style={styles.input}/>
-            <Text>시간표 등록</Text>
-            <Text>주간 총 근무시간 : {totalTime}, 대타근무 : {totalCoverTime}</Text>
+            <View style={{flexDirection:"row", justifyContent:"space-between", width:"100%", paddingHorizontal:15}}>
+                <Text>{weekNumber.month}월 {weekNumber.number}주차 시간표</Text>
+                <View style={{flexDirection:"row"}}>
+                    <Text>주간 총 근무시간 : {totalTime}, </Text>
+                    <Text style={{color:"red"}}>대타근무 : {totalCoverTime}</Text>
+                </View>
+            </View>
             <WeekDate sBlank={1.45}/>
             <FlatList
                 keyExtractor={(item, index) => index.toString()}
@@ -49,7 +55,7 @@ export default function ScheduleAddScreen({navigation}) {
             />
             <View style={styles.hr}/>
             <TouchableOpacity style={styles.btn} onPress={()=>alert("저장하기 기능 구현 필요")}>
-                <Text>저장</Text>
+                <Text style={{fontSize:16, fontWeight:"bold"}}>저장</Text>
             </TouchableOpacity>
             <View>
                 <Text>선택한 요일과 시간 옆에 (-) 버튼을 클릭하여 근무시간으로 등록하세요</Text>
@@ -68,8 +74,9 @@ export default function ScheduleAddScreen({navigation}) {
 }
 
 
+
 const styles = StyleSheet.create({
-    container:{ flex: 1, alignItems: 'center', padding:5},
+    container:{ flex: 1, alignItems: 'flex-start', padding:5},
     hr:{
         marginVertical:10,
         width:"100%",
