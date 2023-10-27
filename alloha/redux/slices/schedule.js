@@ -4,7 +4,8 @@ import { getNextWeek, getWeekNumber, movePrevWeek, moveNextWeek } from '../../sr
 const week = getNextWeek()
 
 const initialState = {
-  
+  cstCo:"",
+  storeList:[],
   // 시간표
   week : week,
   weekNumber:getWeekNumber(week),
@@ -80,12 +81,19 @@ const scheduleSlice = createSlice({
         state.totalTime = 0;
         state.totalCoverTime = 0;
         state.timeBox = new Array(48).fill(null).map(() => [0, 0, 0, 0, 0, 0, 0]);
+    },
+    setScheduleCstCo(state, action){
+        state.cstCo = action.payload.cstCo;
+    },
+    setScheduleStoreList(state, action){
+        state.storeList = action.payload.storeList;
+        state.cstCo = action.payload.storeList[0].CSTCO;
     }
 
   },
 });
 
 //외부에서 reducer를 사용하기위해 export
-export let { setAlba, prevWeek, nextWeek, onTabCheckTIme, initTimeBox } = scheduleSlice.actions
+export let { setAlba, prevWeek, nextWeek, onTabCheckTIme, initTimeBox, setScheduleCstCo, setScheduleStoreList } = scheduleSlice.actions
 
 export default scheduleSlice;
