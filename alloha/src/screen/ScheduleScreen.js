@@ -7,6 +7,7 @@ import WeekAlba from '../components/schedule/WeekAlba';
 import { useSelector, useDispatch } from 'react-redux';
 import { initTimeBox, nextWeek, prevWeek, setAlba } from '../../redux/slices/schedule';
 import { ScrollView } from 'react-native-gesture-handler';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function ScheduleScreen({navigation}) {
     const albas = useSelector((state)=>state.schedule.albas)
@@ -54,13 +55,15 @@ export default function ScheduleScreen({navigation}) {
         <View style={styles.container}>
             <View style={{...styles.card, padding:5, width:"100%"}}>
                 <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:15}}>
-                    <TouchableOpacity onPress={()=> dispatch(prevWeek())}>
-                        <Text>prev</Text>
-                    </TouchableOpacity>
-                    <Text>{weekNumber.month}월 {weekNumber.number}주차 일정표</Text>
-                    <TouchableOpacity onPress={()=> dispatch(nextWeek())}>
-                        <Text>next</Text>
-                    </TouchableOpacity>
+                    <View style={{flexDirection:"row"}}>
+                        <TouchableOpacity onPress={()=> dispatch(prevWeek())}>
+                            <Ionicons name="caret-back-outline" size={20} color="black" />
+                        </TouchableOpacity>
+                        <Text>{weekNumber.month}월 {weekNumber.number}주차 일정표</Text>
+                        <TouchableOpacity onPress={()=> dispatch(nextWeek())}>
+                            <Ionicons name="caret-forward-outline" size={20} color="black" />
+                        </TouchableOpacity>
+                    </View>
                     <TouchableOpacity onPress={()=>dispatch(setAlba(alba))}>
                         <Text>지난 시간표 가져오기</Text>
                     </TouchableOpacity>

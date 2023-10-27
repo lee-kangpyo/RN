@@ -21,7 +21,13 @@ function ContentBox({item}){
     return (
         <View style={{...styles.box, width:boxWidth}}>
             <Text style={{fontSize:boxWidth*0.3}}>{item.txt}</Text>
-            <Text style={{fontSize:boxWidth*0.3, color:"red"}}>{item.subTxt}</Text>
+            {
+                (item.subTxt == "")?
+                    null
+                :
+                <Text style={{fontSize:boxWidth*0.3, color:"red"}}>{item.subTxt}</Text>
+            }
+            
         </View>
     );
 }
@@ -40,7 +46,13 @@ function TotalBox({sum, sumSub}){
     return (
         <View style={{...styles.box, flex:2, width:boxWidth, backgroundColor:"#F9F3CC"}}>
             <Text style={{fontSize:boxWidth*0.3}}>{sum}</Text>
-            <Text style={{fontSize:boxWidth*0.3, color:"red"}}>{sumSub}</Text>
+            {
+                (sumSub == "")?
+                    null
+                :
+                <Text style={{fontSize:boxWidth*0.3, color:"red"}}>{sumSub}</Text>
+            }
+            
         </View>
     );
 }
@@ -50,6 +62,7 @@ const styles = StyleSheet.create({
     //container:{ flex: 1, justifyContent: 'center', alignItems: 'center'},
     container:{ flexDirection:"row",  },
     box:{
+        height:50,
         flex:1,
         paddingVertical:5,
         margin:1,
@@ -57,6 +70,7 @@ const styles = StyleSheet.create({
         borderColor: 'gray', // 테두리 색상
         borderRadius: 0, // 테두리 모서리 둥글게 
         alignItems:"center",
+        justifyContent:"center",
     },
     blank:{
         flex:1,
