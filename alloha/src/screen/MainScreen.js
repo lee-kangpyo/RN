@@ -25,7 +25,7 @@ import ComunityScreen from './ComunityScreen';
 import ModifyStoreScreen from './ModifyStoreScreen';
 import EtcScreen from './EtcScreen';
 import ScheduleScreen from './ScheduleScreen';
-import ScheduleAddScreen from './ScheduleAddScreen';
+import ScheduleModifyScreen from './ScheduleModifyScreen';
 import ScheduleViewScreen from './ScheduleViewScreen';
 
 const Tab = createBottomTabNavigator();
@@ -143,7 +143,7 @@ function ScheduleStack() {
           }
         }
       />
-      <Stack.Screen name="scheduleAdd" component={ScheduleAddScreen} />
+      <Stack.Screen name="scheduleModify" component={ScheduleModifyScreen} />
       <Stack.Screen name="scheduleView" component={ScheduleViewScreen} />
       
     </Stack.Navigator>

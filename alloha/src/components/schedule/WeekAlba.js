@@ -1,20 +1,60 @@
-import { StyleSheet, Dimensions , Text, View } from 'react-native';
+import { StyleSheet, Dimensions , Text, View, TouchableOpacity, Alert } from 'react-native';
 import { getCurrentWeek } from '../../util/moment';
+import { useNavigation } from '@react-navigation/native';
 
 export default function WeekAlba({alba}) {
-    
+    const navigator = useNavigation();
+    const onPressed = () =>{
+        return Alert.alert(
+            "알바생 "+alba.name+"님을 선택하셨습니다.",
+            "수정 또는 삭제",
+            [
+                {
+                    text: "삭제",
+                    onPress: () => confirm("삭제", "정말 삭제 하시겠습니까?", ()=>delAlba(alba)),
+                    style: "cancel"
+                },
+                { text: "수정", onPress: () => modifyAlba(alba) },
+            ],
+            { cancelable: false }
+        );
+    };
+
+    const confirm = (title, content, confirm) => {
+        return Alert.alert(
+            title, content,
+            [
+                {text:"네", onPress:()=>confirm()},
+                {text:"아니오"}
+            ]
+        )
+    }
+
+    const delAlba = (alba)=> {
+        console.log(alba.name + "삭제")
+    };
+
+    const modifyAlba = (alba)=> {
+        console.log(alba.name + "수정")
+        navigator.navigate("scheduleModify", {alba:alba})
+    };
+
   return (
-    <View style={styles.container}>
-        <NameBox name={alba.name}/>
-        {
-            alba.list.map((item, idx)=>{
-                return <ContentBox key={idx} item={item} />
-            })
-        }
-        <TotalBox sum={alba.sum} sumSub={alba.sumSub} />
-    </View>
+    <TouchableOpacity onPress={onPressed}>
+        <View style={styles.container}>
+            <NameBox name={alba.name}/>
+            {
+                alba.list.map((item, idx)=>{
+                    return <ContentBox key={idx} item={item} />
+                })
+            }
+            <TotalBox sum={alba.sum} sumSub={alba.sumSub} />
+        </View>
+    </TouchableOpacity>
   );
 }
+
+
 
 function ContentBox({item}){
     const boxWidth = Dimensions.get('window').width / 9; // 박스의 너비
