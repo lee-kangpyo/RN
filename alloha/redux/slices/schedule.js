@@ -7,6 +7,8 @@ const initialState = {
   cstCo:"",
   storeList:[],
   // 시간표
+  
+  eweek : week,
   week : week,
   weekNumber:getWeekNumber(week),
   albas: [
@@ -53,15 +55,16 @@ const scheduleSlice = createSlice({
         state.albas = action.payload;
     },
     prevWeek(state, action){
-        console.log("prevWeek");
         const prev = movePrevWeek(state.week);
         state.week = prev;
         state.weekNumber = getWeekNumber(prev)
     },
     nextWeek(state, action){
-        const next = moveNextWeek(state.week);
-        state.week = next;
-        state.weekNumber = getWeekNumber(next)
+        if(state.eweek != state.week){
+            const next = moveNextWeek(state.week);
+            state.week = next;
+            state.weekNumber = getWeekNumber(next)
+        }
     },
 
     onTabCheckTIme(state, action){
@@ -88,8 +91,7 @@ const scheduleSlice = createSlice({
     setScheduleStoreList(state, action){
         state.storeList = action.payload.storeList;
         state.cstCo = action.payload.storeList[0].CSTCO;
-    }
-
+    },
   },
 });
 
