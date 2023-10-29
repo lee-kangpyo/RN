@@ -13,7 +13,7 @@ import { URL } from "@env";
 import { useFocusEffect, useIsFocused, useNavigation } from '@react-navigation/native';
 import { getWeekList } from '../util/moment';
 
-export default function ScheduleScreen({navigation}) {
+export default function ResultScreen({navigation}) {
     const userId = useSelector((state) => state.login.userId);
     const albas = useSelector((state)=>state.schedule.albas);
     const weekNumber = useSelector((state)=>state.schedule.weekNumber);
@@ -74,9 +74,9 @@ export default function ScheduleScreen({navigation}) {
 
     useEffect(()=>{
         navigation.setOptions({
-            title:"근무 계획",
+            title:"근무 결과", 
             headerStyle: {
-                backgroundColor: "#A0E9FF",
+                backgroundColor: "#FFDFDF",
             },
             headerTintColor: "black",
         })
@@ -84,19 +84,16 @@ export default function ScheduleScreen({navigation}) {
     
     return (
         <View style={styles.container}>
-            <View style = {{width: "100%",height: 60, borderWidth:1, borderColor:"black", borderRadius:10, marginBottom:10}}>
-                <Picker
-                    selectedValue = {cstCo}
-                    onValueChange = {(cstCo) => dispatch(setScheduleCstCo({cstCo:cstCo}))}
-                    >
-                    {
-                        storeList.map((el, idx)=>{
-                            console.log(el);
-                            return <Picker.Item key={idx} label={el.CSTNA} value={el.CSTCO}/>
-                        })
-                    }
-                </Picker>
-            </View>
+            <Picker
+                selectedValue = {cstCo}
+                onValueChange = {(cstCo) => dispatch(setScheduleCstCo({cstCo:cstCo}))}
+                style = {{width: 200,height: 50, }}>
+                {
+                    storeList.map((el, idx)=>{
+                        return <Picker.Item key={idx} label={el.ADDR} value={el.CSTCO}/>
+                    })
+                }
+            </Picker>
             <View style={{...styles.card, padding:5, width:"100%"}}>
                 <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:15}}>
                     <View style={{flexDirection:"row"}}>
