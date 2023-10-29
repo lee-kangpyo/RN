@@ -1,23 +1,35 @@
 import { StyleSheet, Dimensions , Text, View, TouchableOpacity, Alert } from 'react-native';
-import { getCurrentWeek } from '../../util/moment';
+import { getCurrentWeek, getWeekList } from '../../util/moment';
 import { useNavigation } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
+import axios from 'axios';
+import { URL } from "@env";
 
-export default function WeekAlba({alba}) {
+export default function WeekAlba({alba, onDel}) {
+    const cstCo = useSelector((state)=>state.schedule.cstCo);
+    const week = useSelector((state)=>state.schedule.week)
+    const weekList = getWeekList(week);
     const navigator = useNavigation();
+    const isdeny = useSelector((state)=>state.schedule.week == state.schedule.eweek);
     const onPressed = () =>{
-        return Alert.alert(
-            "알바생 "+alba.name+"님을 선택하셨습니다.",
-            "수정 또는 삭제",
-            [
-                {
-                    text: "삭제",
-                    onPress: () => confirm("삭제", "정말 삭제 하시겠습니까?", ()=>delAlba(alba)),
-                    style: "cancel"
-                },
-                { text: "수정", onPress: () => modifyAlba(alba) },
-            ],
-            { cancelable: false }
-        );
+        
+        return (
+            (isdeny)?Alert.alert(
+                "알바생 "+alba.userNa+"님을 선택하셨습니다.",
+                "수정 또는 삭제",
+                [
+                    {
+                        text: "삭제",
+                        onPress: () => confirm("삭제", "정말 삭제 하시겠습니까?", ()=>delAlba(alba)),
+                        style: "cancel"
+                    },
+                    { text: "수정", onPress: () => modifyAlba(alba) },
+                ],
+                { cancelable: false }
+            )
+            :
+            null
+        )
     };
 
     const confirm = (title, content, confirm) => {
@@ -30,25 +42,40 @@ export default function WeekAlba({alba}) {
         )
     }
 
-    const delAlba = (alba)=> {
-        console.log(alba.name + "삭제")
+    const delAlba = async (alba)=> {
+        param = {cls:"AlbaDelete", cstCo:cstCo, userId:alba.userId, ymdFr:weekList[0].format("yyyyMMDD"), ymdTo:weekList[6].format("yyyyMMDD"), wCnt:"0",};
+        await axios.get(URL+`/api/v1/getWeekSchedule`, {params:param})
+        .then((res)=>{
+            onDel();
+            alert("삭제가 완료되었습니다.");
+        }).catch(function (error) {
+            console.log(error);
+            alert("삭제하는중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
+        })
+        // exec PR_PLYA01_SCHMNG 'AlbaDelete', 16, 'Qpqpqpqp', '20231105', '20231111', 0
+        
     };
 
     const modifyAlba = (alba)=> {
-        console.log(alba.name + "수정")
-        navigator.navigate("scheduleModify", {alba:alba})
+        navigator.navigate("scheduleModify", {alba:alba, stat:"search"})
     };
-
   return (
     <TouchableOpacity onPress={onPressed}>
         <View style={styles.container}>
-            <NameBox name={alba.name}/>
+            <NameBox name={alba.userNa}/>
             {
-                alba.list.map((item, idx)=>{
-                    return <ContentBox key={idx} item={item} />
+                weekList.map((item, idx)=>{
+                    const ymd = item.format("YYYYMMDD");
+                    const filter = alba.list.filter((item)=>item.YMD == ymd)
+                    if (filter.length > 0){
+                        return <ContentBox key={idx} item={filter} />
+                    }else{
+                        return <ContentBox key={idx} blank={true} />
+                    }
+                    
                 })
             }
-            <TotalBox sum={alba.sum} sumSub={alba.sumSub} />
+            <TotalBox sum={alba.sumG} sumSub={alba.sumS} />
         </View>
     </TouchableOpacity>
   );
@@ -56,18 +83,38 @@ export default function WeekAlba({alba}) {
 
 
 
-function ContentBox({item}){
+function ContentBox({item, blank=false}){
     const boxWidth = Dimensions.get('window').width / 9; // 박스의 너비
+    var gg = [];
+    var ss = [];
+    if(!blank){
+        gg = item.filter((el)=>el && el.JOBCL == "G");
+        ss = item.filter((el)=>el && el.JOBCL == "S");
+    }
+    const g = gg.reduce((total, item) => total + (item.JOBDURE || 0), 0);
+    const s = ss.reduce((total, item) => total + (item.JOBDURE || 0), 0);
     return (
+
         <View style={{...styles.box, width:boxWidth}}>
-            <Text style={{fontSize:boxWidth*0.3}}>{item.txt}</Text>
             {
-                (item.subTxt == "")?
-                    null
+                (blank)?
+                    <Text style={{fontSize:boxWidth*0.3}}>-</Text>    
                 :
-                <Text style={{fontSize:boxWidth*0.3, color:"red"}}>{item.subTxt}</Text>
+                    <>
+                        {
+                            (g > 0)?
+                                <Text style={{fontSize:boxWidth*0.3}}>{g}</Text>
+                            :
+                                null
+                        }
+                        {
+                            (s > 0)?
+                                <Text style={{fontSize:boxWidth*0.3, color:"red"}}>{s}</Text>
+                            :
+                                null
+                        }
+                    </>
             }
-            
         </View>
     );
 }

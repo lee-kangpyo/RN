@@ -5,7 +5,7 @@ const {execSql, execTranSql} = require("../utils/excuteSql");
 const { login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, 
         getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, jobChk, salary,
         insertJobChk, geofencingTest, checkJobChk, insert_Uuid_Token, autoLogin, getUUID, checkjobtotal, 
-        getTermsDetail, updateTaxNo, modifyStoreInfo} = require('./../query/auth'); 
+        getTermsDetail, updateTaxNo, modifyStoreInfo, easyAlbaMng, albaSchedulemanager2, albaSchedulemanager} = require('./../query/auth'); 
 const axios = require('axios');
 
 const dotenv = require('dotenv');
@@ -82,7 +82,6 @@ router.post("/v1/saveUser", async(req, res, next)=>{
 router.get("/v1/getStoreList", async (req, res, next) => {
     const {userId} = req.query;
     const result = await execSql(getStoreList, {userId:userId})
-    console.log(result.recordset);
     res.json({result:result.recordset, status_code:"00"});
 })
 
@@ -470,6 +469,63 @@ router.get("/v1/getSalaryDetail", async (req, res, next) => {
     res.status(200).json({resultCode:"00", salaryDetail:result.recordset, slalryWeek:result3.recordset, salaryTotal:result2.recordset[0]});
 })
 
+router.post("/v1/easyAlbaMng", async (req, res, next) => {
+    try {
+        const {cls, cstCo, userName, hpNo, email} = req.body;
+        const result = await execSql(easyAlbaMng, {cls:cls, cstCo:cstCo, userName:userName, hpNo:hpNo, email:email});
+        res.status(200).json({result:result.recordset, resultCode:"00"});
+    } catch (error) {
+        console.log(error.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+})
+
+router.get("/v1/getWeekSchedule", async(req, res, next) => {
+    try{
+        console.log("getWeekSchedule");
+        const {cls, cstCo,  userId, ymdFr, ymdTo, wCnt} = req.query;
+        const param = {cls:cls, cstCo:cstCo, userId:userId, ymdFr:ymdFr, ymdTo:ymdTo, wCnt:wCnt};
+        const result = await execSql(albaSchedulemanager, param);
+        res.status(200).json({result:result.recordset, resultCode:"00"});
+    } catch (error) {
+        console.log(error.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+})
+
+router.get("/v1/searchAlbaChedule", async (req, res, next) => {
+    try{
+        const { cstCo,  userId, ymdFr, ymdTo } = req.query;
+        const param = {cls:"WeekAlbaScheduleSearch", cstCo:cstCo, userId:userId, ymdFr:ymdFr, ymdTo:ymdTo, jobCl:"", sTime:"", eTime:""};
+        const result = await execSql(albaSchedulemanager2, param);
+        res.status(200).json({result:result.recordset, resultCode:"00"});
+    } catch (error) {
+        console.log(error.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+})
+
+router.post("/v1/saveAlbaChedule", async (req, res, next) => {
+    try {
+        const{cls, cstCo, userId, ymdFr, ymdTo, data} = req.body;
+        console.log(userId)
+        // 초기화
+        const initResult = await execSql(albaSchedulemanager2, {cls:"WeekAlbaScheduleClear", jobCl:"", sTime:"", eTime:"", cstCo:cstCo, userId:userId, ymdFr:ymdFr, ymdTo:ymdTo})
+        // insert
+        const basic = {"cls":cls, "cstCo":cstCo, "userId":userId};
+        for (var idx in data){
+            const item = data[idx];
+            const param = {...basic, ...item};
+            await execSql(albaSchedulemanager2, param);
+        }
+
+        res.status(200).json({result:"다녀옴", resultCode:"00"});
+    } catch (error) {
+        console.log(error.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+    
+})
 
 module.exports = router;
 

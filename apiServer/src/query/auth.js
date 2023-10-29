@@ -1,4 +1,5 @@
 const login = `
+import WeekAlba from './../../../alloha/src/components/schedule/WeekAlba';
     SELECT	PWDCOMPARE(@passWord, a.CRPYPW) pwCheck, a.ownrYn, a.mnrgYn, a.crewYn, a.userNa
     FROM	PLYMUSER a
     WHERE	a.USERID = @userId
@@ -198,4 +199,16 @@ const modifyStoreInfo = `
     WHERE CSTCO = @cstCo
 `
 
-module.exports = {login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, insertJobChk, geofencingTest, checkJobChk, insert_Uuid_Token, autoLogin, getUUID, jobChk, salary, getTermsDetail, updateTaxNo, modifyStoreInfo}
+const easyAlbaMng = `
+    exec PR_PLYM01_USERMNG @cls, @cstCo, '', '', @userName, @hpNo, @email, ''
+`
+
+const albaSchedulemanager = `
+    exec PR_PLYA01_SCHMNG  @cls, @cstCo, @userId, @ymdFr, @ymdTo, @wCnt
+`
+
+const albaSchedulemanager2 = `
+    exec PR_PLYA02_ALBASCHMNG @cls, @cstCo, @userId, @ymdFr, @ymdTo, @jobCl, @sTime, @eTime
+`
+
+module.exports = {login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, insertJobChk, geofencingTest, checkJobChk, insert_Uuid_Token, autoLogin, getUUID, jobChk, salary, getTermsDetail, updateTaxNo, modifyStoreInfo, easyAlbaMng, albaSchedulemanager, albaSchedulemanager2}
