@@ -20,7 +20,7 @@ export default function WeekCheckTime({time, content, x}) {
 const ContentBox = React.memo(function ContentBox({x, y, value}){
     const dispatch = useDispatch();
     const val = (value == "0")?"-":value;
-    const color = (val == 1)?"balck":"red"
+    const color = (val == 1)?"black":"red"
     const boxWidth = Dimensions.get('window').width / 9; // 박스의 너비
     return (
         <TouchableOpacity onPress={()=>dispatch(onTabCheckTIme({x:x, y:y, val:value}))}>

@@ -27,6 +27,7 @@ import EtcScreen from './EtcScreen';
 import ScheduleScreen from './ScheduleScreen';
 import ScheduleModifyScreen from './ScheduleModifyScreen';
 import ScheduleViewScreen from './ScheduleViewScreen';
+import EasyRegisterAlbaScreen from './EasyRegisterAlbaScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -145,7 +146,7 @@ function ScheduleStack() {
       />
       <Stack.Screen name="scheduleModify" component={ScheduleModifyScreen} />
       <Stack.Screen name="scheduleView" component={ScheduleViewScreen} />
-      
+      <Stack.Screen name="registerAlba" component={EasyRegisterAlbaScreen} />
     </Stack.Navigator>
   );
 }

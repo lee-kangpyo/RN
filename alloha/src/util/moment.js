@@ -57,6 +57,12 @@ export const getWeekNumber = (dateString) => {
     return {"month":month, "number":weeksSinceStartOfMonth};
 }
 
+export const getDayWeekNumber = (dateStr) => {
+   // const dateStr = "20231105"; // 분석할 날짜 문자열
+    const date = moment(dateStr, 'YYYYMMDD'); // 날짜 문자열을 Moment 객체로 변환
+    const dayOfWeekNumber = date.day(); // 요일(숫자) 반환
+    return dayOfWeekNumber;
+}
 
 export const getCurrentWeek = () => {
 
