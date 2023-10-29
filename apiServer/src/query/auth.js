@@ -1,5 +1,4 @@
 const login = `
-import WeekAlba from './../../../alloha/src/components/schedule/WeekAlba';
     SELECT	PWDCOMPARE(@passWord, a.CRPYPW) pwCheck, a.ownrYn, a.mnrgYn, a.crewYn, a.userNa
     FROM	PLYMUSER a
     WHERE	a.USERID = @userId
