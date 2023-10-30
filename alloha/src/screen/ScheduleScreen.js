@@ -27,6 +27,7 @@ export default function ScheduleScreen({navigation}) {
     const [modalVisible, setModalVisible] = useState(false);
 
     const getWeekSchedule = async () => {
+        console.log("getWeekSchedule2");
         await axios.get(URL+`/api/v1/getWeekSchedule`, {params:{cls:"WeekScheduleSearch", cstCo:cstCo, userId:userId, ymdFr:weekList[0].format("yyyyMMDD"), ymdTo:weekList[6].format("yyyyMMDD"), wCnt:"0",}})
         .then((res)=>{
             dispatch(setAlba({data:res.data.result}))
@@ -55,22 +56,18 @@ export default function ScheduleScreen({navigation}) {
     
     useEffect(() => {
         if (isFocused) {
-        console.log('화면이 활성화됨');
-        if(cstCo != "") getWeekSchedule();
+            console.log('화면이 활성화됨');
+            if(cstCo != "") getWeekSchedule();
         }
-    }, [isFocused]);
+    }, [isFocused, cstCo, week]);
+
+    // useEffect(()=>{
+    //     if(cstCo != "") getWeekSchedule();
+    // }, [cstCo, week])
 
     useEffect(()=>{
         getStoreList();
     }, [])
-
-    useEffect(()=>{
-        if(cstCo != "") getWeekSchedule();
-    }, [cstCo])
-
-    useEffect(()=>{
-        getWeekSchedule();
-    }, [week])
 
     useEffect(()=>{
         navigation.setOptions({
@@ -91,7 +88,6 @@ export default function ScheduleScreen({navigation}) {
                     >
                     {
                         storeList.map((el, idx)=>{
-                            console.log(el);
                             return <Picker.Item key={idx} label={el.CSTNA} value={el.CSTCO}/>
                         })
                     }
@@ -109,7 +105,7 @@ export default function ScheduleScreen({navigation}) {
                         </TouchableOpacity>
                     </View>
                     {
-                        (isScheduleEditable)?
+                        (false && isScheduleEditable)?
                             <TouchableOpacity onPress={()=>dispatch(setAlba(alba))}>
                                 <Text>지난 시간표 가져오기</Text>
                             </TouchableOpacity>
@@ -118,7 +114,7 @@ export default function ScheduleScreen({navigation}) {
                             null
                     }
                 </View>
-                <WeekDate sBlank={2} eBlank={2}/>
+                <WeekDate sBlank={2} eBlank={2} week={week}/>
                 <ScrollView>
                     {
                         (albas.length == 0)?
@@ -127,7 +123,8 @@ export default function ScheduleScreen({navigation}) {
                             </View>
                         :
                             albas.map((item, idx)=>{
-                                return <WeekAlba key={idx} alba={item} onDel={getWeekSchedule} />
+                                console.log(item)
+                                return <WeekAlba key={idx} alba={item} week={week} onDel={getWeekSchedule} />
                             })
                     }
                     {

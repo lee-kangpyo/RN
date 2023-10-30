@@ -1,21 +1,83 @@
 
 import { StyleSheet, Text, View, TouchableOpacity, Platform} from 'react-native';
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import ViewShot from "react-native-view-shot";
 import * as Sharing from 'expo-sharing';
 import { Ionicons } from '@expo/vector-icons';
+import { getDayWeekNumber, getWeekList } from '../util/moment';
+import axios from 'axios';
+import { URL } from "@env";
 
 export default function ScheduleViewScreen({navigation}) {
     const ref = useRef();
     const albas = useSelector((state)=>state.schedule.albas)
+    const cstCo = useSelector((state)=>state.schedule.cstCo);
+    const week = useSelector((state)=>state.schedule.week)
+    const weekList = getWeekList(week);
     const dispatch = useDispatch();
+
+    const [weekSchSearch, setWeekSchSearch] = useState([])
+
+    
+    const getWeekSchedule2 = async () => {
+
+        const param = {cls:"WeekScheduleSearch2", cstCo:cstCo, userId:"", ymdFr:weekList[0].format("yyyyMMDD"), ymdTo:weekList[6].format("yyyyMMDD"), wCnt:"0",};
+        //exec PR_PLYA01_SCHMNG 'WeekScheduleSearch2', 24, '', '20231022', '20231028', 0
+        await axios.get(URL+`/api/v1/getWeekSchedule`, {params:param})
+        .then((res)=>{
+            
+            const data = handelParam(res.data.result)
+            setWeekSchSearch(data)
+            
+
+        }).catch(function (error) {
+            console.log(error);
+            alert("알바 일정을 조회하는중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
+        })
+    }
+
+    const handelParam = (data) => {
+        // 데이터를 YMD 및 USERID 값으로 그룹화
+        const groupedData = data.reduce((result, item) => {
+            const YMD = item.YMD;
+            const USERID = item.USERID;
+            const USERNA = item.USERNA;  
+        
+            // YMD와 USERID로 그룹화한 고유한 식별자 생성
+            const key = `${YMD}_${USERID}`;
+        
+            if (!result[key]) {
+            result[key] = {
+                ymd:YMD,
+                userId: USERID,
+                userNa: USERNA,
+                list: []
+            };
+            }
+        
+            result[key].list.push(item);
+        
+            return result;
+        }, {});
+        
+        const groupedArray = Object.values(groupedData).map((group) => ({
+            ...group,
+            list: group.list.map(({ ymd, userId, userNa, ...rest }) => rest)
+        }));
+        //console.log(groupedArray);
+        return groupedArray
+    }
+    
+    useEffect(()=>{
+        getWeekSchedule2();
+    }, [])
 
     useEffect(()=>{
         navigation.setOptions({title:"시간표 일별 조회"})
         navigation.setOptions({
             headerRight: () => (
-                <TouchableOpacity onPress={() => test()}>
+                <TouchableOpacity onPress={() => onShare()}>
                     <Ionicons name="download-outline" size={24} color="black" />
                 </TouchableOpacity>
             ),
@@ -89,6 +151,22 @@ export default function ScheduleViewScreen({navigation}) {
                     </View>
                 </View>
             </ViewShot>
+
+            {
+                weekSchSearch.map((el, idx) => {
+                    for (var idx in weekList){
+                        const ymd = weekList[idx].format('yyyyMMDD');
+                        const weekNumber = getDayWeekNumber(ymd);
+                        const mmdd = weekList[idx].format('MM/DD');
+                        
+                        const a = data.filter((item)=>item.ymd == mmdd);
+                        console.log(a)
+                        
+                    }
+                    return <Text>asdf</Text>
+                })
+            }
+
         </View>
     );
 }

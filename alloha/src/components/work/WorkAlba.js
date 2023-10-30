@@ -4,12 +4,14 @@ import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { URL } from "@env";
+import React from 'react';
 
-export default function WeekAlba({alba, onDel, week}) {
+export default function WeekAlba({alba, onTap, onDel, week}) {
     const cstCo = useSelector((state)=>state.schedule.cstCo);
     const weekList = getWeekList(week);
     const navigator = useNavigation();
     const isdeny = useSelector((state)=>state.schedule.week == state.schedule.eweek);
+    const workInfo = useSelector((state)=>state.work.workAlbaInfo)
     const onPressed = () =>{
         
         return (
@@ -59,30 +61,28 @@ export default function WeekAlba({alba, onDel, week}) {
         navigator.navigate("scheduleModify", {alba:alba, stat:"search"})
     };
   return (
-    <TouchableOpacity onPress={onPressed}>
         <View style={styles.container}>
             <NameBox name={alba.userNa}/>
             {
                 weekList.map((item, idx)=>{
                     const ymd = item.format("YYYYMMDD");
+                    const selected = (workInfo.isEditing && workInfo.ymd == ymd)?true:false;
                     const filter = alba.list.filter((item)=>item.YMD == ymd)
                     if (filter.length > 0){
-                        return <ContentBox key={idx} item={filter} />
+                        return <ContentBox selected={selected} onTap={onTap} key={idx} item={filter} userId={alba.userId} ymd={ymd} num={idx} />
                     }else{
-                        return <ContentBox key={idx} blank={true} />
+                        return <ContentBox selected={selected} onTap={onTap} key={idx} blank={true} userId={alba.userId} ymd={ymd} num={idx} />
                     }
                     
                 })
             }
             <TotalBox sum={alba.sumG} sumSub={alba.sumS} />
         </View>
-    </TouchableOpacity>
   );
 }
 
 
-
-function ContentBox({item, blank=false}){
+const ContentBox = React.memo(({item, userId, ymd, num, onTap, blank=false, selected}) => {
     const boxWidth = Dimensions.get('window').width / 9; // 박스의 너비
     var gg = [];
     var ss = [];
@@ -93,8 +93,8 @@ function ContentBox({item, blank=false}){
     const g = gg.reduce((total, item) => total + (item.JOBDURE || 0), 0);
     const s = ss.reduce((total, item) => total + (item.JOBDURE || 0), 0);
     return (
-
-        <View style={{...styles.box, width:boxWidth}}>
+        
+        <TouchableOpacity onPress={()=>onTap({userId, ymd, num}, item)} style={{...styles.box, width:boxWidth, borderColor:(selected)?"red":"grey"}}>
             {
                 (blank)?
                     <Text style={{fontSize:boxWidth*0.3}}>-</Text>    
@@ -112,11 +112,62 @@ function ContentBox({item, blank=false}){
                             :
                                 null
                         }
+                        { 
+                            (g == 0 && s == 0)?
+                                <Text style={{fontSize:boxWidth*0.3}}>-</Text>
+                            :
+                                null
+                        }
                     </>
             }
-        </View>
+        </TouchableOpacity>
     );
-}
+}, (prevProps, nextProps) => {
+    console.log(prevProps.selected)
+    console.log(nextProps.selected)
+    return JSON.stringify(prevProps.item) === JSON.stringify(nextProps.item) && prevProps.selected === nextProps.selected;
+})
+// function ContentBox({item, userId, ymd, num, onTap, blank=false, selected}){
+//     const boxWidth = Dimensions.get('window').width / 9; // 박스의 너비
+//     var gg = [];
+//     var ss = [];
+//     if(!blank){
+//         gg = item.filter((el)=>el && el.JOBCL == "G");
+//         ss = item.filter((el)=>el && el.JOBCL == "S");
+//     }
+//     const g = gg.reduce((total, item) => total + (item.JOBDURE || 0), 0);
+//     const s = ss.reduce((total, item) => total + (item.JOBDURE || 0), 0);
+//     return (
+        
+//         <TouchableOpacity onPress={()=>onTap({userId, ymd, num}, item)} style={{...styles.box, width:boxWidth, borderColor:(selected)?"red":"grey"}}>
+//             {
+//                 (blank)?
+//                     <Text style={{fontSize:boxWidth*0.3}}>-</Text>    
+//                 :
+//                     <>
+//                         {
+//                             (g > 0)?
+//                                 <Text style={{fontSize:boxWidth*0.3}}>{g}</Text>
+//                             :
+//                                 null
+//                         }
+//                         {
+//                             (s > 0)?
+//                                 <Text style={{fontSize:boxWidth*0.3, color:"red"}}>{s}</Text>
+//                             :
+//                                 null
+//                         }
+//                         { 
+//                             (g == 0 && s == 0)?
+//                                 <Text style={{fontSize:boxWidth*0.3}}>-</Text>
+//                             :
+//                                 null
+//                         }
+//                     </>
+//             }
+//         </TouchableOpacity>
+//     );
+// }
 
 function NameBox({name}){
     const boxWidth = Dimensions.get('window').width / 9; // 박스의 너비

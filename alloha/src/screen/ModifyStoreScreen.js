@@ -71,7 +71,6 @@ export default function ModifyStoreScreen ({ route }) {
         }
         await axios.post(URL+`/api/v1/modifyStore`, {...data, userId:userId, cstCo:store.CSTCO})
             .then(function(rlt){
-                console.log(rlt.data.result);
                 if(rlt.data.result == 1) {
                     alert("점포 정보가 수정되었습니다.");
                 }

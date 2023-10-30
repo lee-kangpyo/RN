@@ -28,6 +28,7 @@ import ScheduleScreen from './ScheduleScreen';
 import ScheduleModifyScreen from './ScheduleModifyScreen';
 import ScheduleViewScreen from './ScheduleViewScreen';
 import EasyRegisterAlbaScreen from './EasyRegisterAlbaScreen';
+import WorkScreen from './WorkScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -96,7 +97,8 @@ function OwnrScreen({userInfo}){
         tabBarInactiveTintColor: 'gray',
       })}
     >
-      <Tab.Screen name="schedule" component={ScheduleStack} options={{ headerShown:false }}/>
+      <Tab.Screen name="schedule" component={ScheduleStack} options={{ headerShown:false, tabBarLabel: '근무계획'}}/>
+      <Tab.Screen name="result" component={WorkStack} options={{ headerShown:false, tabBarLabel: '근무결과'}}/>
 
 
       <Tab.Screen name="Wage" options={{ headerShown: false, tabBarLabel: '급여' }} >
@@ -128,21 +130,41 @@ function OwnrScreen({userInfo}){
     </Tab.Navigator>
   )
 }
-
+function WorkStack(){
+  const navigation = useNavigation();
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="resultMain" component={WorkScreen} 
+        // options={
+        //   {
+        //     headerRight: () => (
+        //       <TouchableOpacity onPress={() => navigation.navigate("scheduleView")}>
+        //         <Ionicons name="reader-outline" size={24} color="black" />
+        //       </TouchableOpacity>
+        //     ),
+        //   }
+        // }
+      />
+      <Stack.Screen name="scheduleModify" component={ScheduleModifyScreen} />
+      <Stack.Screen name="scheduleView" component={ScheduleViewScreen} />
+      <Stack.Screen name="registerAlba" component={EasyRegisterAlbaScreen} />
+    </Stack.Navigator>
+  );
+}
 function ScheduleStack() {
   const navigation = useNavigation();
   return (
     <Stack.Navigator>
       <Stack.Screen name="scheduleMain" component={ScheduleScreen} 
-        options={
-          {
-            headerRight: () => (
-              <TouchableOpacity onPress={() => navigation.navigate("scheduleView")}>
-                <Ionicons name="reader-outline" size={24} color="black" />
-              </TouchableOpacity>
-            ),
-          }
-        }
+        // options={
+        //   {
+        //     headerRight: () => (
+        //       <TouchableOpacity onPress={() => navigation.navigate("scheduleView")}>
+        //         <Ionicons name="reader-outline" size={24} color="black" />
+        //       </TouchableOpacity>
+        //     ),
+        //   }
+        // }
       />
       <Stack.Screen name="scheduleModify" component={ScheduleModifyScreen} />
       <Stack.Screen name="scheduleView" component={ScheduleViewScreen} />

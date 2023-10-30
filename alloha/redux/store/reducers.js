@@ -4,6 +4,7 @@ import userSlice from '../slices/user';
 import configSlice from '../slices/config';
 import pushSlice from '../slices/push';
 import scheduleSlice from '../slices/schedule';
+import workSlice from '../slices/work';
 
 const rootReducer = combineReducers({
   user: userSlice.reducer,
@@ -11,6 +12,7 @@ const rootReducer = combineReducers({
   push: pushSlice.reducer,
   config: configSlice.reducer,
   schedule: scheduleSlice.reducer,
+  work: workSlice.reducer,
 });
 
 export default rootReducer;
