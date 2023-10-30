@@ -12,6 +12,7 @@ import axios from 'axios';
 import { URL } from "@env";
 import { useFocusEffect, useIsFocused, useNavigation } from '@react-navigation/native';
 import { getWeekList } from '../util/moment';
+import { AlbaModal } from '../components/common/AlbaModal';
 
 export default function ScheduleScreen({navigation}) {
     const userId = useSelector((state) => state.login.userId);
@@ -123,7 +124,6 @@ export default function ScheduleScreen({navigation}) {
                             </View>
                         :
                             albas.map((item, idx)=>{
-                                console.log(item)
                                 return <WeekAlba key={idx} alba={item} week={week} onDel={getWeekSchedule} />
                             })
                     }
@@ -146,86 +146,23 @@ export default function ScheduleScreen({navigation}) {
                 <Text>등록된 시간표는 이름을 클릭하여 수정할수 있습니다.</Text>
                 <Text>등록된 알바를 삭제하기 원하는 경우(-)버튼을 클릭하여 등록된 시간을 삭제할수 있습니다.</Text>
             </View>
-            <AlbaModal isShow={modalVisible} onClose={()=>setModalVisible(false)} onShow={()=>getAlbaList()}/>
-           
-        </View>
-        
-
-    );
-}
-
-function AlbaModal({isShow, onClose, onShow}){
-    const albaList = useSelector((state)=>state.schedule.albaList);
-    
-    const dispatch = useDispatch();
-    const navigation = useNavigation();
-
-    const User = ({alba}) => {
-        return (
-            <TouchableOpacity 
-                onPress={()=>{
-                    onClose();
-                    navigation.navigate("scheduleModify", {alba:alba})}
-                }
-            >
-                <View style={styles.user}>
-                    <Text>{alba.USERNA}</Text>
-                    <Ionicons name="chevron-forward" size={16} color="black" />
-                </View>
-            </TouchableOpacity>
-        );
-    }
-
-    return(
-        <CustomModal isShow={isShow} onClose={onClose} onShow={onShow}>
-            <View style={{flex:5, padding:15, width:"100%", }}>
-                <Text style={styles.title}>알바 선택</Text>
-                <ScrollView>
-                    {
-                        albaList.map((el, idx)=>{
-                            return <User key={idx} alba={el} />
-                        })
-                    }
-                </ScrollView>
-            </View>
-            <View>
-                <TouchableOpacity onPress={()=>{
-                    onClose();
+            <AlbaModal
+                execptAlbaId={albas.map(item => item.userId)}
+                isShow={modalVisible} 
+                onClose={()=>setModalVisible(false)} 
+                onShow={()=>getAlbaList()}
+                addAlba={()=>{
+                    setModalVisible(false)
                     dispatch(initTimeBox());
                     navigation.push("registerAlba");
-                }}>
-                    <Text>알바 등록</Text>
-                </TouchableOpacity>
-            </View>
-        </CustomModal>
-    )
-
-    
-}
-
-function CustomModal({onShow, isShow, onClose, children }){
-
-    return (
-        <Modal 
-            style={{backgroundColor:"black"}}
-            animationType={"fade"}  
-            visible={isShow} 
-            transparent={true}
-            onShow={onShow}
-        >
-            <View style={{ width:"100%", height:"100%", backgroundColor:"rgba(0,0,0,0.5)", padding:50  }}>
-                <View style={{backgroundColor:"white", flex:1, justifyContent:"center", alignItems:"center", borderWidth:1, borderColor:"black", borderRadius:10}}>
-                    {children}
-                    <View style={{flex:1}}>
-                        <TouchableOpacity style={styles.btn} onPress={()=>onClose()}>
-                            <Text>닫기</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </View>
-        </Modal>
-
-    )
+                }}
+                selectAlba={(alba)=>{
+                    setModalVisible(false)
+                    navigation.navigate("scheduleModify", {alba:alba})
+                }}
+            />
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({

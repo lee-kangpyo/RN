@@ -1,5 +1,5 @@
 
-import { StyleSheet, Modal, Text, View, TouchableOpacity, Keyboard, Switch} from 'react-native';
+import { StyleSheet, Modal, Text, View, TouchableOpacity, Keyboard, Switch, Alert} from 'react-native';
 import React, {useState, useEffect, useCallback, useRef, useMemo} from 'react';
 import WeekDate from '../components/schedule/WeekDate';
 import WeekAlba from '../components/schedule/WeekAlba';
@@ -17,6 +17,7 @@ import WorkAlba from './../components/work/WorkAlba';
 
 import BottomSheet, {BottomSheetView, BottomSheetBackdrop} from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { AlbaModal } from '../components/common/AlbaModal';
 
 export default function WorkScreen({navigation}) {
     const userId = useSelector((state) => state.login.userId);
@@ -28,18 +29,17 @@ export default function WorkScreen({navigation}) {
     
     const cstCo = useSelector((state)=>state.schedule.cstCo);
     const storeList = useSelector((state)=>state.schedule.storeList);
-
-    
     
     
     const dispatch = useDispatch();
 
     const [modalVisible, setModalVisible] = useState(false);
-    
 
     const getWeekSchedule = async (callback) => {
-        await axios.get(URL+`/api/v1/work/workChedule`, {params:{cls:"WeekWorkSearch", cstCo:cstCo, userId:userId, ymdFr:weekList[0].format("yyyyMMDD"), ymdTo:weekList[6].format("yyyyMMDD"), jobCl:"", jobDure:0}})
+        const param = {cls:"WeekWorkSearch", cstCo:cstCo, userId:userId, ymdFr:weekList[0].format("yyyyMMDD"), ymdTo:weekList[6].format("yyyyMMDD"), jobCl:"", jobDure:0};
+        await axios.get(URL+`/api/v1/work/workChedule`, {params:param})
         .then((res)=>{
+            //console.log(res.data.result)
             dispatch(setAlba({data:res.data.result}))
             if(callback) callback();
         }).catch(function (error) {
@@ -91,6 +91,7 @@ export default function WorkScreen({navigation}) {
 
 
     //###############################################################
+    const [bottomSheetIndex, setBottomSeetIndex] = useState(-1)
     const sheetRef = useRef(null);
     const snapPoints = useMemo(() => ["35%"], []);
     
@@ -118,6 +119,47 @@ export default function WorkScreen({navigation}) {
     const onAlbaTap = (info, item) => {
         dispatch(setWorkAlbaInfo({data:info}));
         handleSnapPress(0)
+    }
+
+    const addAlba = () => {
+        setModalVisible(false)
+        navigation.push("registerAlba");
+    }
+
+    const selectAlba = async (alba) => {
+        await axiosPost("AlbaSave", alba.USERID)
+        .then((res)=>{
+            getWeekSchedule();
+        }).catch(function (error) {
+            console.log(error);
+        })
+        setModalVisible(false)
+    }
+
+    const axiosPost = async (cls, userID)=>{
+        const param = {cls:cls, cstCo:cstCo, userId:userID, ymdFr:weekList[0].format("yyyyMMDD"), ymdTo:weekList[6].format("yyyyMMDD"), jobCl:"", jobDure:0};
+        console.log(param);
+        return await axios.post(URL+`/api/v1/work/workChedule`, param)
+    }
+    
+    const delAlba = (userId, userNa) => {
+        console.log("삭제")
+        Alert.alert("일정 삭제", userNa+"님의 이번주 일정이 모두 삭제 됩니다. 진행하시겠습니까?",
+            [
+                {text:"네", 
+                    onPress:()=>{
+                        axiosPost("AlbaDelete", userId)
+                        .then((res)=>{
+                            getWeekSchedule();
+                        }).catch(function (error) {
+                            console.log(error);
+                        })
+                        sheetRef.current.close();
+                    }
+                },
+                {text:"아니오", onPress:()=>console.log("취소")},
+            ]
+        )
     }
 
 
@@ -157,6 +199,7 @@ export default function WorkScreen({navigation}) {
                         :
                             null
                     }
+                    
                 </View>
                 <WeekDate sBlank={2} eBlank={2} week={week}/>
                 <ScrollView>
@@ -171,8 +214,8 @@ export default function WorkScreen({navigation}) {
                             })
                     }
                     {
-                        <TouchableOpacity onPress={()=>{dispatch(initTimeBox());setModalVisible(true);}}>
-                            <View style={styles.box}>
+                        <TouchableOpacity onPress={()=>{setModalVisible(true);}}>
+                            <View style={{...styles.box, marginBottom:(bottomSheetIndex == -1)?0:150}}>
                                 <Text style={{fontSize:24}}>+</Text>
                             </View>
                         </TouchableOpacity>
@@ -185,19 +228,28 @@ export default function WorkScreen({navigation}) {
                 <Text>등록된 시간표는 이름을 클릭하여 수정할수 있습니다.</Text>
                 <Text>등록된 알바를 삭제하기 원하는 경우(-)버튼을 클릭하여 등록된 시간을 삭제할수 있습니다.</Text>
             </View>
+            <AlbaModal
+                execptAlbaId={albas.map(item => item.userId)}
+                isShow={modalVisible} 
+                onClose={()=>setModalVisible(false)} 
+                onShow={()=>getAlbaList()}
+                addAlba={addAlba} 
+                selectAlba={selectAlba} 
+            />
             <BotSheet 
+                onBottomSheetChanged={(idx)=>setBottomSeetIndex(idx)}
                 sheetRef={sheetRef} 
                 snapPoints={snapPoints} 
                 renderBackdrop={renderBackdrop} 
                 handleSnapPress={handleSnapPress}
-                Content={<BtnSet workInfo={workInfo} cstCo={cstCo} refresh={(callback) => getWeekSchedule(callback)}/>}
+                Content={<BtnSet workInfo={workInfo} cstCo={cstCo} refresh={(callback) => getWeekSchedule(callback)} onDelete={delAlba}/>}
             />
         </GestureHandlerRootView>
         
 
     );
 }
-function BtnSet({workInfo, cstCo, refresh}){
+function BtnSet({workInfo, cstCo, refresh, onDelete}){
     const [isEnabled, setIsEnabled] = useState(false);
     const [isFncRunning, setIsFncRunning] = useState(false);
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
@@ -227,15 +279,19 @@ function BtnSet({workInfo, cstCo, refresh}){
     }
     return(
         <View style={{height:"100%"}}>
-            <View style={{flex:1, flexDirection:"row", alignItems:"center",justifyContent:"flex-end", marginHorizontal:15}}>
-                <Switch
-                    trackColor={{false: '#767577', true: '#81b0ff'}}
-                    thumbColor={isEnabled ? '#f5dd4b' : '#f4f3f4'}
-                    ios_backgroundColor="#3e3e3e"
-                    onValueChange={toggleSwitch}
-                    value={isEnabled}
-                />
-                <Text>{(isEnabled)?"특근":"일반"}</Text>
+            <View style={{flex:1, flexDirection:"row", alignItems:"center",justifyContent:"space-between", marginHorizontal:15}}>
+                <Text>{workInfo.ymd.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3')} [{workInfo.userNa}]</Text>
+                
+                <View style={{flexDirection:"row", alignItems:"center"}}>
+                    <Switch
+                        trackColor={{false: '#767577', true: '#81b0ff'}}
+                        thumbColor={isEnabled ? '#f5dd4b' : '#f4f3f4'}
+                        ios_backgroundColor="#3e3e3e"
+                        onValueChange={toggleSwitch}
+                        value={isEnabled}
+                    />
+                    <Text style={{marginLeft:-3}}>{(isEnabled)?"특근":"일반"}</Text>
+                </View>
             </View>
             <View style={{flex:3, padding:10}}>
                 <View  style={{flex:1, flexDirection:"row"}}>
@@ -254,7 +310,10 @@ function BtnSet({workInfo, cstCo, refresh}){
                     
                 </View>
             </View>
-            <View style={{flex:2}}>
+            <View style={{flex:2, flexDirection:"row", justifyContent:"space-between", alignItems:"center", paddingHorizontal:15}}>
+                <TouchableOpacity style={styles.btnMini} onPress={()=>onDelete(workInfo.userId, workInfo.userNa)}>
+                    <Text>일정삭제</Text>
+                </TouchableOpacity>
                 <TouchableOpacity style={{...styles.btn, marginBottom:10}} onPress={()=>dispatch(moveWeek())}>
                     <Text>다음</Text>
                 </TouchableOpacity>
@@ -264,7 +323,7 @@ function BtnSet({workInfo, cstCo, refresh}){
 }
 
 // 바텀 시트
-const BotSheet = ({sheetRef, snapPoints, renderBackdrop, handleSnapPress, Content}) => {
+const BotSheet = ({sheetRef, snapPoints, renderBackdrop, handleSnapPress, Content, onBottomSheetChanged}) => {
 
     const dispatch = useDispatch()
     return (
@@ -275,6 +334,7 @@ const BotSheet = ({sheetRef, snapPoints, renderBackdrop, handleSnapPress, Conten
           enablePanDownToClose={true}
           onClose={()=>dispatch(disabledEditing())}
           index={-1}
+          onChange={onBottomSheetChanged}
           //backdropComponent={renderBackdrop}
         >
           <BottomSheetView>
@@ -321,6 +381,7 @@ const styles = StyleSheet.create({
         borderRadius: 10, // 테두리 모서리 둥글게 
         alignSelf:"center",
     },
+    btnMini:{borderWidth:1, borderColor:"grey", borderRadius:5, padding:1,  verticalAlign:"middle", padding:4},
     title:{alignSelf:"center", fontSize:20, marginBottom:15},
     user:{
         marginBottom:5,

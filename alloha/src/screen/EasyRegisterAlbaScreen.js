@@ -57,7 +57,7 @@ export default function EasyRegisterAlbaScreen({navigation}) {
                     const response = await axios.post(URL+'/api/v1/easyAlbaMng', {
                         cls:"AlbaNameChk", cstCo:cstCo, userName: value, hpNo:"", email:""
                     });
-                    console.log(response.data.result)
+                    //console.log(response.data.result)
                     if (response.data.result[0].ChkYn == "Y") {
                         return false;
                     }
@@ -73,9 +73,9 @@ export default function EasyRegisterAlbaScreen({navigation}) {
       });
 
       const handleFormSubmit = async (params) => {
-        console.log(params)
+        //console.log(params)
         const response = await axios.post(URL+'/api/v1/easyAlbaMng', params);
-        console.log(response);
+        //console.log(response);
         navigation.goBack();
       };
 
