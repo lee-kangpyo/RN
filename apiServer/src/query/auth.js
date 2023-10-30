@@ -206,6 +206,7 @@ const albaSchedulemanager = `
     exec PR_PLYA01_SCHMNG  @cls, @cstCo, @userId, @ymdFr, @ymdTo, @wCnt
 `
 
+
 const albaSchedulemanager2 = `
     exec PR_PLYA02_ALBASCHMNG @cls, @cstCo, @userId, @ymdFr, @ymdTo, @jobCl, @sTime, @eTime
 `

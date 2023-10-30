@@ -25,7 +25,7 @@ export default function ScheduleModifyScreen({navigation, route}) {
 
     const [isSaving, setSaving] = useState(false);
     useEffect(()=>{
-        navigation.setOptions({title:"시간표 일별 등록"});
+        navigation.setOptions({title:"근무 계획 일별 등록"});
     }, [navigation]);
 
     useEffect( ()=>{
@@ -145,7 +145,7 @@ export default function ScheduleModifyScreen({navigation, route}) {
                     </View>
                 </View>
             </View>
-            <WeekDate sBlank={1.45}/>
+            <WeekDate sBlank={1.45} week={week}/>
             <FlatList
                 keyExtractor={(item, index) => index.toString()}
                 style={{width:"100%"}}

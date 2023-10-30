@@ -9,11 +9,15 @@ export const getNextWeek = () => {
     const currentWeekStart = currentDate.startOf('week');
     // 다음 주의 시작 날짜 계산
     const nextWeekStart = currentWeekStart.clone().add(7, 'days');
-    //console.log(nextWeekStart.format('YYYYMMDD'));
-    //console.log(nextWeekStart.clone().add(6, 'days').format("YYYYMMDD"))
-    console.log(nextWeekStart.format("YYYY-MM-DD"));
     return nextWeekStart.format("YYYY-MM-DD");
 }
+
+export const getPrevWeek = () => {
+    const currentWeekStart = currentDate.startOf('week');
+    const prevWeekStart = currentWeekStart.clone().subtract(7, 'days');
+    return prevWeekStart.format("YYYY-MM-DD");
+}
+
 
 export const movePrevWeek = (week) => {
     const dateObject = moment(week);
@@ -25,6 +29,17 @@ export const moveNextWeek = (week) => {
     const dateObject = moment(week);
     const nextWeekStart = dateObject.clone().add(7, 'days');
     return nextWeekStart.format("YYYY-MM-DD");
+}
+
+export const moveDay = (cls, week) => {
+    const dateObject = moment(week);
+    var result;
+    if(cls == "next"){
+        result = dateObject.clone().add(1, 'days');
+    }else if(cls == "prev"){
+        result = dateObject.clone().subtract(1, 'days');
+    }
+    return result.format("yyyyMMDD");
 }
 
 export const getWeekList = (week) => {

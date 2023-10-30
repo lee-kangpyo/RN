@@ -12,6 +12,8 @@ const dotenv = require('dotenv');
 const transactionMiddleware = require('../utils/transactionMiddleware');
 dotenv.config();
 
+const workRouter = require("../route/work")
+
 router.get("/v1/test", async (req, res, next)=>{
     const result = await execSql(test, {userId:'asdf'})
     res.json({status_code:"00", result:result.recordset, length:result.rowsAffected}); 
@@ -526,6 +528,8 @@ router.post("/v1/saveAlbaChedule", async (req, res, next) => {
     }
     
 })
+
+router.use('/v1/work', workRouter); 
 
 module.exports = router;
 

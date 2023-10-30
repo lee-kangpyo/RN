@@ -2,8 +2,7 @@ import { StyleSheet, Dimensions , Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { getWeekList } from '../../util/moment';
 
-export default function WeekDate({sBlank, eBlank}) {
-    const week = useSelector((state)=>state.schedule.week)
+export default function WeekDate({sBlank, eBlank, week}) {
     const weekList = getWeekList(week);
 
     return (
