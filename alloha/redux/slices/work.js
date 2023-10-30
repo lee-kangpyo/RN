@@ -12,6 +12,7 @@ const initialState = {
     isEditing:false,
     weekNumber:0,
     userId:"",
+    userNa:"",
     ymd:"",
   }
 };
@@ -63,10 +64,12 @@ const workSlice = createSlice({
     },
     setWorkAlbaInfo(state, action){
       const data = action.payload.data;
-      state.workAlbaInfo.isEditing = true;
-      state.workAlbaInfo.ymd = data.ymd;
-      state.workAlbaInfo.userId = data.userId;
-      state.workAlbaInfo.weekNumber = data.num;
+      const workAlbaInfo = state.workAlbaInfo
+      workAlbaInfo.isEditing = true;
+      workAlbaInfo.ymd = data.ymd;
+      workAlbaInfo.userId = data.userId;
+      workAlbaInfo.userNa = data.userNa
+      workAlbaInfo.weekNumber = data.num;
     },
     moveWeek(state, action){
       const info = state.workAlbaInfo;
@@ -74,6 +77,17 @@ const workSlice = createSlice({
       if(weekNumber < 6){
         info.weekNumber = weekNumber + 1
         info.ymd = moveDay("next", info.ymd) 
+      }else{
+        const idList = state.albas.map(item => item.userId);
+        const naList = state.albas.map(item => item.userNa);
+        const userId = info.userId;
+        const idx = idList.indexOf(userId);
+        if(idx !== -1 && idx <idList.length - 1){
+          info.userId = idList[idx + 1];
+          info.userNa = naList[idx + 1];
+          info.weekNumber = 0;
+          info.ymd = state.week.replace(/-/g, '');;
+        }
       }
     },
     disabledEditing(state, action){

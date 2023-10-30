@@ -13,13 +13,14 @@ dotenv.config();
 router.all("/workChedule", async (req, res, next) => {
     if (req.method === 'GET' || req.method === 'POST') {
         console.log("work.workChedule");
+        console.log("method : "+req.method)
         try {
             const{cls, cstCo, userId, ymdFr, ymdTo, jobCl, jobDure} = (req.method === 'GET')?req.query:req.body;
-            console.log(cls)
+            console.log("cls : "+cls)
             // 초기화
             const param = {cls:cls, cstCo:cstCo, userId:userId, ymdFr:ymdFr, ymdTo:ymdTo, jobCl:jobCl, jobDure:jobDure};
             const result = await execSql(albaWorkManager, param)
-            console.log(result);
+            //console.log(result);
             res.status(200).json({result:result.recordset, resultCode:"00"});
         } catch (error) {
             console.log(error.message)
