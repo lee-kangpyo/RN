@@ -1,10 +1,9 @@
 
-import { StyleSheet, Modal, Text, View, TouchableOpacity, Keyboard, Switch, Alert} from 'react-native';
+import { StyleSheet, Animated, Text, View, TouchableOpacity, Keyboard, Switch, Alert, Dimensions} from 'react-native';
 import React, {useState, useEffect, useCallback, useRef, useMemo} from 'react';
 import WeekDate from '../components/schedule/WeekDate';
-import WeekAlba from '../components/schedule/WeekAlba';
 import { useSelector, useDispatch } from 'react-redux';
-import { initTimeBox,  setAlbaList, setScheduleCstCo, setScheduleStoreList } from '../../redux/slices/schedule';
+import { setAlbaList, setScheduleCstCo, setScheduleStoreList } from '../../redux/slices/schedule';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
@@ -34,6 +33,8 @@ export default function WorkScreen({navigation}) {
     const dispatch = useDispatch();
 
     const [modalVisible, setModalVisible] = useState(false);
+    
+
 
     const getWeekSchedule = async (callback) => {
         const param = {cls:"WeekWorkSearch", cstCo:cstCo, userId:userId, ymdFr:weekList[0].format("yyyyMMDD"), ymdTo:weekList[6].format("yyyyMMDD"), jobCl:"", jobDure:0};
@@ -88,6 +89,35 @@ export default function WorkScreen({navigation}) {
         })
     }, [navigation])
 
+    const [ShowDelBtn, setShowDelBtn] = useState(false);
+    //const widthValue = new Animated.Value(100);
+    const toggleWidth = () => {
+        
+        if(!ShowDelBtn){
+            showDelBtn()
+        }else{
+            hideDelBtn()
+        }
+        setShowDelBtn(!ShowDelBtn);
+      };
+      
+      const widthValue = useRef(new Animated.Value(Dimensions.get('window').width - 22)).current;
+      
+      const showDelBtn = () => {
+        Animated.timing(widthValue, {
+          toValue: (Dimensions.get('window').width-22) - 50,
+          duration: 500,
+          useNativeDriver: false,
+        }).start();
+      };
+    
+      const hideDelBtn = () => {
+        Animated.timing(widthValue, {
+          toValue: Dimensions.get('window').width - 22,
+          duration: 500,
+          useNativeDriver: false,
+        }).start();
+      };
 
 
     //###############################################################
@@ -138,12 +168,10 @@ export default function WorkScreen({navigation}) {
 
     const axiosPost = async (cls, userID)=>{
         const param = {cls:cls, cstCo:cstCo, userId:userID, ymdFr:weekList[0].format("yyyyMMDD"), ymdTo:weekList[6].format("yyyyMMDD"), jobCl:"", jobDure:0};
-        console.log(param);
         return await axios.post(URL+`/api/v1/work/workChedule`, param)
     }
     
     const delAlba = (userId, userNa) => {
-        console.log("삭제")
         Alert.alert("일정 삭제", userNa+"님의 이번주 일정이 모두 삭제 됩니다. 진행하시겠습니까?",
             [
                 {text:"네", 
@@ -179,6 +207,7 @@ export default function WorkScreen({navigation}) {
                     }
                 </Picker>
             </View>
+            
             <View style={{...styles.card, padding:5, width:"100%"}}>
                 <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:15}}>
                     <View style={{flexDirection:"row"}}>
@@ -190,6 +219,11 @@ export default function WorkScreen({navigation}) {
                             <Ionicons name="caret-forward-outline" size={20} color="black" />
                         </TouchableOpacity>
                     </View>
+                    <TouchableOpacity onPress={toggleWidth}>
+                        <View style={{...styles.btnMini, paddingVertical:0, paddingHorizontal:5}}>
+                            <Text>편집</Text>
+                        </View>
+                    </TouchableOpacity>
                     {
                         (false)?
                             <TouchableOpacity onPress={()=>dispatch(setAlba(alba))}>
@@ -201,7 +235,9 @@ export default function WorkScreen({navigation}) {
                     }
                     
                 </View>
-                <WeekDate sBlank={2} eBlank={2} week={week}/>
+                <Animated.View style={{width:widthValue}}>
+                    <WeekDate sBlank={2} eBlank={2} week={week}/>
+                </Animated.View>
                 <ScrollView>
                     {
                         (albas.length == 0)?
@@ -210,7 +246,16 @@ export default function WorkScreen({navigation}) {
                             </View>
                         :
                             albas.map((item, idx)=>{
-                                return <WorkAlba key={idx} alba={item} week={week} onTap={onAlbaTap} onDel={getWeekSchedule} />
+                                return (
+                                    <View style={{flexDirection:"row"}}>
+                                        <Animated.View style={{width:widthValue}} >
+                                            <WorkAlba key={idx} alba={item} week={week} onTap={onAlbaTap} onDel={getWeekSchedule} />
+                                        </Animated.View>
+                                        <TouchableOpacity onPress={()=>delAlba(item.userId, item.userNa)} style={{...styles.btnMini, alignItems:"center", backgroundColor:"red", justifyContent:"center", width:50}}>
+                                            <Text style={{color:"white"}}>삭제</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                )
                             })
                     }
                     {
@@ -242,14 +287,15 @@ export default function WorkScreen({navigation}) {
                 snapPoints={snapPoints} 
                 renderBackdrop={renderBackdrop} 
                 handleSnapPress={handleSnapPress}
-                Content={<BtnSet workInfo={workInfo} cstCo={cstCo} refresh={(callback) => getWeekSchedule(callback)} onDelete={delAlba}/>}
+                
+                Content={<BtnSet workInfo={workInfo} cstCo={cstCo} refresh={(callback) => getWeekSchedule(callback)} onDelete={delAlba} onClose={closesheet}/>}
             />
         </GestureHandlerRootView>
         
 
     );
 }
-function BtnSet({workInfo, cstCo, refresh, onDelete}){
+function BtnSet({workInfo, cstCo, refresh, onDelete, onClose}){
     const [isEnabled, setIsEnabled] = useState(false);
     const [isFncRunning, setIsFncRunning] = useState(false);
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
@@ -279,9 +325,8 @@ function BtnSet({workInfo, cstCo, refresh, onDelete}){
     }
     return(
         <View style={{height:"100%"}}>
-            <View style={{flex:1, flexDirection:"row", alignItems:"center",justifyContent:"space-between", marginHorizontal:15}}>
+            <View style={{flex:1, flexDirection:"row", alignItems:"center",justifyContent:"space-between", height:30, marginHorizontal:15}}>
                 <Text>{workInfo.ymd.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3')} [{workInfo.userNa}]</Text>
-                
                 <View style={{flexDirection:"row", alignItems:"center"}}>
                     <Switch
                         trackColor={{false: '#767577', true: '#81b0ff'}}
@@ -293,15 +338,15 @@ function BtnSet({workInfo, cstCo, refresh, onDelete}){
                     <Text style={{marginLeft:-3}}>{(isEnabled)?"특근":"일반"}</Text>
                 </View>
             </View>
-            <View style={{flex:3, padding:10}}>
-                <View  style={{flex:1, flexDirection:"row"}}>
+            <View style={{flex:2,  paddingHorizontal:10}}>
+                <View style={{flexDirection:"row",}}>
                     {
                         [1, 2, 3, 4, 5, 6, 7, 8].map((num, idx)=>{
                             return <TouchableOpacity key={idx} onPress={()=>onBtnPress(num)} style={styles.numberBox}><Text>{num}</Text></TouchableOpacity>
                         })
                     }
                 </View>
-                <View style={{flex:1, flexDirection:"row"}}>
+                <View style={{flexDirection:"row"}}>
                     {
                         [1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 0].map((num, idx)=>{
                             return <TouchableOpacity key={idx} onPress={()=>onBtnPress(num)} style={styles.numberBox}><Text>{num}</Text></TouchableOpacity>
@@ -311,10 +356,17 @@ function BtnSet({workInfo, cstCo, refresh, onDelete}){
                 </View>
             </View>
             <View style={{flex:2, flexDirection:"row", justifyContent:"space-between", alignItems:"center", paddingHorizontal:15}}>
-                <TouchableOpacity style={styles.btnMini} onPress={()=>onDelete(workInfo.userId, workInfo.userNa)}>
-                    <Text>일정삭제</Text>
+                <TouchableOpacity style={{...styles.btn, marginRight:5}} onPress={()=>onClose()}>
+                    <Text>닫기</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={{...styles.btn, marginBottom:10}} onPress={()=>dispatch(moveWeek())}>
+                {
+                    (false)?
+                    <TouchableOpacity style={{...styles.btn, marginRight:5}} onPress={()=>onDelete(workInfo.userId, workInfo.userNa)}>
+                        <Text>일정삭제</Text>
+                    </TouchableOpacity>
+                    :null
+                }
+                <TouchableOpacity style={styles.btn} onPress={()=>dispatch(moveWeek())}>
                     <Text>다음</Text>
                 </TouchableOpacity>
             </View>
@@ -365,21 +417,25 @@ const styles = StyleSheet.create({
     },
     numberBox:{
         flex:1, 
-        paddingVertical:10,
+        height:40,
         margin:3,
         borderWidth: 0.5, // 테두리 두께
         borderColor: 'gray', // 테두리 색상
         borderRadius: 0, // 테두리 모서리 둥글게 
-        alignItems:"center",
         backgroundColor:"white", 
-        alignSelf:"center"
+        alignItems:"center",
+        justifyContent:"center"
     },
     btn:{
+        flex:1,
         backgroundColor:"#FFCD4B", 
-        paddingHorizontal:100,
+        paddingHorizontal:10,
         paddingVertical:15, 
         borderRadius: 10, // 테두리 모서리 둥글게 
         alignSelf:"center",
+        alignItems:"center", 
+        marginBottom:10, 
+        
     },
     btnMini:{borderWidth:1, borderColor:"grey", borderRadius:5, padding:1,  verticalAlign:"middle", padding:4},
     title:{alignSelf:"center", fontSize:20, marginBottom:15},
