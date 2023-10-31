@@ -5,8 +5,6 @@ import { Ionicons } from '@expo/vector-icons';
 
 export function AlbaModal({execptAlbaId, isShow, onClose, onShow, addAlba, selectAlba }){
     const albaList = useSelector((state)=>state.schedule.albaList);
-    console.log(execptAlbaId);
-    console.log(albaList);
     const filterList = albaList.filter((el)=>execptAlbaId.indexOf(el.USERID) == -1)
     
     const User = ({alba}) => {

@@ -28,7 +28,6 @@ export default function ScheduleScreen({navigation}) {
     const [modalVisible, setModalVisible] = useState(false);
 
     const getWeekSchedule = async () => {
-        console.log("getWeekSchedule2");
         await axios.get(URL+`/api/v1/getWeekSchedule`, {params:{cls:"WeekScheduleSearch", cstCo:cstCo, userId:userId, ymdFr:weekList[0].format("yyyyMMDD"), ymdTo:weekList[6].format("yyyyMMDD"), wCnt:"0",}})
         .then((res)=>{
             dispatch(setAlba({data:res.data.result}))
@@ -57,7 +56,6 @@ export default function ScheduleScreen({navigation}) {
     
     useEffect(() => {
         if (isFocused) {
-            console.log('화면이 활성화됨');
             if(cstCo != "") getWeekSchedule();
         }
     }, [isFocused, cstCo, week]);
