@@ -7,7 +7,7 @@ import { URL } from "@env";
 import React from 'react';
 
 export default function WeekAlba({alba, onTap, onDel, week}) {
-    const cstCo = useSelector((state)=>state.schedule.cstCo);
+    const cstCo = useSelector((state)=>state.common.cstCo);
     const weekList = getWeekList(week);
     const navigator = useNavigation();
     const workInfo = useSelector((state)=>state.work.workAlbaInfo)

@@ -16,7 +16,7 @@ export default function ScheduleModifyScreen({navigation, route}) {
     const totalTime = useSelector((state)=>state.schedule.totalTime);
     const totalCoverTime = useSelector((state)=>state.schedule.totalCoverTime);
     const weekNumber = useSelector((state)=>state.schedule.weekNumber);
-    const cstCo = useSelector((state)=>state.schedule.cstCo);
+    const cstCo = useSelector((state)=>state.common.cstCo);
     const week = useSelector((state)=>state.schedule.week)
     const weekList = getWeekList(week);
     const dispatch = useDispatch();

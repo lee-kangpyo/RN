@@ -18,6 +18,7 @@ import { URL } from "@env";
 
 import uuid from 'react-native-uuid';
 import * as SecureStore from 'expo-secure-store';
+import { setOwnerCstco } from '../../redux/slices/common';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -104,6 +105,7 @@ const LoginForm = ({navigation}) => {
   const loginAction = async () => {
     //밸리데이션 -> 지금은 아이디 패스워드 공백 체크만 함
     if(loginInfo.id && loginInfo.password){
+      dispatch(setOwnerCstco({cstCo:""}));
       setLoginButtonDisabled(true);
       console.log("시작")
       const uid = uuid.v4();

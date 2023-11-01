@@ -29,6 +29,8 @@ import ScheduleModifyScreen from './ScheduleModifyScreen';
 import ScheduleViewScreen from './ScheduleViewScreen';
 import EasyRegisterAlbaScreen from './EasyRegisterAlbaScreen';
 import WorkScreen from './WorkScreen';
+import ResultScreen from './ResultScreen';
+import ResultDetailScreen from './ResultDetailScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -98,17 +100,9 @@ function OwnrScreen({userInfo}){
       })}
     >
       <Tab.Screen name="schedule" component={ScheduleStack} options={{ headerShown:false, tabBarLabel: '근무계획'}}/>
-      <Tab.Screen name="result" component={WorkStack} options={{ headerShown:false, tabBarLabel: '근무결과'}}/>
+      <Tab.Screen name="work" component={WorkScreen} options={{  tabBarLabel: '근무결과'}}/>
+      <Tab.Screen name="result" component={ResultStack} options={{ headerShown:false, tabBarLabel: '결과현황표'}}/>
 
-
-      <Tab.Screen name="Wage" options={{ headerShown: false, tabBarLabel: '급여' }} >
-        {() => (
-          <Stack.Navigator>
-            <Stack.Screen name="WageList" component={WageScreen} options={{ title: '급여' }} initialParams={{userType:"owner"}} />
-            <Stack.Screen  name="WageDetail" component={WageDetailScreen} options={{title:"급여 상세"}}/>
-          </Stack.Navigator>
-        )}
-      </Tab.Screen>
       <Tab.Screen name="community" component={ComunityScreen} options={{ tabBarLabel: '커뮤니티' }}/>
       
 
@@ -123,6 +117,13 @@ function OwnrScreen({userInfo}){
             <Stack.Screen name="addStore" component={AddStoreScreen} options={{ title: '점포추가' }}/>
             <Stack.Screen name="modifyStore" component={ModifyStoreScreen} options={{ title: '점포수정' }}/>
             <Stack.Screen  name="SearchAddress" component={SearchAddress} options={{title:"주소 검색"}}/>
+            
+            {() => ( // 안쓰는 급여 페이지
+              <Stack.Navigator>
+                <Stack.Screen name="WageList" component={WageScreen} options={{ title: '급여' }} initialParams={{userType:"owner"}} />
+                <Stack.Screen  name="WageDetail" component={WageDetailScreen} options={{title:"급여 상세"}}/>
+              </Stack.Navigator>
+            )}
           </Stack.Navigator>
         )}
       </Tab.Screen>
@@ -130,29 +131,16 @@ function OwnrScreen({userInfo}){
     </Tab.Navigator>
   )
 }
-function WorkStack(){
-  const navigation = useNavigation();
-  return (
+function ResultStack(){
+  return(
     <Stack.Navigator>
-      <Stack.Screen name="resultMain" component={WorkScreen} 
-        // options={
-        //   {
-        //     headerRight: () => (
-        //       <TouchableOpacity onPress={() => navigation.navigate("scheduleView")}>
-        //         <Ionicons name="reader-outline" size={24} color="black" />
-        //       </TouchableOpacity>
-        //     ),
-        //   }
-        // }
-      />
-      <Stack.Screen name="scheduleModify" component={ScheduleModifyScreen} />
-      <Stack.Screen name="scheduleView" component={ScheduleViewScreen} />
-      <Stack.Screen name="registerAlba" component={EasyRegisterAlbaScreen} />
+      <Stack.Screen name="resultMain" component={ResultScreen} />
+      <Stack.Screen name="resultDetail" component={ResultDetailScreen} />
     </Stack.Navigator>
-  );
+  )
 }
+
 function ScheduleStack() {
-  const navigation = useNavigation();
   return (
     <Stack.Navigator>
       <Stack.Screen name="scheduleMain" component={ScheduleScreen} 
@@ -213,7 +201,7 @@ const setTabBarIcon = (focused, color, size, name) =>{
   }else if (name === 'ManageCrew'){
     iconName = 'user-cog';
     icon = "FontAwesome5"
-  } else if (name === 'Wage') {
+  } else if (name === 'result') {
     iconName = 'file-invoice-dollar';
     icon = "FontAwesome5"
   } else if (name === 'community'){
@@ -225,6 +213,12 @@ const setTabBarIcon = (focused, color, size, name) =>{
   }else if(name === "etc"){
     iconName = focused ? 'ellipsis-vertical-sharp' : 'ellipsis-vertical-outline';
     icon = "Ionicons"
+  }else if (name === "schedule"){
+    iconName = focused ? 'ios-timer' : 'ios-timer-outline';
+    icon = "Ionicons"
+  }else if(name === "work"){
+    iconName = 'running';
+    icon = "FontAwesome5"
   }
 
   if (icon == "Ionicons"){

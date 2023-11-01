@@ -12,7 +12,7 @@ import { URL } from "@env";
 export default function ScheduleViewScreen({navigation}) {
     const ref = useRef();
     const albas = useSelector((state)=>state.schedule.albas)
-    const cstCo = useSelector((state)=>state.schedule.cstCo);
+    const cstCo = useSelector((state)=>state.common.cstCo);
     const week = useSelector((state)=>state.schedule.week)
     const weekList = getWeekList(week);
     const dispatch = useDispatch();
