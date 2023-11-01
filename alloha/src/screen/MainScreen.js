@@ -100,7 +100,7 @@ function OwnrScreen({userInfo}){
       })}
     >
       <Tab.Screen name="schedule" component={ScheduleStack} options={{ headerShown:false, tabBarLabel: '근무계획'}}/>
-      <Tab.Screen name="work" component={WorkScreen} options={{  tabBarLabel: '근무결과'}}/>
+      <Tab.Screen name="work" component={WorkStack} options={{ headerShown:false, tabBarLabel: '근무결과'}}/>
       <Tab.Screen name="result" component={ResultStack} options={{ headerShown:false, tabBarLabel: '결과현황표'}}/>
 
       <Tab.Screen name="community" component={ComunityScreen} options={{ tabBarLabel: '커뮤니티' }}/>
@@ -137,6 +137,15 @@ function ResultStack(){
       <Stack.Screen name="resultMain" component={ResultScreen} />
       <Stack.Screen name="resultDetail" component={ResultDetailScreen} />
     </Stack.Navigator>
+  )
+}
+
+function WorkStack(){
+  return(
+  <Stack.Navigator>
+    <Stack.Screen name="workMain" component={WorkScreen} />
+    <Stack.Screen name="registerAlba" component={EasyRegisterAlbaScreen} />
+  </Stack.Navigator>
   )
 }
 
