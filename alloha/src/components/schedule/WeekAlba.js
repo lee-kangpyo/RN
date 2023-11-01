@@ -6,7 +6,7 @@ import axios from 'axios';
 import { URL } from "@env";
 
 export default function WeekAlba({alba, onDel, week}) {
-    const cstCo = useSelector((state)=>state.schedule.cstCo);
+    const cstCo = useSelector((state)=>state.common.cstCo);
     const weekList = getWeekList(week);
     const navigator = useNavigation();
     const isdeny = useSelector((state)=>state.schedule.week == state.schedule.eweek);

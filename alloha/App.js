@@ -11,24 +11,20 @@ import Login from '../alloha/src/screen/Login';
 import TermsDetailScreen from '../alloha/src/screen/TermsDetailScreen';
 import MainScreen from '../alloha/src/screen/MainScreen';
 import SignInScreen from '../alloha/src/screen/SignInScreen';
-import GetLocationPermission from '../alloha/src/components/LocationPermission';
 
 import SearchAddress from '../alloha/src/components/SearchAddress';
 
-import Geofencing from './src/screen/GeofencingTestScreen'
 
 import { URL, TASK_URL, LOCATION_TASK } from "@env";
 import { useDispatch } from 'react-redux';
 import { setUserInfo } from './redux/slices/login';
 import axios from "axios"
-import HTTP from "./src/util/http"
 import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loading from './src/components/Loding';
 
 import * as TaskManager from 'expo-task-manager';
 import { testLog } from './src/util/testLog';
-import PushPermission from './src/components/PushPermission';
 import Notification from './src/components/Notification';
 
 // 태스크 매니저
@@ -127,7 +123,7 @@ function Index() {
   }
 
   useEffect(() => {
-    autoLogin("start")
+    autoLogin("start");
   }, []);
 
   useEffect(() => {

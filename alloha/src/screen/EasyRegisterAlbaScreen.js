@@ -11,7 +11,7 @@ import { URL } from "@env";import { useSelector } from 'react-redux';
 ;
 
 export default function EasyRegisterAlbaScreen({navigation}) {
-    const cstCo = useSelector((state)=>state.schedule.cstCo);
+    const cstCo = useSelector((state)=>state.common.cstCo);
 
     useEffect(()=>{
         navigation.setOptions({title:"알바 등록 / 관리"})

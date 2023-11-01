@@ -1,10 +1,35 @@
 import moment from 'moment';
 require('moment/locale/ko'); 
 
-// 현재 날짜 객체 생성
-const currentDate = moment();
+export const getPrevMM = () => {
+    const currentDate = moment();
+    const lastMonth = currentDate.subtract(1, 'month');
+    return lastMonth.format("MM");
+}
+export const getPrevMonth = () => {
+    const currentDate = moment();
+    const lastMonth = currentDate.subtract(1, 'month');
+    const start = lastMonth.startOf('month').clone();
+    const end = lastMonth.endOf('month').clone();
+    return ({start : start.format("YYYYMMDD"), end : end.format("YYYYMMDD"), mm:lastMonth.format("MM")});
+}
+export const movePrevMonth = (date) => {
+    const dateObject = moment(date.start);
+    const prevWeekStart = dateObject.clone().subtract(1, 'month');
+    const start = prevWeekStart.startOf('month').clone();
+    const end = prevWeekStart.endOf('month').clone();
+    return ({start : start.format("YYYYMMDD"), end : end.format("YYYYMMDD"), mm:prevWeekStart.format("MM")});
+}
+export const moveNextMonth = (date) => {
+    const dateObject = moment(date.start);
+    const nextWeekStart = dateObject.clone().add(1, 'month');
+    const start = nextWeekStart.startOf('month').clone();
+    const end = nextWeekStart.endOf('month').clone();
+    return ({start : start.format("YYYYMMDD"), end : end.format("YYYYMMDD"), mm:nextWeekStart.format("MM")});
+}
 
 export const getNextWeek = () => {
+    const currentDate = moment();
     // 현재 주의 시작 날짜 계산
     const currentWeekStart = currentDate.startOf('week');
     // 다음 주의 시작 날짜 계산
@@ -13,6 +38,7 @@ export const getNextWeek = () => {
 }
 
 export const getPrevWeek = () => {
+    const currentDate = moment();
     const currentWeekStart = currentDate.startOf('week');
     const prevWeekStart = currentWeekStart.clone().subtract(7, 'days');
     return prevWeekStart.format("YYYY-MM-DD");

@@ -4,7 +4,7 @@ import React, {useState, useEffect, useCallback} from 'react';
 import WeekDate from '../components/schedule/WeekDate';
 import WeekAlba from '../components/schedule/WeekAlba';
 import { useSelector, useDispatch } from 'react-redux';
-import { initTimeBox, nextWeek, prevWeek, setAlba, setAlbaList, setScheduleCstCo, setScheduleStoreList } from '../../redux/slices/schedule';
+import { initTimeBox, nextWeek, prevWeek, setAlba, setAlbaList } from '../../redux/slices/schedule';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
@@ -13,13 +13,14 @@ import { URL } from "@env";
 import { useFocusEffect, useIsFocused, useNavigation } from '@react-navigation/native';
 import { getWeekList } from '../util/moment';
 import { AlbaModal } from '../components/common/AlbaModal';
+import { setOwnerCstco, setOwnerStoreList } from '../../redux/slices/common';
+import StoreSelectBox from '../components/common/StoreSelectBox';
 
 export default function ScheduleScreen({navigation}) {
     const userId = useSelector((state) => state.login.userId);
     const albas = useSelector((state)=>state.schedule.albas);
     const weekNumber = useSelector((state)=>state.schedule.weekNumber);
-    const cstCo = useSelector((state)=>state.schedule.cstCo);
-    const storeList = useSelector((state)=>state.schedule.storeList);
+    const cstCo = useSelector((state)=>state.common.cstCo);
     const isScheduleEditable = useSelector((state)=>state.schedule.week == state.schedule.eweek);
     const week = useSelector((state)=>state.schedule.week)
     const weekList = getWeekList(week);
@@ -36,15 +37,7 @@ export default function ScheduleScreen({navigation}) {
             alert("알바 일정을 조회하는중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
         })
     }
-    const getStoreList = async () => {
-        await axios.get(URL+`/api/v1/getStoreList`, {params:{userId:userId,}})
-        .then((res)=>{
-            dispatch(setScheduleStoreList({storeList:res.data.result}));
-        }).catch(function (error) {
-            console.log(error);
-            alert("점포를 조회하는중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
-        })
-    }
+
     const getAlbaList = async()=>{
         const response = await axios.post(URL+'/api/v1/easyAlbaMng', {
             cls:"CstAlbaSearch", cstCo:cstCo, userName: "", hpNo:"", email:""
@@ -60,14 +53,6 @@ export default function ScheduleScreen({navigation}) {
         }
     }, [isFocused, cstCo, week]);
 
-    // useEffect(()=>{
-    //     if(cstCo != "") getWeekSchedule();
-    // }, [cstCo, week])
-
-    useEffect(()=>{
-        getStoreList();
-    }, [])
-
     useEffect(()=>{
         navigation.setOptions({
             title:"근무 계획",
@@ -80,20 +65,9 @@ export default function ScheduleScreen({navigation}) {
     
     return (
         <View style={styles.container}>
-            <View style = {{width: "100%",height: 60, borderWidth:1, borderColor:"black", borderRadius:10, marginBottom:10}}>
-                <Picker
-                    selectedValue = {cstCo}
-                    onValueChange = {(cstCo) => dispatch(setScheduleCstCo({cstCo:cstCo}))}
-                    >
-                    {
-                        storeList.map((el, idx)=>{
-                            return <Picker.Item key={idx} label={el.CSTNA} value={el.CSTCO}/>
-                        })
-                    }
-                </Picker>
-            </View>
+            <StoreSelectBox />
             <View style={{...styles.card, padding:5, width:"100%"}}>
-                <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:15}}>
+                <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:5}}>
                     <View style={{flexDirection:"row"}}>
                         <TouchableOpacity onPress={()=> dispatch(prevWeek())}>
                             <Ionicons name="caret-back-outline" size={20} color="black" />

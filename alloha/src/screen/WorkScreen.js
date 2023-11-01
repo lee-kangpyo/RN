@@ -3,7 +3,7 @@ import { StyleSheet, Animated, Text, View, TouchableOpacity, Keyboard, Switch, A
 import React, {useState, useEffect, useCallback, useRef, useMemo} from 'react';
 import WeekDate from '../components/schedule/WeekDate';
 import { useSelector, useDispatch } from 'react-redux';
-import { setAlbaList, setScheduleCstCo, setScheduleStoreList } from '../../redux/slices/schedule';
+import { setAlbaList } from '../../redux/slices/schedule';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
@@ -17,6 +17,8 @@ import WorkAlba from './../components/work/WorkAlba';
 import BottomSheet, {BottomSheetView, BottomSheetBackdrop} from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AlbaModal } from '../components/common/AlbaModal';
+import { setOwnerCstco, setOwnerStoreList } from '../../redux/slices/common';
+import StoreSelectBox from '../components/common/StoreSelectBox';
 
 export default function WorkScreen({navigation}) {
     const userId = useSelector((state) => state.login.userId);
@@ -26,8 +28,7 @@ export default function WorkScreen({navigation}) {
     const albas = useSelector((state)=>state.work.albas);
     const workInfo = useSelector((state)=>state.work.workAlbaInfo);
     
-    const cstCo = useSelector((state)=>state.schedule.cstCo);
-    const storeList = useSelector((state)=>state.schedule.storeList);
+    const cstCo = useSelector((state)=>state.common.cstCo);
     
     
     const dispatch = useDispatch();
@@ -48,15 +49,7 @@ export default function WorkScreen({navigation}) {
             alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
         })
     }
-    const getStoreList = async () => {
-        await axios.get(URL+`/api/v1/getStoreList`, {params:{userId:userId,}})
-        .then((res)=>{
-            dispatch(setScheduleStoreList({storeList:res.data.result}));
-        }).catch(function (error) {
-            console.log(error);
-            alert("점포를 조회하는중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
-        })
-    }
+
     const getAlbaList = async()=>{
         const response = await axios.post(URL+'/api/v1/easyAlbaMng', {
             cls:"CstAlbaSearch", cstCo:cstCo, userName: "", hpNo:"", email:""
@@ -68,15 +61,11 @@ export default function WorkScreen({navigation}) {
     
     useEffect(() => {
         if (isFocused) {
-            console.log('화면이 활성화됨');
+            console.log('근무결과 화면이 활성화됨');
             if(cstCo != "") getWeekSchedule();
         }
     }, [isFocused, cstCo, week]);
 
-
-    useEffect(()=>{
-        getStoreList();
-    }, [])
 
 
     useEffect(()=>{
@@ -195,21 +184,9 @@ export default function WorkScreen({navigation}) {
     //###############################################################
     return (
         <GestureHandlerRootView style={styles.container}>
-            <View style = {{width: "100%",height: 60, borderWidth:1, borderColor:"black", borderRadius:10, marginBottom:10}}>
-                <Picker
-                    selectedValue = {cstCo}
-                    onValueChange = {(cstCo) => dispatch(setScheduleCstCo({cstCo:cstCo}))}
-                >
-                    {
-                        storeList.map((el, idx)=>{
-                            return <Picker.Item key={idx} label={el.CSTNA} value={el.CSTCO}/>
-                        })
-                    }
-                </Picker>
-            </View>
-            
+            <StoreSelectBox />
             <View style={{...styles.card, padding:5, width:"100%"}}>
-                <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:15}}>
+                <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:5}}>
                     <View style={{flexDirection:"row"}}>
                         <TouchableOpacity onPress={()=> dispatch(prevWeek())}>
                             <Ionicons name="caret-back-outline" size={20} color="black" />
@@ -247,9 +224,9 @@ export default function WorkScreen({navigation}) {
                         :
                             albas.map((item, idx)=>{
                                 return (
-                                    <View style={{flexDirection:"row"}}>
+                                    <View key={idx} style={{flexDirection:"row"}}>
                                         <Animated.View style={{width:widthValue}} >
-                                            <WorkAlba key={idx} alba={item} week={week} onTap={onAlbaTap} onDel={getWeekSchedule} />
+                                            <WorkAlba alba={item} week={week} onTap={onAlbaTap} onDel={getWeekSchedule} />
                                         </Animated.View>
                                         <TouchableOpacity onPress={()=>delAlba(item.userId, item.userNa)} style={{...styles.btnMini, alignItems:"center", backgroundColor:"red", justifyContent:"center", width:50}}>
                                             <Text style={{color:"white"}}>삭제</Text>

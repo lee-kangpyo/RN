@@ -83,16 +83,7 @@ const scheduleSlice = createSlice({
         state.totalCoverTime = 0;
         state.timeBox = new Array(48).fill(null).map(() => [0, 0, 0, 0, 0, 0, 0]);
     },
-    setScheduleCstCo(state, action){
-      state.cstCo = action.payload.cstCo;
-    },
-    setScheduleStoreList(state, action){
-        state.storeList = action.payload.storeList;
-        if(state.cstCo == ""){
-          state.cstCo = action.payload.storeList[0].CSTCO;
-        }
-        
-    },
+
     setAlbaList(state, action){
         state.albaList = action.payload.albaList;
     },
@@ -135,7 +126,7 @@ const scheduleSlice = createSlice({
 });
 
 //외부에서 reducer를 사용하기위해 export
-export let { setAlba, prevWeek, nextWeek, onTabCheckTIme, initTimeBox, setScheduleCstCo, setScheduleStoreList, setAlbaList, updateTimeBox } = scheduleSlice.actions
+export let { setAlba, prevWeek, nextWeek, onTabCheckTIme, initTimeBox, setAlbaList, updateTimeBox } = scheduleSlice.actions
 
 export default scheduleSlice;
 
