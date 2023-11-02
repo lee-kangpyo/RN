@@ -1,7 +1,7 @@
 import {createSlice} from '@reduxjs/toolkit';
-import { getPrevWeek, getWeekNumber, moveDay, moveNextWeek, movePrevWeek } from '../../src/util/moment';
+import { getCurWeek, getWeekNumber, moveDay, moveNextWeek, movePrevWeek } from '../../src/util/moment';
 
-const week = getPrevWeek()
+const week = getCurWeek()
 const initialState = {
   token: '',
   eweek : week,
