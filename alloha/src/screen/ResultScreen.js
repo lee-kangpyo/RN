@@ -34,7 +34,7 @@ export default function ResultScreen({navigation}) {
 
     
     const monthCstSlySearch = async () => {
-        const param = {cls:"MonthCstSlySearch", ymdFr:date.start, ymdTo:date.end, cstCo:cstCo, cstNa:"", userId:userId, userNa:"", rtCl:""};
+        const param = {cls:"MonthCstSlySearch", ymdFr:date.start, ymdTo:date.end, cstCo:cstCo, cstNa:"", userId:userId, userNa:"", rtCl:"0"};
         await axios.get(URL+`/api/v1/rlt/monthCstSlySearch`, {params:param})
         .then((res)=>{
             dispatch(setWorkResultList({data:res.data.result}))

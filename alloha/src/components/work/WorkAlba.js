@@ -74,7 +74,6 @@ const ContentBox = React.memo(({item, userId, userNa, ymd, num, onTap, blank=fal
         </TouchableOpacity>
     );
 }, (prevProps, nextProps) => {
-    console.log(prevProps)
     return JSON.stringify(prevProps.item) === JSON.stringify(nextProps.item) && prevProps.selected === nextProps.selected && prevProps.userId === nextProps.userId && prevProps.ymd === nextProps.ymd;
 })
 
