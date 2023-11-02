@@ -2,6 +2,8 @@ import { useNavigation } from "@react-navigation/native";
 import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSelector } from "react-redux";
 import { Ionicons } from '@expo/vector-icons';
+import { TextInput } from "react-native-gesture-handler";
+import { useState } from "react";
 
 export function AlbaModal({execptAlbaId, isShow, onClose, onShow, addAlba, selectAlba }){
     const albaList = useSelector((state)=>state.schedule.albaList);
@@ -41,6 +43,61 @@ export function AlbaModal({execptAlbaId, isShow, onClose, onShow, addAlba, selec
     )
 }
 
+export function ModifyTimeModal({onShow, isShow, onClose, onConfirm}){
+    const [val, setVal] = useState('')
+    const onConfirmModal = () =>{
+        onConfirm(val);
+        setVal('');
+    }
+    const onCloseModal = () => {
+        setVal('');
+        onClose();
+    }
+    return(
+        <CustomTopModal isShow={isShow} onClose={onCloseModal} onShow={onShow} onConfirm={onConfirmModal}>
+            <View style={{ width:"100%", }}>
+                <Text style={{marginBottom:15}}>직접입력</Text>
+                <TextInput
+                value={val}
+                onChange={(event) => {
+                    const {eventCount, target, text} = event.nativeEvent;
+                    setVal(text);
+                    }
+                }
+                keyboardType="decimal-pad"
+                style={{borderWidth:1}} 
+                />
+            </View>
+        </CustomTopModal>
+    )
+}
+
+
+function CustomTopModal({onShow, isShow, onClose, onConfirm, children }){
+    return (
+        <Modal 
+            style={{backgroundColor:"black"}}
+            animationType={"fade"}  
+            visible={isShow} 
+            transparent={true}
+            onShow={onShow}
+        >
+            <View style={{ width:"100%", height:"100%", backgroundColor:"rgba(0,0,0,0.5)", padding:50, justifyContent:"center"}}>
+                <View style={{backgroundColor:"white", justifyContent:"center", alignItems:"center", borderWidth:1, borderColor:"black", borderRadius:10, padding:15}}>
+                    {children}
+                    <View style={{ flexDirection:"row"}}>
+                        <TouchableOpacity style={[styles.btn, {paddingHorizontal:30, backgroundColor:"#FFCD4B", marginRight:15}]} onPress={onClose}>
+                            <Text>취소</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[styles.btn, {paddingHorizontal:30, backgroundColor:"#FFCD4B"}]} onPress={onConfirm}>
+                            <Text>확인</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </View>
+        </Modal>
+    )
+}
 
 function CustomModal({onShow, isShow, onClose, children }){
     return (

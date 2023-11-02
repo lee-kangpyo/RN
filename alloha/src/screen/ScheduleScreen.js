@@ -12,7 +12,7 @@ import axios from 'axios';
 import { URL } from "@env";
 import { useFocusEffect, useIsFocused, useNavigation } from '@react-navigation/native';
 import { getWeekList } from '../util/moment';
-import { AlbaModal } from '../components/common/AlbaModal';
+import { AlbaModal } from '../components/common/customModal';
 import { setOwnerCstco, setOwnerStoreList } from '../../redux/slices/common';
 import StoreSelectBox from '../components/common/StoreSelectBox';
 
