@@ -16,9 +16,10 @@ import WorkAlba from './../components/work/WorkAlba';
 
 import BottomSheet, {BottomSheetView, BottomSheetBackdrop} from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { AlbaModal } from '../components/common/AlbaModal';
+import { AlbaModal, ModifyTimeModal } from '../components/common/customModal';
 import { setOwnerCstco, setOwnerStoreList } from '../../redux/slices/common';
 import StoreSelectBox from '../components/common/StoreSelectBox';
+import CustomModal from '../components/CustomModal';
 
 export default function WorkScreen({navigation}) {
     const userId = useSelector((state) => state.login.userId);
@@ -34,6 +35,7 @@ export default function WorkScreen({navigation}) {
     const dispatch = useDispatch();
 
     const [modalVisible, setModalVisible] = useState(false);
+    const [modifyTimeShow, setModifyTimeShow] = useState(false);
     
 
 
@@ -107,7 +109,23 @@ export default function WorkScreen({navigation}) {
           useNativeDriver: false,
         }).start();
       };
+      
+      const [timeModalParams, setTimeModalParams] = useState([])
+      const onConfrimModifyTime = async (val) => {
+        timeModalParams.jobDure = val;
+        console.log(timeModalParams);
 
+        await axios.post(URL+`/api/v1/work/workChedule`, timeModalParams)
+        .then((res)=>{
+            getWeekSchedule()
+            dispatch(moveWeek())
+            setModifyTimeShow(false);;
+        }).catch(function (error) {
+            console.log(error);
+            alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
+        })
+
+      }
 
     //###############################################################
     const [bottomSheetIndex, setBottomSeetIndex] = useState(-1)
@@ -259,20 +277,27 @@ export default function WorkScreen({navigation}) {
                 selectAlba={selectAlba} 
             />
             <BotSheet 
+                
                 onBottomSheetChanged={(idx)=>setBottomSeetIndex(idx)}
                 sheetRef={sheetRef} 
                 snapPoints={snapPoints} 
                 renderBackdrop={renderBackdrop} 
                 handleSnapPress={handleSnapPress}
-                
-                Content={<BtnSet workInfo={workInfo} cstCo={cstCo} refresh={(callback) => getWeekSchedule(callback)} onDelete={delAlba} onClose={closesheet}/>}
+                Content={<BtnSet workInfo={workInfo} cstCo={cstCo} refresh={(callback) => getWeekSchedule(callback)} onDelete={delAlba} onClose={closesheet} 
+                    onTypingModalShow={(param)=>{
+                        setTimeModalParams(param)
+                        setModifyTimeShow(true)
+                    }
+                }/>}
             />
+            <ModifyTimeModal isShow={modifyTimeShow} onClose={()=>setModifyTimeShow(false)} onConfirm={(val)=>{onConfrimModifyTime(val)}} onShow={()=>console.log("onShow")} />
         </GestureHandlerRootView>
         
 
     );
+    
 }
-function BtnSet({workInfo, cstCo, refresh, onDelete, onClose}){
+function BtnSet({ workInfo, cstCo, refresh, onDelete, onClose, onTypingModalShow, }){
     const [isEnabled, setIsEnabled] = useState(false);
     const [isFncRunning, setIsFncRunning] = useState(false);
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
@@ -301,10 +326,17 @@ function BtnSet({workInfo, cstCo, refresh, onDelete, onClose}){
         };
     }
     return(
-        <View style={{height:"100%"}}>
-            <View style={{flex:1, flexDirection:"row", alignItems:"center",justifyContent:"space-between", height:30, marginHorizontal:15}}>
+        <View style={{height:"100%", justifyContent:"center"}}>
+            <View style={{ flexDirection:"row", alignItems:"center",justifyContent:"space-between", height:30, marginHorizontal:15, marginBottom:10}}>
                 <Text>{workInfo.ymd.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3')} [{workInfo.userNa}]</Text>
                 <View style={{flexDirection:"row", alignItems:"center"}}>
+                    <TouchableOpacity style={{marginRight:5}} onPress={()=>{
+                        const type = (isEnabled)?"S":"G"
+                        const param = {cls:"WeekAlbaWorkSave", cstCo, userId:workInfo.userId, ymdFr:workInfo.ymd, ymdTo:"", jobCl:type, jobDure:0}
+                        onTypingModalShow(param);
+                    }}>
+                        <Text style={styles.btnMini}>직접입력</Text>
+                    </TouchableOpacity>
                     <Switch
                         trackColor={{false: '#767577', true: '#81b0ff'}}
                         thumbColor={isEnabled ? '#f5dd4b' : '#f4f3f4'}
@@ -315,7 +347,7 @@ function BtnSet({workInfo, cstCo, refresh, onDelete, onClose}){
                     <Text style={{marginLeft:-3}}>{(isEnabled)?"특근":"일반"}</Text>
                 </View>
             </View>
-            <View style={{flex:2,  paddingHorizontal:10}}>
+            <View style={{paddingHorizontal:10,  marginBottom:10}}>
                 <View style={{flexDirection:"row",}}>
                     {
                         [1, 2, 3, 4, 5, 6, 7, 8].map((num, idx)=>{
@@ -332,7 +364,7 @@ function BtnSet({workInfo, cstCo, refresh, onDelete, onClose}){
                     
                 </View>
             </View>
-            <View style={{flex:2, flexDirection:"row", justifyContent:"space-between", alignItems:"center", paddingHorizontal:15}}>
+            <View style={{flexDirection:"row", justifyContent:"space-between", alignItems:"center", paddingHorizontal:15}}>
                 <TouchableOpacity style={{...styles.btn, marginRight:5}} onPress={()=>onClose()}>
                     <Text>닫기</Text>
                 </TouchableOpacity>
