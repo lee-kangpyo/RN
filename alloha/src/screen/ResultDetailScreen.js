@@ -30,7 +30,7 @@ export default function ResultDetailScreen({navigation, route}) {
         return result; 
     }, {jobWage:0, jobDure:0, spcDure:0, weekWage:0, incentive:0, salary:0})
     const monthAlbaSlySearch = async () => {
-        const param = {cls:"MonthAlbaSlySearch", ymdFr:date.start, ymdTo:date.end, cstCo:cstCo, cstNa:"", userId:item.userId, userNa:"", rtCl:""};
+        const param = {cls:"MonthAlbaSlySearch", ymdFr:date.start, ymdTo:date.end, cstCo:cstCo, cstNa:"", userId:item.userId, userNa:"", rtCl:"0"};
         await axios.get(URL+`/api/v1/rlt/monthCstSlySearch`, {params:param})
         .then((res)=>{
             dispatch(setWorkDetailResultList({data:res.data.result}))

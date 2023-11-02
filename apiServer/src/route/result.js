@@ -13,7 +13,8 @@ router.get("/monthCstSlySearch", async (req, res, next) => {
     console.log("GET result.monthCstSlySearch");
     try {
         const {cls, ymdFr, ymdTo, cstCo, cstNa, userId, userNa, rtCl} = req.query;
-        const param = {cls, ymdFr, ymdTo, cstCo, cstNa, userId, userNa, rtCl};
+        const spcAmt = (rtCl == "")?"0":rtCl;
+        const param = {cls, ymdFr, ymdTo, cstCo, cstNa, userId, userNa, rtCl:spcAmt};
         const result = await execSql(monthCstSlySearch, param)
         res.status(200).json({result:result.recordset, resultCode:"00"});
     } catch (error) {
