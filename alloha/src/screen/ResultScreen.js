@@ -55,7 +55,6 @@ export default function ResultScreen({navigation}) {
 
     return (
         <View style={styles.container}>
-            <TouchableOpacity onPress={()=>{}}><Text>asdf</Text></TouchableOpacity>
             <StoreSelectBox />
             <View style={{...styles.card, padding:5, width:"100%"}}>
                 <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:5}}>
