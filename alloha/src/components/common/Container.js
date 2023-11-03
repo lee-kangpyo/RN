@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Touchable, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, StyleSheet, Text, Touchable, TouchableOpacity, Keyboard } from 'react-native';
+import { ScrollView, TextInput } from 'react-native-gesture-handler';
 
-export function PayDetailContainer({header, contents,}){
+export function PayDetailContainer({header, contents, ondeataTap}){
     return(
         <View>
-            
             <View style={styles.row}>
                 {
                     header.map((label, idx)=>{
@@ -17,7 +17,7 @@ export function PayDetailContainer({header, contents,}){
                     <View>
                         {
                             contents.map((el, idx)=>{
-                                return <PayDetailLine key={idx} item={el} />
+                                return <PayDetailLine key={idx} item={el} onDeataTap={ondeataTap}/>
                             })
                         }
                     </View>
@@ -31,15 +31,22 @@ export function PayDetailContainer({header, contents,}){
 }
 
 
-const PayDetailLine = ({item}) => {
-    console.log(item)
+const PayDetailLine = ({item, onDeataTap}) => {
+    const [isEdit, setEdit] = useState(false);
+    
     return(
         <View style={[styles.row, {justifyContent:"space-between"}]}>
-            <ContentBox text={item.week1+"주"}/>
-            <ContentBox text={item.jobDure} subText={item.jobWage.toLocaleString()}/>
-            <ContentBox text={item.spcDure}/>
-            <ContentBox text={"-"} subText={item.weekWage}/>
-            <ContentBox text={item.jobDure + item.spcDure} subText={item.salary}/>
+            <ContentBox text={item.week1+"주"} />
+            <ContentBox text={item.jobDure} subText={item.jobWage.toLocaleString()} alignItems='flex-end'/>
+            {
+                (isEdit)?
+                    <EidtNumberBox text={item.spcDure.toLocaleString()} onTap={(value)=>{onDeataTap({value, userId:item.userId, weekNumber:item.week1});setEdit(false);}} />
+                :
+                    <ContentBox text={item.spcDure.toLocaleString()} onTap={()=>setEdit(true)}  alignItems='flex-end'/>
+            }
+            
+            <ContentBox text={"-"} subText={item.weekWage} alignItems='flex-end'/>
+            <ContentBox text={item.jobDure + item.spcDure} subText={item.salary} alignItems='flex-end'/>
             
         </View>
     )
@@ -47,8 +54,7 @@ const PayDetailLine = ({item}) => {
 
 export function PayContainer({header, contents, onNameTap, onIncentiveTap}) {
     return(
-        <View>
-            
+        <ScrollView>
             <View style={styles.row}>
                 {
                     header.map((label, idx)=>{
@@ -70,7 +76,7 @@ export function PayContainer({header, contents, onNameTap, onIncentiveTap}) {
                         <Text>데이터가 없습니다.</Text>
                     </View>
                 }
-        </View>
+        </ScrollView>
     )
 };
 
@@ -111,20 +117,46 @@ const NameBox2 = ({list}) => {
 }
 
 const PayLine = ({item, onNameTap, onIncentiveTap}) => {
+    const [isEdit, setEdit] = useState(false);
     return(
         <View style={[styles.row, {justifyContent:"space-between"}]}>
             <ContentBox text={item.userNa} onTap={()=>onNameTap(item)}/>
-            <ContentBox text={item.jobWage.toLocaleString()} />
-            <ContentBox text={item.weekWage.toLocaleString()} subText={item.weekWageNa} />
-            <ContentBox text={item.incentive.toLocaleString()} onTap={()=>onIncentiveTap(item)} />
-            <ContentBox text={item.salary.toLocaleString()} />
+            <ContentBox text={item.jobWage.toLocaleString()} alignItems='flex-end'/>
+            <ContentBox text={item.weekWage.toLocaleString()} subText={item.weekWageNa}  alignItems='flex-end' />
+            
+            {
+                (isEdit)?
+                    <EidtNumberBox text={item.incentive.toLocaleString()} onTap={(value)=>{onIncentiveTap({value, userId:item.userId});setEdit(false);}} />
+                :
+                    <ContentBox text={item.incentive.toLocaleString()} onTap={()=>setEdit(true)}  alignItems='flex-end' />
+            }
+            <ContentBox text={item.salary.toLocaleString()}  alignItems='flex-end'/>
         </View>
     )
 }
 
-const ContentBox = ({text, subText, onTap}) => {
+const EidtNumberBox = ({ initvalue=0, onTap, alignItems = "center"}) => {
+    const ref = useRef(initvalue);
+    const [value, setValue] = useState("")
+    const onSave = () => {
+        if (value == "" || (!isNaN(value) && value >= 0 && value == parseInt(value, 10))) {
+            onTap(value);
+        }else{
+            alert("잘못된 값을 입력하셨습니다.")
+            ref.current.focus();
+        }
+    }
     return(
-        <TouchableOpacity activeOpacity={(onTap)?0.2:1} style={styles.box} onPress={onTap}>
+        <TouchableOpacity activeOpacity={(onTap)?0.2:1} style={[styles.box, {alignItems:alignItems, paddingHorizontal:5}]} onPress={onTap}>
+            <TextInput autoFocus={true} style={styles.input} ref={ref} value={value} keyboardType='number-pad' onChange={(e)=>setValue(e.nativeEvent.text)} 
+                onBlur={onSave}
+            />
+        </TouchableOpacity>
+    )
+}
+const ContentBox = ({text, subText, onTap, alignItems = "center"}) => {
+    return(
+        <TouchableOpacity activeOpacity={(onTap)?0.2:1} style={[styles.box, {alignItems:alignItems, paddingHorizontal:5}]} onPress={onTap}>
             <Text>{text}</Text>
             {
                 (subText)?
@@ -158,5 +190,11 @@ const styles = StyleSheet.create({
     subText:{
         color:"grey",
         fontSize:10
+    },
+    input:{
+        borderWidth:1,
+        borderRadius:1,
+        borderColor:"grey",
+        width:"100%"
     }
 });

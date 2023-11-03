@@ -1,6 +1,16 @@
 import moment from 'moment';
 require('moment/locale/ko'); 
 
+export const getWeekByWeekNumber = (startMonth, weekNumber) => {
+    // "20231001", 4(주차)
+    const startOfWeek = moment(startMonth).add(weekNumber, 'w').startOf('week').format('YYYYMMDD');
+
+    // 2023년 9월의 2주차 끝 날짜
+    const endOfWeek = moment(startMonth).add(weekNumber, 'w').endOf('week').format('YYYYMMDD');
+
+    return {startOfWeek, endOfWeek}
+}
+
 export const getCurMM = () => {
     const currentDate = moment();
     return currentDate.format("MM");
