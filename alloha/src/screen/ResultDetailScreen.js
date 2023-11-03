@@ -51,8 +51,10 @@ export default function ResultDetailScreen({navigation, route}) {
     useEffect(()=>{
         navigation.setOptions({title:"결과 현황표 - 상세"})
     }, [navigation])
-
+    console.log(getWeekByWeekNumber('20231101', 1))
     const onDeataTap = async (info) => {
+        console.log("####")
+        console.log(date.start, info.weekNumber)
         const week = getWeekByWeekNumber(date.start, info.weekNumber);
         var param = {cls:"DetaAmtUpdate", ymdFr:week.startOfWeek, ymdTo:week.endOfWeek, cstCo:cstCo, userId:info.userId, userNa:"", rtCl:info.value}
         console.log(param)
