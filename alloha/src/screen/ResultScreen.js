@@ -17,6 +17,7 @@ export default function ResultScreen({navigation}) {
     const isFocused = useIsFocused();
     const date = useSelector((state) => state.result.month)
     const items = useSelector((state) => state.result.workResultList)
+   
     
     const dispatch = useDispatch()
 
@@ -51,7 +52,16 @@ export default function ResultScreen({navigation}) {
     }, [isFocused, cstCo, date]);
 
     const onNameTap = (item) => {navigation.push("resultDetail", {item:item})}
-    const onIncentiveTap = (item) => {console.log("인센티브 변경")}
+    const onIncentiveTap = async (incentive) => {
+        var param = {cls:"IncentiveAmtUpdate", ymdFr:date.start, ymdTo:date.end, cstCo:cstCo, userId:incentive.userId, userNa:"", rtCl:incentive.value}
+        await axios.get(URL+`/api/v1/rlt/monthCstSlySearch`, {params:param})
+        .then((res)=>{
+            monthCstSlySearch();
+        }).catch(function (error) {
+            console.log(error);
+            alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
+        })
+    }
 
     return (
         <View style={styles.container}>

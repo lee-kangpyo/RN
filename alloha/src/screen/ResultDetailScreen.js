@@ -10,6 +10,7 @@ import axios from 'axios';
 import { URL } from "@env";
 import { nextMonth, prevMonth, setWorkDetailResultList, setWorkResultList } from '../../redux/slices/result';
 import { PayDetailContainer, TotalContainer } from '../components/common/Container';
+import { getWeekByWeekNumber } from '../util/moment';
 
 export default function ResultDetailScreen({navigation, route}) {
     const cstCo = useSelector((state)=>state.common.cstCo);
@@ -17,7 +18,7 @@ export default function ResultDetailScreen({navigation, route}) {
     const isFocused = useIsFocused();
     const dispatch = useDispatch()
     const { item } = route.params;
-
+    
     const items = useSelector((state) => state.result.workDetailResultList)
     
     const total = items.reduce((result, next)=>{
@@ -51,6 +52,18 @@ export default function ResultDetailScreen({navigation, route}) {
         navigation.setOptions({title:"결과 현황표 - 상세"})
     }, [navigation])
 
+    const onDeataTap = async (info) => {
+        const week = getWeekByWeekNumber(date.start, info.weekNumber);
+        var param = {cls:"DetaAmtUpdate", ymdFr:week.startOfWeek, ymdTo:week.endOfWeek, cstCo:cstCo, userId:info.userId, userNa:"", rtCl:info.value}
+        console.log(param)
+        await axios.get(URL+`/api/v1/rlt/monthCstSlySearch`, {params:param})
+        .then((res)=>{
+            monthAlbaSlySearch();
+        }).catch(function (error) {
+            console.log(error);
+            alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
+        })
+    }
 
     return (
         <View style={styles.container}>
@@ -66,7 +79,7 @@ export default function ResultDetailScreen({navigation, route}) {
                         </TouchableOpacity>
                     </View>
                 </View>
-                <PayDetailContainer header={["주차", "기본", "대타", "주휴수당", "합계"]} contents={items} />
+                <PayDetailContainer header={["주차", "기본", "대타", "주휴수당", "합계"]} contents={items} ondeataTap={onDeataTap}/>
             </View>
             <View style={{padding:5, width:"100%"}}>
                 <TotalContainer contents={["합계", [total.jobDure, total.jobWage.toLocaleString()], [total.spcDure, total.weekWage.toLocaleString()], total.incentive.toLocaleString(), total.salary.toLocaleString()]}/>

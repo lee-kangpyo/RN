@@ -11,7 +11,7 @@ export default function WeekAlba({alba, onTap, onDel, week}) {
     const weekList = getWeekList(week);
     const navigator = useNavigation();
     const workInfo = useSelector((state)=>state.work.workAlbaInfo)
-    
+    //console.log(alba)
   return (
         <View style={styles.container}>
             <NameBox name={alba.userNa}/>
