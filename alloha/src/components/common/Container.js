@@ -33,16 +33,19 @@ export function PayDetailContainer({header, contents, ondeataTap}){
 
 const PayDetailLine = ({item, onDeataTap}) => {
     const [isEdit, setEdit] = useState(false);
-    
+    const spcWage = (item.spcWage > 0)?item.spcWage.toLocaleString():"";
     return(
         <View style={[styles.row, {justifyContent:"space-between"}]}>
             <ContentBox text={item.week1+"주"} />
             <ContentBox text={item.jobDure} subText={item.jobWage.toLocaleString()} alignItems='flex-end'/>
             {
-                (isEdit)?
+                (isEdit && item.spcDure > 0)?
                     <EidtNumberBox text={item.spcDure.toLocaleString()} onTap={(value)=>{onDeataTap({value, userId:item.userId, weekNumber:item.week1});setEdit(false);}} />
                 :
-                    <ContentBox text={item.spcDure.toLocaleString()} onTap={()=>setEdit(true)}  alignItems='flex-end'/>
+                (item.spcDure > 0)?
+                    <ContentBox text={item.spcDure.toLocaleString()} subText={spcWage} onTap={()=>setEdit(true)}  alignItems='flex-end'/>
+                :
+                <ContentBox text={item.spcDure.toLocaleString()} subText={spcWage}  alignItems='flex-end'/>
             }
             
             <ContentBox text={"-"} subText={item.weekWage} alignItems='flex-end'/>
