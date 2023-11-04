@@ -10,6 +10,7 @@ import axios from 'axios';
 import { URL } from "@env";
 import { nextMonth, prevMonth, setWorkResultList } from '../../redux/slices/result';
 import { PayContainer, TotalContainer } from '../components/common/Container';
+import HeaderControl from '../components/common/HeaderControl';
 
 export default function ResultScreen({navigation}) {
     const userId = useSelector((state) => state.login.userId);
@@ -66,20 +67,11 @@ export default function ResultScreen({navigation}) {
     return (
         <View style={styles.container}>
             <StoreSelectBox />
-            <View style={{...styles.card, padding:5, width:"100%"}}>
+            <View style={{...styles.card, padding:5, width:"100%", overflow:"hidden"}}>
                 <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:5}}>
-                    <View style={{flexDirection:"row"}}>
-                        <TouchableOpacity onPress={()=> dispatch(prevMonth())}>
-                            <Ionicons name="caret-back-outline" size={20} color="black" />
-                        </TouchableOpacity>
-                        <Text>{date.mm}월 급여표</Text>
-                        <TouchableOpacity onPress={()=> dispatch(nextMonth())}>
-                            <Ionicons name="caret-forward-outline" size={20} color="black" />
-                        </TouchableOpacity>
-                    </View>
+                    <HeaderControl title={`${date.mm}월 급여표`} onLeftTap={()=> dispatch(prevMonth())} onRightTap={()=> dispatch(nextMonth())} />
                 </View>
-
-                <PayContainer header={["성명", "본급", "주휴수당", "추가", "계"]} contents={items} onNameTap={onNameTap} onIncentiveTap={onIncentiveTap}/>
+                <PayContainer header={["성명", "시급", "주휴", "플러스", "합계"]} contents={items} onNameTap={onNameTap} onIncentiveTap={onIncentiveTap}/>
             </View>
             <View style={{padding:5, width:"100%"}}>
                 <TotalContainer contents={["합계", total.jobWage.toLocaleString(), total.weekWage.toLocaleString(), total.incentive.toLocaleString(), total.salary.toLocaleString()]}/>

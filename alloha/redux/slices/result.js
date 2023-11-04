@@ -5,7 +5,7 @@ const initialState = {
   month:getPrevMonth(),
   MM:getPrevMM(),
   workResultList:[],
-  workDetailResultList:[]
+  workDetailResultList:[],
 };
 
 const rltSlice = createSlice({

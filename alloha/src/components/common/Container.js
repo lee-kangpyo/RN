@@ -17,6 +17,7 @@ export function PayDetailContainer({header, contents, ondeataTap}){
                     <View>
                         {
                             contents.map((el, idx)=>{
+                                console.log(el)
                                 return <PayDetailLine key={idx} item={el} onDeataTap={ondeataTap}/>
                             })
                         }
@@ -34,30 +35,31 @@ export function PayDetailContainer({header, contents, ondeataTap}){
 const PayDetailLine = ({item, onDeataTap}) => {
     const [isEdit, setEdit] = useState(false);
     const spcWage = (item.spcWage > 0)?item.spcWage.toLocaleString():"";
+    //console.log(item);
     return(
         <View style={[styles.row, {justifyContent:"space-between"}]}>
             <ContentBox text={item.week1+"주"} />
-            <ContentBox text={item.jobDure} subText={item.jobWage.toLocaleString()} alignItems='flex-end'/>
+            <ContentBox text={item.jobWage.toLocaleString()} subText={item.jobDure} alignItems='flex-end'/>
             {
                 (isEdit && item.spcDure > 0)?
                     <EidtNumberBox text={item.spcDure.toLocaleString()} onTap={(value)=>{onDeataTap({value, userId:item.userId, weekNumber:item.week1});setEdit(false);}} />
                 :
                 (item.spcDure > 0)?
-                    <ContentBox text={item.spcDure.toLocaleString()} subText={spcWage} onTap={()=>setEdit(true)}  alignItems='flex-end'/>
+                    <ContentBox text={spcWage.toLocaleString()} subText={item.spcDure.toLocaleString()} onTap={()=>setEdit(true)}  alignItems='flex-end'/>
                 :
-                <ContentBox text={item.spcDure.toLocaleString()} subText={spcWage}  alignItems='flex-end'/>
+                <ContentBox text={spcWage.toLocaleString()} subText={item.spcDure.toLocaleString()}  alignItems='flex-end'/>
             }
             
             <ContentBox text={"-"} subText={item.weekWage} alignItems='flex-end'/>
-            <ContentBox text={item.jobDure + item.spcDure} subText={item.salary} alignItems='flex-end'/>
-            
+            <ContentBox text={item.salary.toLocaleString()} subText={item.jobDure + item.spcDure} alignItems='flex-end'/>
         </View>
     )
 }
 
 export function PayContainer({header, contents, onNameTap, onIncentiveTap}) {
+    //console.log(contents);
     return(
-        <ScrollView>
+        <View >
             <View style={styles.row}>
                 {
                     header.map((label, idx)=>{
@@ -67,19 +69,19 @@ export function PayContainer({header, contents, onNameTap, onIncentiveTap}) {
             </View>
                 {
                     (contents.length > 0)?
-                    <View>
+                    <ScrollView>
                         {
                             contents.map((el, idx)=>{
                                 return <PayLine key={idx} item={el} onNameTap={onNameTap} onIncentiveTap={onIncentiveTap} />
                             })
                         }
-                    </View>
+                    </ScrollView>
                     :
                     <View style={{alignItems:"center", borderWidth:0.5, margin:1, padding:3}}>
                         <Text>데이터가 없습니다.</Text>
                     </View>
                 }
-        </ScrollView>
+        </View>
     )
 };
 
@@ -91,9 +93,10 @@ export function TotalContainer({contents}) {
                 {
                     contents.map((label, idx)=>{
                         if(Array.isArray(label)){
-                            return <NameBox2 key={idx} list={label} />
+                            return <NameBox2 key={idx} list={label} alignItems={"flex-end"}/>
                         }else{
-                            return <NameBox key={idx} text={label} />
+                            const s = (label == "합계")?"center":"flex-end"
+                            return <NameBox key={idx} text={label} alignItems={s} />
                         }
                         
                     })
@@ -103,18 +106,18 @@ export function TotalContainer({contents}) {
     )
 };
 
-const NameBox = ({text}) => {
+const NameBox = ({text, alignItems = "center"}) => {
     return (
-        <View style={styles.box}>
-            <Text>{text}</Text>
+        <View style={[styles.box, {alignItems:alignItems, paddingHorizontal:5}]}>
+            <Text >{text}</Text>
         </View>
     )
 }
-const NameBox2 = ({list}) => {
+const NameBox2 = ({list, alignItems = "center"}) => {
     return (
-        <View style={styles.box}>
+        <View style={[styles.box, {alignItems:alignItems, paddingHorizontal:5}]}>
             <Text>{list[0]}</Text>
-            <Text style={styles.subText}>{list[1]}</Text>
+            <Text>{list[1]}</Text>
         </View>
     )
 }
@@ -163,7 +166,7 @@ const ContentBox = ({text, subText, onTap, alignItems = "center"}) => {
             <Text>{text}</Text>
             {
                 (subText)?
-                    <Text style={styles.subText}>({subText})</Text>
+                    <Text >{subText}</Text>
                 :null
             }
         </TouchableOpacity>
