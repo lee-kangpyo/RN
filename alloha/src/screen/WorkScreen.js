@@ -20,6 +20,7 @@ import { AlbaModal, ModifyTimeModal } from '../components/common/customModal';
 import { setOwnerCstco, setOwnerStoreList } from '../../redux/slices/common';
 import StoreSelectBox from '../components/common/StoreSelectBox';
 import CustomModal from '../components/CustomModal';
+import HeaderControl from '../components/common/HeaderControl';
 
 export default function WorkScreen({navigation}) {
     const userId = useSelector((state) => state.login.userId);
@@ -205,15 +206,7 @@ export default function WorkScreen({navigation}) {
             <StoreSelectBox />
             <View style={{...styles.card, padding:5, width:"100%"}}>
                 <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:5}}>
-                    <View style={{flexDirection:"row"}}>
-                        <TouchableOpacity onPress={()=> dispatch(prevWeek())}>
-                            <Ionicons name="caret-back-outline" size={20} color="black" />
-                        </TouchableOpacity>
-                        <Text>{weekNumber.month}월 {weekNumber.number}주차 일정표</Text>
-                        <TouchableOpacity onPress={()=> dispatch(nextWeek())}>
-                            <Ionicons name="caret-forward-outline" size={20} color="black" />
-                        </TouchableOpacity>
-                    </View>
+                    <HeaderControl title={`${weekNumber.month}월 ${weekNumber.number}주차 일정표`} onLeftTap={()=> dispatch(prevWeek())} onRightTap={()=> dispatch(nextWeek())} />
                     <TouchableOpacity onPress={toggleWidth}>
                         <View style={{...styles.btnMini, paddingVertical:0, paddingHorizontal:5}}>
                             <Text>편집</Text>

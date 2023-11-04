@@ -11,6 +11,7 @@ import { URL } from "@env";
 import { nextMonth, prevMonth, setWorkDetailResultList, setWorkResultList } from '../../redux/slices/result';
 import { PayDetailContainer, TotalContainer } from '../components/common/Container';
 import { getWeekByWeekNumber } from '../util/moment';
+import HeaderControl from '../components/common/HeaderControl';
 
 export default function ResultDetailScreen({navigation, route}) {
     const cstCo = useSelector((state)=>state.common.cstCo);
@@ -18,7 +19,6 @@ export default function ResultDetailScreen({navigation, route}) {
     const isFocused = useIsFocused();
     const dispatch = useDispatch()
     const { item } = route.params;
-    
     const items = useSelector((state) => state.result.workDetailResultList)
     
     const total = items.reduce((result, next)=>{
@@ -30,11 +30,15 @@ export default function ResultDetailScreen({navigation, route}) {
         result.salary = result.salary + next.salary;
         return result; 
     }, {jobWage:0, jobDure:0, spcDure:0, weekWage:0, incentive:0, salary:0})
+
     const monthAlbaSlySearch = async () => {
+        console.log(item.userId);
         const param = {cls:"MonthAlbaSlySearch", ymdFr:date.start, ymdTo:date.end, cstCo:cstCo, cstNa:"", userId:item.userId, userNa:"", rtCl:"0"};
         await axios.get(URL+`/api/v1/rlt/monthCstSlySearch`, {params:param})
         .then((res)=>{
-            dispatch(setWorkDetailResultList({data:res.data.result}))
+            // TODO: 김이사님과 처리해야할일. 결과 현황표 상세에 점주는 모든 알바생의 데이터를 가져오는 문제가 있음 일단 빼둠.
+            const data = res.data.result.filter((el)=>el.userId == item.userId);
+            dispatch(setWorkDetailResultList({data}))
         }).catch(function (error) {
             console.log(error);
             alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
@@ -51,7 +55,7 @@ export default function ResultDetailScreen({navigation, route}) {
     useEffect(()=>{
         navigation.setOptions({title:"결과 현황표 - 상세"})
     }, [navigation])
-    console.log(getWeekByWeekNumber('20231101', 1))
+
     const onDeataTap = async (info) => {
         console.log("####")
         console.log(date.start, info.weekNumber)
@@ -71,20 +75,12 @@ export default function ResultDetailScreen({navigation, route}) {
         <View style={styles.container}>
             <View style={{...styles.card, padding:5, width:"100%"}}>
                 <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:5}}>
-                    <View style={{flexDirection:"row"}}>
-                        <TouchableOpacity onPress={()=> dispatch(prevMonth())}>
-                            <Ionicons name="caret-back-outline" size={20} color="black" />
-                        </TouchableOpacity>
-                        <Text>{item.userNa}님 {date.mm}월 급여표</Text>
-                        <TouchableOpacity onPress={()=> dispatch(nextMonth())}>
-                            <Ionicons name="caret-forward-outline" size={20} color="black" />
-                        </TouchableOpacity>
-                    </View>
+                    <HeaderControl title={`${item.userNa}님 ${date.mm}월 급여표`} onLeftTap={()=> dispatch(prevMonth())} onRightTap={()=> dispatch(nextMonth())} />
                 </View>
-                <PayDetailContainer header={["주차", "기본", "대타", "주휴수당", "합계"]} contents={items} ondeataTap={onDeataTap}/>
+                <PayDetailContainer header={["주차", "시급", "주휴", "플러스", "합계"]} contents={items} ondeataTap={onDeataTap}/>
             </View>
             <View style={{padding:5, width:"100%"}}>
-                <TotalContainer contents={["합계", [total.jobDure, total.jobWage.toLocaleString()], [total.spcDure, total.weekWage.toLocaleString()], total.incentive.toLocaleString(), total.salary.toLocaleString()]}/>
+                <TotalContainer contents={["합계", [total.jobWage.toLocaleString(), total.jobDure], [total.weekWage.toLocaleString(), total.spcDure], total.incentive.toLocaleString(), total.salary.toLocaleString()]}/>
             </View>
         </View>
     );
