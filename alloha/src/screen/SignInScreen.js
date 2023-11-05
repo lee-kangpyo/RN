@@ -284,7 +284,6 @@ const BusinessInfo = ({navigation, updateBusiness}) => {
     const detailAddress = useRef();
 
     const setAdress = (transferData) => {
-        console.log(transferData);
         setData(transferData);
         //여기서 상세 주소 포커스
     }
