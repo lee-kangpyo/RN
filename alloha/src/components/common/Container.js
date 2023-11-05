@@ -8,7 +8,7 @@ export function PayDetailContainer({header, contents, ondeataTap}){
             <View style={styles.row}>
                 {
                     header.map((label, idx)=>{
-                        return <NameBox key={idx} text={label} />
+                        return <NameBox key={idx} text={label} fontSize={14}/>
                     })
                 }
             </View>
@@ -38,7 +38,7 @@ const PayDetailLine = ({item, onDeataTap}) => {
     //console.log(item);
     return(
         <View style={[styles.row, {justifyContent:"space-between"}]}>
-            <ContentBox text={item.week1+"주"} />
+            <ContentBox text={item.week1+"주"} fontSize={14}/>
             <ContentBox text={item.jobWage.toLocaleString()} subText={item.jobDure} alignItems='flex-end'/>
             {
                 (isEdit && item.spcDure > 0)?
@@ -50,7 +50,7 @@ const PayDetailLine = ({item, onDeataTap}) => {
                 <ContentBox text={spcWage.toLocaleString()} subText={item.spcDure.toLocaleString()}  alignItems='flex-end'/>
             }
             
-            <ContentBox text={"-"} subText={item.weekWage} alignItems='flex-end'/>
+            <ContentBox text={item.weekWage.toLocaleString()} alignItems='flex-end'/>
             <ContentBox text={item.salary.toLocaleString()} subText={item.jobDure + item.spcDure} alignItems='flex-end'/>
         </View>
     )
@@ -59,29 +59,31 @@ const PayDetailLine = ({item, onDeataTap}) => {
 export function PayContainer({header, contents, onNameTap, onIncentiveTap}) {
     //console.log(contents);
     return(
-        <View >
-            <View style={styles.row}>
-                {
-                    header.map((label, idx)=>{
-                        return <NameBox key={idx} text={label} />
-                    })
-                }
+        <ScrollView stickyHeaderIndices={[0]}>
+            <View>
+                <View style={styles.row}>
+                    {
+                        header.map((label, idx)=>{
+                            return <NameBox key={idx} text={label} fontSize={14}/>
+                        })
+                    }
+                </View>
             </View>
                 {
                     (contents.length > 0)?
-                    <ScrollView>
+                    <>
                         {
                             contents.map((el, idx)=>{
                                 return <PayLine key={idx} item={el} onNameTap={onNameTap} onIncentiveTap={onIncentiveTap} />
                             })
                         }
-                    </ScrollView>
+                    </>
                     :
                     <View style={{alignItems:"center", borderWidth:0.5, margin:1, padding:3}}>
                         <Text>데이터가 없습니다.</Text>
                     </View>
                 }
-        </View>
+        </ScrollView>
     )
 };
 
@@ -92,11 +94,12 @@ export function TotalContainer({contents}) {
             <View style={styles.row}>
                 {
                     contents.map((label, idx)=>{
+                        const fontSize = (label == "합계")?16:11;
                         if(Array.isArray(label)){
-                            return <NameBox2 key={idx} list={label} alignItems={"flex-end"}/>
+                            return <NameBox2  key={idx} list={label} alignItems={"flex-end"} fontSize={fontSize}/>
                         }else{
                             const s = (label == "합계")?"center":"flex-end"
-                            return <NameBox key={idx} text={label} alignItems={s} />
+                            return <NameBox key={idx} text={label} alignItems={s}  fontSize={fontSize}/>
                         }
                         
                     })
@@ -106,18 +109,18 @@ export function TotalContainer({contents}) {
     )
 };
 
-const NameBox = ({text, alignItems = "center"}) => {
+const NameBox = ({text, alignItems = "center", fontSize=11, backgroundColor="#EBF3E8"}) => {
     return (
-        <View style={[styles.box, {alignItems:alignItems, paddingHorizontal:5}]}>
-            <Text >{text}</Text>
+        <View style={[styles.box, {alignItems:alignItems, paddingHorizontal:5, backgroundColor:backgroundColor}]}>
+            <Text style={{fontSize:fontSize}}>{text}</Text>
         </View>
     )
 }
-const NameBox2 = ({list, alignItems = "center"}) => {
+const NameBox2 = ({list, alignItems = "center", fontSize=11, backgroundColor="#EBF3E8"}) => {
     return (
-        <View style={[styles.box, {alignItems:alignItems, paddingHorizontal:5}]}>
-            <Text>{list[0]}</Text>
-            <Text>{list[1]}</Text>
+        <View style={[styles.box, {alignItems:alignItems, paddingHorizontal:5, backgroundColor:backgroundColor}]}>
+            <Text style={{fontSize:fontSize}}>{list[0]}</Text>
+            <Text style={{fontSize:fontSize}}>{list[1]}</Text>
         </View>
     )
 }
@@ -160,13 +163,13 @@ const EidtNumberBox = ({ initvalue=0, onTap, alignItems = "center"}) => {
         </TouchableOpacity>
     )
 }
-const ContentBox = ({text, subText, onTap, alignItems = "center"}) => {
+const ContentBox = ({text, subText, onTap, alignItems = "center", fontSize = 12}) => {
     return(
         <TouchableOpacity activeOpacity={(onTap)?0.2:1} style={[styles.box, {alignItems:alignItems, paddingHorizontal:5}]} onPress={onTap}>
-            <Text>{text}</Text>
+            <Text style={{fontSize:fontSize}}>{text}</Text>
             {
                 (subText)?
-                    <Text >{subText}</Text>
+                    <Text style={{fontSize:fontSize}}>{subText}</Text>
                 :null
             }
         </TouchableOpacity>
@@ -201,6 +204,7 @@ const styles = StyleSheet.create({
         borderWidth:1,
         borderRadius:1,
         borderColor:"grey",
-        width:"100%"
+        width:"100%",
+        
     }
 });
