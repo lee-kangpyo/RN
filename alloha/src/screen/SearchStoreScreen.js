@@ -44,7 +44,6 @@ export default function SearchStoreScreen({type, refresh, setRefresh}) {
                 const params = {cstCo:cstCo, userId:userId, iUserId:userId, roleCl:"CREW"};
                 await axios.post(URL+`/api/v1/applyStoreListCrew`, params)
                 .then((res)=>{
-                    console.log(res.data)
                     if(res.data.resultCode === "00"){
                         Alert.alert("알림", "해당 점포에 알바 지원이 완료되었습니다.")
                     }else{

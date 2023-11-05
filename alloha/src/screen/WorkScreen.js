@@ -114,8 +114,6 @@ export default function WorkScreen({navigation}) {
       const [timeModalParams, setTimeModalParams] = useState([])
       const onConfrimModifyTime = async (val) => {
         timeModalParams.jobDure = val;
-        console.log(timeModalParams);
-
         await axios.post(URL+`/api/v1/work/workChedule`, timeModalParams)
         .then((res)=>{
             getWeekSchedule()

@@ -123,7 +123,6 @@ export const getWeekNumber = (dateString) => {
     // 해당 월의 첫째 주부터의 주차를 계산
     const startOfMonth = moment(inputDate).startOf('month');
     const weeksSinceStartOfMonth = inputDate.diff(startOfMonth, 'weeks') + 1;
-    console.log({"month":month, "number":weeksSinceStartOfMonth});
     return {"month":month, "number":weeksSinceStartOfMonth};
 }
 

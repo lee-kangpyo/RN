@@ -55,12 +55,10 @@ export default function WageScreen({navigation, route}) {
         )
     }
     const getSalary = async (cstCo) => {
-        console.log("cstco:"+cstCo)
         const ymdFr = date.getFullYear()+String(date.getMonth() + 1).padStart(2, '0')+String(date.getDate()).padStart(2, '0');
         const ymdTo = date2.getFullYear()+String(date2.getMonth() + 1).padStart(2, '0')+String(date2.getDate()).padStart(2, '0');
         await HTTP("GET", "/api/v1/getSalary", {"userType":userType, "ymdFr":ymdFr, "ymdTo":ymdTo, "userId":userId, "cstCo":cstCo})
             .then((res)=>{
-                console.log(res.data.salary)
                 setMyStore(res.data.salary)
             }
         )

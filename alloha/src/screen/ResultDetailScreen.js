@@ -32,7 +32,6 @@ export default function ResultDetailScreen({navigation, route}) {
     }, {jobWage:0, jobDure:0, spcDure:0, weekWage:0, incentive:0, salary:0})
 
     const monthAlbaSlySearch = async () => {
-        console.log(item.userId);
         const param = {cls:"MonthAlbaSlySearch", ymdFr:date.start, ymdTo:date.end, cstCo:cstCo, cstNa:"", userId:item.userId, userNa:"", rtCl:"0"};
         await axios.get(URL+`/api/v1/rlt/monthCstSlySearch`, {params:param})
         .then((res)=>{
@@ -57,11 +56,8 @@ export default function ResultDetailScreen({navigation, route}) {
     }, [navigation])
 
     const onDeataTap = async (info) => {
-        console.log("####")
-        console.log(date.start, info.weekNumber)
         const week = getWeekByWeekNumber(date.start, info.weekNumber);
         var param = {cls:"DetaAmtUpdate", ymdFr:week.startOfWeek, ymdTo:week.endOfWeek, cstCo:cstCo, userId:info.userId, userNa:"", rtCl:info.value}
-        console.log(param)
         await axios.get(URL+`/api/v1/rlt/monthCstSlySearch`, {params:param})
         .then((res)=>{
             monthAlbaSlySearch();
