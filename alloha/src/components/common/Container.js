@@ -34,23 +34,25 @@ export function PayDetailContainer({header, contents, ondeataTap}){
 
 const PayDetailLine = ({item, onDeataTap}) => {
     const [isEdit, setEdit] = useState(false);
-    const spcWage = (item.spcWage > 0)?item.spcWage.toLocaleString():"";
-    //console.log(item);
+    const spcWage = (item.spcWage > 0)?item.spcWage.toLocaleString():"0";
+    console.log(item);
     return(
         <View style={[styles.row, {justifyContent:"space-between"}]}>
             <ContentBox text={item.week1+"주"} fontSize={14}/>
             <ContentBox text={item.jobWage.toLocaleString()} subText={item.jobDure} alignItems='flex-end'/>
-            {
-                (isEdit && item.spcDure > 0)?
-                    <EidtNumberBox text={item.spcDure.toLocaleString()} onTap={(value)=>{onDeataTap({value, userId:item.userId, weekNumber:item.week1});setEdit(false);}} />
-                :
-                (item.spcDure > 0)?
-                    <ContentBox text={spcWage.toLocaleString()} subText={item.spcDure.toLocaleString()} onTap={()=>setEdit(true)}  alignItems='flex-end'/>
-                :
-                <ContentBox text={spcWage.toLocaleString()} subText={item.spcDure.toLocaleString()}  alignItems='flex-end'/>
-            }
-            
             <ContentBox text={item.weekWage.toLocaleString()} alignItems='flex-end'/>
+            <ContentBox text={item.incentive.toLocaleString()} alignItems='flex-end'/>
+            {
+                (false)?
+                    (false && isEdit && item.spcDure > 0)?
+                        <EidtNumberBox text={item.spcDure.toLocaleString()} onTap={(value)=>{onDeataTap({value, userId:item.userId, weekNumber:item.week1});setEdit(false);}} />
+                    :
+                    (item.spcDure > 0)?
+                        <ContentBox text={spcWage.toLocaleString()} subText={item.spcDure.toLocaleString()} onTap={()=>setEdit(true)}  alignItems='flex-end'/>
+                    :
+                    <ContentBox text={spcWage.toLocaleString()} subText={item.spcDure.toLocaleString()}  alignItems='flex-end'/>
+                :null
+            }
             <ContentBox text={item.salary.toLocaleString()} subText={item.jobDure + item.spcDure} alignItems='flex-end'/>
         </View>
     )

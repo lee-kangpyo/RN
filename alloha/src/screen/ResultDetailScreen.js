@@ -76,7 +76,7 @@ export default function ResultDetailScreen({navigation, route}) {
                 <PayDetailContainer header={["주차", "시급", "주휴", "플러스", "합계"]} contents={items} ondeataTap={onDeataTap}/>
             </View>
             <View style={{padding:5, width:"100%"}}>
-                <TotalContainer contents={["합계", [total.jobWage.toLocaleString(), total.jobDure], [total.weekWage.toLocaleString(), total.spcDure], total.incentive.toLocaleString(), total.salary.toLocaleString()]}/>
+                <TotalContainer contents={["합계", [total.jobWage.toLocaleString(), total.jobDure], total.weekWage.toLocaleString(), total.incentive.toLocaleString(), total.salary.toLocaleString()]}/>
             </View>
         </View>
     );
