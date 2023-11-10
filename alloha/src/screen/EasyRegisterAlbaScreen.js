@@ -1,4 +1,3 @@
-
 import { StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import React, {useState, useEffect} from 'react';
 import { TextInput } from 'react-native-gesture-handler';
@@ -10,9 +9,9 @@ import { theme } from '../util/color'
 import { URL } from "@env";import { useSelector } from 'react-redux';
 ;
 
-export default function EasyRegisterAlbaScreen({navigation}) {
+export default function EasyRegisterAlbaScreen({navigation, route}) {
     const cstCo = useSelector((state)=>state.common.cstCo);
-
+    const {prev} = route.params;
     useEffect(()=>{
         navigation.setOptions({title:"알바 등록 / 관리"})
     }, [navigation])
@@ -73,9 +72,9 @@ export default function EasyRegisterAlbaScreen({navigation}) {
       });
 
       const handleFormSubmit = async (params) => {
-        //console.log(params)
+        params["cstNa"] = prev;
+        console.log(params)
         const response = await axios.post(URL+'/api/v1/easyAlbaMng', params);
-        //console.log(response);
         navigation.goBack();
       };
 
