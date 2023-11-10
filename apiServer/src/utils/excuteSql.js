@@ -1,5 +1,6 @@
 //const logger = require("../logger");
 const { pool } = require('../config/pool');
+const sql = require('mssql');
 
 
 async function execSql(query, params) {
@@ -8,7 +9,12 @@ async function execSql(query, params) {
         const poool = await pool;
         const request = poool.request();
         Object.entries(params).forEach(([key, value]) => {
-          request.input(key, value);
+          if (key == 'rtnValue') {
+            request.output(key, ""); // 출력 매개변수 설정
+          } else {
+            request.input(key, value); // 다른 입력 매개변수 설정
+          }
+
         });
         const result = await request.query(query);
         return result;

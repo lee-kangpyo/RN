@@ -130,7 +130,7 @@ const NameBox2 = ({list, alignItems = "center", fontSize=11, backgroundColor="#E
 const PayLine = ({item, onNameTap, onIncentiveTap}) => {
     const [isEdit, setEdit] = useState(false);
     return(
-        <View style={[styles.row, {justifyContent:"space-between"}]}>
+        <View style={[styles.row, {justifyContent:"space-between", height:40}]}>
             <ContentBox text={item.userNa} onTap={()=>onNameTap(item)}/>
             <ContentBox text={item.jobWage.toLocaleString()} alignItems='flex-end'/>
             <ContentBox text={item.weekWage.toLocaleString()} subText={item.weekWageNa}  alignItems='flex-end' />

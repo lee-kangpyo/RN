@@ -474,10 +474,10 @@ router.get("/v1/getSalaryDetail", async (req, res, next) => {
 
 router.post("/v1/easyAlbaMng", async (req, res, next) => {
     try {
-        const {cls, cstCo, cstNa, userName, hpNo, email} = req.body;
-        const na = (cstNa)?cstNa:'';
-        const result = await execSql(easyAlbaMng, {cls:cls, cstCo:cstCo, cstNa:na, userName:userName, hpNo:hpNo, email:email});
-        res.status(200).json({result:result.recordset, resultCode:"00"});
+        const {cls, cstCo, userName, hpNo, email} = req.body;
+        const result = await execSql(easyAlbaMng, {cls:cls, cstCo:cstCo, userName:userName, hpNo:hpNo, email:email, rtnValue:""});
+        //console.log(result);
+        res.status(200).json({result:result.recordset, resultCode:"00", rltValue:result.output.rtnValue});
     } catch (error) {
         console.log(error.message)
         res.status(200).json({ resultCode:"-1"});
@@ -529,6 +529,19 @@ router.post("/v1/saveAlbaChedule", async (req, res, next) => {
         res.status(200).json({ resultCode:"-1"});
     }
     
+})
+
+router.post("/v1/saveAlba", async(req, res, next) => {
+    console.log("saveAlba");
+    try{
+        const {cls, cstCo,  userId, ymdFr, ymdTo} = req.body;
+        const param = {cls:cls, cstCo:cstCo, userId:userId, ymdFr:ymdFr, ymdTo:ymdTo, wCnt:0};
+        const result = await execSql(albaSchedulemanager, param);
+        res.status(200).json({result:result.recordset, resultCode:"00"});
+    } catch (error) {
+        console.log(error.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
 })
 
 router.use('/v1/work', workRouter); 
