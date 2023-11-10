@@ -67,16 +67,24 @@ const scheduleSlice = createSlice({
 
     onTabCheckTIme(state, action){
         const obj = action.payload;
-        const value = (obj.val == 2)?0:obj.val+1;
+        const value = (obj.val == 1)?0:1;
         state.timeBox[obj.x][obj.y] = value;
         if(value == 1){
             state.totalTime = state.totalTime + 0.5
-        }else if (value == 2){
-            state.totalTime = state.totalTime - 0.5
-            state.totalCoverTime = state.totalCoverTime + 0.5
         }else{
-            state.totalCoverTime = state.totalCoverTime - 0.5
+            state.totalTime = state.totalTime - 0.5
         }
+
+        //const obj = action.payload;
+        //const value = (obj.val == 2)?0:obj.val+1;
+        // if(value == 1){
+        //     state.totalTime = state.totalTime + 0.5
+        // }else if (value == 2){
+        //     state.totalTime = state.totalTime - 0.5
+        //     state.totalCoverTime = state.totalCoverTime + 0.5
+        // }else{
+        //     state.totalCoverTime = state.totalCoverTime - 0.5
+        // }
     },
     initTimeBox(state, action){
         state.totalTime = 0;

@@ -36,7 +36,6 @@ function Box({top, bot}){
     return (
         <View style={{...styles.box, width:boxWidth}}>
             <Text style={{fontSize:boxWidth*0.3,}}>{top}</Text>
-            <Text style={{fontSize:boxWidth*0.2, color:"red"}}>({bot})</Text>
         </View>
     );
 }

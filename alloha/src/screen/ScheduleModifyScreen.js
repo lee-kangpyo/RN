@@ -60,31 +60,30 @@ export default function ScheduleModifyScreen({navigation, route}) {
         for (let i = 0; i < timeArray.length; i++) {
             const cell = timeArray[i][dayIndex];
             const hour = i * 0.5;
-        
             if (cell === 1) {
-            if (currentType !== "G") {
-                if (currentType !== "") {
-                const eTime = i * 0.5;
-                daySchedule.push({ jobCl: currentType, sTime, eTime });
+                if (currentType !== "G") {
+                    if (currentType !== "") {
+                        const eTime = i * 0.5;
+                        daySchedule.push({ jobCl: currentType, sTime, eTime });
+                    }
+                    currentType = "G";
+                    sTime = hour;
                 }
-                currentType = "G";
-                sTime = hour;
-            }
             } else if (cell === 2) {
-            if (currentType !== "S") {
-                if (currentType !== "") {
-                const eTime = i * 0.5;
-                daySchedule.push({ jobCl: currentType, sTime, eTime });
+                if (currentType !== "S") {
+                    if (currentType !== "") {
+                        const eTime = i * 0.5;
+                        daySchedule.push({ jobCl: currentType, sTime, eTime });
+                    }
+                    currentType = "S";
+                    sTime = hour;
                 }
-                currentType = "S";
-                sTime = hour;
-            }
             } else {
-            if (currentType !== "") {
-                const eTime = i * 0.5;
-                daySchedule.push({ jobCl: currentType, sTime, eTime });
-                currentType = "";
-            }
+                if (currentType !== "") {
+                    const eTime = i * 0.5;
+                    daySchedule.push({ jobCl: currentType, sTime, eTime });
+                    currentType = "";
+                }
             }
         }
         
@@ -140,8 +139,7 @@ export default function ScheduleModifyScreen({navigation, route}) {
                 <Text>{alba.USERNA}{alba.userNa}님의 {weekNumber.month}월 {weekNumber.number}주차 시간표</Text>
                 <View style={{flexDirection:"row", justifyContent:"space-between", width:"100%", paddingTop:10}}>
                     <View style={{flexDirection:"row"}}>
-                        <Text>주간 총 근무시간 : {totalTime}, </Text>
-                        <Text style={{color:"red"}}>대타근무 : {totalCoverTime}</Text>
+                        <Text>주간 총 근무시간 : {totalTime}</Text>
                     </View>
                 </View>
             </View>
@@ -167,10 +165,8 @@ export default function ScheduleModifyScreen({navigation, route}) {
                 <View style={{flexDirection:"row", flexWrap:"wrap"}}>
                     <Text>시간표 버튼을 한번 누르면 일반 근무 : </Text>
                     <Ionicons name="checkmark-circle" size={20} color="black" />
-                    <Text>두번 누르면 대타 근무 : </Text>
-                    <Ionicons name="checkmark-circle" size={20} color="red" />
                 </View>
-                <Text>세번 누르면 근무 해제 상태가 됩니다.</Text>
+                <Text>다시 누르면 근무 해제 상태가 됩니다.</Text>
                 <Text>시간표는 30분 단위로 등록할수 있습니다.</Text>
             </View>
             <Modal
