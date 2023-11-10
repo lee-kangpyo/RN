@@ -474,8 +474,9 @@ router.get("/v1/getSalaryDetail", async (req, res, next) => {
 
 router.post("/v1/easyAlbaMng", async (req, res, next) => {
     try {
-        const {cls, cstCo, userName, hpNo, email} = req.body;
-        const result = await execSql(easyAlbaMng, {cls:cls, cstCo:cstCo, userName:userName, hpNo:hpNo, email:email});
+        const {cls, cstCo, cstNa, userName, hpNo, email} = req.body;
+        const na = (cstNa)?cstNa:'';
+        const result = await execSql(easyAlbaMng, {cls:cls, cstCo:cstCo, cstNa:na, userName:userName, hpNo:hpNo, email:email});
         res.status(200).json({result:result.recordset, resultCode:"00"});
     } catch (error) {
         console.log(error.message)

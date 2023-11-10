@@ -199,7 +199,7 @@ const modifyStoreInfo = `
 `
 
 const easyAlbaMng = `
-    exec PR_PLYM01_USERMNG @cls, @cstCo, '', '', @userName, @hpNo, @email, ''
+    exec PR_PLYM01_USERMNG @cls, @cstCo, @cstNa, '', @userName, @hpNo, @email, ''
 `
 
 const albaSchedulemanager = `

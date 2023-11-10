@@ -159,7 +159,7 @@ export default function WorkScreen({navigation}) {
 
     const addAlba = () => {
         setModalVisible(false)
-        navigation.push("registerAlba");
+        navigation.push("registerAlba", { prev: 'work' });
     }
 
     const selectAlba = async (alba) => {

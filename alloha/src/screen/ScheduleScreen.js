@@ -119,7 +119,7 @@ export default function ScheduleScreen({navigation}) {
                 addAlba={()=>{
                     setModalVisible(false)
                     dispatch(initTimeBox());
-                    navigation.push("registerAlba");
+                    navigation.push("registerAlba", { prev: 'schedule' });
                 }}
                 selectAlba={(alba)=>{
                     setModalVisible(false)
