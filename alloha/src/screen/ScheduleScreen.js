@@ -46,6 +46,11 @@ export default function ScheduleScreen({navigation}) {
         dispatch(setAlbaList({albaList:response.data.result}));
     }
     
+    const getTmpAlbaInfo = () => {
+        var params = {cls:"AlbaSave", ymdFr:weekList[0].format("yyyyMMDD"), ymdTo:weekList[6].format("yyyyMMDD")}
+        return {screen:"schedule", url:'/api/v1/saveAlba', params:params};
+    }
+
     const isFocused = useIsFocused();
     
     useEffect(() => {
@@ -119,7 +124,7 @@ export default function ScheduleScreen({navigation}) {
                 addAlba={()=>{
                     setModalVisible(false)
                     dispatch(initTimeBox());
-                    navigation.push("registerAlba", { prev: 'schedule' });
+                    navigation.push("registerAlba", { data: getTmpAlbaInfo() });
                 }}
                 selectAlba={(alba)=>{
                     setModalVisible(false)
@@ -129,6 +134,8 @@ export default function ScheduleScreen({navigation}) {
         </View>
     );
 }
+
+
 
 const styles = StyleSheet.create({
     container:{ flex: 1, alignItems: 'center', padding:5},

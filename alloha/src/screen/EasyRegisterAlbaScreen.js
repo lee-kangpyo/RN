@@ -11,7 +11,7 @@ import { URL } from "@env";import { useSelector } from 'react-redux';
 
 export default function EasyRegisterAlbaScreen({navigation, route}) {
     const cstCo = useSelector((state)=>state.common.cstCo);
-    const {prev} = route.params;
+    const {data} = route.params;
     useEffect(()=>{
         navigation.setOptions({title:"알바 등록 / 관리"})
     }, [navigation])
@@ -47,7 +47,6 @@ export default function EasyRegisterAlbaScreen({navigation, route}) {
             </View>
         )
     }
-
     
     const validationSchema = yup.object().shape({
         userName: yup.string().required('이름을 입력해주세요.')
@@ -72,9 +71,13 @@ export default function EasyRegisterAlbaScreen({navigation, route}) {
       });
 
       const handleFormSubmit = async (params) => {
-        params["cstNa"] = prev;
-        console.log(params)
         const response = await axios.post(URL+'/api/v1/easyAlbaMng', params);
+        
+        const albaSaveInfo = data.params;
+        albaSaveInfo.cstCo = params.cstCo;
+        albaSaveInfo.userId=response.data.rltValue;
+
+        await axios.post(URL+data.url, albaSaveInfo);
         navigation.goBack();
       };
 
