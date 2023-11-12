@@ -1,15 +1,13 @@
 
-import { StyleSheet, Animated, Text, View, TouchableOpacity, Keyboard, Switch, Alert, Dimensions} from 'react-native';
+import { StyleSheet, Animated, Text, View, TouchableOpacity, Keyboard, Switch, Alert, Dimensions, StatusBar } from 'react-native';
 import React, {useState, useEffect, useCallback, useRef, useMemo} from 'react';
 import WeekDate from '../components/schedule/WeekDate';
 import { useSelector, useDispatch } from 'react-redux';
 import { setAlbaList } from '../../redux/slices/schedule';
 import { ScrollView } from 'react-native-gesture-handler';
-import { Ionicons } from '@expo/vector-icons';
-import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 import { URL } from "@env";
-import { useFocusEffect, useIsFocused, useNavigation } from '@react-navigation/native';
+import { useIsFocused } from '@react-navigation/native';
 import { getWeekList } from '../util/moment';
 import { setAlba, nextWeek, prevWeek, setWorkAlbaInfo, moveWeek, disabledEditing, } from '../../redux/slices/work';
 import WorkAlba from './../components/work/WorkAlba';
@@ -17,10 +15,8 @@ import WorkAlba from './../components/work/WorkAlba';
 import BottomSheet, {BottomSheetView, BottomSheetBackdrop} from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AlbaModal, ModifyTimeModal } from '../components/common/customModal';
-import { setOwnerCstco, setOwnerStoreList } from '../../redux/slices/common';
-import StoreSelectBox from '../components/common/StoreSelectBox';
-import CustomModal from '../components/CustomModal';
 import HeaderControl from '../components/common/HeaderControl';
+import StoreSelectBoxWithTitle from '../components/common/StoreSelectBoxWithTitle';
 
 export default function WorkScreen({navigation}) {
     const userId = useSelector((state) => state.login.userId);
@@ -73,6 +69,7 @@ export default function WorkScreen({navigation}) {
 
     useEffect(()=>{
         navigation.setOptions({
+            headerShown:false,
             title:"근무 결과", 
             headerStyle: {
                 backgroundColor: "#FFDFDF",
@@ -205,7 +202,7 @@ export default function WorkScreen({navigation}) {
     //###############################################################
     return (
         <GestureHandlerRootView style={styles.container}>
-            <StoreSelectBox />
+            <StoreSelectBoxWithTitle titleText={"근무 결과"} titleflex={4} selectBoxFlex={8} />
             <View style={{...styles.card, padding:5, width:"100%"}}>
                 <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:5}}>
                     <HeaderControl title={`${weekNumber.month}월 ${weekNumber.number}주차 일정표`} onLeftTap={()=> dispatch(prevWeek())} onRightTap={()=> dispatch(nextWeek())} />
@@ -402,7 +399,7 @@ const BotSheet = ({sheetRef, snapPoints, renderBackdrop, handleSnapPress, Conten
   }
 
 const styles = StyleSheet.create({
-    container:{ flex: 1, alignItems: 'center', padding:5},
+    container:{ flex: 1, alignItems: 'center', padding:5, marginTop:StatusBar.currentHeight},
     card:{
         flex:1,
         borderWidth: 1, // 테두리 두께

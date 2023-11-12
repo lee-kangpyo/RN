@@ -1,28 +1,27 @@
 
-import { StyleSheet, Modal, Text, View, TouchableOpacity} from 'react-native';
-import React, {useState, useEffect, useCallback} from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, StatusBar } from 'react-native';
+import React, {useState, useEffect} from 'react';
 import WeekDate from '../components/schedule/WeekDate';
 import WeekAlba from '../components/schedule/WeekAlba';
 import { useSelector, useDispatch } from 'react-redux';
 import { initTimeBox, nextWeek, prevWeek, setAlba, setAlbaList } from '../../redux/slices/schedule';
 import { ScrollView } from 'react-native-gesture-handler';
-import { Ionicons } from '@expo/vector-icons';
-import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 import { URL } from "@env";
-import { useFocusEffect, useIsFocused, useNavigation } from '@react-navigation/native';
+import { useIsFocused } from '@react-navigation/native';
 import { getWeekList } from '../util/moment';
 import { AlbaModal } from '../components/common/customModal';
-import { setOwnerCstco, setOwnerStoreList } from '../../redux/slices/common';
-import StoreSelectBox from '../components/common/StoreSelectBox';
 import HeaderControl from '../components/common/HeaderControl';
+import StoreSelectBoxWithTitle from '../components/common/StoreSelectBoxWithTitle';
 
 export default function ScheduleScreen({navigation}) {
     const userId = useSelector((state) => state.login.userId);
     const albas = useSelector((state)=>state.schedule.albas);
     const weekNumber = useSelector((state)=>state.schedule.weekNumber);
     const cstCo = useSelector((state)=>state.common.cstCo);
-    const isScheduleEditable = useSelector((state)=>state.schedule.week == state.schedule.eweek);
+    // [v] 이걸 풀어주면 근무 계획에서 다음 주만 + 가 추가됨.
+    //const isScheduleEditable = useSelector((state)=>state.schedule.week == state.schedule.eweek);
+    const isScheduleEditable = true
     const week = useSelector((state)=>state.schedule.week)
     const weekList = getWeekList(week);
     const dispatch = useDispatch();
@@ -61,6 +60,7 @@ export default function ScheduleScreen({navigation}) {
 
     useEffect(()=>{
         navigation.setOptions({
+            headerShown:false,
             title:"근무 계획",
             headerStyle: {
                 backgroundColor: "#A0E9FF",
@@ -70,11 +70,11 @@ export default function ScheduleScreen({navigation}) {
     }, [navigation])
     
     return (
-        <View style={styles.container}>
-            <StoreSelectBox />
+        <SafeAreaView style={styles.container}>
+            <StoreSelectBoxWithTitle titleText={"근무 계획"} titleflex={4} selectBoxFlex={8} />
             <View style={{...styles.card, padding:5, width:"100%"}}>
                 <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:5}}>
-                    <HeaderControl title={`${weekNumber.month}월 ${weekNumber.number}주차 일정표`} onLeftTap={()=> dispatch(prevWeek())} onRightTap={()=> dispatch(nextWeek())} />
+                    <HeaderControl title={`${weekNumber.month}월 ${weekNumber.number}주차 근무 계획`} onLeftTap={()=> dispatch(prevWeek())} onRightTap={()=> dispatch(nextWeek())} />
                     {
                         (false && isScheduleEditable)?
                             <TouchableOpacity onPress={()=>dispatch(setAlba(alba))}>
@@ -111,10 +111,9 @@ export default function ScheduleScreen({navigation}) {
                     
                 </ScrollView>
             </View>
-            <View>
-                <Text>시간표의 (+)버튼을 클릭하면 시간표 일별 등록으로 이동합니다.</Text>
-                <Text>등록된 시간표는 이름을 클릭하여 수정할수 있습니다.</Text>
-                <Text>등록된 알바를 삭제하기 원하는 경우(-)버튼을 클릭하여 등록된 시간을 삭제할수 있습니다.</Text>
+            <View style={{width:"100%", padding:5}}>
+                <Text>(+)버튼을 클릭하여 알바생 등록 또는 기존 알바생 근무계획을 작성합니다.</Text>
+                <Text>근무 계획에 등록된 알바를 클릭하면 수정 또는 삭제 할 수 있습니다.</Text>
             </View>
             <AlbaModal
                 execptAlbaId={albas.map(item => item.userId)}
@@ -131,14 +130,14 @@ export default function ScheduleScreen({navigation}) {
                     navigation.navigate("scheduleModify", {alba:alba})
                 }}
             />
-        </View>
+        </SafeAreaView>
     );
 }
 
 
 
 const styles = StyleSheet.create({
-    container:{ flex: 1, alignItems: 'center', padding:5},
+    container:{ flex: 1, alignItems: 'center', padding:5, marginTop:StatusBar.currentHeight},
     card:{
         flex:1,
         borderWidth: 1, // 테두리 두께

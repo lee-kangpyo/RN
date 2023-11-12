@@ -6,7 +6,7 @@ import { setOwnerCstco, setOwnerStoreList } from '../../../redux/slices/common';
 import axios from 'axios';
 import { URL } from "@env";
 
-export default function StoreSelectBox() {
+export default function StoreSelectBox({flex}) {
     const userId = useSelector((state) => state.login.userId);
     const cstCo = useSelector((state)=>state.common.cstCo);
     const storeList = useSelector((state)=>state.common.storeList);
@@ -22,12 +22,13 @@ export default function StoreSelectBox() {
         })
     }
 
+    var viewWidth = (flex)?{flex:flex}:{width:"100%"};
     useEffect(()=>{
         getStoreList();
     }, [])
 
     return (
-        <View style = {{width: "100%",height: 60, borderWidth:1, borderColor:"black", borderRadius:10, marginBottom:10}}>
+        <View style = {[styles.container, viewWidth]}>
             <Picker
                 selectedValue = {cstCo}
                 onValueChange = {(cstCo) => dispatch(setOwnerCstco({cstCo:cstCo}))}
@@ -44,8 +45,9 @@ export default function StoreSelectBox() {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+        height: 60, 
+        borderWidth:1, 
+        borderColor:"black", 
+        borderRadius:10, 
     },
 });
