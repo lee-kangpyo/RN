@@ -9,7 +9,9 @@ export default function WeekAlba({alba, onDel, week}) {
     const cstCo = useSelector((state)=>state.common.cstCo);
     const weekList = getWeekList(week);
     const navigator = useNavigation();
-    const isdeny = useSelector((state)=>state.schedule.week == state.schedule.eweek);
+    // [v] 이걸 풀어주면 근무계획에서 다음주만 계획 수정 가능함.
+    // const isdeny = useSelector((state)=>state.schedule.week == state.schedule.eweek);
+    const isdeny = true
     const onPressed = () =>{
         
         return (
