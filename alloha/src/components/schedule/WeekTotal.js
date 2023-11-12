@@ -43,7 +43,7 @@ function Box({top, bot}){
 function NameBox({name}){
     const boxWidth = Dimensions.get('window').width / 9; // 박스의 너비
     return (
-        <View style={{...styles.box, flex:1.45, width:boxWidth, justifyContent:"center"}}>
+        <View style={{...styles.box, flex:1.5, width:boxWidth, justifyContent:"center"}}>
             <Text>{name}</Text>
         </View>
     );

@@ -143,7 +143,7 @@ export default function ScheduleModifyScreen({navigation, route}) {
                     </View>
                 </View>
             </View>
-            <WeekDate sBlank={1.45} week={week}/>
+            <WeekDate sBlank={1.5} week={week}/>
             <FlatList
                 keyExtractor={(item, index) => index.toString()}
                 style={{width:"100%"}}
@@ -161,13 +161,13 @@ export default function ScheduleModifyScreen({navigation, route}) {
                 <Text style={{fontSize:16, fontWeight:"bold"}}>저장</Text>
             </TouchableOpacity>
             <View>
-                <Text>선택한 요일과 시간 옆에 (-) 버튼을 클릭하여 근무시간으로 등록하세요</Text>
-                <View style={{flexDirection:"row", flexWrap:"wrap"}}>
-                    <Text>시간표 버튼을 한번 누르면 일반 근무 : </Text>
-                    <Ionicons name="checkmark-circle" size={20} color="black" />
+                <Text>선택한 요일과 시간 옆에 [ - ] 버튼을 클릭하여 근무시간으로 등록하세요</Text>
+                <View style={{flexDirection:"row", flexWrap:"wrap", alignItems:"center"}}>
+                    <Text>체크 아이콘(</Text>
+                    <Ionicons name="checkmark-circle" size={18} color="black" />
+                    <Text>)이 있는 시간부터 30분간 근무입니다. </Text>
                 </View>
-                <Text>다시 누르면 근무 해제 상태가 됩니다.</Text>
-                <Text>시간표는 30분 단위로 등록할수 있습니다.</Text>
+                <Text>ex ) 07:00분에 체크했다면, 07:00-07:30 근무</Text>
             </View>
             <Modal
                 transparent={true}
@@ -238,6 +238,5 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.5)', // 반투명 배경
-
     }
 });

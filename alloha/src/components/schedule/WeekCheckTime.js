@@ -23,8 +23,8 @@ const ContentBox = React.memo(function ContentBox({x, y, value}){
     const color = (val == 1)?"black":"red"
     const boxWidth = Dimensions.get('window').width / 9; // 박스의 너비
     return (
-        <TouchableOpacity onPress={()=>dispatch(onTabCheckTIme({x:x, y:y, val:value}))}>
-            <View style={{...styles.box, width:boxWidth}}>
+        <TouchableOpacity style={{...styles.box, flex:1, width:boxWidth}} onPress={()=>dispatch(onTabCheckTIme({x:x, y:y, val:value}))}>
+            <>
                 {
                     (val == "-")
                     ?
@@ -33,7 +33,7 @@ const ContentBox = React.memo(function ContentBox({x, y, value}){
                         <Ionicons name="checkmark-circle" size={20} color={color} />
                 }
                 
-            </View>
+            </>
         </TouchableOpacity>
     );
 }, (prevProps, nextProps) => {
@@ -54,16 +54,14 @@ function NameBox({name}){
 
 const styles = StyleSheet.create({
     //container:{ flex: 1, justifyContent: 'center', alignItems: 'center'},
-    container:{ flexDirection:"row",  },
+    container:{ flexDirection:"row", },
     box:{
-        flex:1,
         paddingVertical:15,
         margin:1,
         borderWidth: 1, // 테두리 두께
         borderColor: 'gray', // 테두리 색상
         borderRadius: 0, // 테두리 모서리 둥글게 
         alignItems:"center",
-        verticalAlign:"middle",
     },
 });
   
