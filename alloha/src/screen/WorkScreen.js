@@ -124,9 +124,11 @@ export default function WorkScreen({navigation}) {
       }
 
     //###############################################################
+    const windowHeight = Dimensions.get('window').height;
+
     const [bottomSheetIndex, setBottomSeetIndex] = useState(-1)
     const sheetRef = useRef(null);
-    const snapPoints = useMemo(() => ["35%"], []);
+    const snapPoints = useMemo(() => [windowHeight*0.35], []);
     
     const handleSnapPress = useCallback((index) => {
       sheetRef.current.snapToIndex(index);
@@ -318,7 +320,7 @@ function BtnSet({ workInfo, cstCo, refresh, onDelete, onClose, onTypingModalShow
         };
     }
     return(
-        <View style={{height:"100%", justifyContent:"center"}}>
+        <View style={{flex:1, justifyContent:"center"}}>
             <View style={{ flexDirection:"row", alignItems:"center",justifyContent:"space-between", height:30, marginHorizontal:15, marginBottom:10}}>
                 <Text>{workInfo.ymd.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3')} [{workInfo.userNa}]</Text>
                 <View style={{flexDirection:"row", alignItems:"center"}}>
@@ -390,7 +392,7 @@ const BotSheet = ({sheetRef, snapPoints, renderBackdrop, handleSnapPress, Conten
           onChange={onBottomSheetChanged}
           //backdropComponent={renderBackdrop}
         >
-          <BottomSheetView>
+          <BottomSheetView style={{height:"100%"}}>
             {Content}     
           </BottomSheetView>
         </BottomSheet>
