@@ -1,5 +1,5 @@
 
-import { StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, StatusBar } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import StoreSelectBox from '../components/common/StoreSelectBox';
@@ -11,6 +11,7 @@ import { URL } from "@env";
 import { nextMonth, prevMonth, setWorkResultList } from '../../redux/slices/result';
 import { PayContainer, TotalContainer } from '../components/common/Container';
 import HeaderControl from '../components/common/HeaderControl';
+import StoreSelectBoxWithTitle from '../components/common/StoreSelectBoxWithTitle';
 
 export default function ResultScreen({navigation}) {
     const userId = useSelector((state) => state.login.userId);
@@ -31,7 +32,7 @@ export default function ResultScreen({navigation}) {
     }, {jobWage:0, weekWage:0, incentive:0, salary:0})
     
     useEffect(()=>{
-        navigation.setOptions({title:"결과 현황표"})
+        navigation.setOptions({headerShown:false, title:"결과 현황표"})
     }, [navigation])
 
     
@@ -66,7 +67,7 @@ export default function ResultScreen({navigation}) {
 
     return (
         <View style={styles.container}>
-            <StoreSelectBox />
+            <StoreSelectBoxWithTitle titleText={"결과 현황표"} titleflex={4} selectBoxFlex={8} />
             <View style={{...styles.card, padding:5, width:"100%", overflow:"hidden"}}>
                 <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:5}}>
                     <HeaderControl title={`${date.mm}월 급여표`} onLeftTap={()=> dispatch(prevMonth())} onRightTap={()=> dispatch(nextMonth())} />
@@ -81,7 +82,7 @@ export default function ResultScreen({navigation}) {
 }
 
 const styles = StyleSheet.create({
-    container:{ flex: 1, alignItems: 'center', padding:5},
+    container:{ flex: 1, alignItems: 'center', padding:5, marginTop:StatusBar.currentHeight},
     card:{
         flex:1,
         borderWidth: 1, // 테두리 두께
