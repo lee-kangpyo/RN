@@ -89,6 +89,7 @@ export default function Notification({ children }) {
 
     } else {
       alert('Must use physical device for Push Notifications');
+      setShowChildComponent(true);
     }
 
     return token;
