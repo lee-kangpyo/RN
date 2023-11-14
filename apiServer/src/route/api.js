@@ -14,6 +14,7 @@ dotenv.config();
 
 const workRouter = require("../route/work")
 const resultRouter = require("../route/result")
+const palRouter = require("../route/profitAndLoss")
 
 router.get("/v1/test", async (req, res, next)=>{
     const result = await execSql(test, {userId:'asdf'})
@@ -546,6 +547,8 @@ router.post("/v1/saveAlba", async(req, res, next) => {
 
 router.use('/v1/work', workRouter); 
 router.use('/v1/rlt', resultRouter); 
+router.use('/v1/profitAndLoss', palRouter); 
 
 module.exports = router;
+
 
