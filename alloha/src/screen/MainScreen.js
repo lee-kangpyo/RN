@@ -1,6 +1,6 @@
 //import * as React from 'react';
 import { Text, View, TouchableOpacity, StyleSheet, Button } from 'react-native';
-import { Ionicons, MaterialCommunityIcons, FontAwesome5  } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons, FontAwesome5, MaterialIcons   } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
@@ -31,6 +31,7 @@ import EasyRegisterAlbaScreen from './EasyRegisterAlbaScreen';
 import WorkScreen from './WorkScreen';
 import ResultScreen from './ResultScreen';
 import ResultDetailScreen from './ResultDetailScreen';
+import ProfitAndLossScreen from './ProfitAndLossScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -102,9 +103,7 @@ function OwnrScreen({userInfo}){
       <Tab.Screen name="schedule" component={ScheduleStack} options={{ headerShown:false, tabBarLabel: '근무계획'}}/>
       <Tab.Screen name="work" component={WorkStack} options={{ headerShown:false, tabBarLabel: '근무결과'}}/>
       <Tab.Screen name="result" component={ResultStack} options={{ headerShown:false, tabBarLabel: '결과현황표'}}/>
-
-      <Tab.Screen name="community" component={ComunityScreen} options={{ tabBarLabel: '커뮤니티' }}/>
-      
+      <Tab.Screen name="profitAndLoss" component={ProfitAndLossScreen} options={{ tabBarLabel: '손익관리' }}/>
 
       <Tab.Screen name="etc" options={{ headerShown: false, }}>
         {() => (
@@ -117,6 +116,7 @@ function OwnrScreen({userInfo}){
             <Stack.Screen name="addStore" component={AddStoreScreen} options={{ title: '점포추가' }}/>
             <Stack.Screen name="modifyStore" component={ModifyStoreScreen} options={{ title: '점포수정' }}/>
             <Stack.Screen  name="SearchAddress" component={SearchAddress} options={{title:"주소 검색"}}/>
+            <Stack.Screen  name="community" component={ComunityScreen} options={{title:"커뮤니티"}}/>
             
             {() => ( // 안쓰는 급여 페이지
               <Stack.Navigator>
@@ -228,6 +228,9 @@ const setTabBarIcon = (focused, color, size, name) =>{
   }else if(name === "work"){
     iconName = 'running';
     icon = "FontAwesome5"
+  }else if(name ==="profitAndLoss"){
+    iconName = 'payments';
+    icon = "MaterialIcons"
   }
 
   if (icon == "Ionicons"){
@@ -236,7 +239,10 @@ const setTabBarIcon = (focused, color, size, name) =>{
     return <MaterialCommunityIcons name={iconName} size={size} color={color} />;
   }else if(icon == "FontAwesome5"){
     return <FontAwesome5 name={iconName} size={size} color={color} />;
+  }else if(icon == "MaterialIcons"){
+    return <MaterialIcons name={iconName} size={size} color={color} />;
   }
+  
 }
 
 const styles = StyleSheet.create({
