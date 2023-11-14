@@ -14,5 +14,5 @@ export default function StoreSelectBoxWithTitle({titleflex, selectBoxFlex, title
 
 const styles = StyleSheet.create({
     comp: { flexDirection:"row", paddingVertical:5},
-    text: { alignSelf:"center", fontSize:24, paddingLeft:15 }
+    text: { alignSelf:"center", fontSize:20, paddingLeft:15, fontWeight:"bold" }
 });
