@@ -71,6 +71,7 @@ export default function ScheduleScreen({navigation}) {
     
     return (
         <SafeAreaView style={styles.container}>
+            <StatusBar />
             <StoreSelectBoxWithTitle titleText={"근무 계획"} titleflex={4} selectBoxFlex={8} />
             <View style={{...styles.card, padding:5, width:"100%"}}>
                 <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:5}}>
@@ -137,7 +138,7 @@ export default function ScheduleScreen({navigation}) {
 
 
 const styles = StyleSheet.create({
-    container:{ flex: 1, alignItems: 'center', padding:5, marginTop:StatusBar.currentHeight},
+    container:{ flex: 1, alignItems: 'center', padding:5},
     card:{
         flex:1,
         borderWidth: 1, // 테두리 두께
