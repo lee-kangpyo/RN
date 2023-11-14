@@ -35,7 +35,7 @@ export default function StoreSelectBox({flex}) {
                 >
                 {
                     storeList.map((el, idx)=>{
-                        return <Picker.Item key={idx} label={el.CSTNA} value={el.CSTCO}/>
+                        return <Picker.Item style={styles.item} key={idx} label={el.CSTNA} value={el.CSTCO}/>
                     })
                 }
             </Picker>
@@ -45,9 +45,13 @@ export default function StoreSelectBox({flex}) {
 
 const styles = StyleSheet.create({
     container: {
-        height: 60, 
+        justifyContent:"center",
+        height:40,
         borderWidth:1, 
         borderColor:"black", 
         borderRadius:10, 
     },
+    item:{
+        fontSize:13,
+    }
 });
