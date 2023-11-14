@@ -1,5 +1,5 @@
 
-import { StyleSheet, Animated, Text, View, TouchableOpacity, Keyboard, Switch, Alert, Dimensions, StatusBar } from 'react-native';
+import { StyleSheet, Animated, Text, View, TouchableOpacity, Keyboard, Switch, Alert, Dimensions, StatusBar, SafeAreaView } from 'react-native';
 import React, {useState, useEffect, useCallback, useRef, useMemo} from 'react';
 import WeekDate from '../components/schedule/WeekDate';
 import { useSelector, useDispatch } from 'react-redux';
@@ -203,89 +203,92 @@ export default function WorkScreen({navigation}) {
 
     //###############################################################
     return (
-        <GestureHandlerRootView style={styles.container}>
-            <StoreSelectBoxWithTitle titleText={"근무 결과"} titleflex={4} selectBoxFlex={8} />
-            <View style={{...styles.card, padding:5, width:"100%"}}>
-                <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:5}}>
-                    <HeaderControl title={`${weekNumber.month}월 ${weekNumber.number}주차 일정표`} onLeftTap={()=> dispatch(prevWeek())} onRightTap={()=> dispatch(nextWeek())} />
-                    <TouchableOpacity onPress={toggleWidth}>
-                        <View style={{...styles.btnMini, paddingVertical:0, paddingHorizontal:5}}>
-                            <Text>편집</Text>
-                        </View>
-                    </TouchableOpacity>
-                    {
-                        (false)?
-                            <TouchableOpacity onPress={()=>dispatch(setAlba(alba))}>
-                                <Text>지난 시간표 가져오기</Text>
-                            </TouchableOpacity>
-
-                        :
-                            null
-                    }
-                    
-                </View>
-                <Animated.View style={{width:widthValue}}>
-                    <WeekDate sBlank={2} eBlank={2} week={week}/>
-                </Animated.View>
-                <ScrollView>
-                    {
-                        (albas.length == 0)?
-                            <View style={{alignItems:"center", borderWidth:1, borderColor:"grey", padding:5}}>
-                                <Text>데이터가 없습니다.</Text>
-                            </View>
-                        :
-                            albas.map((item, idx)=>{
-                                return (
-                                    <View key={idx} style={{flexDirection:"row"}}>
-                                        <Animated.View style={{width:widthValue}} >
-                                            <WorkAlba alba={item} week={week} onTap={onAlbaTap} onDel={getWeekSchedule} />
-                                        </Animated.View>
-                                        <TouchableOpacity onPress={()=>delAlba(item.userId, item.userNa)} style={{...styles.btnMini, alignItems:"center", backgroundColor:"red", justifyContent:"center", width:50}}>
-                                            <Text style={{color:"white"}}>삭제</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                )
-                            })
-                    }
-                    {
-                        <TouchableOpacity onPress={()=>{setModalVisible(true);}}>
-                            <View style={{...styles.box, marginBottom:(bottomSheetIndex == -1)?0:150}}>
-                                <Text style={{fontSize:24}}>+</Text>
+        <SafeAreaView style={styles.container}>
+            <StatusBar />
+            <GestureHandlerRootView >
+                <StoreSelectBoxWithTitle titleText={"근무 결과"} titleflex={4} selectBoxFlex={8} />
+                <View style={{...styles.card, padding:5, width:"100%"}}>
+                    <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:5}}>
+                        <HeaderControl title={`${weekNumber.month}월 ${weekNumber.number}주차 일정표`} onLeftTap={()=> dispatch(prevWeek())} onRightTap={()=> dispatch(nextWeek())} />
+                        <TouchableOpacity onPress={toggleWidth}>
+                            <View style={{...styles.btnMini, paddingVertical:0, paddingHorizontal:5}}>
+                                <Text>편집</Text>
                             </View>
                         </TouchableOpacity>
-                    }
+                        {
+                            (false)?
+                                <TouchableOpacity onPress={()=>dispatch(setAlba(alba))}>
+                                    <Text>지난 시간표 가져오기</Text>
+                                </TouchableOpacity>
+
+                            :
+                                null
+                        }
+                        
+                    </View>
+                    <Animated.View style={{width:widthValue}}>
+                        <WeekDate sBlank={2} eBlank={2} week={week}/>
+                    </Animated.View>
+                    <ScrollView>
+                        {
+                            (albas.length == 0)?
+                                <View style={{alignItems:"center", borderWidth:1, borderColor:"grey", padding:5}}>
+                                    <Text>데이터가 없습니다.</Text>
+                                </View>
+                            :
+                                albas.map((item, idx)=>{
+                                    return (
+                                        <View key={idx} style={{flexDirection:"row"}}>
+                                            <Animated.View style={{width:widthValue}} >
+                                                <WorkAlba alba={item} week={week} onTap={onAlbaTap} onDel={getWeekSchedule} />
+                                            </Animated.View>
+                                            <TouchableOpacity onPress={()=>delAlba(item.userId, item.userNa)} style={{...styles.btnMini, alignItems:"center", backgroundColor:"red", justifyContent:"center", width:50}}>
+                                                <Text style={{color:"white"}}>삭제</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    )
+                                })
+                        }
+                        {
+                            <TouchableOpacity onPress={()=>{setModalVisible(true);}}>
+                                <View style={{...styles.box, marginBottom:(bottomSheetIndex == -1)?0:150}}>
+                                    <Text style={{fontSize:24}}>+</Text>
+                                </View>
+                            </TouchableOpacity>
+                        }
+                        
+                    </ScrollView>
+                </View>
+                <View>
+                    <Text>시간표의 (+)버튼을 클릭하면 시간표 일별 등록으로 이동합니다.</Text>
+                    <Text>등록된 시간표는 이름을 클릭하여 수정할수 있습니다.</Text>
+                    <Text>등록된 알바를 삭제하기 원하는 경우(-)버튼을 클릭하여 등록된 시간을 삭제할수 있습니다.</Text>
+                </View>
+                <AlbaModal
+                    execptAlbaId={albas.map(item => item.userId)}
+                    isShow={modalVisible} 
+                    onClose={()=>setModalVisible(false)} 
+                    onShow={()=>getAlbaList()}
+                    addAlba={addAlba} 
+                    selectAlba={selectAlba} 
+                />
+                <BotSheet 
                     
-                </ScrollView>
-            </View>
-            <View>
-                <Text>시간표의 (+)버튼을 클릭하면 시간표 일별 등록으로 이동합니다.</Text>
-                <Text>등록된 시간표는 이름을 클릭하여 수정할수 있습니다.</Text>
-                <Text>등록된 알바를 삭제하기 원하는 경우(-)버튼을 클릭하여 등록된 시간을 삭제할수 있습니다.</Text>
-            </View>
-            <AlbaModal
-                execptAlbaId={albas.map(item => item.userId)}
-                isShow={modalVisible} 
-                onClose={()=>setModalVisible(false)} 
-                onShow={()=>getAlbaList()}
-                addAlba={addAlba} 
-                selectAlba={selectAlba} 
-            />
-            <BotSheet 
-                
-                onBottomSheetChanged={(idx)=>setBottomSeetIndex(idx)}
-                sheetRef={sheetRef} 
-                snapPoints={snapPoints} 
-                renderBackdrop={renderBackdrop} 
-                handleSnapPress={handleSnapPress}
-                Content={<BtnSet workInfo={workInfo} cstCo={cstCo} refresh={(callback) => getWeekSchedule(callback)} onDelete={delAlba} onClose={closesheet} 
-                    onTypingModalShow={(param)=>{
-                        setTimeModalParams(param)
-                        setModifyTimeShow(true)
-                    }
-                }/>}
-            />
-            <ModifyTimeModal isShow={modifyTimeShow} onClose={()=>setModifyTimeShow(false)} onConfirm={(val)=>{onConfrimModifyTime(val)}} onShow={()=>console.log("onShow")} />
-        </GestureHandlerRootView>
+                    onBottomSheetChanged={(idx)=>setBottomSeetIndex(idx)}
+                    sheetRef={sheetRef} 
+                    snapPoints={snapPoints} 
+                    renderBackdrop={renderBackdrop} 
+                    handleSnapPress={handleSnapPress}
+                    Content={<BtnSet workInfo={workInfo} cstCo={cstCo} refresh={(callback) => getWeekSchedule(callback)} onDelete={delAlba} onClose={closesheet} 
+                        onTypingModalShow={(param)=>{
+                            setTimeModalParams(param)
+                            setModifyTimeShow(true)
+                        }
+                    }/>}
+                />
+                <ModifyTimeModal isShow={modifyTimeShow} onClose={()=>setModifyTimeShow(false)} onConfirm={(val)=>{onConfrimModifyTime(val)}} onShow={()=>console.log("onShow")} />
+            </GestureHandlerRootView>
+        </SafeAreaView>
         
 
     );
@@ -401,7 +404,7 @@ const BotSheet = ({sheetRef, snapPoints, renderBackdrop, handleSnapPress, Conten
   }
 
 const styles = StyleSheet.create({
-    container:{ flex: 1, alignItems: 'center', padding:5, marginTop:StatusBar.currentHeight},
+    container:{ flex: 1, alignItems: 'center', padding:5},
     card:{
         flex:1,
         borderWidth: 1, // 테두리 두께
