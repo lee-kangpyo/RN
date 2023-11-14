@@ -2,6 +2,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, Text, Touchable, TouchableOpacity, Keyboard } from 'react-native';
 import { ScrollView, TextInput } from 'react-native-gesture-handler';
 
+export function ProfitLossContainer({StoreName}){
+    return (
+        <View style={styles.card}>
+            <Text style={styles.title}>{StoreName}</Text>
+        </View>
+    )
+}
+
 export function PayDetailContainer({header, contents, ondeataTap}){
     return(
         <View>
@@ -208,5 +216,16 @@ const styles = StyleSheet.create({
         borderColor:"grey",
         width:"100%",
         
+    },
+    card:{
+        borderWidth: 1, // 테두리 두께
+        borderColor: 'black', // 테두리 색상
+        borderRadius: 10, // 테두리 모서리 둥글게 
+        padding:5,
+        width:"100%",
+        marginBottom:15,
+    },
+    title:{
+        fontSize:20
     }
 });
