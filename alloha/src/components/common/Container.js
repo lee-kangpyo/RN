@@ -2,11 +2,36 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, Text, Touchable, TouchableOpacity, Keyboard } from 'react-native';
 import { ScrollView, TextInput } from 'react-native-gesture-handler';
 
-export function ProfitLossContainer({StoreName}){
+export function ProfitLossPl({data}){
     return (
         <View style={styles.card}>
-            <Text style={styles.title}>{StoreName}</Text>
+            {
+                data.map((el, idx)=>{
+                    return (
+                        <View key={idx} style={styles.row}>
+                            <Text>{el.CONA}</Text>
+                            <Text>{el.AMT.toLocaleString()}</Text>
+                        </View>
+                    )
+                })
+            }
         </View>
+    )
+}
+export function ProfitLossAlbaList({data}){
+    return (
+        <ScrollView style={[styles.card, {paddingVertical:0}]}>
+            {
+                data.map((el, idx)=>{
+                    return (
+                        <View key={idx} style={styles.row}>
+                            <Text>{el.userNa}</Text>
+                            <Text>{el.salary.toLocaleString()}</Text>
+                        </View>
+                    )
+                })
+            }
+        </ScrollView>
     )
 }
 

@@ -2,8 +2,6 @@ const express = require('express')
 var router = express.Router();
 const {execSql, execTranSql} = require("../utils/excuteSql");
 
-const axios = require('axios');
-
 const dotenv = require('dotenv');
 const { monthCstSlySearch } = require('../query/workResult');
 

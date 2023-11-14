@@ -199,7 +199,6 @@ export default function WorkScreen({navigation}) {
         var params = {cls:"AlbaSave", ymdFr:weekList[0].format("yyyyMMDD"), ymdTo:weekList[6].format("yyyyMMDD"), jobCl:"", jobDure:0}
         return {screen:"work", url:"/api/v1/work/workChedule", params:params};
     }
-    //exec PR_PLYB01_WRKMNG  'AlbaSave', 24, 'mangdee@naver.com', '20231022', '20231028', '', 0
 
     //###############################################################
     return (
