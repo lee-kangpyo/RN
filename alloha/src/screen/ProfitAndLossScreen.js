@@ -37,11 +37,9 @@ export default function ProfitAndLossScreen({navigation}) {
     }
 
     const getAlbaData = async () => {
-        console.log("getAlbaData")
         var params = {ymdFr:date.start, ymdTo:date.end, cstCo:cstCo}
         await HTTP("GET", "/api/v1/profitAndLoss/getAlbaFeeList", params)
         .then((res)=>{
-            console.log(res.data.result)
             dispatch(setAlbaFeeList({data:res.data.result}));
         }).catch(function (error) {
             console.log(error);
@@ -49,28 +47,33 @@ export default function ProfitAndLossScreen({navigation}) {
         })
     }
 
+    const headerControl = (tap) => {
+        if(tap === "left") dispatch(prevMonth());
+        if(tap === "right")dispatch(nextMonth());
+        getData();
+    }
+    const onChangeValue = async (chg) => {
+        if(chg.value != ""){
+            var params = {cls:"CstPlSave", ymdFr:date.start, ymdTo:date.end, cstCo:cstCo, plItCo:chg.plItCo, amt:chg.value}
+            await HTTP("GET", "/api/v1/profitAndLoss/execPL", params)
+            .then((res)=>{
+                getData();
+            }).catch(function (error) {
+                console.log(error);
+                alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
+            })
+        }
+
+    }
+
     return (
         <View style={styles.container}>
             <StatusBar />
-            <StoreSelectBoxWithTitle titleText={"손익 관리"} titleflex={4} selectBoxFlex={8} />
+            <StoreSelectBoxWithTitle titleText={"매출 현황"} titleflex={4} selectBoxFlex={8} />
             <View style={[styles.card, {padding:10}]}>
-                <HeaderControl title={`${date.mm}월 손익`} 
-                    onLeftTap={()=> {
-                        dispatch(prevMonth());
-                        getData();
-                    }} 
-                    onRightTap={()=> {
-                        dispatch(nextMonth());
-                        getData();
-                    }} 
-                />
-                <View style={{flex:1}}>
-                    <ProfitLossPl data={monthCstPl} />
-                </View>
-                <View style={{flex:1.5}}>
-                    <ProfitLossAlbaList data={albaFeeList} />
-                </View>
-                <TotalContainer contents={["합계????", "1000".toLocaleString(), "1000".toLocaleString()]}/>
+                <HeaderControl title={`${date.mm}월 매출 현황`} onLeftTap={() => headerControl("left")} onRightTap={() =>  headerControl("right")} />
+                <ProfitLossPl data={monthCstPl} onChangeValue={onChangeValue}/>
+                <ProfitLossAlbaList data={albaFeeList} />
             </View>
         </View>
     );
