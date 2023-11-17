@@ -8,9 +8,10 @@ const { monthCstSlySearch } = require('../query/workResult');
 router.get("/execPL", async (req, res, next)=>{
     console.log("profitAndLoss.ecexPL");
     try {
-        const{cls, ymdFR, ymdTo, cstCo, plItCo, amt} = req.query;
+        const{cls, ymdFr, ymdTo, cstCo, plItCo, amt} = req.query;
         // 초기화
-        const param = {cls:cls, ymdFR:ymdFR, ymdTo:ymdTo, cstCo:cstCo, plItCo:plItCo, amt:amt};
+        const param = {cls:cls, ymdFR:ymdFr, ymdTo:ymdTo, cstCo:cstCo, plItCo:plItCo, amt:amt};
+        console.log(param);
         const result = await execSql(PLmanager, param)
         console.log(result);
         res.status(200).json({result:result.recordset, resultCode:"00"});
