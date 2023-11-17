@@ -1,5 +1,5 @@
 
-import { StyleSheet, Text, View, StatusBar } from 'react-native';
+import { StyleSheet, Text, View, StatusBar, KeyboardAvoidingView } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import { ProfitLossAlbaList, ProfitLossContainer, ProfitLossPl, TotalContainer } from '../components/common/Container';
 import StoreSelectBoxWithTitle from '../components/common/StoreSelectBoxWithTitle';
@@ -16,7 +16,7 @@ export default function ProfitAndLossScreen({navigation}) {
     const dispatch = useDispatch()
 
     useEffect(()=>{
-        navigation.setOptions({ headerShown:false, title:"손익관리"})
+        navigation.setOptions({ headerShown:false, title:"손익현황"})
     }, [navigation])
     
     useEffect(()=>{
@@ -67,15 +67,15 @@ export default function ProfitAndLossScreen({navigation}) {
     }
 
     return (
-        <View style={styles.container}>
+        <KeyboardAvoidingView style={[styles.container, { flex: 1}]} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
             <StatusBar />
-            <StoreSelectBoxWithTitle titleText={"매출 현황"} titleflex={4} selectBoxFlex={8} />
+            <StoreSelectBoxWithTitle titleText={"손익 현황"} titleflex={4} selectBoxFlex={8} />
             <View style={[styles.card, {padding:10}]}>
-                <HeaderControl title={`${date.mm}월 매출 현황`} onLeftTap={() => headerControl("left")} onRightTap={() =>  headerControl("right")} />
+                <HeaderControl title={`${date.mm}월`} onLeftTap={() => headerControl("left")} onRightTap={() =>  headerControl("right")} />
                 <ProfitLossPl data={monthCstPl} onChangeValue={onChangeValue}/>
                 <ProfitLossAlbaList data={albaFeeList} />
             </View>
-        </View>
+        </KeyboardAvoidingView>
     );
 }
 
