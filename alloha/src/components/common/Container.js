@@ -3,64 +3,89 @@ import { View, StyleSheet, Text, Touchable, TouchableOpacity, Keyboard } from 'r
 import { ScrollView, TextInput } from 'react-native-gesture-handler';
 import { FontAwesome5 } from '@expo/vector-icons';
 
-export function ProfitLossPl({data, onChangeValue}){
-    const main = data.filter((el)=>el.ORDBY % 100 == 0);
-    // 하위
-    const SubLine = ({items, text, isOpen}) => {
-        const style = (text)?styles.borderBox:{width:40}
-        return(
-            (isOpen)?
-                <View style={{flexDirection:"row"}}>
-                    <View style={style}>
-                        <Text>{text}</Text>
-                    </View>
-                    <View style={{flex:1}}>
-                    {
-                        items.map((el, idx)=>{
-                            return(
+
+const ProfitLossSubLine = ({type, items, text, isOpen, onChangeValue}) => {
+    const style = (text)?styles.borderBox:{width:40}
+    return(
+        (isOpen)?
+            <View style={{flexDirection:"row"}}>
+                <View style={style}>
+                    <Text>{text}</Text>
+                </View>
+                <View style={{flex:1}}>
+                {
+                    items.map((el, idx)=>{
+                        return(
+                            (type == "sub")?
                                 <ProfitBox 
-                                    key={text+"_"+idx}
+                                    key={idx}
                                     text={el.CONA} 
                                     text2={el.AMT.toLocaleString()} 
                                     style={{flexDirection:"row", justifyContent:"space-between", height:25}} 
                                     onTapToEdit={(value)=>onChangeValue({plItCo:el.PLITCO, value:value})}
                                     fontSize={13}
                                 />
-                            )
-                        })
-                    }
-                    </View>
+                            :
+                                <ProfitBox 
+                                    key={idx}
+                                    text={el.userNa} 
+                                    text2={el.salary.toLocaleString()} 
+                                    style={{flexDirection:"row", justifyContent:"space-between", height:25}} 
+                                    fontSize={13}
+                                />
+                        )
+                    })
+                }
                 </View>
-            :
-                null
-        )
-    }
-    //메인
-    return (
-        <View style={styles.card}>
-            {
-                main.map((item, idx)=>{
-                    const [isOpen, setIsOpen] = useState(false);
-                    const subItems = data.filter(el => el.ORDBY > item.ORDBY && el.ORDBY < item.ORDBY + 100);
-                    const editable = ["0200"];
-                    const onTap = (editable.indexOf(item.PLITCO) > -1)?(value)=>onChangeValue({plItCo:item.PLITCO, value:value}):null;
-                    const isExistSub = (subItems.length > 0)?true:false
-                    return (
-                        <>
-                            <ProfitBox key={idx} text={item.CONA} text2={item.AMT.toLocaleString()} 
-                                onTapToEdit={onTap} 
-                                isSub={isExistSub}
-                                isOpen={isOpen}
-                                setIsOpen={setIsOpen}
-                            />
-                            {   (isExistSub)?<SubLine isOpen={isOpen} items={subItems}/>:null   }
-                        </>
-                    )
-                })
-            }
-        </View>
+            </View>
+        :
+            null
     )
 }
+
+function ProfitLossMainLine ({item, subItems, albaList, onChangeValue}) {
+    const [isOpen, setIsOpen] = useState(false);
+    const editable = ["0200"];
+    const onTap = (editable.indexOf(item.PLITCO) > -1)?(value)=>onChangeValue({plItCo:item.PLITCO, value:value}):null;
+    const isExistSub = (subItems && subItems.length > 0)?true:false
+    const isExistAlba = (albaList && albaList.length > 0)?true:false
+    return (
+        <>
+            <ProfitBox text={item.CONA} text2={item.AMT.toLocaleString()} 
+                onTapToEdit={onTap} 
+                isSub={isExistSub || isExistAlba}
+                isOpen={isOpen}
+                setIsOpen={setIsOpen}
+            />
+            {   (isExistSub)? <ProfitLossSubLine type={"sub"} isOpen={isOpen} items={subItems} onChangeValue={onChangeValue}/>:null   }
+            {   (isExistAlba)? <ProfitLossSubLine type={"alba"} isOpen={isOpen} items={albaList} onChangeValue={onChangeValue}/> : null }
+        </>
+    )
+}
+
+export function ProfitLossPl({data, albaList, onChangeValue}){
+    const mainData = data.filter((el)=>el.ORDBY % 100 == 0);
+    return (
+        <ScrollView contentContainerStyle={{padding:5}} style={[styles.card, {marginBottom:0, padding:0}]}>
+            {
+                (mainData.length > 0)?
+                    mainData.map((item, idx)=>{
+                        const subItems = data.filter(el => el.ORDBY > item.ORDBY && el.ORDBY < item.ORDBY + 100);
+                        if(item.CONA == "인건비"){
+                            return <ProfitLossMainLine item = {item} albaList={albaList} />               
+                        }else{
+                            return <ProfitLossMainLine item = {item} subItems={subItems} onChangeValue={onChangeValue}/>                   
+                        }
+                    })
+                :
+                    <View style={{alignItems:"center"}}>
+                        <Text>데이터가 없습니다.</Text>
+                    </View>
+            }
+        </ScrollView>
+    )
+}
+
 export function ProfitLossAlbaList({data}){
     const total = data.reduce((result, next)=>{
         return result + next.salary;
@@ -88,7 +113,7 @@ export function ProfitLossAlbaList({data}){
 // isSub:bool, isOpen:bool, setIsOpen:function 터치로 subLine을 열수있다. 
 function ProfitBox({style={}, onTapToEdit, isSub, isOpen, setIsOpen, text, text2, fontSize=16}){
     const [isText, setIsText] = useState(true);
-    const fontWeight = (text == "손익")?"bold":"";
+    const fontWeight = (text == "손익")?"bold":"normal";
     const Accodion = () => {
         const name = (isOpen)?"chevron-up":"chevron-down"
         return <FontAwesome5 style={{marginLeft:5}} name={name} size={fontSize} color="red"/>;
@@ -104,25 +129,26 @@ function ProfitBox({style={}, onTapToEdit, isSub, isOpen, setIsOpen, text, text2
             </TouchableOpacity>
         :
         (onTapToEdit)?
-            <TouchableOpacity onPress={()=>setIsText(false)} style={[styles.borderBox, {flexDirection:"row", justifyContent:"space-between", height:40}, style]}>
+            <TouchableOpacity onPress={()=>setIsText(false)} style={[styles.borderBox, {flexDirection:"row", justifyContent:"space-between", height:40,}, style]}>
                 <Text style={{fontSize:fontSize, fontWeight:fontWeight}}>{text}</Text>
                 {
                     (isText)?
-                        <Text style={{fontSize:fontSize, fontWeight:fontWeight}}>{text2}</Text>
-                    :
-                        <View style={{width:"50%"}}>
-                            <EidtNumberBox 
-                                onTap={(value)=>{onTapToEdit(value);setIsText(true);}}
-                                hasBox={false}
-                            />
+                        <View>
+                            <Text style={{fontSize:fontSize, fontWeight:fontWeight, marginRight:20}}>{text2}</Text>
                         </View>
+                    :
+                        <EidtNumberBox
+                            initvalue={text2}
+                            onTap={(value)=>{onTapToEdit(value);setIsText(true);}}
+                            hasBox={false}
+                        />
                 }
                 
             </TouchableOpacity>
         :
             <View style={[styles.borderBox, {flexDirection:"row", justifyContent:"space-between", height:40}, style]}>
                 <Text style={{fontSize:fontSize, fontWeight:fontWeight}}>{text}</Text>
-                <Text style={{fontSize:fontSize, fontWeight:fontWeight}}>{text2}</Text>
+                <Text style={{fontSize:fontSize, fontWeight:fontWeight, marginRight:20}}>{text2}</Text>
             </View>
     )
 }
@@ -212,7 +238,6 @@ export function PayContainer({header, contents, onNameTap, onIncentiveTap}) {
 };
 
 export function TotalContainer({contents}) {
-    
     return(
         <View>
             <View style={styles.row}>
@@ -268,9 +293,9 @@ const PayLine = ({item, onNameTap, onIncentiveTap}) => {
     )
 }
 
-const EidtNumberBox = ({ initvalue=0, onTap, alignItems = "center", hasBox=true}) => {
-    const ref = useRef(initvalue);
-    const [value, setValue] = useState("")
+const EidtNumberBox = ({ initvalue="0", onTap, alignItems = "center", hasBox=true}) => {
+    const ref = useRef();
+    const [value, setValue] = useState(initvalue.replace(/,/g, ''))
     const onSave = () => {
         if (value == "" || (!isNaN(value) && value >= 0 && value == parseInt(value, 10))) {
             onTap(value);
@@ -281,15 +306,23 @@ const EidtNumberBox = ({ initvalue=0, onTap, alignItems = "center", hasBox=true}
     }
     return(
         (hasBox)?
-            <TouchableOpacity activeOpacity={(onTap)?0.2:1} style={[styles.box, {alignItems:alignItems, paddingHorizontal:5}]} onPress={onTap}>
-                <TextInput autoFocus={true} style={styles.input} ref={ref} value={value} keyboardType='number-pad' onChange={(e)=>setValue(e.nativeEvent.text)} 
+            <TouchableOpacity activeOpacity={(onTap)?0.2:1} style={[styles.box, {alignItems:alignItems, paddingHorizontal:5, flexDirection:"row"}]} onPress={onTap}>
+                <TextInput autoFocus={true} style={[styles.input, {flex:1}]} ref={ref} value={value} keyboardType='number-pad' onChange={(e)=>setValue(e.nativeEvent.text)} 
                     onBlur={onSave}
                 />
+                <TouchableOpacity style={{ justifyContent:"center"}} onPress={onSave}>
+                    <FontAwesome5 name="check-circle" size={16} color="black" />
+                </TouchableOpacity>
             </TouchableOpacity>
         :
-            <TextInput autoFocus={true} style={styles.input} ref={ref} value={value} keyboardType='number-pad' onChange={(e)=>setValue(e.nativeEvent.text)} 
-                onBlur={onSave}
-            />
+            <View style={{flexDirection:"row", justifyContent:"flex-end"}}>
+                <TextInput autoFocus={true} style={[styles.input, {width:"50%"}]} ref={ref} value={value} keyboardType='number-pad' onChange={(e)=>setValue(e.nativeEvent.text)} 
+                    onBlur={onSave}
+                />
+                <TouchableOpacity style={{borderWidth:1, justifyContent:"center", borderColor:"grey"}} onPress={onSave}>
+                    <FontAwesome5 name="check" size={16} color="black" />
+                </TouchableOpacity>
+            </View>
     )
 }
 const ContentBox = ({text, subText, onTap, alignItems = "center", fontSize = 12}) => {
