@@ -1,5 +1,5 @@
 
-import { StyleSheet, Text, View, StatusBar, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, Text, View, StatusBar, KeyboardAvoidingView, TouchableOpacity } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import { ProfitLossAlbaList, ProfitLossContainer, ProfitLossPl, TotalContainer } from '../components/common/Container';
 import StoreSelectBoxWithTitle from '../components/common/StoreSelectBoxWithTitle';
@@ -7,6 +7,7 @@ import { HTTP } from '../util/http';
 import { useDispatch, useSelector } from 'react-redux';
 import { nextMonth, prevMonth, setAlbaFeeList, setMonthCstPl } from '../../redux/slices/result';
 import HeaderControl from '../components/common/HeaderControl';
+import Excel from '../components/common/Excel';
 
 export default function ProfitAndLossScreen({navigation}) {
     const cstCo = useSelector((state)=>state.common.cstCo);
@@ -15,8 +16,27 @@ export default function ProfitAndLossScreen({navigation}) {
     const albaFeeList = useSelector((state) => state.result.albaFeeList);
     const dispatch = useDispatch()
 
+    const test = () => {
+        const data = monthCstPl.map((el) => {
+            if(el.ORDBY % 100 == 0){
+                return {"메인":el.CONA,"하위":"", "금액":el.AMT}
+            }else{
+                return {"메인":"", "하위":el.CONA, "금액":el.AMT}
+            }
+
+        })
+        const alba = albaFeeList.map((el) => {
+            return {"메인":"","하위":el.userNa, "금액":el.salary}
+        })
+        const index = data.findIndex(item => item.메인 === '인건비');
+        if(index > -1) data.splice(index + 1, 0, ...alba);
+        console.log(data);
+        return data
+        //console.log(albaFeeList);
+    }
+
     useEffect(()=>{
-        navigation.setOptions({ headerShown:false, title:"손익현황"})
+        navigation.setOptions({ headerShown:false, title:"매출현황"})
     }, [navigation])
     
     useEffect(()=>{
@@ -63,17 +83,21 @@ export default function ProfitAndLossScreen({navigation}) {
                 alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
             })
         }
-
     }
 
     return (
         <KeyboardAvoidingView style={[styles.container, { flex: 1}]} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
             <StatusBar />
-            <StoreSelectBoxWithTitle titleText={"손익 현황"} titleflex={4} selectBoxFlex={8} />
+            <StoreSelectBoxWithTitle titleText={"매출 현황"} titleflex={4} selectBoxFlex={8} />
+            <Excel 
+                type={"sharing"}
+                btntext={"매출 현황 다운"} 
+                fileName={"매출 현황"}
+                data={test()} 
+            />
             <View style={[styles.card, {padding:10}]}>
                 <HeaderControl title={`${date.mm}월`} onLeftTap={() => headerControl("left")} onRightTap={() =>  headerControl("right")} />
-                <ProfitLossPl data={monthCstPl} onChangeValue={onChangeValue}/>
-                <ProfitLossAlbaList data={albaFeeList} />
+                <ProfitLossPl data={monthCstPl} albaList={albaFeeList} onChangeValue={onChangeValue}/>
             </View>
         </KeyboardAvoidingView>
     );
