@@ -151,3 +151,27 @@ export const getCurrentWeek = () => {
 
     return thisWeekDates
 }
+
+
+export const getSTime = (sTime) => {
+    var splittedTime = sTime.split(":");
+    var hours = parseInt(splittedTime[0], 10);
+    var minutes = parseInt(splittedTime[1], 10);
+    var currentDate = new Date();
+    
+    // 시간을 설정
+    currentDate.setHours(hours);
+    currentDate.setMinutes(minutes);
+    currentDate.setSeconds(0);
+    currentDate.setMilliseconds(0);
+    return currentDate
+}
+export const getETime = (sTime, endHour) => {
+    var splittedTime = sTime.split(":");
+    var hours = parseInt(splittedTime[0], 10);
+    var minutes = parseInt(splittedTime[1], 10);
+    var startTime = moment().hour(hours).minutes(minutes);
+    var endTime = startTime.clone().add(endHour, 'hours');
+    var result = endTime.format("HH:mm");
+    return result;
+}

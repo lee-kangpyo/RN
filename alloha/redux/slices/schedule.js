@@ -1,5 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit';
-import { getNextWeek, getWeekNumber, movePrevWeek, moveNextWeek, getDayWeekNumber } from '../../src/util/moment';
+import { getNextWeek, getWeekNumber, movePrevWeek, moveNextWeek, getDayWeekNumber, moveDay } from '../../src/util/moment';
 
 const week = getNextWeek()
 
@@ -17,6 +17,16 @@ const initialState = {
     timeBox:new Array(48).fill(null).map(() => [0, 0, 0, 0, 0, 0, 0]),
     totalTime:0.0,
     totalCoverTime:0.0,
+    // 수정사항
+    scheduleAlbaInfo:{
+      isEditing:false,
+      weekNumber:0,
+      userId:"",
+      userNa:"",
+      ymd:"",
+      sTime:"07:00",
+      jobDure:0,
+    }
 };
 
 const scheduleSlice = createSlice({
@@ -129,12 +139,51 @@ const scheduleSlice = createSlice({
     //    console.log(row);
     //});
 
-    }
+    },
+    setScheduleAlbaInfo(state, action){
+      const data = action.payload.data;
+      const scheduleAlbaInfo = state.scheduleAlbaInfo
+      scheduleAlbaInfo.isEditing = true;
+      scheduleAlbaInfo.ymd = data.ymd;
+      scheduleAlbaInfo.userId = data.userId;
+      scheduleAlbaInfo.userNa = data.userNa
+      scheduleAlbaInfo.weekNumber = data.num;
+      scheduleAlbaInfo.sTime = data.sTime //(data.sTime)?data.sTime:"07:00";
+      scheduleAlbaInfo.jobDure = data.jobDure 
+    },
+    setscheduleAlbaSTime(state, action){
+      const data = action.payload.data;
+      state.scheduleAlbaInfo.sTime = data;
+    },
+    moveWeek(state, action){
+      const info = state.scheduleAlbaInfo;
+      const weekNumber = info.weekNumber
+      if(weekNumber < 6){
+        info.weekNumber = weekNumber + 1
+        info.ymd = moveDay("next", info.ymd) 
+      }else{
+        const idList = state.albas.map(item => item.userId);
+        const naList = state.albas.map(item => item.userNa);
+        const userId = info.userId;
+        const idx = idList.indexOf(userId);
+        if(idx !== -1 && idx <idList.length - 1){
+          info.userId = idList[idx + 1];
+          info.userNa = naList[idx + 1];
+          info.weekNumber = 0;
+          info.ymd = state.week.replace(/-/g, '');;
+        }
+      }
+      const day = state.albas.filter(users => users.userId == info.userId)[0].list.filter(day => day.YMD == info.ymd)
+      info.sTime = (day.length > 0)?day[0].STARTTIME:"07:00"
+    },
+    disabledEditing(state, action){
+      state.scheduleAlbaInfo.isEditing = false;
+    },
   },
 });
 
 //외부에서 reducer를 사용하기위해 export
-export let { setAlba, prevWeek, nextWeek, onTabCheckTIme, initTimeBox, setAlbaList, updateTimeBox } = scheduleSlice.actions
+export let { setAlba, prevWeek, nextWeek, onTabCheckTIme, initTimeBox, setAlbaList, updateTimeBox, setScheduleAlbaInfo, moveWeek, disabledEditing, setscheduleAlbaSTime } = scheduleSlice.actions
 
 export default scheduleSlice;
 
