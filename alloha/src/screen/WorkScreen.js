@@ -12,11 +12,12 @@ import { getWeekList } from '../util/moment';
 import { setAlba, nextWeek, prevWeek, setWorkAlbaInfo, moveWeek, disabledEditing, } from '../../redux/slices/work';
 import WorkAlba from './../components/work/WorkAlba';
 
-import BottomSheet, {BottomSheetView, BottomSheetBackdrop} from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AlbaModal, ModifyTimeModal } from '../components/common/customModal';
 import HeaderControl from '../components/common/HeaderControl';
 import StoreSelectBoxWithTitle from '../components/common/StoreSelectBoxWithTitle';
+import CustomBottomSheet, { NumberBottomSheet } from '../components/common/CustomBottomSheet';
+import { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 
 export default function WorkScreen({navigation}) {
     const userId = useSelector((state) => state.login.userId);
@@ -28,13 +29,11 @@ export default function WorkScreen({navigation}) {
     
     const cstCo = useSelector((state)=>state.common.cstCo);
     
-    
     const dispatch = useDispatch();
 
     const [modalVisible, setModalVisible] = useState(false);
     const [modifyTimeShow, setModifyTimeShow] = useState(false);
     
-
 
     const getWeekSchedule = async (callback) => {
         const param = {cls:"WeekWorkSearch", cstCo:cstCo, userId:userId, ymdFr:weekList[0].format("yyyyMMDD"), ymdTo:weekList[6].format("yyyyMMDD"), jobCl:"", jobDure:0};
@@ -124,33 +123,17 @@ export default function WorkScreen({navigation}) {
       }
 
     //###############################################################
-    const windowHeight = Dimensions.get('window').height;
-
+    //const windowHeight = Dimensions.get('window').height;
+    // // 바텀 시트 몇번째인지
     const [bottomSheetIndex, setBottomSeetIndex] = useState(-1)
+    // //바텀시트ref
     const sheetRef = useRef(null);
-    const snapPoints = useMemo(() => [windowHeight*0.35], []);
-    
+    // // 바터시트 움직이는거
     const handleSnapPress = useCallback((index) => {
       sheetRef.current.snapToIndex(index);
       Keyboard.dismiss();
     }, []);
   
-    const closesheet = useCallback(() => {
-      sheetRef.current.close();
-    });
-  
-    const renderBackdrop = useCallback(
-      props => (
-        <BottomSheetBackdrop
-          {...props}
-          disappearsOnIndex={-1}
-          appearsOnIndex={1}
-          pressBehavior={'none'}
-        />
-      ),
-      []
-    );
-
     const onAlbaTap = (info, item) => {
         dispatch(setWorkAlbaInfo({data:info}));
         handleSnapPress(0)
@@ -206,9 +189,9 @@ export default function WorkScreen({navigation}) {
             <StatusBar />
             <GestureHandlerRootView >
                 <StoreSelectBoxWithTitle titleText={"근무 결과"} titleflex={4} selectBoxFlex={8} />
-                <View style={{...styles.card, padding:5, width:"100%"}}>
+                <View style={{...styles.card, padding:5}}>
                     <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:5}}>
-                        <HeaderControl title={`${weekNumber.month}월 ${weekNumber.number}주차 일정표`} onLeftTap={()=> dispatch(prevWeek())} onRightTap={()=> dispatch(nextWeek())} />
+                        <HeaderControl title={`${weekNumber.month}월 ${weekNumber.number}주차`} onLeftTap={()=> dispatch(prevWeek())} onRightTap={()=> dispatch(nextWeek())} />
                         <TouchableOpacity onPress={toggleWidth}>
                             <View style={{...styles.btnMini, paddingVertical:0, paddingHorizontal:5}}>
                                 <Text>편집</Text>
@@ -250,7 +233,7 @@ export default function WorkScreen({navigation}) {
                         }
                         {
                             <TouchableOpacity onPress={()=>{setModalVisible(true);}}>
-                                <View style={{...styles.box, marginBottom:(bottomSheetIndex == -1)?0:150}}>
+                                <View style={{...styles.box, marginBottom:(bottomSheetIndex == -1)?0:150, width:Dimensions.get('window').width - 22}}>
                                     <Text style={{fontSize:24}}>+</Text>
                                 </View>
                             </TouchableOpacity>
@@ -271,20 +254,20 @@ export default function WorkScreen({navigation}) {
                     addAlba={addAlba} 
                     selectAlba={selectAlba} 
                 />
-                <BotSheet 
-                    
-                    onBottomSheetChanged={(idx)=>setBottomSeetIndex(idx)}
-                    sheetRef={sheetRef} 
-                    snapPoints={snapPoints} 
-                    renderBackdrop={renderBackdrop} 
-                    handleSnapPress={handleSnapPress}
-                    Content={<BtnSet workInfo={workInfo} cstCo={cstCo} refresh={(callback) => getWeekSchedule(callback)} onDelete={delAlba} onClose={closesheet} 
-                        onTypingModalShow={(param)=>{
-                            setTimeModalParams(param)
-                            setModifyTimeShow(true)
-                        }
-                    }/>}
+                <NumberBottomSheet 
+                    sheetRef = {sheetRef}
+                    onBottomSheetChanged = {(idx)=>setBottomSeetIndex(idx)}
+                    onClose={()=>dispatch(disabledEditing())}
+                    Content = {
+                        <BtnSet workInfo={workInfo} cstCo={cstCo} refresh={(callback) => getWeekSchedule(callback)} onDelete={delAlba} onClose={()=>sheetRef.current.close()} 
+                            onTypingModalShow={(param)=>{
+                                setTimeModalParams(param)
+                                setModifyTimeShow(true)
+                            }
+                        }/>
+                    }
                 />
+               
                 <ModifyTimeModal isShow={modifyTimeShow} onClose={()=>setModifyTimeShow(false)} onConfirm={(val)=>{onConfrimModifyTime(val)}} onShow={()=>console.log("onShow")} />
             </GestureHandlerRootView>
         </SafeAreaView>
@@ -379,29 +362,6 @@ function BtnSet({ workInfo, cstCo, refresh, onDelete, onClose, onTypingModalShow
     )
 }
 
-// 바텀 시트
-const BotSheet = ({sheetRef, snapPoints, renderBackdrop, handleSnapPress, Content, onBottomSheetChanged}) => {
-
-    const dispatch = useDispatch()
-    return (
-      <>
-        <BottomSheet
-          ref={sheetRef}
-          snapPoints={snapPoints}
-          enablePanDownToClose={true}
-          onClose={()=>dispatch(disabledEditing())}
-          index={-1}
-          onChange={onBottomSheetChanged}
-          //backdropComponent={renderBackdrop}
-        >
-          <BottomSheetView style={{height:"100%"}}>
-            {Content}     
-          </BottomSheetView>
-        </BottomSheet>
-      </>
-    )
-  }
-
 const styles = StyleSheet.create({
     container:{ flex: 1, alignItems: 'center', padding:5},
     card:{
@@ -410,7 +370,6 @@ const styles = StyleSheet.create({
         borderColor: 'black', // 테두리 색상
         borderRadius: 10, // 테두리 모서리 둥글게 
     },
-    sampleImage:{width:"100%", height:"100%"},
     box:{
         backgroundColor:"#D7E5CA",
         paddingVertical:10,

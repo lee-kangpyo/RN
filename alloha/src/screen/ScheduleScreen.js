@@ -1,18 +1,22 @@
 
-import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, StatusBar } from 'react-native';
-import React, {useState, useEffect} from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, StatusBar, Keyboard, Animated, Dimensions, Alert } from 'react-native';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import WeekDate from '../components/schedule/WeekDate';
 import WeekAlba from '../components/schedule/WeekAlba';
 import { useSelector, useDispatch } from 'react-redux';
-import { initTimeBox, nextWeek, prevWeek, setAlba, setAlbaList } from '../../redux/slices/schedule';
+import { disabledEditing, initTimeBox, moveWeek, nextWeek, prevWeek, setAlba, setAlbaList, setScheduleAlbaInfo, setscheduleAlbaSTime } from '../../redux/slices/schedule';
 import { ScrollView } from 'react-native-gesture-handler';
 import axios from 'axios';
 import { URL } from "@env";
 import { useIsFocused } from '@react-navigation/native';
-import { getWeekList } from '../util/moment';
-import { AlbaModal } from '../components/common/customModal';
+import { getETime, getSTime, getWeekList } from '../util/moment';
+import { AlbaModal, ModifyTimeModal } from '../components/common/customModal';
 import HeaderControl from '../components/common/HeaderControl';
 import StoreSelectBoxWithTitle from '../components/common/StoreSelectBoxWithTitle';
+import { NumberBottomSheet } from '../components/common/CustomBottomSheet';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+//import DateTimePicker from "react-native-modal-datetime-picker";
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 export default function ScheduleScreen({navigation}) {
     const userId = useSelector((state) => state.login.userId);
@@ -22,14 +26,41 @@ export default function ScheduleScreen({navigation}) {
     // [v] 이걸 풀어주면 근무 계획에서 다음 주만 + 가 추가됨.
     //const isScheduleEditable = useSelector((state)=>state.schedule.week == state.schedule.eweek);
     const isScheduleEditable = true
-    const week = useSelector((state)=>state.schedule.week)
+    const week = useSelector((state)=>state.schedule.week);
     const weekList = getWeekList(week);
+    const scheduleInfo = useSelector((state)=>state.schedule.scheduleAlbaInfo);
     const dispatch = useDispatch();
 
     const [modalVisible, setModalVisible] = useState(false);
+    // 애니매이션
+    const [ShowDelBtn, setShowDelBtn] = useState(false);
+    const toggleWidth = () => {
+        if(!ShowDelBtn){
+            showDelBtn()
+        }else{
+            hideDelBtn()
+        }
+        setShowDelBtn(!ShowDelBtn);
+      };
+    const widthValue = useRef(new Animated.Value(Dimensions.get('window').width - 22)).current;
+    const showDelBtn = () => {
+    Animated.timing(widthValue, {
+        toValue: (Dimensions.get('window').width-22) - 50,
+        duration: 500,
+        useNativeDriver: false,
+    }).start();
+    };
+    const hideDelBtn = () => {
+    Animated.timing(widthValue, {
+        toValue: Dimensions.get('window').width - 22,
+        duration: 500,
+        useNativeDriver: false,
+    }).start();
+    };
+    // 애니매이션
 
     const getWeekSchedule = async () => {
-        await axios.get(URL+`/api/v1/getWeekSchedule`, {params:{cls:"WeekScheduleSearch", cstCo:cstCo, userId:userId, ymdFr:weekList[0].format("yyyyMMDD"), ymdTo:weekList[6].format("yyyyMMDD"), wCnt:"0",}})
+        await axios.get(URL+`/api/v1/getWeekSchedule`, {params:{cls:"WeekScheduleSearch2", cstCo:cstCo, userId:'', ymdFr:weekList[0].format("yyyyMMDD"), ymdTo:weekList[6].format("yyyyMMDD"), wCnt:"0",}})
         .then((res)=>{
             dispatch(setAlba({data:res.data.result}))
         }).catch(function (error) {
@@ -50,6 +81,7 @@ export default function ScheduleScreen({navigation}) {
         return {screen:"schedule", url:'/api/v1/saveAlba', params:params};
     }
 
+
     const isFocused = useIsFocused();
     
     useEffect(() => {
@@ -68,71 +100,267 @@ export default function ScheduleScreen({navigation}) {
             headerTintColor: "black",
         })
     }, [navigation])
-    
+
+    const addAlba = () => {
+        setModalVisible(false)
+        dispatch(initTimeBox());
+        navigation.push("registerAlba", { data: getTmpAlbaInfo() });
+    }
+
+    const selectAlba = async (alba) => {
+        const param = {cls:"albaSave", cstCo:cstCo, userId:alba.USERID, ymdFr:weekList[0].format("yyyyMMDD"), ymdTo:weekList[6].format("yyyyMMDD")};
+        await axios.post(URL+`/api/v1/saveAlba`, param)
+        .then((res)=>{
+            getWeekSchedule();
+        }).catch(function (error) {
+            console.log(error);
+        })
+        setModalVisible(false)
+        // 수정하는화면 삭제
+        //navigation.navigate("scheduleModify", {alba:alba})
+    }
+
+    // // 바텀 시트 몇번째인지
+    const [bottomSheetIndex, setBottomSeetIndex] = useState(-1)
+    // //바텀시트ref
+    const sheetRef = useRef(null);
+    // // 바터시트 움직이는거
+    const handleSnapPress = useCallback((index) => {
+      sheetRef.current.snapToIndex(index);
+      Keyboard.dismiss();
+    }, []);
+    const onAlbaTap = (info, item) => {
+        dispatch(setScheduleAlbaInfo({data:info}));
+        handleSnapPress(0)
+    }
+
+    const delAlba = (userId, userNa)=> {
+        Alert.alert("계획 삭제", userNa+"님의 계획이 삭제 됩니다. 진행하시겠습니까?",
+            [
+                {text:"네", 
+                    onPress: async ()=>{
+                        param = {cls:"AlbaDelete", cstCo:cstCo, userId:userId, ymdFr:weekList[0].format("yyyyMMDD"), ymdTo:weekList[6].format("yyyyMMDD"), wCnt:"0",};
+                        await axios.get(URL+`/api/v1/getWeekSchedule`, {params:param})
+                        .then((res)=>{
+                            sheetRef.current.close();
+                            getWeekSchedule();
+                        }).catch(function (error) {
+                            console.log(error);
+                            alert("삭제하는중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
+                        })
+                    }
+                },
+                {text:"아니오", onPress:()=>console.log("취소")},
+            ]
+        )
+    };
+    //dateTimepiker
+    const [dateTime, setDateTime] = useState(new Date());
+    const [isTimePikerShow, setTimePiker] = useState(false);
+        // exec PR_PLYA01_SCHMNG 'AlbaDelete', 16, 'Qpqpqpqp', '20231105', '20231111', 0
+    const openDateTimeModal = (startTime) => {
+        setDateTime(startTime)
+        setTimePiker(true);
+    }
+    const onDateTimeModalConfirm = (param) => {
+        setTimePiker(false)
+        const date = new Date(param.nativeEvent.timestamp);
+        var currentHours = date.getHours().toString().padStart(2, '0');
+        var currentMinutes = date.getMinutes().toString().padStart(2, '0');
+        const sTime = currentHours+":"+currentMinutes;
+        const eTime = getETime(sTime, scheduleInfo.jobDure);
+        if(param.type == "set" && scheduleInfo.jobDure > 0){
+            saveAlbaSchedule(sTime, eTime);
+        }else if(param.type == "set" && scheduleInfo.jobDure == 0){
+            sTime
+            dispatch(setscheduleAlbaSTime({data:sTime}))
+        }
+    }
+    const saveAlbaSchedule = async (sTime, eTime) => {
+        const param = {cls:"WeekAlbaScheduleSave", cstCo:cstCo, userId:scheduleInfo.userId, ymdFr:scheduleInfo.ymd, ymdTo:"", jobCl:"G", startTime:sTime, endTime:eTime};
+        await axios.post(URL+`/api/v1/WeekAlbaScheduleSave`, param)
+        .then((res)=>{
+            getWeekSchedule();
+            dispatch(moveWeek());
+        }).catch(function (error) {
+            console.log(error);
+            alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
+        })
+    }
+    //직접입력
+    const [modifyTimeShow, setModifyTimeShow] = useState(false);
+    const onConfrimModifyTime = (val) =>{
+        const sTime = scheduleInfo.sTime;
+        const eTime = getETime(sTime, val);
+        console.log(sTime, eTime)
+        saveAlbaSchedule(sTime, eTime);
+        setModifyTimeShow(false);
+    } 
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar />
-            <StoreSelectBoxWithTitle titleText={"근무 계획"} titleflex={4} selectBoxFlex={8} />
-            <View style={{...styles.card, padding:5, width:"100%"}}>
-                <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:5}}>
-                    <HeaderControl title={`${weekNumber.month}월 ${weekNumber.number}주차 근무 계획`} onLeftTap={()=> dispatch(prevWeek())} onRightTap={()=> dispatch(nextWeek())} />
-                    {
-                        (false && isScheduleEditable)?
-                            <TouchableOpacity onPress={()=>dispatch(setAlba(alba))}>
-                                <Text>지난 시간표 가져오기</Text>
-                            </TouchableOpacity>
-
-                        :
-                            null
-                    }
-                </View>
-                <WeekDate sBlank={2} eBlank={2} week={week}/>
-                <ScrollView>
-                    {
-                        (albas.length == 0)?
-                            <View style={{alignItems:"center", borderWidth:1, borderColor:"grey", padding:5}}>
-                                <Text>데이터가 없습니다.</Text>
+            <GestureHandlerRootView >
+                <StoreSelectBoxWithTitle titleText={"근무 계획"} titleflex={4} selectBoxFlex={8} />
+                <View style={{...styles.card, padding:5}}>
+                    <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:5}}>
+                        <HeaderControl title={`${weekNumber.month}월 ${weekNumber.number}주차`} onLeftTap={()=> dispatch(prevWeek())} onRightTap={()=> dispatch(nextWeek())} />
+                        <TouchableOpacity onPress={toggleWidth}>
+                            <View style={{...styles.btnMini, paddingVertical:0, paddingHorizontal:5}}>
+                                <Text>편집</Text>
                             </View>
-                        :
-                            albas.map((item, idx)=>{
-                                return <WeekAlba key={idx} alba={item} week={week} onDel={getWeekSchedule} />
-                            })
-                    }
-                    {
-                        (isScheduleEditable)?
-                            <TouchableOpacity onPress={()=>{dispatch(initTimeBox());setModalVisible(true);}}>
-                                <View style={styles.box}>
-                                    <Text style={{fontSize:24}}>+</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <Animated.View style={{width:widthValue}}>
+                        <WeekDate sBlank={2} eBlank={2} week={week}/>
+                    </Animated.View>
+                    <ScrollView>
+                        {
+                            (albas.length == 0)?
+                                <View style={{alignItems:"center", borderWidth:1, borderColor:"grey", padding:5}}>
+                                    <Text>데이터가 없습니다.</Text>
                                 </View>
-                            </TouchableOpacity>
+                            :
+                                albas.map((item, idx)=>{
+                                    return (
+                                        <View key={idx} style={{flexDirection:"row"}}>
+                                            <Animated.View style={{width:widthValue}} >
+                                                <WeekAlba key={idx} alba={item} week={week} onTap={onAlbaTap} onDel={getWeekSchedule} />
+                                            </Animated.View>
+                                            <TouchableOpacity onPress={()=>delAlba(item.userId, item.userNa)} style={{...styles.btnMini, alignItems:"center", backgroundColor:"red", justifyContent:"center", width:50}}>
+                                                <Text style={{color:"white"}}>삭제</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    )
+                                })
+                        }
+                        {
+                            (isScheduleEditable)?
+                                <TouchableOpacity onPress={()=>{dispatch(initTimeBox());setModalVisible(true);}}>
+                                    <View style={{...styles.box, width:Dimensions.get('window').width - 22}}>
+                                        <Text style={{fontSize:24}}>+</Text>
+                                    </View>
+                                </TouchableOpacity>
 
-                        :
-                            null
+                            :
+                                null
+                        }
+                        
+                    </ScrollView>
+                </View>
+                <View>
+                    <Text>(+)버튼을 클릭하여 알바생 등록 또는 기존 알바생 근무계획을 작성합니다.</Text>
+                    <Text>근무 계획에 등록된 알바를 클릭하면 수정 또는 삭제 할 수 있습니다.</Text>
+                </View>
+                <AlbaModal
+                    execptAlbaId={albas.map(item => item.userId)}
+                    isShow={modalVisible}
+                    onClose={()=>setModalVisible(false)}
+                    onShow={()=>getAlbaList()}
+                    addAlba={addAlba}
+                    selectAlba={selectAlba}
+                />
+                <NumberBottomSheet
+                    sheetRef = {sheetRef}
+                    onBottomSheetChanged = {(idx)=>setBottomSeetIndex(idx)}
+                    onClose={()=>dispatch(disabledEditing())}
+                    Content = {
+                        <BtnSet scheduleInfo={scheduleInfo} cstCo={cstCo} refresh={(callback)=>getWeekSchedule(callback)} onDelete={()=>console.log("onDelete")} onClose={()=>sheetRef.current.close()} openDateTimeModal={openDateTimeModal}
+                            onTypingModalShow={(param)=>{
+                                //setTimeModalParams(param)
+                                setModifyTimeShow(true)
+                            }}
+                        />
                     }
-                    
-                </ScrollView>
-            </View>
-            <View style={{width:"100%", padding:5}}>
-                <Text>(+)버튼을 클릭하여 알바생 등록 또는 기존 알바생 근무계획을 작성합니다.</Text>
-                <Text>근무 계획에 등록된 알바를 클릭하면 수정 또는 삭제 할 수 있습니다.</Text>
-            </View>
-            <AlbaModal
-                execptAlbaId={albas.map(item => item.userId)}
-                isShow={modalVisible} 
-                onClose={()=>setModalVisible(false)} 
-                onShow={()=>getAlbaList()}
-                addAlba={()=>{
-                    setModalVisible(false)
-                    dispatch(initTimeBox());
-                    navigation.push("registerAlba", { data: getTmpAlbaInfo() });
-                }}
-                selectAlba={(alba)=>{
-                    setModalVisible(false)
-                    navigation.navigate("scheduleModify", {alba:alba})
-                }}
-            />
+                />
+                {
+                (isTimePikerShow)?
+                    <DateTimePicker
+                        locale="ko-kr"
+                        testID="dateTimePicker12"
+                        value={dateTime}
+                        mode={"time"}
+                        is24Hour={false}
+                        onChange={onDateTimeModalConfirm}
+                        minuteInterval={30}
+                    />
+                    : null
+                }
+                <ModifyTimeModal isShow={modifyTimeShow} onClose={()=>setModifyTimeShow(false)} onConfirm={(val)=>{onConfrimModifyTime(val)}} onShow={()=>console.log("onShow")} />
+            </GestureHandlerRootView>
         </SafeAreaView>
     );
+}
+
+function BtnSet({ scheduleInfo, cstCo, refresh, onTypingModalShow, openDateTimeModal }){
+    const [isFncRunning, setIsFncRunning] = useState(false);
+    const dispatch = useDispatch()
+    const sTime = getSTime(scheduleInfo.sTime);
+    const onBtnTap = async (num) => {
+        if (isFncRunning) return;
+        const eTime = getETime(scheduleInfo.sTime, num);
+        //const eTime = time.eTime.format("HH:mm");
+        const param = {cls:"WeekAlbaScheduleSave", cstCo:cstCo, userId:scheduleInfo.userId, ymdFr:scheduleInfo.ymd, ymdTo:"", jobCl:"G", startTime:scheduleInfo.sTime, endTime:eTime};
+        await axios.post(URL+`/api/v1/WeekAlbaScheduleSave`, param)
+        .then((res)=>{
+            refresh()
+            dispatch(moveWeek());
+            setIsFncRunning(false);
+        }).catch(function (error) {
+            console.log(error);
+            alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
+            setIsFncRunning(false);
+        })
+    }
+    const onBtnPress = (num) => {
+        if(!isFncRunning){
+            setIsFncRunning(true)
+            onBtnTap(num)
+        };
+    }
+    return(
+        <View style={{flex:1, justifyContent:"center"}}>
+            <View style={{ flexDirection:"row", alignItems:"center",justifyContent:"space-between", height:30, marginHorizontal:15, marginBottom:10}}>
+                <Text>{scheduleInfo.ymd.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3')} [{scheduleInfo.userNa}]</Text>
+                <View style={{flexDirection:"row", alignItems:"center"}}>
+                    <TouchableOpacity style={{marginRight:5}} onPress={()=>{
+                        //onTypingModalShow(param);
+                        const param = {cls:"WeekAlbaWorkSave", cstCo, userId:scheduleInfo.userId, ymdFr:scheduleInfo.ymd, ymdTo:"", jobCl:"", jobDure:0}
+                        //alert("직접 입력 구현중")
+                        onTypingModalShow(param);
+                    }}>
+                        <Text style={styles.btnMini}>직접입력</Text>
+                    </TouchableOpacity>
+                    
+                </View>
+            </View>
+            <View style={{paddingHorizontal:10,  marginBottom:10}}>
+                <View style={{flexDirection:"row",}}>
+                    {
+                        [1, 2, 3, 4, 5, 6, 7, 8].map((num, idx)=>{
+                            return <TouchableOpacity key={idx} onPress={()=>onBtnPress(num)} style={styles.numberBox}><Text>{num}</Text></TouchableOpacity>
+                        })
+                    }
+                </View>
+                <View style={{flexDirection:"row"}}>
+                    {
+                        [1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 0].map((num, idx)=>{
+                            return <TouchableOpacity key={idx} onPress={()=>onBtnPress(num)} style={styles.numberBox}><Text>{num}</Text></TouchableOpacity>
+                        })
+                    }
+                    
+                </View>
+            </View>
+            <View style={{flexDirection:"row", justifyContent:"space-between", alignItems:"center", paddingHorizontal:15}}>
+                <TouchableOpacity onPress={()=>openDateTimeModal(sTime)} style={{borderWidth:1, borderRadius:5, width:100, height:50, alignItems:"center"}}>
+                    <Text>시작시간</Text>
+                    <Text>{scheduleInfo.sTime}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.btn, {marginTop:0}]} onPress={()=>dispatch(moveWeek())}>
+                    <Text>다음</Text>
+                </TouchableOpacity>
+            </View>
+        </View>
+    )
 }
 
 
@@ -145,7 +373,6 @@ const styles = StyleSheet.create({
         borderColor: 'black', // 테두리 색상
         borderRadius: 10, // 테두리 모서리 둥글게 
     },
-    sampleImage:{width:"100%", height:"100%"},
     box:{
         backgroundColor:"#D7E5CA",
         paddingVertical:10,
@@ -155,6 +382,17 @@ const styles = StyleSheet.create({
         borderRadius: 0, // 테두리 모서리 둥글게 
         alignItems:"center",
     },
+    numberBox:{
+        flex:1, 
+        height:40,
+        margin:3,
+        borderWidth: 0.5, // 테두리 두께
+        borderColor: 'gray', // 테두리 색상
+        borderRadius: 0, // 테두리 모서리 둥글게 
+        backgroundColor:"white", 
+        alignItems:"center",
+        justifyContent:"center"
+    },
     btn:{
         marginTop:20,
         backgroundColor:"#FFCD4B", 
@@ -163,6 +401,7 @@ const styles = StyleSheet.create({
         borderRadius: 10, // 테두리 모서리 둥글게 
         alignSelf:"center",
     },
+    btnMini:{borderWidth:1, borderColor:"grey", borderRadius:5, padding:1,  verticalAlign:"middle", padding:4},
     title:{alignSelf:"center", fontSize:20, marginBottom:15},
     user:{
         marginBottom:5,
