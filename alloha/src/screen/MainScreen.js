@@ -32,6 +32,8 @@ import WorkScreen from './WorkScreen';
 import ResultScreen from './ResultScreen';
 import ResultDetailScreen from './ResultDetailScreen';
 import ProfitAndLossScreen from './ProfitAndLossScreen';
+import CustomerServiceScreen from './CustomerServiceScreen';
+import QnAScreen from './QnAScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -104,7 +106,8 @@ function OwnrScreen({userInfo}){
       <Tab.Screen name="work" component={WorkStack} options={{ headerShown:false, tabBarLabel: '근무결과'}}/>
       <Tab.Screen name="result" component={ResultStack} options={{ headerShown:false, tabBarLabel: '결과현황표'}}/>
       <Tab.Screen name="profitAndLoss" component={ProfitAndLossScreen} options={{ tabBarLabel: '매출현황' }}/>
-
+      <Tab.Screen name="qna" component={QnAScreen} options={{ tabBarLabel: '질문' }}/>
+      
       <Tab.Screen name="etc" options={{ headerShown: false, }}>
         {() => (
           <Stack.Navigator initialRouteName="etc3">
@@ -117,7 +120,7 @@ function OwnrScreen({userInfo}){
             <Stack.Screen name="modifyStore" component={ModifyStoreScreen} options={{ title: '점포수정' }}/>
             <Stack.Screen  name="SearchAddress" component={SearchAddress} options={{title:"주소 검색"}}/>
             <Stack.Screen  name="community" component={ComunityScreen} options={{title:"커뮤니티"}}/>
-            
+            <Stack.Screen  name="customerService" component={CustomerServiceScreen} options={{title:"채팅테스트"}}/>
             {() => ( // 안쓰는 급여 페이지
               <Stack.Navigator>
                 <Stack.Screen name="WageList" component={WageScreen} options={{ title: '급여' }} initialParams={{userType:"owner"}} />
