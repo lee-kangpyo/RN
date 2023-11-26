@@ -50,8 +50,8 @@ export default function EtcScreen({navigation}) {
                     icon={{type:"Ionicons", name:"ios-people-sharp", size:48, color:"black"}}
                 />
                 <GridBox
-                    text={"준비중"}
-                    onPress={()=>null}
+                    text={"채팅"}
+                    onPress={()=>navigation.push("customerService")}
                     icon={{type:"AntDesign", name:"appstore-o", size:48, color:"black"}}
                 />
                 <GridBox

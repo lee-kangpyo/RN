@@ -5,7 +5,6 @@ import { Alert } from 'react-native';
 
 
 export const HTTP = async (method, url, params, timeout=10000) => {
-    
     const axiosConfig = {
         timeout: timeout, // 타임아웃 설정
     };
@@ -29,7 +28,7 @@ export const HTTP = async (method, url, params, timeout=10000) => {
                     throw error; 
                 });
     } else if (method === 'POST') {
-        return await axios.post(URL+url, params, ...axiosConfig)
+        return await axios.post(URL+url, params, axiosConfig)
                 .catch(error => {
                     if (axios.isCancel(error)) {
                         // 요청이 취소된 경우
