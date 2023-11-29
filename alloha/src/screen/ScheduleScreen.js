@@ -4,7 +4,7 @@ import React, {useState, useEffect, useRef, useCallback} from 'react';
 import WeekDate from '../components/schedule/WeekDate';
 import WeekAlba from '../components/schedule/WeekAlba';
 import { useSelector, useDispatch } from 'react-redux';
-import { disabledEditing, initTimeBox, moveWeek, nextWeek, prevWeek, setAlba, setAlbaList, setScheduleAlbaInfo, setscheduleAlbaSTime } from '../../redux/slices/schedule';
+import { disabledEditing, initTimeBox, moveWeek, moveWeekDown, nextWeek, prevWeek, setAlba, setAlbaList, setScheduleAlbaInfo, setscheduleAlbaSTime } from '../../redux/slices/schedule';
 import { ScrollView } from 'react-native-gesture-handler';
 import axios from 'axios';
 import { URL } from "@env";
@@ -60,10 +60,11 @@ export default function ScheduleScreen({navigation}) {
     };
     // 애니매이션
 
-    const getWeekSchedule = async () => {
+    const getWeekSchedule = async (callback) => {
         await axios.get(URL+`/api/v1/getWeekSchedule`, {params:{cls:"WeekScheduleSearch2", cstCo:cstCo, userId:'', ymdFr:weekList[0].format("yyyyMMDD"), ymdTo:weekList[6].format("yyyyMMDD"), wCnt:"0",}})
         .then((res)=>{
             dispatch(setAlba({data:res.data.result}))
+            if (callback) callback();
         }).catch(function (error) {
             console.log(error);
             alert("알바 일정을 조회하는중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
@@ -182,7 +183,7 @@ export default function ScheduleScreen({navigation}) {
         await axios.post(URL+`/api/v1/WeekAlbaScheduleSave`, param)
         .then((res)=>{
             getWeekSchedule();
-            dispatch(moveWeek());
+            dispatch(moveWeekDown());
         }).catch(function (error) {
             console.log(error);
             alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
@@ -303,9 +304,10 @@ function BtnSet({ scheduleInfo, cstCo, refresh, onTypingModalShow, openDateTimeM
         const param = {cls:"WeekAlbaScheduleSave", cstCo:cstCo, userId:scheduleInfo.userId, ymdFr:scheduleInfo.ymd, ymdTo:"", jobCl:"G", startTime:scheduleInfo.sTime, endTime:eTime};
         await axios.post(URL+`/api/v1/WeekAlbaScheduleSave`, param)
         .then((res)=>{
-            refresh()
-            dispatch(moveWeek());
-            setIsFncRunning(false);
+            refresh(()=>{
+                dispatch(moveWeekDown());
+                setIsFncRunning(false);
+            })
         }).catch(function (error) {
             console.log(error);
             alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
@@ -356,7 +358,7 @@ function BtnSet({ scheduleInfo, cstCo, refresh, onTypingModalShow, openDateTimeM
                     <Text>시작시간</Text>
                     <Text>{scheduleInfo.sTime}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.btn, {marginTop:0}]} onPress={()=>dispatch(moveWeek())}>
+                <TouchableOpacity style={[styles.btn, {marginTop:0}]} onPress={()=>dispatch(moveWeekDown())}>
                     <Text>다음</Text>
                 </TouchableOpacity>
             </View>

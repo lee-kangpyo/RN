@@ -176,6 +176,17 @@ const scheduleSlice = createSlice({
       const day = state.albas.filter(users => users.userId == info.userId)[0].list.filter(day => day.YMD == info.ymd)
       info.sTime = (day.length > 0)?day[0].STARTTIME:"07:00"
     },
+    moveWeekDown(state, action){
+      const info = state.scheduleAlbaInfo;
+      const weekNumber = info.weekNumber;
+      const albas = state.albas;
+      const curIndex = albas.findIndex(item => item.userId === info.userId);
+      const target = albas[curIndex+1];
+      if(target){
+        info.userId = target.userId;
+        info.userNa = target.userNa;
+      }
+    },
     disabledEditing(state, action){
       state.scheduleAlbaInfo.isEditing = false;
     },
@@ -183,7 +194,7 @@ const scheduleSlice = createSlice({
 });
 
 //외부에서 reducer를 사용하기위해 export
-export let { setAlba, prevWeek, nextWeek, onTabCheckTIme, initTimeBox, setAlbaList, updateTimeBox, setScheduleAlbaInfo, moveWeek, disabledEditing, setscheduleAlbaSTime } = scheduleSlice.actions
+export let { setAlba, prevWeek, nextWeek, onTabCheckTIme, initTimeBox, setAlbaList, updateTimeBox, setScheduleAlbaInfo, moveWeek, moveWeekDown, disabledEditing, setscheduleAlbaSTime } = scheduleSlice.actions
 
 export default scheduleSlice;
 
