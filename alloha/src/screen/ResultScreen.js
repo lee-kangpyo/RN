@@ -1,10 +1,8 @@
 
-import { StyleSheet, Text, View, StatusBar, SafeAreaView } from 'react-native';
-import React, {useState, useEffect} from 'react';
+import { StyleSheet, View, StatusBar, SafeAreaView } from 'react-native';
+import React, {useEffect} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import StoreSelectBox from '../components/common/StoreSelectBox';
 import { useIsFocused } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
 
 import axios from 'axios';
 import { URL } from "@env";

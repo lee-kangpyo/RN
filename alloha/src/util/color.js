@@ -9,5 +9,6 @@ export const theme = {
     darkGrey:"#A9A9A9",
     black:"#000",
     blurblack:"#666",
-    red:"#f3444f"
+    red:"#f3444f",
+    link:"#30CD93"
 }

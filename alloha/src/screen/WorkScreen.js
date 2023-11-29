@@ -18,6 +18,7 @@ import HeaderControl from '../components/common/HeaderControl';
 import StoreSelectBoxWithTitle from '../components/common/StoreSelectBoxWithTitle';
 import CustomBottomSheet, { NumberBottomSheet } from '../components/common/CustomBottomSheet';
 import { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import { theme } from '../util/color';
 
 export default function WorkScreen({navigation}) {
     const userId = useSelector((state) => state.login.userId);
@@ -193,8 +194,8 @@ export default function WorkScreen({navigation}) {
                     <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:5}}>
                         <HeaderControl title={`${weekNumber.month}월 ${weekNumber.number}주차`} onLeftTap={()=> dispatch(prevWeek())} onRightTap={()=> dispatch(nextWeek())} />
                         <TouchableOpacity onPress={toggleWidth}>
-                            <View style={{...styles.btnMini, paddingVertical:0, paddingHorizontal:5}}>
-                                <Text>편집</Text>
+                            <View style={{...styles.btnMini, paddingVertical:0, paddingHorizontal:5, borderColor:theme.link}}>
+                                <Text style={styles.btnText}>편집</Text>
                             </View>
                         </TouchableOpacity>
                         {
@@ -413,5 +414,8 @@ const styles = StyleSheet.create({
     },
     bottomContainer:{
         flex:1
+    },
+    btnText:{
+        color:theme.link
     }
 });
