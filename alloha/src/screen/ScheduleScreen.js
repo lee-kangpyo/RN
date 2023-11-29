@@ -215,7 +215,7 @@ export default function ScheduleScreen({navigation}) {
                     <Animated.View style={{width:widthValue}}>
                         <WeekDate sBlank={2} eBlank={2} week={week}/>
                     </Animated.View>
-                    <ScrollView>
+                    <ScrollView  contentContainerStyle={{paddingBottom:(bottomSheetIndex == -1)?0:Dimensions.get('window').height * 0.3, }}>
                         {
                             (albas.length == 0)?
                                 <View style={{alignItems:"center", borderWidth:1, borderColor:"grey", padding:5}}>
