@@ -69,7 +69,7 @@ export default function ResultScreen({navigation}) {
             <StoreSelectBoxWithTitle titleText={"결과 현황표"} titleflex={4} selectBoxFlex={8} />
             <View style={{...styles.card, padding:5, width:"100%", overflow:"hidden"}}>
                 <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:5}}>
-                    <HeaderControl title={`${date.mm}월 급여표`} onLeftTap={()=> dispatch(prevMonth())} onRightTap={()=> dispatch(nextMonth())} />
+                    <HeaderControl title={`${date.mm}월`} onLeftTap={()=> dispatch(prevMonth())} onRightTap={()=> dispatch(nextMonth())} />
                 </View>
                 <PayContainer header={["성명", "시급", "주휴", "플러스", "합계"]} contents={items} onNameTap={onNameTap} onIncentiveTap={onIncentiveTap}/>
             </View>
