@@ -90,6 +90,17 @@ const workSlice = createSlice({
         }
       }
     },
+    moveWeekDown(state, action){
+      const info = state.workAlbaInfo;
+      const weekNumber = info.weekNumber;
+      const albas = state.albas;
+      const curIndex = albas.findIndex(item => item.userId === info.userId);
+      const target = albas[curIndex+1];
+      if(target){
+        info.userId = target.userId;
+        info.userNa = target.userNa;
+      }
+    },
     disabledEditing(state, action){
       state.workAlbaInfo.isEditing = false;
     },
@@ -98,6 +109,6 @@ const workSlice = createSlice({
 });
 
 //외부에서 reducer를 사용하기위해 export
-export let { setAlba, prevWeek, nextWeek, setWorkAlbaInfo, moveWeek, disabledEditing } = workSlice.actions
+export let { setAlba, prevWeek, nextWeek, setWorkAlbaInfo, moveWeekDown, disabledEditing } = workSlice.actions
 
 export default workSlice;

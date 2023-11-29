@@ -9,7 +9,7 @@ import axios from 'axios';
 import { URL } from "@env";
 import { useIsFocused } from '@react-navigation/native';
 import { getWeekList } from '../util/moment';
-import { setAlba, nextWeek, prevWeek, setWorkAlbaInfo, moveWeek, disabledEditing, } from '../../redux/slices/work';
+import { setAlba, nextWeek, prevWeek, setWorkAlbaInfo, moveWeek, disabledEditing, moveWeekDown, } from '../../redux/slices/work';
 import WorkAlba from './../components/work/WorkAlba';
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -114,7 +114,7 @@ export default function WorkScreen({navigation}) {
         await axios.post(URL+`/api/v1/work/workChedule`, timeModalParams)
         .then((res)=>{
             getWeekSchedule()
-            dispatch(moveWeek())
+            dispatch(moveWeekDown())
             setModifyTimeShow(false);;
         }).catch(function (error) {
             console.log(error);
@@ -289,7 +289,8 @@ function BtnSet({ workInfo, cstCo, refresh, onDelete, onClose, onTypingModalShow
         await axios.post(URL+`/api/v1/work/workChedule`, param)
         .then((res)=>{
             refresh(()=>{
-                dispatch(moveWeek())
+
+                dispatch(moveWeekDown())
                 setIsFncRunning(false);
             })
             
@@ -355,7 +356,7 @@ function BtnSet({ workInfo, cstCo, refresh, onDelete, onClose, onTypingModalShow
                     </TouchableOpacity>
                     :null
                 }
-                <TouchableOpacity style={styles.btn} onPress={()=>dispatch(moveWeek())}>
+                <TouchableOpacity style={styles.btn} onPress={()=>dispatch(moveWeekDown())}>
                     <Text>다음</Text>
                 </TouchableOpacity>
             </View>
