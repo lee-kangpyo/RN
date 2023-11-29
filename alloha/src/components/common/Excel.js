@@ -151,12 +151,12 @@ const styles = StyleSheet.create({
       alignItems: 'center',
     },
     btn:{
-      color:theme.link,
       borderColor:theme.link,
       fontSize:8,
       borderWidth:1,
       borderRadius:5,
-      padding:5
+      paddingHorizontal:5,
+      paddingVertical:2
     },
     btntext:{
       color:theme.link

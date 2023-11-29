@@ -1,9 +1,9 @@
 import {createSlice} from '@reduxjs/toolkit';
-import { getNextMonth, getPrevMM, getPrevMonth, moveNextMonth, movePrevMonth } from '../../src/util/moment';
+import { getCurMM, getNextMonth, getPrevMM, getPrevMonth, moveNextMonth, movePrevMonth } from '../../src/util/moment';
 
 const initialState = {
   month:getPrevMonth(),
-  MM:getPrevMM(),
+  MM:getCurMM(),
   workResultList:[],
   workDetailResultList:[],
   //ProfitAndLoss
