@@ -89,16 +89,20 @@ export default function ProfitAndLossScreen({navigation}) {
         <KeyboardAvoidingView style={[styles.container, { flex: 1}]} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
             <StatusBar />
             <StoreSelectBoxWithTitle titleText={"매출 현황"} titleflex={4} selectBoxFlex={8} />
-            <Excel 
-                type={"sharing"}
-                btntext={"매출 현황 다운"} 
-                fileName={"매출 현황"}
-                data={test()} 
-            />
             <View style={[styles.card, {padding:10}]}>
-                <HeaderControl title={`${date.mm}월`} onLeftTap={() => headerControl("left")} onRightTap={() =>  headerControl("right")} />
+                <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:5}}>
+                    <HeaderControl title={`${date.mm}월`} onLeftTap={() => headerControl("left")} onRightTap={() =>  headerControl("right")} />
+                    <Excel 
+                        type={"sharing"}
+                        btntext={"공유하기"} 
+                        fileName={"매출 현황"}
+                        data={test()} 
+                    />
+                </View>
+                
                 <ProfitLossPl data={monthCstPl} albaList={albaFeeList} onChangeValue={onChangeValue}/>
             </View>
+            
         </KeyboardAvoidingView>
     );
 }

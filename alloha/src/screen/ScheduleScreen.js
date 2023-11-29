@@ -17,6 +17,7 @@ import { NumberBottomSheet } from '../components/common/CustomBottomSheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 //import DateTimePicker from "react-native-modal-datetime-picker";
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { theme } from '../util/color';
 
 export default function ScheduleScreen({navigation}) {
     const userId = useSelector((state) => state.login.userId);
@@ -205,8 +206,8 @@ export default function ScheduleScreen({navigation}) {
                     <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:5}}>
                         <HeaderControl title={`${weekNumber.month}월 ${weekNumber.number}주차`} onLeftTap={()=> dispatch(prevWeek())} onRightTap={()=> dispatch(nextWeek())} />
                         <TouchableOpacity onPress={toggleWidth}>
-                            <View style={{...styles.btnMini, paddingVertical:0, paddingHorizontal:5}}>
-                                <Text>편집</Text>
+                            <View style={{...styles.btnMini, paddingVertical:0, paddingHorizontal:5, borderColor:theme.link}}>
+                                <Text style={styles.btnText}>편집</Text>
                             </View>
                         </TouchableOpacity>
                     </View>
@@ -410,5 +411,8 @@ const styles = StyleSheet.create({
         padding:20,
         borderWidth:0.5,
         borderColor:"gray",
+    },
+    btnText:{
+        color:theme.link
     }
 });

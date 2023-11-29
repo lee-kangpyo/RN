@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { View, ActivityIndicator, StyleSheet, TouchableOpacity, Text } from 'react-native';
-import XLSX from 'xlsx';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
+import * as XLSX from 'xlsx-js-style';
+import { theme } from '../../util/color';
 const { StorageAccessFramework } = FileSystem;
 
 export default function Excel({type="sharing", btntext, data, fileName }) {
   // 엑셀 공유
   const execlSharing = async () => {
+    const date = new Date()
+    
     const wbout = makeExcelData();
-    const fileNa = fileName+'.xlsx';
+    const fileNa = `${fileName}_${date.getFullYear()}_${date.getMonth() + 1}_${date.getDate()}.xlsx`;
     const uri = FileSystem.cacheDirectory + fileNa;
-    console.log(`Writing to ${JSON.stringify(uri)} with text: ${wbout}`);
     await FileSystem.writeAsStringAsync(uri, wbout, {
       encoding: FileSystem.EncodingType.Base64
     });
@@ -48,7 +50,6 @@ export default function Excel({type="sharing", btntext, data, fileName }) {
     try {
       await saveStorage(directoryUri, fileNa, excelData)
         .catch(async (e) => {
-          console.log(e);
           const permissions = await getPermission();
           if (!permissions.granted) {
             alert("디렉토리 권한 요청이 거부 되었습니다.");
@@ -67,7 +68,49 @@ export default function Excel({type="sharing", btntext, data, fileName }) {
     }
   };
   const makeExcelData = () => {
-    var ws = XLSX.utils.json_to_sheet(data, { header: false });
+    var ws = XLSX.utils.json_to_sheet(data, { skipHeader: true, });
+    // 디자인 함수로 나중에 뺄꺼.
+    ws["!cols"] = [];
+    for (var i = 0; i < data.length; i++) {
+      ws["!cols"].push({ wpx: 100 });
+      const item = Object.values(data[i]);
+      const row = i + 1;
+      
+      for (var j = 0; j < item.length; j++) {
+        if (j >= 26) break;
+        const col = String.fromCharCode(65 + j);
+        if (col == "C") {
+          ws[`${col}${row}`].z = '#,##0'; // 열 "C"에 대한 서식
+          ws[`${col}${row}`].s = {
+            border: {
+              top: { style: 'thick', color: { rgb: '000000' } },
+              right: { style: 'thick', color: { rgb: '000000' } },
+              bottom: { style: 'thick', color: { rgb: '000000' } },
+              left: { style: 'thick', color: { rgb: '000000' } }
+            }
+          };
+        } else {
+          ws[`${col}${row}`].s = {
+            alignment: { horizontal: 'center', vertical: 'middle' },
+            border: {
+              top: { style: 'thick', color: { rgb: '000000' } },
+              right: { style: 'thick', color: { rgb: '000000' } },
+              bottom: { style: 'thick', color: { rgb: '000000' } },
+              left: { style: 'thick', color: { rgb: '000000' } }
+            }
+          };
+        }
+        
+
+      }
+    }
+
+
+
+
+
+
+    // 디자인 함수로 나중에 뺄꺼.
     var wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
     const wbout = XLSX.write(wb, {
@@ -84,7 +127,6 @@ export default function Excel({type="sharing", btntext, data, fileName }) {
     })
   }
   const getPermission = async () => {
-    console.log("getPermission");
     const path = StorageAccessFramework.getUriForDirectoryInRoot("Download");
     const result = await StorageAccessFramework.requestDirectoryPermissionsAsync(path);
     return result;
@@ -95,8 +137,8 @@ export default function Excel({type="sharing", btntext, data, fileName }) {
 
   return (
     <View>
-        <TouchableOpacity onPress={onPress}>
-            <Text>{btntext}</Text>
+        <TouchableOpacity style={styles.btn} onPress={onPress}>
+            <Text style={styles.btntext}>{btntext}</Text>
         </TouchableOpacity>
     </View>
   );
@@ -108,4 +150,15 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
     },
+    btn:{
+      color:theme.link,
+      borderColor:theme.link,
+      fontSize:8,
+      borderWidth:1,
+      borderRadius:5,
+      padding:5
+    },
+    btntext:{
+      color:theme.link
+    }
   });
