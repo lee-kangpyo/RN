@@ -10,5 +10,9 @@ export const theme = {
     black:"#000",
     blurblack:"#666",
     red:"#f3444f",
-    link:"#30CD93"
+    link:"#30CD93",
+    open:"#FFC5C5",
+    middle:"#FFEBD8",
+    close:"#C7DCA7",
+    etc:"#E0F4FF"
 }
