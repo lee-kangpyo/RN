@@ -86,7 +86,6 @@ export default function WeekAlba({alba, onTap, onDel, week}) {
 
 
 const _color = (jobCl) => {
-    console.log(jobCl);
     if(jobCl == "-1"){
         return "";
     }else if(jobCl == "2"){
@@ -100,7 +99,6 @@ const _color = (jobCl) => {
     }
 }
 const ContentBox = React.memo(({item, color, jobDure = -1, sTime, userId, userNa, ymd, num, onTap, blank=false, selected}) => {
-    console.log(color)
     jobDure = (blank)?"0":jobDure;
     sTime = (blank)?"07:00":sTime;
     const boxWidth = Dimensions.get('window').width / 9; // 박스의 너비
