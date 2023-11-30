@@ -1,6 +1,6 @@
 
 import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, StatusBar, Keyboard, Animated, Dimensions, Alert } from 'react-native';
-import React, {useState, useEffect, useRef, useCallback} from 'react';
+import React, {useState, useEffect, useRef, useCallback, useMemo} from 'react';
 import WeekDate from '../components/schedule/WeekDate';
 import WeekAlba from '../components/schedule/WeekAlba';
 import { useSelector, useDispatch } from 'react-redux';
@@ -19,6 +19,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { AntDesign } from '@expo/vector-icons';
 import { theme } from './../util/color';
+import RadioGroup from 'react-native-radio-buttons-group';
 
 export default function ScheduleScreen({navigation}) {
     const userId = useSelector((state) => state.login.userId);
@@ -196,7 +197,6 @@ export default function ScheduleScreen({navigation}) {
     const onConfrimModifyTime = (val) =>{
         const sTime = scheduleInfo.sTime;
         const eTime = getETime(sTime, val);
-        console.log(sTime, eTime)
         saveAlbaSchedule(sTime, eTime);
         setModifyTimeShow(false);
     } 
@@ -269,7 +269,7 @@ export default function ScheduleScreen({navigation}) {
                     onClose={()=>dispatch(disabledEditing())}
                     Content = {
                         //<BtnSet scheduleInfo={scheduleInfo} cstCo={cstCo} refresh={(callback)=>getWeekSchedule(callback)} onDelete={()=>console.log("onDelete")} onClose={()=>sheetRef.current.close()} openDateTimeModal={openDateTimeModal} onTypingModalShow={(param)=>{setModifyTimeShow(true)}} />
-                        <BtnSetV2 scheduleInfo={scheduleInfo} cstCo={cstCo} refresh={(callback)=>getWeekSchedule(callback)} onDelete={()=>console.log("onDelete")} onClose={()=>sheetRef.current.close()} openDateTimeModal={openDateTimeModal} />
+                        <BtnSetV3 scheduleInfo={scheduleInfo} cstCo={cstCo} refresh={(callback)=>getWeekSchedule(callback)} onDelete={()=>console.log("onDelete")} onClose={()=>sheetRef.current.close()} />
                     }
                 />
                 {
@@ -292,7 +292,118 @@ export default function ScheduleScreen({navigation}) {
 }
 
 
-function BtnSetV2({ scheduleInfo, cstCo, refresh, onTypingModalShow, openDateTimeModal }){
+function BtnSetV3({ scheduleInfo, cstCo, refresh }){
+    const _TimeComponent = ({time, setTime, fontSize=16}) => {
+        const changeTime = (min)=>{ if(!((time == "00:00" && min < 0) || (time == "23:30" && min > 0))) setTime(manipulateTime(time, min)) }
+        return (
+            <View style={{flexDirection:"row", alignItems:"center"}}>
+                <TouchableOpacity onPress={()=>changeTime(-30)}>
+                    <AntDesign name="caretleft" size={24} color="black" />
+                </TouchableOpacity>
+                <View style={{alignItems:"center"}}>
+                    <Text style={{fontSize:fontSize}}>{time}</Text>
+                </View>
+                <TouchableOpacity onPress={()=>changeTime(30)}>
+                    <AntDesign name="caretright" size={24} color="black" />
+                </TouchableOpacity>
+            </View>
+        )
+    }
+    const _Section = ({fontSize=16, text, sTime, eTime, setStime, setEtime}) => {
+        //const [startTime, setStime] = useState(sTime);
+        //const [endTime, setEtime] = useState(eTime);
+        const hours = calTimeDiffHours(sTime, eTime);
+        return (
+            <View style={{borderWidth:1, flexDirection:"row", marginBottom:5, padding:20, borderRadius:5}} >
+                <View style={{flexDirection:"row", alignItems:"center"}}>
+                    <Text style={{fontSize:fontSize}}>{text}</Text>
+                </View>
+                <View style={{flex:1, flexDirection:"row", justifyContent:"center"}}>
+                    <_TimeComponent fontSize={fontSize} time={sTime} setTime={setStime} />
+                    <Text> ~ </Text>
+                    <_TimeComponent fontSize={fontSize} time={eTime} setTime={setEtime} />
+                </View>
+                <View style={{justifyContent:"center", alignItems:"flex-end", marginRight:5}}>
+                    <Text style={{fontSize:fontSize}}>{hours}</Text>
+                </View>
+            </View>
+        )
+    }
+    const radioButtons = useMemo(() => ([
+        {id: 0, label: '오픈', value: '2', color:theme.open},
+        {id: 1, label: '미들', value: '5', color:theme.middle},
+        {id: 2, label: '마감', value: '6', color:theme.close},
+        {id: 3, label: '기타', value: '1', color:theme.etc}
+    ]), []);
+    const selectData = [
+        {text:"오픈", sTime:"07:00", eTime:"12:00", jobCl:"2", color:theme.open},
+        {text:"미들", sTime:"12:00", eTime:"18:00", jobCl:"5", color:theme.middle},
+        {text:"마감", sTime:"18:00", eTime:"22:00", jobCl:"9", color:theme.close},
+        {text:"기타", sTime:"00:00", eTime:"23:30", jobCl:"1", color:theme.etc},
+    ]
+    const [selectRadio, setSelectRadio] = useState(0);
+    const [isFncRunning, setIsFncRunning] = useState(false);
+    const [sTime, setStime] = useState(selectData[selectRadio].sTime);
+    const [eTime, setEtime] = useState(selectData[selectRadio].eTime);
+    useEffect(()=> {
+        setStime(selectData[selectRadio].sTime);
+        setEtime(selectData[selectRadio].eTime);
+    }, [selectRadio])
+
+    const dispatch = useDispatch()
+    const onSave = async (sTime, eTime, cl) => {
+        if (isFncRunning) return;
+        setIsFncRunning(true)
+        const param = {cls:"WeekAlbaScheduleSave", cstCo:cstCo, userId:scheduleInfo.userId, ymdFr:scheduleInfo.ymd, ymdTo:"", jobCl:cl, startTime:sTime, endTime:eTime};
+        await axios.post(URL+`/api/v1/WeekAlbaScheduleSave`, param)
+        .then((res)=>{
+            refresh(()=>{
+                dispatch(moveWeekDown());
+                setIsFncRunning(false);
+            })
+        }).catch(function (error) {
+            console.log(error);
+            alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
+            setIsFncRunning(false);
+        })
+    }
+    return(
+        <View style={{flex:1,}}>
+            <View style={{ flexDirection:"row", alignItems:"center",justifyContent:"space-between", height:30, marginHorizontal:15, marginBottom:15}}>
+                <Text style={{fontSize:20}}>{scheduleInfo.ymd.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3')} [{scheduleInfo.userNa}]</Text>
+            </View>
+            <View style={{flex:1, marginHorizontal:15, marginBottom:10}}>
+                <RadioGroup 
+                    containerStyle={{justifyContent:"space-evenly", marginBottom:5}}
+                    layout="row"
+                    radioButtons={radioButtons} 
+                    onPress={setSelectRadio}
+                    selectedId={selectRadio}
+                />
+                <_Section 
+                    cl={selectData[selectRadio].jobCl} 
+                    color={selectData[selectRadio].color} 
+                    text={"시간"} 
+                    sTime={sTime} 
+                    eTime={eTime} 
+                    setStime={setStime}
+                    setEtime={setEtime}
+                />
+                <View style={{flexDirection:"row", justifyContent:"center", marginTop:15}}>
+                    <TouchableOpacity style={[styles.btnSetBtn, {marginRight:15}]} onPress={()=>dispatch(moveWeekDown())}>
+                        <Text>다음</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.btnSetBtn} onPress={()=>onSave(sTime, eTime, selectData[selectRadio].jobCl)}>
+                        <Text>저장</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </View>
+    )
+
+}
+
+function _BtnSetV2({ scheduleInfo, cstCo, refresh, onTypingModalShow, openDateTimeModal }){
     const TimeComponent = ({text, time, setTime, fontSize=16}) => {
         const changeTime = (min)=>{ if(!((time == "00:00" && min < 0) || (time == "23:30" && min > 0))) setTime(manipulateTime(time, min)) }
         return (
@@ -335,10 +446,8 @@ function BtnSetV2({ scheduleInfo, cstCo, refresh, onTypingModalShow, openDateTim
     const dispatch = useDispatch()
 
     const onSelectSection = async (sTime, eTime, cl) => {
-        console.log(sTime, eTime)
         if (isFncRunning) return;
         setIsFncRunning(true)
-        console.log()
         const param = {cls:"WeekAlbaScheduleSave", cstCo:cstCo, userId:scheduleInfo.userId, ymdFr:scheduleInfo.ymd, ymdTo:"", jobCl:cl, startTime:sTime, endTime:eTime};
         await axios.post(URL+`/api/v1/WeekAlbaScheduleSave`, param)
         .then((res)=>{
@@ -368,7 +477,7 @@ function BtnSetV2({ scheduleInfo, cstCo, refresh, onTypingModalShow, openDateTim
 
 }
 
-function BtnSet({ scheduleInfo, cstCo, refresh, onTypingModalShow, openDateTimeModal }){
+function _BtnSet({ scheduleInfo, cstCo, refresh, onTypingModalShow, openDateTimeModal }){
     const [isFncRunning, setIsFncRunning] = useState(false);
     const dispatch = useDispatch()
     const sTime = getSTime(scheduleInfo.sTime);
@@ -478,6 +587,13 @@ const styles = StyleSheet.create({
         paddingVertical:15, 
         borderRadius: 10, // 테두리 모서리 둥글게 
         alignSelf:"center",
+    },
+    btnSetBtn:{
+        flex:1,
+        padding:15,
+        alignItems:"center",
+        backgroundColor:"#FFCD4B", 
+        borderRadius: 10,
     },
     btnMini:{borderWidth:1, borderColor:"grey", borderRadius:5, padding:1,  verticalAlign:"middle", padding:4},
     title:{alignSelf:"center", fontSize:20, marginBottom:15},
