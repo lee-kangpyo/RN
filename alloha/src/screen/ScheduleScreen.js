@@ -9,7 +9,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import axios from 'axios';
 import { URL } from "@env";
 import { useIsFocused } from '@react-navigation/native';
-import { getETime, getSTime, getWeekList } from '../util/moment';
+import { calTimeDiffHours, getETime, getSTime, getWeekList, manipulateTime } from '../util/moment';
 import { AlbaModal, ModifyTimeModal } from '../components/common/customModal';
 import HeaderControl from '../components/common/HeaderControl';
 import StoreSelectBoxWithTitle from '../components/common/StoreSelectBoxWithTitle';
@@ -17,7 +17,8 @@ import { NumberBottomSheet } from '../components/common/CustomBottomSheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 //import DateTimePicker from "react-native-modal-datetime-picker";
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { theme } from '../util/color';
+import { AntDesign } from '@expo/vector-icons';
+import { theme } from './../util/color';
 
 export default function ScheduleScreen({navigation}) {
     const userId = useSelector((state) => state.login.userId);
@@ -63,7 +64,8 @@ export default function ScheduleScreen({navigation}) {
     const getWeekSchedule = async (callback) => {
         await axios.get(URL+`/api/v1/getWeekSchedule`, {params:{cls:"WeekScheduleSearch2", cstCo:cstCo, userId:'', ymdFr:weekList[0].format("yyyyMMDD"), ymdTo:weekList[6].format("yyyyMMDD"), wCnt:"0",}})
         .then((res)=>{
-            dispatch(setAlba({data:res.data.result}))
+            //console.log(res.data.result);
+            dispatch(setAlba({data:res.data.result}));
             if (callback) callback();
         }).catch(function (error) {
             console.log(error);
@@ -266,12 +268,8 @@ export default function ScheduleScreen({navigation}) {
                     onBottomSheetChanged = {(idx)=>setBottomSeetIndex(idx)}
                     onClose={()=>dispatch(disabledEditing())}
                     Content = {
-                        <BtnSet scheduleInfo={scheduleInfo} cstCo={cstCo} refresh={(callback)=>getWeekSchedule(callback)} onDelete={()=>console.log("onDelete")} onClose={()=>sheetRef.current.close()} openDateTimeModal={openDateTimeModal}
-                            onTypingModalShow={(param)=>{
-                                //setTimeModalParams(param)
-                                setModifyTimeShow(true)
-                            }}
-                        />
+                        //<BtnSet scheduleInfo={scheduleInfo} cstCo={cstCo} refresh={(callback)=>getWeekSchedule(callback)} onDelete={()=>console.log("onDelete")} onClose={()=>sheetRef.current.close()} openDateTimeModal={openDateTimeModal} onTypingModalShow={(param)=>{setModifyTimeShow(true)}} />
+                        <BtnSetV2 scheduleInfo={scheduleInfo} cstCo={cstCo} refresh={(callback)=>getWeekSchedule(callback)} onDelete={()=>console.log("onDelete")} onClose={()=>sheetRef.current.close()} openDateTimeModal={openDateTimeModal} />
                     }
                 />
                 {
@@ -291,6 +289,83 @@ export default function ScheduleScreen({navigation}) {
             </GestureHandlerRootView>
         </SafeAreaView>
     );
+}
+
+
+function BtnSetV2({ scheduleInfo, cstCo, refresh, onTypingModalShow, openDateTimeModal }){
+    const TimeComponent = ({text, time, setTime, fontSize=16}) => {
+        const changeTime = (min)=>{ if(!((time == "00:00" && min < 0) || (time == "23:30" && min > 0))) setTime(manipulateTime(time, min)) }
+        return (
+            <View style={{flexDirection:"row", alignItems:"center"}}>
+                <TouchableOpacity onPress={()=>changeTime(-30)}>
+                    <AntDesign name="caretleft" size={24} color="black" />
+                </TouchableOpacity>
+                <View style={{alignItems:"center"}}>
+                    <Text style={{fontSize:8}}>{text}</Text>
+                    <Text style={{fontSize:fontSize}}>{time}</Text>
+                </View>
+                <TouchableOpacity onPress={()=>changeTime(30)}>
+                    <AntDesign name="caretright" size={24} color="black" />
+                </TouchableOpacity>
+            </View>
+        )
+    }
+    const Section = ({cl, color, fontSize=16, text, sTime, eTime, onSelect}) => {
+        const [startTime, setStime] = useState(sTime);
+        const [endTime, setEtime] = useState(eTime);
+        const hours = calTimeDiffHours(startTime, endTime);
+        return (
+            <View style={{borderWidth:1, flexDirection:"row", marginBottom:5, padding:5, borderRadius:5, backgroundColor:color}} >
+                <TouchableOpacity onPress={()=>onSelect(sTime, eTime, cl)} style={{flexDirection:"row", alignItems:"center", width:80}}>
+                    <AntDesign name="pluscircle" size={20} color={theme.link} style={{marginRight:5}} />
+                    <Text style={{fontSize:fontSize}}>{text}</Text>
+                </TouchableOpacity>
+                <View style={{flex:1, flexDirection:"row", justifyContent:"space-around"}}>
+                    <TimeComponent text={"시작"} fontSize={fontSize} time={startTime} setTime={setStime} />
+                    <TimeComponent text={"끝"} fontSize={fontSize} time={endTime} setTime={setEtime} />
+                </View>
+                <View style={{justifyContent:"center", alignItems:"flex-end", width:35, marginRight:5}}>
+                    <Text style={{fontSize:fontSize}}>{hours}</Text>
+                </View>
+            </View>
+        )
+    }
+
+    const [isFncRunning, setIsFncRunning] = useState(false);
+    const dispatch = useDispatch()
+
+    const onSelectSection = async (sTime, eTime, cl) => {
+        console.log(sTime, eTime)
+        if (isFncRunning) return;
+        setIsFncRunning(true)
+        console.log()
+        const param = {cls:"WeekAlbaScheduleSave", cstCo:cstCo, userId:scheduleInfo.userId, ymdFr:scheduleInfo.ymd, ymdTo:"", jobCl:cl, startTime:sTime, endTime:eTime};
+        await axios.post(URL+`/api/v1/WeekAlbaScheduleSave`, param)
+        .then((res)=>{
+            refresh(()=>{
+                dispatch(moveWeekDown());
+                setIsFncRunning(false);
+            })
+        }).catch(function (error) {
+            console.log(error);
+            alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
+            setIsFncRunning(false);
+        })
+    }
+    return(
+        <View style={{flex:1,}}>
+            <View style={{ flexDirection:"row", alignItems:"center",justifyContent:"space-between", height:30, marginHorizontal:15}}>
+                <Text>{scheduleInfo.ymd.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3')} [{scheduleInfo.userNa}]</Text>
+            </View>
+            <View style={{flex:1, marginHorizontal:15, marginBottom:10}}>
+                <Section cl={2} color={theme.open} text={"오픈"} sTime={"07:00"} eTime={"12:00"} onSelect={onSelectSection}/>
+                <Section cl={5} color={theme.middle} text={"미들"} sTime={"12:00"} eTime={"18:00"}  onSelect={onSelectSection}/>
+                <Section cl={9} color={theme.close} text={"크로즈"} sTime={"18:00"} eTime={"22:00"}  onSelect={onSelectSection}/>
+                <Section cl={1} color={theme.etc} text={"기타"} sTime={"00:00"} eTime={"23:30"}  onSelect={onSelectSection}/>
+            </View>
+        </View>
+    )
+
 }
 
 function BtnSet({ scheduleInfo, cstCo, refresh, onTypingModalShow, openDateTimeModal }){

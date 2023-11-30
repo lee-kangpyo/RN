@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { URL } from "@env";
 import React from 'react';
+import { theme } from '../../util/color';
 
 export default function WeekAlba({alba, onTap, onDel, week}) {
     const cstCo = useSelector((state)=>state.common.cstCo);
@@ -15,7 +16,6 @@ export default function WeekAlba({alba, onTap, onDel, week}) {
     // const isdeny = useSelector((state)=>state.schedule.week == state.schedule.eweek);
     const isdeny = true
     const onPressed = () =>{
-        
         return (
             (isdeny)?Alert.alert(
                 "알바생 "+alba.userNa+"님을 선택하셨습니다.",
@@ -71,7 +71,8 @@ export default function WeekAlba({alba, onTap, onDel, week}) {
                     const filter = alba.list.filter((item)=>item.YMD == ymd);
                     const selected = (scheduleInfo.isEditing && scheduleInfo.ymd == ymd && scheduleInfo.userId == alba.userId)?true:false;
                     if (filter.length > 0){
-                        return <ContentBox key={idx} selected={selected} onTap={onTap} item={filter} jobDure={filter[0].JOBDURE} sTime={filter[0].STARTTIME} userId={alba.userId} userNa={alba.userNa} ymd={ymd} num={idx}/>
+                        const color = _color(filter[0].JOBCL);
+                        return <ContentBox key={idx} selected={selected} onTap={onTap} item={filter}  color={color} sTime={filter[0].STARTTIME}  userId={alba.userId} userNa={alba.userNa} ymd={ymd} num={idx}/>
                     }else{
                         return <ContentBox key={idx} selected={selected} onTap={onTap} blank={true} userId={alba.userId} userNa={alba.userNa} ymd={ymd} num={idx}/>
                     }
@@ -84,7 +85,22 @@ export default function WeekAlba({alba, onTap, onDel, week}) {
 }
 
 
-const ContentBox = React.memo(({item, jobDure, sTime, userId, userNa, ymd, num, onTap, blank=false, selected}) => {
+const _color = (jobCl) => {
+    console.log(jobCl);
+    if(jobCl == "-1"){
+        return "";
+    }else if(jobCl == "2"){
+        return theme.open;
+    }else if(jobCl == "5"){
+        return theme.middle;
+    }else if (jobCl == "9"){
+        return theme.close;
+    }else if (jobCl == "1"){
+        return theme.etc;
+    }
+}
+const ContentBox = React.memo(({item, color, jobDure = -1, sTime, userId, userNa, ymd, num, onTap, blank=false, selected}) => {
+    console.log(color)
     jobDure = (blank)?"0":jobDure;
     sTime = (blank)?"07:00":sTime;
     const boxWidth = Dimensions.get('window').width / 9; // 박스의 너비
@@ -93,16 +109,25 @@ const ContentBox = React.memo(({item, jobDure, sTime, userId, userNa, ymd, num, 
     if(!blank){
         gg = item.filter((el)=>el && el.JOBCL == "G");
         ss = item.filter((el)=>el && el.JOBCL == "S");
+        nn = item.filter((el)=>el && el.JOBCL != "S" && el.JOBCL != "G");
     }
+    //console.log(jobCl)  
     const g = gg.reduce((total, item) => total + (item.JOBDURE || 0), 0);
     const s = ss.reduce((total, item) => total + (item.JOBDURE || 0), 0);
+    const n = nn.reduce((total, item) => total + (item.JOBDURE || 0), 0);
     return (
-        <TouchableOpacity onPress={()=>onTap({userNa, userId, ymd, num, sTime, jobDure}, item)} style={{...styles.box, width:boxWidth, borderColor:(selected)?"red":"grey"}}>
+        <TouchableOpacity onPress={()=>onTap({userNa, userId, ymd, num, sTime, jobDure}, item)} style={{...styles.box, width:boxWidth, borderColor:(selected)?"red":"grey", backgroundColor:color}}>
             {
                 (blank)?
                     <Text style={{fontSize:boxWidth*0.3}}>-</Text>    
                 :
                     <>
+                        {
+                            (n > 0)?
+                                <Text style={{fontSize:boxWidth*0.3}}>{n}</Text>
+                            :
+                                null
+                        }
                         {
                             (g > 0)?
                                 <Text style={{fontSize:boxWidth*0.3}}>{g}</Text>
@@ -116,7 +141,7 @@ const ContentBox = React.memo(({item, jobDure, sTime, userId, userNa, ymd, num, 
                                 null
                         }
                         { 
-                            (g == 0 && s == 0)?
+                            (g == 0 && s == 0 && n == 0)?
                                 <Text style={{fontSize:boxWidth*0.3}}>-</Text>
                             :
                                 null

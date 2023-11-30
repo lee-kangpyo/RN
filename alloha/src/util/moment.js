@@ -166,6 +166,8 @@ export const getSTime = (sTime) => {
     currentDate.setMilliseconds(0);
     return currentDate
 }
+
+// eTime 반환 홤수 07:00, 0.5 -> 07:30
 export const getETime = (sTime, endHour) => {
     var splittedTime = sTime.split(":");
     var hours = parseInt(splittedTime[0], 10);
@@ -175,3 +177,34 @@ export const getETime = (sTime, endHour) => {
     var result = endTime.format("HH:mm");
     return result;
 }
+
+
+export const calTimeDiffHours = (sTime, eTime) => {
+    const today = moment();
+    const startTime = moment(sTime, 'HH:mm');
+    const endTime = moment(eTime, 'HH:mm');
+    const timeDifferenceMinutes = endTime.diff(startTime, 'minutes');
+    const timeDifferenceHours = timeDifferenceMinutes / 60;
+    return timeDifferenceHours;
+  };
+  
+
+// 시간 조작함수 07:00, 30 -> 07:30, 07:00, -30 -> 06:30
+export const manipulateTime = (timeString, minutes) => {
+    // 현재 날짜를 가져옵니다.
+    const today = moment();
+  
+    // 입력받은 시간 문자열을 moment 객체로 변환합니다.
+    const inputTime = moment(timeString, 'HH:mm');
+  
+    // 분을 더하거나 뺀 결과를 계산합니다.
+    const resultTime = inputTime.add(minutes, 'minutes');
+  
+    // 오늘의 날짜와 합쳐서 반환합니다.
+    return today.set({
+      hour: resultTime.hour(),
+      minute: resultTime.minute(),
+      second: 0,
+      millisecond: 0,
+    }).format('HH:mm');
+  };

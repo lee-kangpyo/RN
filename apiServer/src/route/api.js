@@ -533,8 +533,8 @@ router.post("/v1/saveAlbaChedule", async (req, res, next) => {
 
 router.post("/v1/WeekAlbaScheduleSave", async (req, res, next) => {
     try {
-        const{cstCo, userId, ymdFr, startTime, endTime} = req.body;
-        const param = {"cls":"WeekAlbaScheduleSave", "cstCo":cstCo, userId:userId, ymdFr:ymdFr, ymdTo:"", jobCl:"G", sTime:startTime, eTime:endTime};
+        const{cstCo, userId, ymdFr, jobCl,startTime, endTime} = req.body;
+        const param = {"cls":"WeekAlbaScheduleSave", "cstCo":cstCo, userId:userId, ymdFr:ymdFr, ymdTo:"", jobCl:jobCl, sTime:startTime, eTime:endTime};
         await execSql(albaSchedulemanager2, param);
         res.status(200).json({result:"다녀옴", resultCode:"00"});
     } catch (error) {
