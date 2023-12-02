@@ -8,6 +8,7 @@ import React from 'react';
 import { theme } from '../../util/color';
 
 export default function WeekAlba({alba, onTap, onDel, week}) {
+    //console.log(alba)
     const cstCo = useSelector((state)=>state.common.cstCo);
     const weekList = getWeekList(week);
     const navigator = useNavigation();
@@ -79,7 +80,7 @@ export default function WeekAlba({alba, onTap, onDel, week}) {
                     
                 })
             }
-            <TotalBox sum={alba.sumG} sumSub={alba.sumS} />
+            <TotalBox sum={alba.sumN} sumSub={alba.sumS} />
         </View>
   );
 }
@@ -99,6 +100,7 @@ const _color = (jobCl) => {
     }
 }
 const ContentBox = React.memo(({item, color, jobDure = -1, sTime, userId, userNa, ymd, num, onTap, blank=false, selected}) => {
+    //console.log(item)
     jobDure = (blank)?"0":jobDure;
     sTime = (blank)?"07:00":sTime;
     const boxWidth = Dimensions.get('window').width / 9; // 박스의 너비

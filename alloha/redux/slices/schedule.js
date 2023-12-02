@@ -8,7 +8,6 @@ const initialState = {
     cstCo:"",
     storeList:[],
     // 시간표
-    
     eweek : week,
     week : week,
     weekNumber:getWeekNumber(week),
@@ -40,23 +39,27 @@ const scheduleSlice = createSlice({
             const id = item.USERID;
             const name = item.USERNA;
             var sumG = 0;  
-            var sumS = 0;    
+            var sumS = 0;   
+            var sumN = 0;    
         
             if( remains.JOBCL == "G" ){
               sumG = remains.JOBDURE;
             }else if( remains.JOBCL == "S" ){
               sumS = remains.JOBDURE;
-            }    
+            }else {
+              sumN = remains.JOBDURE;
+            }   
           
             const existingGroup = result.find((group) => group.userId === USERID);
           
             if (existingGroup) {
               existingGroup.sumG += sumG  
               existingGroup.sumS += sumS  
+              existingGroup.sumN += sumN  
               existingGroup.list.push(remains);
             } else {
         
-              result.push({ userId:USERID, userNa:USERNA, sumG:sumG, sumS:sumS, list: [remains] });
+              result.push({ userId:USERID, userNa:USERNA, sumG:sumG, sumS:sumS, sumN:sumN, list: [remains] });
             }
             return result;
           }, []);
