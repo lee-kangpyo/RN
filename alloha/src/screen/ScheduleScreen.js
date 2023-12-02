@@ -309,12 +309,10 @@ function BtnSetV3({ scheduleInfo, cstCo, refresh }){
             </View>
         )
     }
-    const _Section = ({fontSize=16, text, sTime, eTime, setStime, setEtime}) => {
-        //const [startTime, setStime] = useState(sTime);
-        //const [endTime, setEtime] = useState(eTime);
+    const _Section = ({fontSize=18, text, sTime, eTime, setStime, setEtime}) => {
         const hours = calTimeDiffHours(sTime, eTime);
         return (
-            <View style={{borderWidth:1, flexDirection:"row", marginBottom:5, padding:20, borderRadius:5}} >
+            <View style={{borderWidth:1, flexDirection:"row", marginBottom:5, padding:10, borderRadius:5}} >
                 <View style={{flexDirection:"row", alignItems:"center"}}>
                     <Text style={{fontSize:fontSize}}>{text}</Text>
                 </View>
@@ -369,8 +367,8 @@ function BtnSetV3({ scheduleInfo, cstCo, refresh }){
     }
     return(
         <View style={{flex:1,}}>
-            <View style={{ flexDirection:"row", alignItems:"center",justifyContent:"space-between", height:30, marginHorizontal:15, marginBottom:15}}>
-                <Text style={{fontSize:20}}>{scheduleInfo.ymd.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3')} [{scheduleInfo.userNa}]</Text>
+            <View style={{ flexDirection:"row", alignItems:"center",justifyContent:"space-between", height:30, marginHorizontal:15, marginBottom:5}}>
+                <Text style={{fontSize:16}}>{scheduleInfo.ymd.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3')} [{scheduleInfo.userNa}]</Text>
             </View>
             <View style={{flex:1, marginHorizontal:15, marginBottom:10}}>
                 <RadioGroup 
