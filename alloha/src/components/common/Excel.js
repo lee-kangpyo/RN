@@ -6,7 +6,7 @@ import * as XLSX from 'xlsx-js-style';
 import { theme } from '../../util/color';
 const { StorageAccessFramework } = FileSystem;
 
-export default function Excel({type="sharing", btntext, data, fileName }) {
+export default function Excel({header, type="sharing", custom, btntext, data, fileName }) {
   // 엑셀 공유
   const execlSharing = async () => {
     const date = new Date()
@@ -25,7 +25,8 @@ export default function Excel({type="sharing", btntext, data, fileName }) {
     });
   };
   
-  // 엑셀 다운 
+
+  // 엑셀 다운.
   // 1. 유저가 지정한 디렉토리 경로 저장 작업필요
   // 2. 디렉토리 경로 불러오는 작업 필요
   // 3. 
@@ -68,49 +69,12 @@ export default function Excel({type="sharing", btntext, data, fileName }) {
     }
   };
   const makeExcelData = () => {
-    var ws = XLSX.utils.json_to_sheet(data, { skipHeader: true, });
-    // 디자인 함수로 나중에 뺄꺼.
-    ws["!cols"] = [];
-    for (var i = 0; i < data.length; i++) {
-      ws["!cols"].push({ wpx: 100 });
-      const item = Object.values(data[i]);
-      const row = i + 1;
-      
-      for (var j = 0; j < item.length; j++) {
-        if (j >= 26) break;
-        const col = String.fromCharCode(65 + j);
-        if (col == "C") {
-          ws[`${col}${row}`].z = '#,##0'; // 열 "C"에 대한 서식
-          ws[`${col}${row}`].s = {
-            border: {
-              top: { style: 'thick', color: { rgb: '000000' } },
-              right: { style: 'thick', color: { rgb: '000000' } },
-              bottom: { style: 'thick', color: { rgb: '000000' } },
-              left: { style: 'thick', color: { rgb: '000000' } }
-            }
-          };
-        } else {
-          ws[`${col}${row}`].s = {
-            alignment: { horizontal: 'center', vertical: 'middle' },
-            border: {
-              top: { style: 'thick', color: { rgb: '000000' } },
-              right: { style: 'thick', color: { rgb: '000000' } },
-              bottom: { style: 'thick', color: { rgb: '000000' } },
-              left: { style: 'thick', color: { rgb: '000000' } }
-            }
-          };
-        }
-        
-
-      }
+    var ws = XLSX.utils.json_to_sheet(data, { skipHeader: !header, });
+    if(custom == "profit"){
+      ws = _profit(ws)
+    }else if(custom == "result") {
+      ws = _result(ws)
     }
-
-
-
-
-
-
-    // 디자인 함수로 나중에 뺄꺼.
     var wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
     const wbout = XLSX.write(wb, {
@@ -119,6 +83,100 @@ export default function Excel({type="sharing", btntext, data, fileName }) {
     });
     return wbout;
   }
+  // 매출 현황 디자인
+  const _border = {
+    basic:{
+      top: { style: 'thin', color: { rgb: '000000' } },
+      right: { style: 'thin', color: { rgb: '000000' } },
+      bottom: { style: 'thin', color: { rgb: '000000' } },
+      left: { style: 'thin', color: { rgb: '000000' } },
+    },
+    bottom_thick:{
+      top: { style: 'thin', color: { rgb: '000000' } },
+      right: { style: 'thin', color: { rgb: '000000' } },
+      bottom: { style: 'thick', color: { rgb: '000000' } },
+      left: { style: 'thin', color: { rgb: '000000' } },
+    }
+  }
+  const _profit = (ws) => {
+    ws["!cols"] = [];
+    for (var i = 0; i < data.length; i++) {
+      ws["!cols"].push({ wpx: 100 });
+      const item = Object.values(data[i]);
+      const row = i + 1;
+      for (var j = 0; j < item.length; j++) {
+        if (j >= 26) break;
+        const col = String.fromCharCode(65 + j);
+        const cell = ws[`${col}${row}`]
+        if (col == "C") {
+          cell.z = '#,##0'; // 열 "C"에 대한 서식
+          cell.s = {border: _border.basic,};
+        } else {
+          cell.s = {
+            alignment: { horizontal: 'center', vertical: 'middle' },
+            border: _border.basic,
+          };
+        }
+      }
+    }
+    return ws;
+  }
+  // 결과 현황 디자인
+  const _result = (ws) => {
+    ws["!cols"] = [
+      { wpx : 100 }, 
+      { wpx : 100 }, 
+      { wpx : 100 }, 
+      { wpx : 30 },
+      { wpx : 30 },
+      { wpx : 30 },
+      { wpx : 30 },
+      { wpx : 30 },
+      { wpx : 30 },
+      { wpx : 30 },
+      { wpx : 100 }, //작업시간(합계)
+      { wpx : 100 }, //시급
+      { wpx : 100 }, 
+      { wpx : 100 },
+      { wpx : 100 }, 
+      { wpx : 100 }, 
+      { wpx : 100 },
+      { wpx : 100 },
+    ];
+    for (var i = 0; i < data.length; i++) {
+      el = data[i];
+      const item = Object.values(data[i]);
+      const row = i + 2;
+      for (var j = 0; j < item.length; j++) {
+        if (j >= 26) break;
+        const col = String.fromCharCode(65 + j);
+        // 헤더
+        if(i == 0){
+          ws[`${col}1`].s = {
+            alignment: { horizontal: 'center', vertical: 'middle' },
+            border: _border.basic,
+          };
+        }
+        if (col == "L" || col == "Q") {
+          ws[`${col}${row}`].z = '#,##0';
+          ws[`${col}${row}`].s = {
+            alignment : { horizontal: 'right', vertical: 'middle' },
+          }
+        }
+        
+        if(el.주차 == "소계" || el.주차 == "총계" ){
+          ws[`${col}${row}`].s = {
+            border : _border.bottom_thick,
+            font: {
+              color: { rgb: (el.주차 == "소계")?'#3C7BB9':'#508D69' },
+            },
+          }
+        }
+      }
+    }
+    return ws;
+  }
+
   const saveStorage = async (uri, fileName, excelData) => {
     return await StorageAccessFramework.createFileAsync(uri, fileName, 'application/xlsx')
     .then(async (uri) => {

@@ -16,7 +16,7 @@ export default function ProfitAndLossScreen({navigation}) {
     const albaFeeList = useSelector((state) => state.result.albaFeeList);
     const dispatch = useDispatch()
 
-    const test = () => {
+    const getExcelData = () => {
         const data = monthCstPl.map((el) => {
             if(el.ORDBY % 100 == 0){
                 return {"메인":el.CONA,"하위":"", "금액":el.AMT}
@@ -30,9 +30,7 @@ export default function ProfitAndLossScreen({navigation}) {
         })
         const index = data.findIndex(item => item.메인 === '인건비');
         if(index > -1) data.splice(index + 1, 0, ...alba);
-        console.log(data);
         return data
-        //console.log(albaFeeList);
     }
 
     useEffect(()=>{
@@ -93,10 +91,12 @@ export default function ProfitAndLossScreen({navigation}) {
                 <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:5}}>
                     <HeaderControl title={`${date.mm}월`} onLeftTap={() => headerControl("left")} onRightTap={() =>  headerControl("right")} />
                     <Excel 
+                        header={false}
+                        custom={"profit"}
                         type={"sharing"}
                         btntext={"공유하기"} 
                         fileName={"매출 현황"}
-                        data={test()} 
+                        data={getExcelData()} 
                     />
                 </View>
                 

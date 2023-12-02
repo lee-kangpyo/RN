@@ -4,6 +4,7 @@ const {execSql, execTranSql} = require("../utils/excuteSql");
 
 const dotenv = require('dotenv');
 const { monthCstSlySearch } = require('../query/workResult');
+const { salary } = require('../query/auth');
 
 dotenv.config();
 
@@ -19,6 +20,13 @@ router.get("/monthCstSlySearch", async (req, res, next) => {
         console.log(error.message)
         res.status(200).json({ resultCode:"-1"});
     }
+})
+
+router.get("/excelData", async (req, res, next) => {
+    console.log("GET result.excelData");
+    const {ymdFr, ymdTo, cstCo} = req.query
+    const result = await execSql(salary, {userId:"", cls:"salaryMonth", ymdFr:ymdFr, ymdTo:ymdTo, cstCo:cstCo});
+    res.status(200).json({resultCode:"00", result:result.recordset});
 })
 
 module.exports = router;

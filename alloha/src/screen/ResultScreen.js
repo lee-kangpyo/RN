@@ -1,6 +1,6 @@
 
 import { StyleSheet, View, StatusBar, SafeAreaView } from 'react-native';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIsFocused } from '@react-navigation/native';
 
@@ -10,6 +10,7 @@ import { nextMonth, prevMonth, setWorkResultList } from '../../redux/slices/resu
 import { PayContainer, TotalContainer } from '../components/common/Container';
 import HeaderControl from '../components/common/HeaderControl';
 import StoreSelectBoxWithTitle from '../components/common/StoreSelectBoxWithTitle';
+import Excel from '../components/common/Excel';
 
 export default function ResultScreen({navigation}) {
     const userId = useSelector((state) => state.login.userId);
@@ -17,7 +18,9 @@ export default function ResultScreen({navigation}) {
     const isFocused = useIsFocused();
     const date = useSelector((state) => state.result.month)
     const items = useSelector((state) => state.result.workResultList)
+    const [cstNa, setCstNa] = useState("");
    
+    const [excelData, setExcelData] = useState([]);
     
     const dispatch = useDispatch()
 
@@ -39,6 +42,7 @@ export default function ResultScreen({navigation}) {
         await axios.get(URL+`/api/v1/rlt/monthCstSlySearch`, {params:param})
         .then((res)=>{
             dispatch(setWorkResultList({data:res.data.result}))
+            getExcelData();
         }).catch(function (error) {
             console.log(error);
             alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
@@ -63,6 +67,22 @@ export default function ResultScreen({navigation}) {
         })
     }
 
+    const getExcelData = async () => {
+        var param = {ymdFr:date.start, ymdTo:date.end, cstCo:cstCo}
+        await axios.get(URL+`/api/v1/rlt/excelData`, {params:param})
+        .then((res)=>{
+            if(res.data.result && res.data.result.length > 0) setCstNa(res.data.result[0].CSTNA);
+            const result = res.data.result.map(item => {
+                let { CSTCO, USERID, CSTNA, sumOrd, ...rest } = item;
+                return rest;
+            });
+            setExcelData(result)
+        }).catch(function (error) {
+            console.log(error);
+            alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
+        })
+    }
+
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar />
@@ -70,6 +90,14 @@ export default function ResultScreen({navigation}) {
             <View style={{...styles.card, padding:5, width:"100%", overflow:"hidden"}}>
                 <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:5}}>
                     <HeaderControl title={`${date.mm}월`} onLeftTap={()=> dispatch(prevMonth())} onRightTap={()=> dispatch(nextMonth())} />
+                    <Excel 
+                        header={true}
+                        custom={"result"}
+                        type={"sharing"}
+                        btntext={"공유하기"} 
+                        fileName={`${cstNa} 결과현황표`}
+                        data={excelData} 
+                    />
                 </View>
                 <PayContainer header={["성명", "시급", "주휴", "플러스", "합계"]} contents={items} onNameTap={onNameTap} onIncentiveTap={onIncentiveTap}/>
             </View>
