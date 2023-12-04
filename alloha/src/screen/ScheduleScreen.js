@@ -4,7 +4,7 @@ import React, {useState, useEffect, useRef, useCallback, useMemo} from 'react';
 import WeekDate from '../components/schedule/WeekDate';
 import WeekAlba from '../components/schedule/WeekAlba';
 import { useSelector, useDispatch } from 'react-redux';
-import { disabledEditing, initTimeBox, moveWeek, moveWeekDown, nextWeek, prevWeek, setAlba, setAlbaList, setScheduleAlbaInfo, setscheduleAlbaSTime } from '../../redux/slices/schedule';
+import { disabledEditing, initTimeBox, moveWeek, moveWeekDown, nextWeek, prevWeek, setAlba, setAlbaList, setScheduleAlbaIdName, setScheduleAlbaInfo, setscheduleAlbaSTime } from '../../redux/slices/schedule';
 import { ScrollView } from 'react-native-gesture-handler';
 import axios from 'axios';
 import { URL } from "@env";
@@ -13,7 +13,7 @@ import { calTimeDiffHours, getETime, getSTime, getWeekList, manipulateTime } fro
 import { AlbaModal, ModifyTimeModal } from '../components/common/customModal';
 import HeaderControl from '../components/common/HeaderControl';
 import StoreSelectBoxWithTitle from '../components/common/StoreSelectBoxWithTitle';
-import { NumberBottomSheet } from '../components/common/CustomBottomSheet';
+import { NumberBottomSheet, ScheduleBottomSheet } from '../components/common/CustomBottomSheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 //import DateTimePicker from "react-native-modal-datetime-picker";
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -107,22 +107,23 @@ export default function ScheduleScreen({navigation}) {
     }, [navigation])
 
     const addAlba = () => {
+        
         setModalVisible(false)
         dispatch(initTimeBox());
         navigation.push("registerAlba", { data: getTmpAlbaInfo() });
     }
 
     const selectAlba = async (alba) => {
+        console.log(alba);
         const param = {cls:"albaSave", cstCo:cstCo, userId:alba.USERID, ymdFr:weekList[0].format("yyyyMMDD"), ymdTo:weekList[6].format("yyyyMMDD")};
         await axios.post(URL+`/api/v1/saveAlba`, param)
         .then((res)=>{
             getWeekSchedule();
+            dispatch(setScheduleAlbaIdName({data:{userId:alba.USERID, userNa:alba.USERNA}}));
         }).catch(function (error) {
             console.log(error);
         })
         setModalVisible(false)
-        // 수정하는화면 삭제
-        //navigation.navigate("scheduleModify", {alba:alba})
     }
 
     // // 바텀 시트 몇번째인지
@@ -263,13 +264,19 @@ export default function ScheduleScreen({navigation}) {
                     addAlba={addAlba}
                     selectAlba={selectAlba}
                 />
-                <NumberBottomSheet
+                <ScheduleBottomSheet
                     sheetRef = {sheetRef}
                     onBottomSheetChanged = {(idx)=>setBottomSeetIndex(idx)}
                     onClose={()=>dispatch(disabledEditing())}
                     Content = {
                         //<BtnSet scheduleInfo={scheduleInfo} cstCo={cstCo} refresh={(callback)=>getWeekSchedule(callback)} onDelete={()=>console.log("onDelete")} onClose={()=>sheetRef.current.close()} openDateTimeModal={openDateTimeModal} onTypingModalShow={(param)=>{setModifyTimeShow(true)}} />
-                        <BtnSetV3 scheduleInfo={scheduleInfo} cstCo={cstCo} refresh={(callback)=>getWeekSchedule(callback)} onDelete={()=>console.log("onDelete")} onClose={()=>sheetRef.current.close()} />
+                        <BtnSetV3 
+                            scheduleInfo={scheduleInfo} 
+                            cstCo={cstCo} 
+                            refresh={(callback)=>getWeekSchedule(callback)} 
+                            onDelete={()=>console.log("onDelete")} 
+                            onClose={()=>sheetRef.current.close()} 
+                        />
                     }
                 />
                 {
@@ -309,10 +316,10 @@ function BtnSetV3({ scheduleInfo, cstCo, refresh }){
             </View>
         )
     }
-    const _Section = ({fontSize=18, text, sTime, eTime, setStime, setEtime}) => {
+    const _Section = ({fontSize=16, text, sTime, eTime, setStime, setEtime}) => {
         const hours = calTimeDiffHours(sTime, eTime);
         return (
-            <View style={{borderWidth:1, flexDirection:"row", marginBottom:5, padding:10, borderRadius:5}} >
+            <View style={{flex:1, borderWidth:1, borderRightWidth:0, flexDirection:"row", marginBottom:5, padding:10, borderTopStartRadius:5, borderBottomStartRadius:5}} >
                 <View style={{flexDirection:"row", alignItems:"center"}}>
                     <Text style={{fontSize:fontSize}}>{text}</Text>
                 </View>
@@ -339,14 +346,22 @@ function BtnSetV3({ scheduleInfo, cstCo, refresh }){
         {text:"마감", sTime:"18:00", eTime:"22:00", jobCl:"9", color:theme.close},
         {text:"기타", sTime:"00:00", eTime:"23:30", jobCl:"1", color:theme.etc},
     ]
+
+    const [radioRefresh, setRadioRefresh] = useState(false);
     const [selectRadio, setSelectRadio] = useState(0);
     const [isFncRunning, setIsFncRunning] = useState(false);
+    
     const [sTime, setStime] = useState(selectData[selectRadio].sTime);
     const [eTime, setEtime] = useState(selectData[selectRadio].eTime);
+    
+    const start = (scheduleInfo.jobDure > 0)?scheduleInfo.sTime:"";
+    const end = (scheduleInfo.jobDure > 0)?getETime(scheduleInfo.sTime, scheduleInfo.jobDure):"";
+    
+
     useEffect(()=> {
         setStime(selectData[selectRadio].sTime);
         setEtime(selectData[selectRadio].eTime);
-    }, [selectRadio])
+    }, [selectRadio, radioRefresh])
 
     const dispatch = useDispatch()
     const onSave = async (sTime, eTime, cl) => {
@@ -356,7 +371,8 @@ function BtnSetV3({ scheduleInfo, cstCo, refresh }){
         await axios.post(URL+`/api/v1/WeekAlbaScheduleSave`, param)
         .then((res)=>{
             refresh(()=>{
-                dispatch(moveWeekDown());
+                setRadioRefresh(!radioRefresh)
+                dispatch(moveWeekDown({data:{sTime:sTime, jobCl:cl, jobDure:calTimeDiffHours(sTime, eTime)}}));
                 setIsFncRunning(false);
             })
         }).catch(function (error) {
@@ -369,6 +385,12 @@ function BtnSetV3({ scheduleInfo, cstCo, refresh }){
         <View style={{flex:1,}}>
             <View style={{ flexDirection:"row", alignItems:"center",justifyContent:"space-between", height:30, marginHorizontal:15, marginBottom:5}}>
                 <Text style={{fontSize:16}}>{scheduleInfo.ymd.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3')} [{scheduleInfo.userNa}]</Text>
+                {
+                    (start)?
+                        <Text style={{fontSize:16}}>{start} - {end} ({scheduleInfo.jobDure}시간)</Text>
+                    :
+                        <Text style={{fontSize:16}}>비번</Text>
+                }
             </View>
             <View style={{flex:1, marginHorizontal:15, marginBottom:10}}>
                 <RadioGroup 
@@ -378,22 +400,22 @@ function BtnSetV3({ scheduleInfo, cstCo, refresh }){
                     onPress={setSelectRadio}
                     selectedId={selectRadio}
                 />
-                <_Section 
-                    cl={selectData[selectRadio].jobCl} 
-                    color={selectData[selectRadio].color} 
-                    text={"시간"} 
-                    sTime={sTime} 
-                    eTime={eTime} 
-                    setStime={setStime}
-                    setEtime={setEtime}
-                />
-                <View style={{flexDirection:"row", justifyContent:"center", marginTop:15}}>
-                    <TouchableOpacity style={[styles.btnSetBtn, {marginRight:15}]} onPress={()=>dispatch(moveWeekDown())}>
-                        <Text>다음</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.btnSetBtn} onPress={()=>onSave(sTime, eTime, selectData[selectRadio].jobCl)}>
+                <View style={{flexDirection:"row"}}>
+                    <_Section 
+                        cl={selectData[selectRadio].jobCl} 
+                        color={selectData[selectRadio].color} 
+                        text={"시간"} 
+                        sTime={sTime} 
+                        eTime={eTime} 
+                        setStime={setStime}
+                        setEtime={setEtime}
+                    />
+                    <TouchableOpacity 
+                        style={{ backgroundColor:theme.correct, justifyContent:"center", borderWidth:1, borderTopEndRadius:5, borderBottomEndRadius:5, marginBottom:5, marginLeft:0, padding:3}} 
+                            onPress={()=>onSave(sTime, eTime, selectData[selectRadio].jobCl)}>
                         <Text>저장</Text>
                     </TouchableOpacity>
+                    
                 </View>
             </View>
         </View>

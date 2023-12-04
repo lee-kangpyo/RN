@@ -25,6 +25,7 @@ const initialState = {
       ymd:"",
       sTime:"07:00",
       jobDure:0,
+      jobCl:"2"
     }
 };
 
@@ -152,11 +153,21 @@ const scheduleSlice = createSlice({
       scheduleAlbaInfo.userNa = data.userNa
       scheduleAlbaInfo.weekNumber = data.num;
       scheduleAlbaInfo.sTime = data.sTime //(data.sTime)?data.sTime:"07:00";
-      scheduleAlbaInfo.jobDure = data.jobDure 
+      scheduleAlbaInfo.jobDure = data.jobDure;
+      scheduleAlbaInfo.jobCl = data.jobCl;
     },
     setscheduleAlbaSTime(state, action){
       const data = action.payload.data;
       state.scheduleAlbaInfo.sTime = data;
+    },
+    setScheduleAlbaIdName(state,action){
+      const data = action.payload.data;
+      const scheduleAlbaInfo = state.scheduleAlbaInfo
+      scheduleAlbaInfo.userId = data.userId;
+      scheduleAlbaInfo.userNa = data.userNa;
+      scheduleAlbaInfo.sTime = "07:00";
+      scheduleAlbaInfo.jobDure = 0;
+      scheduleAlbaInfo.jobCl = "2";
     },
     moveWeek(state, action){
       const info = state.scheduleAlbaInfo;
@@ -181,6 +192,7 @@ const scheduleSlice = createSlice({
     },
     moveWeekDown(state, action){
       const info = state.scheduleAlbaInfo;
+      
       const weekNumber = info.weekNumber;
       const albas = state.albas;
       const curIndex = albas.findIndex(item => item.userId === info.userId);
@@ -188,6 +200,11 @@ const scheduleSlice = createSlice({
       if(target){
         info.userId = target.userId;
         info.userNa = target.userNa;
+      }else{
+        const data = action.payload.data;
+        info.sTime=data.sTime;
+        info.jobDure=data.jobDure;
+        info.jobCl=data.jobCl;
       }
     },
     disabledEditing(state, action){
@@ -197,7 +214,7 @@ const scheduleSlice = createSlice({
 });
 
 //외부에서 reducer를 사용하기위해 export
-export let { setAlba, prevWeek, nextWeek, onTabCheckTIme, initTimeBox, setAlbaList, updateTimeBox, setScheduleAlbaInfo, moveWeek, moveWeekDown, disabledEditing, setscheduleAlbaSTime } = scheduleSlice.actions
+export let { setAlba, prevWeek, nextWeek, onTabCheckTIme, initTimeBox, setAlbaList, updateTimeBox, setScheduleAlbaInfo, setScheduleAlbaIdName, moveWeek, moveWeekDown, disabledEditing, setscheduleAlbaSTime } = scheduleSlice.actions
 
 export default scheduleSlice;
 

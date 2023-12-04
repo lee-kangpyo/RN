@@ -6,10 +6,12 @@ import * as yup from 'yup';
 import { Formik } from 'formik';
 import axios from 'axios';
 import { theme } from '../util/color'
-import { URL } from "@env";import { useSelector } from 'react-redux';
+import { URL } from "@env";import { useDispatch, useSelector } from 'react-redux';
+import { setScheduleAlbaIdName } from '../../redux/slices/schedule';
 ;
 
 export default function EasyRegisterAlbaScreen({navigation, route}) {
+    const dispatch = useDispatch();
     const cstCo = useSelector((state)=>state.common.cstCo);
     const {data} = route.params;
     useEffect(()=>{
@@ -78,6 +80,8 @@ export default function EasyRegisterAlbaScreen({navigation, route}) {
         albaSaveInfo.userId=response.data.rltValue;
 
         await axios.post(URL+data.url, albaSaveInfo);
+        dispatch(setScheduleAlbaIdName({data:{userId:albaSaveInfo.userId, userNa:params.userName}}));
+
         navigation.goBack();
       };
 

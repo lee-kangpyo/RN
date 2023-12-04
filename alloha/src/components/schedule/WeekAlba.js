@@ -72,10 +72,13 @@ export default function WeekAlba({alba, onTap, onDel, week}) {
                     const filter = alba.list.filter((item)=>item.YMD == ymd);
                     const selected = (scheduleInfo.isEditing && scheduleInfo.ymd == ymd && scheduleInfo.userId == alba.userId)?true:false;
                     if (filter.length > 0){
-                        const color = _color(filter[0].JOBCL);
-                        return <ContentBox key={idx} selected={selected} onTap={onTap} item={filter}  color={color} sTime={filter[0].STARTTIME}  userId={alba.userId} userNa={alba.userNa} ymd={ymd} num={idx}/>
+                        const item = filter[0];
+                        const jobDure = item.JOBDURE
+                        const jobCl = item.JOBCL
+                        const color = _color(jobCl);
+                        return <ContentBox key={idx} selected={selected} onTap={onTap} item={filter} jobDure={jobDure} jobCl={jobCl} color={color} sTime={filter[0].STARTTIME}  userId={alba.userId} userNa={alba.userNa} ymd={ymd} num={idx}/>
                     }else{
-                        return <ContentBox key={idx} selected={selected} onTap={onTap} blank={true} userId={alba.userId} userNa={alba.userNa} ymd={ymd} num={idx}/>
+                        return <ContentBox key={idx} selected={selected} onTap={onTap} blank={true} jobDure={"0"} jobCl={"2"} userId={alba.userId} userNa={alba.userNa} ymd={ymd} num={idx}/>
                     }
                     
                 })
@@ -87,9 +90,7 @@ export default function WeekAlba({alba, onTap, onDel, week}) {
 
 
 const _color = (jobCl) => {
-    if(jobCl == "-1"){
-        return "";
-    }else if(jobCl == "2"){
+    if(jobCl == "2"){
         return theme.open;
     }else if(jobCl == "5"){
         return theme.middle;
@@ -97,11 +98,11 @@ const _color = (jobCl) => {
         return theme.close;
     }else if (jobCl == "1"){
         return theme.etc;
+    }else{
+        return ""
     }
 }
-const ContentBox = React.memo(({item, color, jobDure = -1, sTime, userId, userNa, ymd, num, onTap, blank=false, selected}) => {
-    //console.log(item)
-    jobDure = (blank)?"0":jobDure;
+const ContentBox = React.memo(({item, color, sTime, jobDure, jobCl, userId, userNa, ymd, num, onTap, blank=false, selected}) => {
     sTime = (blank)?"07:00":sTime;
     const boxWidth = Dimensions.get('window').width / 9; // 박스의 너비
     var gg = [];
@@ -117,7 +118,7 @@ const ContentBox = React.memo(({item, color, jobDure = -1, sTime, userId, userNa
     const s = ss.reduce((total, item) => total + (item.JOBDURE || 0), 0);
     const n = nn.reduce((total, item) => total + (item.JOBDURE || 0), 0);
     return (
-        <TouchableOpacity onPress={()=>onTap({userNa, userId, ymd, num, sTime, jobDure}, item)} style={{...styles.box, width:boxWidth, borderColor:(selected)?"red":"grey", backgroundColor:color}}>
+        <TouchableOpacity onPress={()=>onTap({userNa, userId, ymd, num, sTime, jobDure, jobCl}, item)} style={{...styles.box, width:boxWidth, borderColor:(selected)?"red":"grey", backgroundColor:color}}>
             {
                 (blank)?
                     <Text style={{fontSize:boxWidth*0.3}}>-</Text>    
@@ -152,7 +153,9 @@ const ContentBox = React.memo(({item, color, jobDure = -1, sTime, userId, userNa
         </TouchableOpacity>
     );
 }, (prevProps, nextProps) => {
-    return JSON.stringify(prevProps.item) === JSON.stringify(nextProps.item) && prevProps.selected === nextProps.selected && prevProps.userId === nextProps.userId && prevProps.ymd === nextProps.ymd;
+    return JSON.stringify(prevProps.item) === JSON.stringify(nextProps.item) && prevProps.selected === nextProps.selected 
+            && prevProps.userId === nextProps.userId && prevProps.ymd === nextProps.ymd 
+            && prevProps.jobDure === nextProps.jobDure && prevProps.jobCl === nextProps.jobCl;
 })
 
 

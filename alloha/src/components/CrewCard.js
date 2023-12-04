@@ -1,8 +1,8 @@
-import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { theme } from '../util/color';
 import CustomBtn from './CustomBtn';
 
-export default function CrewCard({crew, applyBtntxt, denyBtnTxt, retirementBtnTxt, onApplyButtonPressed, onDenyButtonPressed, onRetirementButtonPressed}) {
+export default function CrewCard({crew, applyBtntxt, denyBtnTxt, retirementBtnTxt, modifyBtnTxt, onApplyButtonPressed, onDenyButtonPressed, onRetirementButtonPressed, onModifyButtonPressed}) {
     const statNa = (crew.RTCL == "R")?"요청중":(crew.RTCL == "N")?"재직":"퇴직";
     return (
         <>
@@ -20,7 +20,10 @@ export default function CrewCard({crew, applyBtntxt, denyBtnTxt, retirementBtnTx
                             <CustomBtn txt={denyBtnTxt} onPress={()=>{onDenyButtonPressed(crew.CSTCO, crew.USERID)}} style={{...styles.btn, ...styles.denyBtn}} color='white' fSize={16}/>    
                         </>
                         :
-                        <CustomBtn txt={retirementBtnTxt} onPress={()=>{onRetirementButtonPressed(crew.CSTCO, crew.USERID)}} style={{...styles.btn, ...styles.retireBtn}} color='white' fSize={16}/>
+                        <>
+                            <CustomBtn txt={modifyBtnTxt} onPress={()=>{onModifyButtonPressed(crew.CSTCO, crew.USERID, crew.USERNA)}} style={{...styles.btn, ...styles.retireBtn}} color='white' fSize={16}/>
+                            <CustomBtn txt={retirementBtnTxt} onPress={()=>{onRetirementButtonPressed(crew.CSTCO, crew.USERID)}} style={{...styles.btn, ...styles.retireBtn}} color='white' fSize={16}/>
+                        </>
                     }
                 </View>
             </View>

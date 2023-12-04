@@ -20,6 +20,20 @@ export function NumberBottomSheet({sheetRef, onBottomSheetChanged, onClose, Cont
   )
 }
 
+export function ScheduleBottomSheet({sheetRef, onBottomSheetChanged, onClose, Content}){
+  const windowHeight = Dimensions.get('window').height;
+  return(
+    <CustomBottomSheet 
+      sheetRef={sheetRef} 
+      snapPointList={[windowHeight*0.22]} 
+      isBackdrop={false} 
+      onBottomSheetChanged={onBottomSheetChanged}
+      onClose={onClose}
+      Content={Content}
+    />
+  )
+}
+
 export default function CustomBottomSheet({sheetRef, snapPointList, isBackdrop = true, Content, onBottomSheetChanged, onClose}) {
   const snapPoints = useMemo(() => snapPointList, []);
   const backdropComponent = useCallback(
