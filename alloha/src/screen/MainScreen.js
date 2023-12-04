@@ -34,6 +34,7 @@ import ResultDetailScreen from './ResultDetailScreen';
 import ProfitAndLossScreen from './ProfitAndLossScreen';
 import CustomerServiceScreen from './CustomerServiceScreen';
 import QnAScreen from './QnAScreen';
+import ModifyCrewScreen from './ModifyCrewScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -113,6 +114,7 @@ function OwnrScreen({userInfo}){
           <Stack.Navigator initialRouteName="etc3">
             <Stack.Screen name="etc3" component={EtcScreen} options={{ tabBarLabel: '기타' }}/>
             <Stack.Screen name="ManageCrew" component={ManageCrewScreen} options={{ tabBarLabel: '알바관리' }}/>
+            <Stack.Screen name="modifyCrew" component={ModifyCrewScreen} options={{ tabBarLabel: '알바수정' }}/>
             <Stack.Screen name="storeList" options={storeOption} backBehavior={"none"}>
               {() => <ManageStoreScreen type={"ownr"} refresh={refresh} setRefresh={setRefresh} />}
             </Stack.Screen>

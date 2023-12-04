@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { Modal, StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, Alert, TextInput } from 'react-native';
 import React, {useState, useEffect, useCallback} from 'react';
 import SearchBar from '../components/SearchBar';
 import StoreCard from '../components/StoreCard';
@@ -12,6 +12,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { URL } from "@env";
 import { Confirm } from '../util/confirm';
 import { useFocusEffect } from '@react-navigation/native';
+import CustomModal from '../components/CustomModal';
 
 export default function ManageCrewScreen({navigation}) {
     const userId = useSelector((state) => state.login.userId);
@@ -95,6 +96,21 @@ export default function ManageCrewScreen({navigation}) {
     )
     
     const filterList = (filterWrd == "")?crewList:crewList.filter((el)=>el.USERNA == filterWrd);
+    
+    const[modifyUser, setModifyUser] = useState({name:"이강표"});
+    const ModalBody = ({user}) => {
+        return(
+            <View style={styles.modalBody}>
+                <Text>{user.name}</Text>
+                <Text style={{paddingHorizontal:15}}>---</Text>
+                <TextInput style={styles.modalInput} />
+            </View>
+        )
+    }
+    const modifyCrew = () => {
+        // 나중에 다른 페이지로 변경
+        //navigation.push("modifyCrew")
+    }
     return (
         <>
             <View style={{margin:16,}}>
@@ -117,6 +133,8 @@ export default function ManageCrewScreen({navigation}) {
                                                 onRetirementButtonPressed={(cstCo, userId)=>{onRetirement(el.USERNA, cstCo, userId)}}
                                                 denyBtnTxt={"거절"}
                                                 onDenyButtonPressed={(cstCo, userId)=>{onDeny(el.USERNA, cstCo, userId)}}    
+                                                modifyBtnTxt={"수정"}
+                                                onModifyButtonPressed={()=>modifyCrew()}
                                             />
                                 })}
                             </ScrollView>
@@ -128,12 +146,31 @@ export default function ManageCrewScreen({navigation}) {
                     </>
                 }
             </View>
+            
+            <CustomModal
+                visible={true}
+                title={"이름 수정"}
+                body={<ModalBody user={modifyUser} />}
+                confBtnTxt={"수정하기"}
+                confirm={()=>console.log("수정하기")}
+                cBtnTxt={"취소"}
+                onCancel={()=>console.log("취소하기")}
+                onClose={()=>console.log("close")}
+            >
+                <View >
+                    <Text>asdfs</Text>
+                </View>
+            </CustomModal>
         </>
     );
+    
 }
 
+// visible, title, body, confBtnTxt, confirm, cBtnTxt, onCancel, onClose
 const styles = StyleSheet.create({
     container:{ flex: 1, justifyContent: 'center', alignItems: 'center', padding:8},
-    sampleImage:{width:"100%", height:"100%"},
+    modalBody:{padding:15, flexDirection:"row"},
+    modalInput:{borderWidth:1, borderRadius:5, flex:1},
     scrollArea:{width:"100%"}
+
 });
