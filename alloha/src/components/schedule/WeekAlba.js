@@ -106,6 +106,7 @@ const ContentBox = React.memo(({item, color, jobDure = -1, sTime, userId, userNa
     const boxWidth = Dimensions.get('window').width / 9; // 박스의 너비
     var gg = [];
     var ss = [];
+    var nn = [];
     if(!blank){
         gg = item.filter((el)=>el && el.JOBCL == "G");
         ss = item.filter((el)=>el && el.JOBCL == "S");
