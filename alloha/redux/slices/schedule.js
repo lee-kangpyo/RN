@@ -137,24 +137,24 @@ const scheduleSlice = createSlice({
     state.timeBox = array;
     state.totalTime = time;
     state.totalCoverTime = cTime;
-
-    // 결과 출력
-    //array.forEach(row => {
-    //    console.log(row);
-    //});
-
     },
     setScheduleAlbaInfo(state, action){
       const data = action.payload.data;
-      const scheduleAlbaInfo = state.scheduleAlbaInfo
+      const scheduleAlbaInfo = state.scheduleAlbaInfo;
       scheduleAlbaInfo.isEditing = true;
       scheduleAlbaInfo.ymd = data.ymd;
       scheduleAlbaInfo.userId = data.userId;
-      scheduleAlbaInfo.userNa = data.userNa
+      scheduleAlbaInfo.userNa = data.userNa;
       scheduleAlbaInfo.weekNumber = data.num;
-      scheduleAlbaInfo.sTime = data.sTime //(data.sTime)?data.sTime:"07:00";
-      scheduleAlbaInfo.jobDure = data.jobDure;
-      scheduleAlbaInfo.jobCl = data.jobCl;
+      if(data.jobCl == "G" || data.jobCl == "S"){
+        scheduleAlbaInfo.sTime = "07:00";
+        scheduleAlbaInfo.jobDure = 0;
+        scheduleAlbaInfo.jobCl = "2";
+      }else{
+        scheduleAlbaInfo.sTime = data.sTime;
+        scheduleAlbaInfo.jobDure = data.jobDure;
+        scheduleAlbaInfo.jobCl = data.jobCl;  
+      }
     },
     setscheduleAlbaSTime(state, action){
       const data = action.payload.data;
@@ -162,7 +162,7 @@ const scheduleSlice = createSlice({
     },
     setScheduleAlbaIdName(state,action){
       const data = action.payload.data;
-      const scheduleAlbaInfo = state.scheduleAlbaInfo
+      const scheduleAlbaInfo = state.scheduleAlbaInfo;
       scheduleAlbaInfo.userId = data.userId;
       scheduleAlbaInfo.userNa = data.userNa;
       scheduleAlbaInfo.sTime = "07:00";
@@ -191,7 +191,6 @@ const scheduleSlice = createSlice({
       info.sTime = (day.length > 0)?day[0].STARTTIME:"07:00"
     },
     moveWeekDown(state, action){
-      console.log("moveWeekDown");
       const info = state.scheduleAlbaInfo;
       const albas = state.albas;
       const curIndex = albas.findIndex(item => item.userId === info.userId);

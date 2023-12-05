@@ -22,15 +22,11 @@ export default function QnAScreen({navigation}) {
     }, [navigation])
     
     useEffect(() => {
-        const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', ()=>scrollViewRef.current.scrollToEnd({ animated: false }));
-        //const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', _keyboardDidHide);
-
-        // useEffect의 cleanup 함수를 활용하여 이벤트 리스너를 제거
-        return () => {
-            keyboardDidShowListener.remove();
-            //keyboardDidHideListener.remove();
-        };
-    }, []);
+        const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', ()=>{
+            scrollViewRef.current.scrollToEnd({ animated: false })
+        });
+        return () => keyboardDidShowListener.remove();;
+    },);
 
     const getChatList = () => {
         const params = {cstCo:cstCo}
@@ -42,7 +38,6 @@ export default function QnAScreen({navigation}) {
 
     const saveChat = (contents) => {
         const params = {cstCo:cstCo, userId:userId, contents:contents}
-        console.log(params);
         QnACall("POST", params, (data)=>{
             getChatList();
         })
@@ -55,12 +50,12 @@ export default function QnAScreen({navigation}) {
     const onSend = () =>{
         const txt = textInput;
         setTextInput("");
-        console.log(txt);
         saveChat(txt);
     }
     const QnACall = async (method, params, callback) => {
         await HTTP(method, "/api/v1/board/QnA", params)
         .then((res)=>{
+            console.log("")
             if(res.data.resultCode == "00"){
                 callback(res.data)
             }
@@ -79,7 +74,7 @@ export default function QnAScreen({navigation}) {
         <View style={styles.container}>
                 {
                     (chatList.length == 0)?
-                        <View style={styles.centerContainer}><Text>알로하와 대화를 시작해보세요!!</Text></View>
+                        <ScrollView ref={scrollViewRef} contentContainerStyle={styles.centerContainer}><Text>알로하와 대화를 시작해보세요!!</Text></ScrollView>
                     :
                     <ScrollView 
                         ref={scrollViewRef}
@@ -90,9 +85,8 @@ export default function QnAScreen({navigation}) {
                         }}
                     >
                         {
-                            chatList.map((el)=>{
-                                console.log(el);
-                                return <ChatEl contents={el.REPCONTENTS} isMyInputData={(el.WOWNER == userId)} />
+                            chatList.map((el, idx)=>{
+                                return <ChatEl key={idx} contents={el.REPCONTENTS} isMyInputData={(el.WOWNER == userId)} />
                             })
                         }
                     </ScrollView>
