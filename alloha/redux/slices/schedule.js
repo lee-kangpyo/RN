@@ -191,20 +191,24 @@ const scheduleSlice = createSlice({
       info.sTime = (day.length > 0)?day[0].STARTTIME:"07:00"
     },
     moveWeekDown(state, action){
+      console.log("moveWeekDown");
       const info = state.scheduleAlbaInfo;
-      
-      const weekNumber = info.weekNumber;
       const albas = state.albas;
       const curIndex = albas.findIndex(item => item.userId === info.userId);
-      const target = albas[curIndex+1];
+      const target = (albas.length == curIndex+1)?albas[curIndex]:albas[curIndex+1];
       if(target){
         info.userId = target.userId;
         info.userNa = target.userNa;
-      }else{
-        const data = action.payload.data;
-        info.sTime=data.sTime;
-        info.jobDure=data.jobDure;
-        info.jobCl=data.jobCl;
+        const targetDay = target.list.find((day)=> day.jobCl != "G" && day.jobCl != "S" && day.YMD == info.ymd);
+        if(targetDay){
+          info.sTime=targetDay.STARTTIME;
+          info.jobDure = targetDay.JOBDURE;
+          info.jobCl = targetDay.JOBCL;
+        }else{
+          info.sTime="07:00";
+          info.jobDure=0;
+          info.jobCl="2";
+        }
       }
     },
     disabledEditing(state, action){

@@ -299,7 +299,8 @@ export default function ScheduleScreen({navigation}) {
 }
 
 
-function BtnSetV3({ scheduleInfo, cstCo, refresh }){
+function BtnSetV3({ scheduleInfo, cstCo, refresh }) {
+    // component START
     const _TimeComponent = ({time, setTime, fontSize=16}) => {
         const changeTime = (min)=>{ if(!((time == "00:00" && min < 0) || (time == "23:30" && min > 0))) setTime(manipulateTime(time, min)) }
         return (
@@ -328,42 +329,50 @@ function BtnSetV3({ scheduleInfo, cstCo, refresh }){
                     <Text> ~ </Text>
                     <_TimeComponent fontSize={fontSize} time={eTime} setTime={setEtime} />
                 </View>
-                <View style={{justifyContent:"center", alignItems:"flex-end", marginRight:5}}>
+                <View style={{justifyContent:"center", alignItems:"flex-end", marginRight:5, width:35}}>
                     <Text style={{fontSize:fontSize}}>{hours}</Text>
                 </View>
             </View>
         )
     }
-    const radioButtons = useMemo(() => ([
-        {id: 0, label: '오픈', value: '2', color:theme.open},
-        {id: 1, label: '미들', value: '5', color:theme.middle},
-        {id: 2, label: '마감', value: '6', color:theme.close},
-        {id: 3, label: '기타', value: '1', color:theme.etc}
-    ]), []);
-    const selectData = [
+    // component END
+    const _selectData = [
         {text:"오픈", sTime:"07:00", eTime:"12:00", jobCl:"2", color:theme.open},
         {text:"미들", sTime:"12:00", eTime:"18:00", jobCl:"5", color:theme.middle},
         {text:"마감", sTime:"18:00", eTime:"22:00", jobCl:"9", color:theme.close},
         {text:"기타", sTime:"00:00", eTime:"23:30", jobCl:"1", color:theme.etc},
     ]
-
     const [radioRefresh, setRadioRefresh] = useState(false);
     const [selectRadio, setSelectRadio] = useState(0);
     const [isFncRunning, setIsFncRunning] = useState(false);
-    
-    const [sTime, setStime] = useState(selectData[selectRadio].sTime);
-    const [eTime, setEtime] = useState(selectData[selectRadio].eTime);
-    
+    const [sTime, setStime] = useState(_selectData[selectRadio].sTime);
+    const [eTime, setEtime] = useState(_selectData[selectRadio].eTime);
     const start = (scheduleInfo.jobDure > 0)?scheduleInfo.sTime:"";
     const end = (scheduleInfo.jobDure > 0)?getETime(scheduleInfo.sTime, scheduleInfo.jobDure):"";
-    
+    const dispatch = useDispatch();
 
     useEffect(()=> {
-        setStime(selectData[selectRadio].sTime);
-        setEtime(selectData[selectRadio].eTime);
-    }, [selectRadio, radioRefresh])
+        setStime(_selectData[selectRadio].sTime);
+        setEtime(_selectData[selectRadio].eTime);
+    }, [radioRefresh])
 
-    const dispatch = useDispatch()
+    useEffect(()=>{
+        const idx = getRadioInx(scheduleInfo.jobCl);
+        radioChange(idx, start, end)
+    }, [start, end]);
+    
+    const getRadioInx = (jobCl)=>{
+        if(jobCl == "2") return 0;
+        if(jobCl == "5") return 1;   
+        if(jobCl == "9") return 2;  
+        if(jobCl == "1") return 3; 
+    }
+    const radioChange = (selectedId, sTime, eTime) => {
+        setSelectRadio(selectedId);
+        setStime((sTime)?sTime:_selectData[selectRadio].sTime);
+        setEtime((eTime)?eTime:_selectData[selectRadio].eTime);
+    }
+    
     const onSave = async (sTime, eTime, cl) => {
         if (isFncRunning) return;
         setIsFncRunning(true)
@@ -372,7 +381,8 @@ function BtnSetV3({ scheduleInfo, cstCo, refresh }){
         .then((res)=>{
             refresh(()=>{
                 setRadioRefresh(!radioRefresh)
-                dispatch(moveWeekDown({data:{sTime:sTime, jobCl:cl, jobDure:calTimeDiffHours(sTime, eTime)}}));
+                //dispatch(moveWeekDown({data:{sTime:sTime, jobCl:cl, jobDure:calTimeDiffHours(sTime, eTime)}}));
+                dispatch(moveWeekDown());
                 setIsFncRunning(false);
             })
         }).catch(function (error) {
@@ -385,25 +395,26 @@ function BtnSetV3({ scheduleInfo, cstCo, refresh }){
         <View style={{flex:1,}}>
             <View style={{ flexDirection:"row", alignItems:"center",justifyContent:"space-between", height:30, marginHorizontal:15, marginBottom:5}}>
                 <Text style={{fontSize:16}}>{scheduleInfo.ymd.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3')} [{scheduleInfo.userNa}]</Text>
-                {
-                    (start)?
-                        <Text style={{fontSize:16}}>{start} - {end} ({scheduleInfo.jobDure}시간)</Text>
-                    :
-                        <Text style={{fontSize:16}}>비번</Text>
-                }
             </View>
             <View style={{flex:1, marginHorizontal:15, marginBottom:10}}>
                 <RadioGroup 
                     containerStyle={{justifyContent:"space-evenly", marginBottom:5}}
                     layout="row"
-                    radioButtons={radioButtons} 
-                    onPress={setSelectRadio}
+                    radioButtons={
+                        useMemo(() => ([
+                            {id: 0, label: '오픈', value: '2', color:theme.open},
+                            {id: 1, label: '미들', value: '5', color:theme.middle},
+                            {id: 2, label: '마감', value: '6', color:theme.close},
+                            {id: 3, label: '기타', value: '1', color:theme.etc}
+                        ]), [])
+                    } 
+                    onPress={radioChange}
                     selectedId={selectRadio}
                 />
                 <View style={{flexDirection:"row"}}>
                     <_Section 
-                        cl={selectData[selectRadio].jobCl} 
-                        color={selectData[selectRadio].color} 
+                        cl={_selectData[selectRadio].jobCl} 
+                        color={_selectData[selectRadio].color} 
                         text={"시간"} 
                         sTime={sTime} 
                         eTime={eTime} 
@@ -412,7 +423,7 @@ function BtnSetV3({ scheduleInfo, cstCo, refresh }){
                     />
                     <TouchableOpacity 
                         style={{ backgroundColor:theme.correct, justifyContent:"center", borderWidth:1, borderTopEndRadius:5, borderBottomEndRadius:5, marginBottom:5, marginLeft:0, padding:3}} 
-                            onPress={()=>onSave(sTime, eTime, selectData[selectRadio].jobCl)}>
+                            onPress={()=>onSave(sTime, eTime, _selectData[selectRadio].jobCl)}>
                         <Text>저장</Text>
                     </TouchableOpacity>
                     
