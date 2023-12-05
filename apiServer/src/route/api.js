@@ -477,8 +477,7 @@ router.get("/v1/getSalaryDetail", async (req, res, next) => {
 router.post("/v1/easyAlbaMng", async (req, res, next) => {
     try {
         const {cls, cstCo, userName, hpNo, email} = req.body;
-        const result = await execSql(easyAlbaMng, {cls:cls, cstCo:cstCo, userName:userName, hpNo:hpNo, email:email, rtnValue:""});
-        //console.log(result);
+        const result = await execSql(easyAlbaMng, {cls:cls, cstCo:cstCo, userName:userName, hpNo:hpNo, email:email, wage:0, rtnValue:""});
         res.status(200).json({result:result.recordset, resultCode:"00", rltValue:result.output.rtnValue});
     } catch (error) {
         console.log(error.message)

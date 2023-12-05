@@ -367,10 +367,10 @@ function BtnSetV3({ scheduleInfo, cstCo, refresh }) {
         if(jobCl == "9") return 2;  
         if(jobCl == "1") return 3; 
     }
-    const radioChange = (selectedId, sTime, eTime) => {
+    const radioChange = (selectedId, stTime, enTime) => {
         setSelectRadio(selectedId);
-        setStime((sTime)?sTime:_selectData[selectRadio].sTime);
-        setEtime((eTime)?eTime:_selectData[selectRadio].eTime);
+        setStime((stTime)?stTime:_selectData[selectedId].sTime);
+        setEtime((enTime)?enTime:_selectData[selectedId].eTime);
     }
     
     const onSave = async (sTime, eTime, cl) => {
@@ -408,7 +408,7 @@ function BtnSetV3({ scheduleInfo, cstCo, refresh }) {
                             {id: 3, label: '기타', value: '1', color:theme.etc}
                         ]), [])
                     } 
-                    onPress={radioChange}
+                    onPress={(v)=>{console.log(v);radioChange(v)}}
                     selectedId={selectRadio}
                 />
                 <View style={{flexDirection:"row"}}>
