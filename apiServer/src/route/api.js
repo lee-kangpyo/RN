@@ -543,8 +543,9 @@ router.post("/v1/WeekAlbaScheduleSave", async (req, res, next) => {
     
 })
 
+
 router.post("/v1/saveAlba", async(req, res, next) => {
-    console.log("saveAlba");
+    console.log("api.saveAlba");
     try{
         const {cls, cstCo,  userId, ymdFr, ymdTo} = req.body;
         const param = {cls:cls, cstCo:cstCo, userId:userId, ymdFr:ymdFr, ymdTo:ymdTo, wCnt:0};
@@ -554,6 +555,20 @@ router.post("/v1/saveAlba", async(req, res, next) => {
         console.log(error.message)
         res.status(200).json({ resultCode:"-1"});
     }
+})
+
+router.post("/v1/WeekScheduleCopy", async (req, res, next) => {
+    console.log("api.WeekScheduleCopy");
+    try {
+        const{cstCo, ymdFr, ymdTo, wCnt} = req.body;
+        const param = {cls:"WeekScheduleCopy", cstCo:cstCo, userId:"", ymdFr:ymdFr, ymdTo:ymdTo, wCnt:wCnt};
+        await execSql(albaSchedulemanager, param);
+        res.status(200).json({resultCode:"00"});
+    } catch (error) {
+        console.log(error.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+    
 })
 
 router.use('/v1/work', workRouter); 
