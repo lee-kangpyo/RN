@@ -20,6 +20,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { AntDesign } from '@expo/vector-icons';
 import { theme } from './../util/color';
 import RadioGroup from 'react-native-radio-buttons-group';
+import CustomModal from './../components/CustomModal';
 
 export default function ScheduleScreen({navigation}) {
     const userId = useSelector((state) => state.login.userId);
@@ -201,6 +202,21 @@ export default function ScheduleScreen({navigation}) {
         saveAlbaSchedule(sTime, eTime);
         setModifyTimeShow(false);
     } 
+    // 계획 가져오기
+    const [isPrevScheduleModalShow, setPrevScheduleModalShow] = useState(false);
+    const getPrevSchedule = async () => {
+        console.log("ASdf")
+        var params = {cstCo:cstCo, ymdFr:weekList[0].format("yyyyMMDD"), ymdTo:weekList[6].format("yyyyMMDD"), wCnt:1}
+        await axios.post(URL+`/api/v1/WeekScheduleCopy`, params)
+        .then((res)=>{
+            getWeekSchedule();
+            setPrevScheduleModalShow(false);
+        }).catch(function (error) {
+            console.log(error);
+            alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
+            setPrevScheduleModalShow(false);
+        })
+    }
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar />
@@ -209,11 +225,18 @@ export default function ScheduleScreen({navigation}) {
                 <View style={{...styles.card, padding:5}}>
                     <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:5}}>
                         <HeaderControl title={`${weekNumber.month}월 ${weekNumber.number}주차`} onLeftTap={()=> dispatch(prevWeek())} onRightTap={()=> dispatch(nextWeek())} />
-                        <TouchableOpacity onPress={toggleWidth}>
-                            <View style={{...styles.btnMini, paddingVertical:0, paddingHorizontal:5, borderColor:theme.link}}>
-                                <Text style={styles.btnText}>편집</Text>
-                            </View>
-                        </TouchableOpacity>
+                        <View style={{flexDirection:"row"}}>
+                            <TouchableOpacity onPress={()=>setPrevScheduleModalShow(true)}>
+                                <View style={{...styles.btnMini, paddingVertical:0, paddingHorizontal:5, borderColor:theme.link, marginRight:2}}>
+                                    <Text style={styles.btnText}>계획 가져오기</Text>
+                                </View>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={toggleWidth}>
+                                <View style={{...styles.btnMini, paddingVertical:0, paddingHorizontal:5, borderColor:theme.link}}>
+                                    <Text style={styles.btnText}>편집</Text>
+                                </View>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                     <Animated.View style={{width:widthValue}}>
                         <WeekDate sBlank={2} eBlank={2} week={week}/>
@@ -293,6 +316,16 @@ export default function ScheduleScreen({navigation}) {
                     : null
                 }
                 <ModifyTimeModal isShow={modifyTimeShow} onClose={()=>setModifyTimeShow(false)} onConfirm={(val)=>{onConfrimModifyTime(val)}} onShow={()=>console.log("onShow")} />
+                <CustomModal
+                    visible={isPrevScheduleModalShow}
+                    title={"계획 가져오기"}
+                    confBtnTxt={"확인"}
+                    confirm={getPrevSchedule}
+                    cBtnTxt={"취소"}
+                    onCancel={()=>setPrevScheduleModalShow(false)}
+                    onClose={()=>console.log("close")}
+                    body={<Text>{weekNumber.month}월 {weekNumber.number}주차에 입력된 근무계획이 전주 계획으로 변경 됩니다. 진행하시겠습니까?</Text>}
+                />
             </GestureHandlerRootView>
         </SafeAreaView>
     );
@@ -501,7 +534,7 @@ function _BtnSetV2({ scheduleInfo, cstCo, refresh, onTypingModalShow, openDateTi
                 <Section cl={2} color={theme.open} text={"오픈"} sTime={"07:00"} eTime={"12:00"} onSelect={onSelectSection}/>
                 <Section cl={5} color={theme.middle} text={"미들"} sTime={"12:00"} eTime={"18:00"}  onSelect={onSelectSection}/>
                 <Section cl={9} color={theme.close} text={"크로즈"} sTime={"18:00"} eTime={"22:00"}  onSelect={onSelectSection}/>
-                <Section cl={1} color={theme.etc} text={"기타"} sTime={"07:00"} eTime={"12:00"}  onSelect={onSelectSection}/>
+                <Section cl={1} color={theme.etc} text={"기타"} sTime={"07:00"} eTime={"22:00"}  onSelect={onSelectSection}/>
             </View>
         </View>
     )
