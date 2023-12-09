@@ -340,7 +340,7 @@ function BtnSetV3({ scheduleInfo, cstCo, refresh }) {
         {text:"오픈", sTime:"07:00", eTime:"12:00", jobCl:"2", color:theme.open},
         {text:"미들", sTime:"12:00", eTime:"18:00", jobCl:"5", color:theme.middle},
         {text:"마감", sTime:"18:00", eTime:"22:00", jobCl:"9", color:theme.close},
-        {text:"기타", sTime:"00:00", eTime:"23:30", jobCl:"1", color:theme.etc},
+        {text:"기타", sTime:"07:00", eTime:"12:00", jobCl:"1", color:theme.etc},
     ]
     const [radioRefresh, setRadioRefresh] = useState(false);
     const [selectRadio, setSelectRadio] = useState(0);
@@ -501,7 +501,7 @@ function _BtnSetV2({ scheduleInfo, cstCo, refresh, onTypingModalShow, openDateTi
                 <Section cl={2} color={theme.open} text={"오픈"} sTime={"07:00"} eTime={"12:00"} onSelect={onSelectSection}/>
                 <Section cl={5} color={theme.middle} text={"미들"} sTime={"12:00"} eTime={"18:00"}  onSelect={onSelectSection}/>
                 <Section cl={9} color={theme.close} text={"크로즈"} sTime={"18:00"} eTime={"22:00"}  onSelect={onSelectSection}/>
-                <Section cl={1} color={theme.etc} text={"기타"} sTime={"00:00"} eTime={"23:30"}  onSelect={onSelectSection}/>
+                <Section cl={1} color={theme.etc} text={"기타"} sTime={"07:00"} eTime={"12:00"}  onSelect={onSelectSection}/>
             </View>
         </View>
     )
