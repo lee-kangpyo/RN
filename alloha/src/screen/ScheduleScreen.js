@@ -66,7 +66,6 @@ export default function ScheduleScreen({navigation}) {
     const getWeekSchedule = async (callback) => {
         await axios.get(URL+`/api/v1/getWeekSchedule`, {params:{cls:"WeekScheduleSearch2", cstCo:cstCo, userId:'', ymdFr:weekList[0].format("yyyyMMDD"), ymdTo:weekList[6].format("yyyyMMDD"), wCnt:"0",}})
         .then((res)=>{
-            //console.log(res.data.result);
             dispatch(setAlba({data:res.data.result}));
             if (callback) callback();
         }).catch(function (error) {
@@ -115,7 +114,6 @@ export default function ScheduleScreen({navigation}) {
     }
 
     const selectAlba = async (alba) => {
-        console.log(alba);
         const param = {cls:"albaSave", cstCo:cstCo, userId:alba.USERID, ymdFr:weekList[0].format("yyyyMMDD"), ymdTo:weekList[6].format("yyyyMMDD")};
         await axios.post(URL+`/api/v1/saveAlba`, param)
         .then((res)=>{
@@ -205,7 +203,6 @@ export default function ScheduleScreen({navigation}) {
     // 계획 가져오기
     const [isPrevScheduleModalShow, setPrevScheduleModalShow] = useState(false);
     const getPrevSchedule = async () => {
-        console.log("ASdf")
         var params = {cstCo:cstCo, ymdFr:weekList[0].format("yyyyMMDD"), ymdTo:weekList[6].format("yyyyMMDD"), wCnt:1}
         await axios.post(URL+`/api/v1/WeekScheduleCopy`, params)
         .then((res)=>{
@@ -239,7 +236,9 @@ export default function ScheduleScreen({navigation}) {
                         </View>
                     </View>
                     <Animated.View style={{width:widthValue}}>
-                        <WeekDate sBlank={2} eBlank={2} week={week}/>
+                        <TouchableOpacity onPress={()=>navigation.push("scheduleView")}>
+                            <WeekDate sBlank={2} eBlank={2} week={week}/>
+                        </TouchableOpacity>
                     </Animated.View>
                     <ScrollView  contentContainerStyle={{paddingBottom:(bottomSheetIndex == -1)?0:Dimensions.get('window').height * 0.3, }}>
                         {

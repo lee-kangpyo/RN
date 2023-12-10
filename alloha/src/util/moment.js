@@ -169,6 +169,7 @@ export const getSTime = (sTime) => {
 
 // eTime 반환 홤수 07:00, 0.5 -> 07:30
 export const getETime = (sTime, endHour) => {
+    console.log("getEtime")
     var splittedTime = sTime.split(":");
     var hours = parseInt(splittedTime[0], 10);
     var minutes = parseInt(splittedTime[1], 10);
