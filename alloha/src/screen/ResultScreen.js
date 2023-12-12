@@ -90,13 +90,13 @@ export default function ResultScreen({navigation}) {
             <View style={{...styles.card, padding:5, width:"100%", overflow:"hidden"}}>
                 <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:5}}>
                     <HeaderControl title={`${date.mm}월`} onLeftTap={()=> dispatch(prevMonth())} onRightTap={()=> dispatch(nextMonth())} />
-                    <Excel 
+                    <Excel
                         header={true}
                         custom={"result"}
                         type={"sharing"}
-                        btntext={"공유하기"} 
+                        btntext={"공유하기"}
                         fileName={`${cstNa} 결과현황표`}
-                        data={excelData} 
+                        data={excelData}
                     />
                 </View>
                 <PayContainer header={["성명", "시급", "주휴", "플러스", "합계"]} contents={items} onNameTap={onNameTap} onIncentiveTap={onIncentiveTap}/>

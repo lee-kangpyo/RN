@@ -86,31 +86,56 @@ export default function ManageCrewScreen({navigation}) {
     
     useFocusEffect(
         useCallback(() => {
-            // Do something when the screen is focused
             searchCrewList()
-            return () => {
-              // Do something when the screen is unfocused
-              // Useful for cleanup functions
-            };
+            return () => {};
           }, [])
     )
     
     const filterList = (filterWrd == "")?crewList:crewList.filter((el)=>el.USERNA == filterWrd);
     
-    const[modifyUser, setModifyUser] = useState({name:"이강표"});
-    const ModalBody = ({user}) => {
+    // 이름 수정
+    const[modifyUser, setModifyUser] = useState({});
+    const[isShow, setIsShow] = useState(false);
+    var changedName = "";
+    const onNameChange = (name) => changedName = name;
+    const ModalBody = ({user, onNameChange}) => {
+        const[name, setName] = useState("");
+        const onChange = (txt) => {
+            setName(txt);
+            onNameChange(txt);
+        }
         return(
             <View style={styles.modalBody}>
                 <Text>{user.name}</Text>
-                <Text style={{paddingHorizontal:15}}>---</Text>
-                <TextInput style={styles.modalInput} />
+                <Text style={{paddingHorizontal:15}}>---&gt;</Text>
+                <TextInput onChange={(e)=>onChange(e.nativeEvent.text)} value={name} style={styles.modalInput} />
             </View>
         )
     }
-    const modifyCrew = () => {
-        // 나중에 다른 페이지로 변경
-        //navigation.push("modifyCrew")
+    const modifyName = async () => {
+        await axios.post(URL+`/api/v1/changeCrewName`, {cstCo:modifyUser.cstCo, userId:modifyUser.userId, name:changedName})
+        .then((res)=>{
+            console.log(res.data.resultCode)
+            if(res.data.resultCode == "00"){
+                searchCrewList();
+                changedName = "";
+                setModifyUser({});
+                setIsShow(false);
+            }else{
+                Alert.alert("오류", "요청 중 알수없는 오류가 발생했습니다. 잠시후 다시 시도해주세요.")    
+            }
+        }).catch(function (error) {
+            console.log(error);
+            Alert.alert("오류", "요청 중 알수없는 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
+        })
+        
     }
+    const modifyCrew = (cstCo, userId, userNa) => {
+        console.log(cstCo, userId, userNa);
+        setModifyUser({name:userNa, userId:userId, cstCo:cstCo});
+        setIsShow(true);
+    }
+    // 이름 수정
     return (
         <>
             <View style={{margin:16,}}>
@@ -134,7 +159,7 @@ export default function ManageCrewScreen({navigation}) {
                                                 denyBtnTxt={"거절"}
                                                 onDenyButtonPressed={(cstCo, userId)=>{onDeny(el.USERNA, cstCo, userId)}}    
                                                 modifyBtnTxt={"수정"}
-                                                onModifyButtonPressed={()=>modifyCrew()}
+                                                onModifyButtonPressed={(cstCo, userId, userNa)=>modifyCrew(cstCo, userId, userNa)}
                                             />
                                 })}
                             </ScrollView>
@@ -148,14 +173,14 @@ export default function ManageCrewScreen({navigation}) {
             </View>
             
             <CustomModal
-                visible={true}
+                visible={isShow}
                 title={"이름 수정"}
-                body={<ModalBody user={modifyUser} />}
+                body={<ModalBody user={modifyUser} onNameChange={onNameChange} />}
                 confBtnTxt={"수정하기"}
-                confirm={()=>console.log("수정하기")}
+                confirm={modifyName}
                 cBtnTxt={"취소"}
-                onCancel={()=>console.log("취소하기")}
-                onClose={()=>console.log("close")}
+                onCancel={()=>setIsShow(false)}
+                onClose={()=>console.log("onclose")}
             >
                 <View >
                     <Text>asdfs</Text>
@@ -169,8 +194,8 @@ export default function ManageCrewScreen({navigation}) {
 // visible, title, body, confBtnTxt, confirm, cBtnTxt, onCancel, onClose
 const styles = StyleSheet.create({
     container:{ flex: 1, justifyContent: 'center', alignItems: 'center', padding:8},
-    modalBody:{padding:15, flexDirection:"row"},
-    modalInput:{borderWidth:1, borderRadius:5, flex:1},
+    modalBody:{padding:15, flexDirection:"row", alignItems:"center"},
+    modalInput:{borderWidth:1, borderRadius:5, flex:1, padding:5},
     scrollArea:{width:"100%"}
 
 });
