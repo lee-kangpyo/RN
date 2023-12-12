@@ -11,17 +11,20 @@ import { URL } from "@env";
 import { AntDesign } from '@expo/vector-icons'; 
 import { theme } from '../util/color';
 import { ScrollView } from 'react-native-gesture-handler';
-import { useNavigation } from '@react-navigation/native';
 
-export default function ScheduleViewScreen({navigation}) {
+export default function ScheduleTimeViewScreen({navigation}) {
     const ref = useRef();
     const cstCo = useSelector((state)=>state.common.cstCo);
     const week = useSelector((state)=>state.schedule.week);
     const weekList = getWeekList(week);
+
     const dispatch = useDispatch();
+
     const [weekSchSearch, setWeekSchSearch] = useState([])
 
+    
     const getWeekSchedule2 = async () => {
+
         const param = {cls:"WeekScheduleSearch3", cstCo:cstCo, userId:"", ymdFr:weekList[0].format("yyyyMMDD"), ymdTo:weekList[6].format("yyyyMMDD"), wCnt:"0",};
         await axios.get(URL+`/api/v1/getWeekSchedule`, {params:param})
         .then((res)=>{
@@ -107,7 +110,7 @@ export default function ScheduleViewScreen({navigation}) {
                                 weekList.map((dayStr, idx)=>{
                                     const day={ 0:"일", 1:"월", 2:"화", 3:"수", 4:"목", 5:"금", 6:"토" };
                                     const albaList = weekSchSearch.filter((el)=>el.YMD == dayStr.format("YYYYMMDD"));
-                                    return (albaList.length > 0)?<DailyScheduleBox key={idx} mmdd={dayStr.format("MM / DD")} day={day[getDayWeekNumber(dayStr)]} albaList={albaList} />:null;
+                                    return (albaList.length > 0)?<DailyScheduleBox key={idx} mmdd={dayStr.format("MM / DD")} day={day[getDayWeekNumber(dayStr)]}  albaList={albaList} />:null;
                                 })
                                 }
                             </ScrollView>
@@ -124,24 +127,20 @@ export default function ScheduleViewScreen({navigation}) {
 }
 
 const DailyScheduleBox = ({mmdd, day, albaList}) => {
-    const navigation = useNavigation();
     const color={2:theme.open,5:theme.middle,9:theme.close,1:theme.etc,};
     return(
         <View style={styles.day}>
-            <TouchableOpacity style={styles.mmdd} onPress={()=>navigation.push("scheduleTimeView")}>
+            <View style={styles.mmdd}>
                 <Text>{mmdd}</Text>
-                <Text>({day})</Text>
-            </TouchableOpacity>
+                <Text>{day}</Text>
+            </View>
             <View style={styles.albaList}>
                 {
                     albaList.map((alba)=>{
                         return(
                             <View style={styles.alba}>
                                 <AntDesign name="checkcircle" size={16} color={color[alba.JOBCL]} style={styles.circle}/>
-                                <View style={{flexDirection:"row",}}>
-                                    <Text style={{fontSize:16, width:70}}>{alba.USERNA}</Text>
-                                    <Text style={{fontSize:16}}>{alba.SCHTIME} 근무 ({alba.JOBDURE})</Text>
-                                </View>
+                                <Text style={{fontSize:16}}>{alba.USERNA} : {alba.SCHTIME} 근무 ({alba.JOBDURE})</Text>
                             </View>
                         );
                     })
@@ -168,8 +167,7 @@ const styles = StyleSheet.create({
         padding:15
     },
     mmdd:{
-        paddingRight:15,
-        alignItems:"center"
+        paddingRight:15
     },
     albaList:{
         flex:1,

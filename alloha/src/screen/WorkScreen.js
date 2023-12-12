@@ -328,14 +328,14 @@ function BtnSet({ workInfo, cstCo, refresh, onDelete, onClose, onTypingModalShow
             <View style={{paddingHorizontal:10,  marginBottom:10}}>
                 <View style={{flexDirection:"row",}}>
                     {
-                        [1, 2, 3, 4, 5, 6, 7, 8].map((num, idx)=>{
+                        [3, 4, 5, 6, 7, 8, 9, 0].map((num, idx)=>{
                             return <TouchableOpacity key={idx} onPress={()=>onBtnPress(num)} style={styles.numberBox}><Text>{num}</Text></TouchableOpacity>
                         })
                     }
                 </View>
                 <View style={{flexDirection:"row"}}>
                     {
-                        [1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 0].map((num, idx)=>{
+                        [2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5].map((num, idx)=>{
                             return <TouchableOpacity key={idx} onPress={()=>onBtnPress(num)} style={styles.numberBox}><Text>{num}</Text></TouchableOpacity>
                         })
                     }

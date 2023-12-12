@@ -35,6 +35,7 @@ import ProfitAndLossScreen from './ProfitAndLossScreen';
 import CustomerServiceScreen from './CustomerServiceScreen';
 import QnAScreen from './QnAScreen';
 import ModifyCrewScreen from './ModifyCrewScreen';
+import ScheduleTimeViewScreen from './ScheduleTimeViewScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -170,6 +171,7 @@ function ScheduleStack() {
       />
       <Stack.Screen name="scheduleModify" component={ScheduleModifyScreen} />
       <Stack.Screen name="scheduleView" component={ScheduleViewScreen} />
+      <Stack.Screen name="scheduleTimeView" component={ScheduleTimeViewScreen} />
       <Stack.Screen name="registerAlba" component={EasyRegisterAlbaScreen} />
     </Stack.Navigator>
   );
@@ -236,7 +238,11 @@ const setTabBarIcon = (focused, color, size, name) =>{
   }else if(name ==="profitAndLoss"){
     iconName = 'payments';
     icon = "MaterialIcons"
+  }else if(name === "qna"){
+    iconName = 'chat-question';
+    icon = "MaterialCommunityIcons"
   }
+  
 
   if (icon == "Ionicons"){
     return <Ionicons name={iconName} size={size} color={color} />;

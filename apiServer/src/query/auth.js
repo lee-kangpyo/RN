@@ -106,6 +106,10 @@ const searchCrewList = `
     AND   a.RTCL not in ( 'Y', 'D' )        -- Y - 퇴직, N - 재직, R - 요청, D - 거절 <-- 추후 생성
     GROUP   BY a.CSTCO, b.CSTNA, a.USERID, c.USERNA, ISNULL(c.NICKNA,''), a.JOBTYPE, a.WAGE, a.ROLECL, a.RTCL
 `
+const changeCrewName = `
+    UPDATE a set a.USERNA = @userNa
+    from PLYMUSER a where USERID = @userId
+`
 
 const searchMyAlbaList = `
     SELECT   a.CSTCO
@@ -211,4 +215,4 @@ const albaSchedulemanager2 = `
     exec PR_PLYA02_ALBASCHMNG @cls, @cstCo, @userId, @ymdFr, @ymdTo, @jobCl, @sTime, @eTime
 `
 
-module.exports = {login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, insertJobChk, geofencingTest, checkJobChk, insert_Uuid_Token, autoLogin, getUUID, jobChk, salary, getTermsDetail, updateTaxNo, modifyStoreInfo, easyAlbaMng, albaSchedulemanager, albaSchedulemanager2}
+module.exports = {login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, insertJobChk, geofencingTest, checkJobChk, insert_Uuid_Token, autoLogin, getUUID, jobChk, salary, getTermsDetail, updateTaxNo, modifyStoreInfo, easyAlbaMng, albaSchedulemanager, albaSchedulemanager2, changeCrewName}

@@ -5,7 +5,7 @@ const {execSql, execTranSql} = require("../utils/excuteSql");
 const { login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, 
         getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, jobChk, salary,
         insertJobChk, geofencingTest, checkJobChk, insert_Uuid_Token, autoLogin, getUUID, checkjobtotal, 
-        getTermsDetail, updateTaxNo, modifyStoreInfo, easyAlbaMng, albaSchedulemanager2, albaSchedulemanager} = require('./../query/auth'); 
+        getTermsDetail, updateTaxNo, modifyStoreInfo, easyAlbaMng, albaSchedulemanager2, albaSchedulemanager, changeCrewName} = require('./../query/auth'); 
 const axios = require('axios');
 
 const dotenv = require('dotenv');
@@ -229,6 +229,17 @@ router.get("/v1/searchCrewList", async (req, res, next) => {
         const {userId} = req.query;
         const result = await execSql(searchCrewList, {userId:userId}) 
         res.status(200).json({result:result.recordset, resultCode:"00"});
+    } catch (err) {
+        console.log(err.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+})
+router.post("/v1/changeCrewName", async (req, res, next) => {
+    try {
+        const {cstCo, userId, name} = req.body;
+        console.log(cstCo, userId, name)
+        const result = await execSql(changeCrewName, {userId:userId, userNa:name}) 
+        res.status(200).json({result:"다녀옴", resultCode:"00"});
     } catch (err) {
         console.log(err.message)
         res.status(200).json({ resultCode:"-1"});
