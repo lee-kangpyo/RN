@@ -14,6 +14,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 
 export default function ScheduleViewScreen({navigation}) {
+    const weekNumber = useSelector((state)=>state.schedule.weekNumber);
     const ref = useRef();
     const cstCo = useSelector((state)=>state.common.cstCo);
     const week = useSelector((state)=>state.schedule.week);
@@ -97,7 +98,7 @@ export default function ScheduleViewScreen({navigation}) {
     }
     return (
         <View style={[styles.container]}>
-            <Text>10월 4주차 근무 계획</Text>
+            <Text>{weekNumber.month}월 {weekNumber.number}주차 근무 계획</Text>
             <ViewShot ref={ref} options={{ fileName: "capture", format: "jpg", quality: 0.9 }}>
                 <View style={styles.containerBox}>
                     {
@@ -107,7 +108,7 @@ export default function ScheduleViewScreen({navigation}) {
                                 weekList.map((dayStr, idx)=>{
                                     const day={ 0:"일", 1:"월", 2:"화", 3:"수", 4:"목", 5:"금", 6:"토" };
                                     const albaList = weekSchSearch.filter((el)=>el.YMD == dayStr.format("YYYYMMDD"));
-                                    return (albaList.length > 0)?<DailyScheduleBox key={idx} mmdd={dayStr.format("MM / DD")} day={day[getDayWeekNumber(dayStr)]} albaList={albaList} />:null;
+                                    return (albaList.length > 0)?<DailyScheduleBox key={idx} mmdd={dayStr} day={day[getDayWeekNumber(dayStr)]} albaList={albaList} />:null;
                                 })
                                 }
                             </ScrollView>
@@ -128,8 +129,8 @@ const DailyScheduleBox = ({mmdd, day, albaList}) => {
     const color={2:theme.open,5:theme.middle,9:theme.close,1:theme.etc,};
     return(
         <View style={styles.day}>
-            <TouchableOpacity style={styles.mmdd} onPress={()=>navigation.push("scheduleTimeView")}>
-                <Text>{mmdd}</Text>
+            <TouchableOpacity style={styles.mmdd} onPress={()=>navigation.push("scheduleTimeLine", {ymd:mmdd.format("YYYYMMDD"), mmdd:mmdd.format("MM / DD") + " " + day})}>
+                <Text>{mmdd.format("MM / DD")}</Text>
                 <Text>({day})</Text>
             </TouchableOpacity>
             <View style={styles.albaList}>
