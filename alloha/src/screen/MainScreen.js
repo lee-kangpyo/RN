@@ -35,7 +35,7 @@ import ProfitAndLossScreen from './ProfitAndLossScreen';
 import CustomerServiceScreen from './CustomerServiceScreen';
 import QnAScreen from './QnAScreen';
 import ModifyCrewScreen from './ModifyCrewScreen';
-import ScheduleTimeViewScreen from './ScheduleTimeViewScreen';
+import ScheduleTimeLineScreen from './ScheduleTimeLineScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -171,7 +171,7 @@ function ScheduleStack() {
       />
       <Stack.Screen name="scheduleModify" component={ScheduleModifyScreen} />
       <Stack.Screen name="scheduleView" component={ScheduleViewScreen} />
-      <Stack.Screen name="scheduleTimeView" component={ScheduleTimeViewScreen} />
+      <Stack.Screen name="scheduleTimeLine" component={ScheduleTimeLineScreen} />
       <Stack.Screen name="registerAlba" component={EasyRegisterAlbaScreen} />
     </Stack.Navigator>
   );
