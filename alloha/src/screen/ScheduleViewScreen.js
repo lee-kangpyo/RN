@@ -98,7 +98,7 @@ export default function ScheduleViewScreen({navigation}) {
     }
     return (
         <View style={[styles.container]}>
-            <Text>{weekNumber.month}월 {weekNumber.number}주차 근무 계획</Text>
+            <Text style={{fontSize:16, marginBottom:15}}>{weekNumber.month}월 {weekNumber.number}주차 근무 계획</Text>
             <ViewShot ref={ref} options={{ fileName: "capture", format: "jpg", quality: 0.9 }}>
                 <View style={styles.containerBox}>
                     {
@@ -153,12 +153,13 @@ const DailyScheduleBox = ({mmdd, day, albaList}) => {
 }
 
 const styles = StyleSheet.create({
-    container:{ flex: 1, justifyContent:"flex-start", padding:5,},
+    container:{ flex: 1, justifyContent:"flex-start", margin:15},
     containerBox:{
         backgroundColor:"white",
         borderWidth: 0.5, // 테두리 두께
         borderColor: 'gray', // 테두리 색상
         borderRadius: 10, // 테두리 모서리 둥글게 
+        height:"95%"
     },
     scroll:{
 
