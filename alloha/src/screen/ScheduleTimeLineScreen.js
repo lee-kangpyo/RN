@@ -67,7 +67,7 @@ export default function ScheduleTimeLineScreen({navigation, route}) {
 
     return(
         <View style={styles.container}>
-            <Text>{mmdd} 근무 계획</Text>
+            <Text style={{fontSize:16, marginBottom:15}}>{mmdd} 근무 계획</Text>
             
                 {
                     
@@ -81,16 +81,21 @@ export default function ScheduleTimeLineScreen({navigation, route}) {
                     <View style={styles.card}>
                         <View>
                             <View style={{flexDirection:"row"}}>
-                            <ScrollView scrollEnabled={false} ref={scrollViewRef}  scrollEventThrottle={16}  showsVerticalScrollIndicator={false} style={{width:100}} stickyHeaderIndices={[0]}>
-                                <Text style={[styles.timeLineEl, {backgroundColor:"white"}]}></Text>
-                                <TimeLineClock ref={scrollViewRef} />
-                            </ScrollView>
+                            <View>
+                                <ScrollView scrollEnabled={false} ref={scrollViewRef}  scrollEventThrottle={16}  showsVerticalScrollIndicator={false} contentContainerStyle={{width:80}}  stickyHeaderIndices={[0]}>
+                                    <Text style={[styles.timeLineEl, {backgroundColor:"white"}]}></Text>
+                                    <TimeLineClock ref={scrollViewRef} />
+                                </ScrollView>
+                            </View>
                             <ScrollView onScroll={handleScrollH} horizontal={true} bounces={false}>
                                 <ScrollView onScroll={handleScroll} scrollEventThrottle={16}  stickyHeaderIndices={[0]}  bounces={false}>
                                     <TimeLineHeader color='white' contents={userInfo} />
                                     <View>
                                         {
-                                            daySchedule.map((contents, idx)=><TimeLineContents key={idx} contents={contents} />)
+                                            daySchedule.map((contents, idx)=>{
+                                                if(idx < 7) return null;
+                                                return <TimeLineContents key={idx} contents={contents} />;
+                                            })
                                         }
                                     </View>
                                 </ScrollView>
@@ -99,7 +104,7 @@ export default function ScheduleTimeLineScreen({navigation, route}) {
                     </View>
                 </View>
                 <View style={{flexDirection:"row", paddingTop:2}}>
-                    <Text style={{width:90}}></Text>
+                    <Text style={{width:80}}></Text>
                     <ScrollView ref={totRef} scrollEventThrottle={16} showsHorizontalScrollIndicator={false}  horizontal={true} bounces={false}>
                         <TimeLineBottom contents={userInfo} />
                     </ScrollView>
@@ -115,7 +120,7 @@ const TimeLineBottom = ({contents}) => {
         <View style={{flexDirection:"row"}}>
             {contents.map((el, idx)=>{
                 return (
-                    <View key={idx} style={[styles.timeLineEl, {width:100, alignItems:"center"}]}>
+                    <View key={idx} style={[styles.timeLineEl, {width:50, alignItems:"center"}]}>
                         <Text ellipsizeMode="tail" numberOfLines={1}>({el.jobDure})</Text>
                     </View>
                 )
@@ -128,7 +133,7 @@ const TimeLineHeader = ({contents, color=""}) => {
         <View style={{flexDirection:"row"}}>
             {contents.map((el, idx)=>{
                 return (
-                    <View key={idx} style={[styles.timeLineEl, {width:100, alignItems:"center", backgroundColor:color,}]}>
+                    <View key={idx} style={[styles.timeLineEl, {width:50, alignItems:"center", backgroundColor:color,}]}>
                         <Text ellipsizeMode="tail" numberOfLines={1}>{el.userNa}</Text>
                     </View>
                 )
@@ -149,7 +154,7 @@ const TimeLineContents = ({contents}) => {
                 const top = (el[0] == 0)?<View style={styles.noLine}/>:<View style={[styles.line, {borderColor:color[el[0]]}]} />;
                 const bot = (el[1] == 0)?<View style={styles.noLine}/>:<View style={[styles.line, {borderColor:color[el[1]]}]} />
                 return (
-                    <View key={idx} style={[styles.timeLineEl, {width:100, alignItems:"center"}]}>
+                    <View key={idx} style={[styles.timeLineEl, {width:50, alignItems:"center"}]}>
                        {top}
                        {bot}
                     </View>
@@ -159,7 +164,7 @@ const TimeLineContents = ({contents}) => {
     )
 }
 const TimeLineClock = () => {
-    let startTime = 0;  // 시작 시간
+    let startTime = 7;  // 시작 시간
     let endTime = 24;  // 종료 시간
     let timeList = [];
     for (let hour = startTime; hour <= endTime; hour++) {
@@ -178,7 +183,7 @@ const TimeLineClock = () => {
 
 const styles = StyleSheet.create({
     container:{ flex: 1, justifyContent:"flex-start", margin:15},
-    card:{borderWidth:1, borderRadius:5, flex:1, backgroundColor:"white"},
+    card:{borderWidth:1, borderRadius:5, flex:1, backgroundColor:"white", paddingTop:3},
     timeLineEl:{
         justifyContent:"center",
         alignItems:"center",
@@ -187,6 +192,6 @@ const styles = StyleSheet.create({
         //borderWidth:1
         //marginBottom:15
     },
-    line:{borderRightWidth:4, height:"50%",},
+    line:{borderRightWidth:10, height:"50%",},
     noLine:{height:"50%",}
 });

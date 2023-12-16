@@ -163,8 +163,15 @@ export default function ScheduleScreen({navigation}) {
     const [dateTime, setDateTime] = useState(new Date());
     const [isTimePikerShow, setTimePiker] = useState(false);
         // exec PR_PLYA01_SCHMNG 'AlbaDelete', 16, 'Qpqpqpqp', '20231105', '20231111', 0
-    const openDateTimeModal = (startTime) => {
-        setDateTime(startTime)
+    const [bottomSheetTimeChanger, setBottomSheetTimeChanger] = useState([]);
+    const openDateTimeModal = (time, setTime) => {
+        setBottomSheetTimeChanger([setTime]);
+        var currentDate = new Date();
+        var [hours, minutes] = time.split(':');
+        currentDate.setHours(parseInt(hours, 10));
+        currentDate.setMinutes(parseInt(minutes, 10));
+        currentDate.setSeconds(0);
+        setDateTime(currentDate)
         setTimePiker(true);
     }
     const onDateTimeModalConfirm = (param) => {
@@ -172,14 +179,8 @@ export default function ScheduleScreen({navigation}) {
         const date = new Date(param.nativeEvent.timestamp);
         var currentHours = date.getHours().toString().padStart(2, '0');
         var currentMinutes = date.getMinutes().toString().padStart(2, '0');
-        const sTime = currentHours+":"+currentMinutes;
-        const eTime = getETime(sTime, scheduleInfo.jobDure);
-        if(param.type == "set" && scheduleInfo.jobDure > 0){
-            saveAlbaSchedule(sTime, eTime);
-        }else if(param.type == "set" && scheduleInfo.jobDure == 0){
-            sTime
-            dispatch(setscheduleAlbaSTime({data:sTime}))
-        }
+        const time = currentHours+":"+currentMinutes;
+        bottomSheetTimeChanger[0](time)
     }
     const saveAlbaSchedule = async (sTime, eTime) => {
         const param = {cls:"WeekAlbaScheduleSave", cstCo:cstCo, userId:scheduleInfo.userId, ymdFr:scheduleInfo.ymd, ymdTo:"", jobCl:"G", startTime:sTime, endTime:eTime};
@@ -298,6 +299,7 @@ export default function ScheduleScreen({navigation}) {
                             refresh={(callback)=>getWeekSchedule(callback)} 
                             onDelete={()=>console.log("onDelete")} 
                             onClose={()=>sheetRef.current.close()} 
+                            openDateModal={openDateTimeModal}
                         />
                     }
                 />
@@ -331,25 +333,43 @@ export default function ScheduleScreen({navigation}) {
 }
 
 
-function BtnSetV3({ scheduleInfo, cstCo, refresh }) {
+function BtnSetV3({ scheduleInfo, cstCo, refresh, openDateModal }) {
     // component START
-    const _TimeComponent = ({time, setTime, fontSize=16}) => {
+    const _TimeComponent = ({time, setTime, onTapTime, fontSize=16}) => {
         const changeTime = (min)=>{ if(!((time == "00:00" && min < 0) || (time == "23:30" && min > 0))) setTime(manipulateTime(time, min)) }
         return (
             <View style={{flexDirection:"row", alignItems:"center"}}>
                 <TouchableOpacity onPress={()=>changeTime(-30)}>
                     <AntDesign name="caretleft" size={24} color="black" />
                 </TouchableOpacity>
-                <View style={{alignItems:"center"}}>
+                <TouchableOpacity onPress={onTapTime} style={{alignItems:"center"}}>
                     <Text style={{fontSize:fontSize}}>{time}</Text>
-                </View>
+                </TouchableOpacity>
                 <TouchableOpacity onPress={()=>changeTime(30)}>
                     <AntDesign name="caretright" size={24} color="black" />
                 </TouchableOpacity>
             </View>
         )
     }
-    const _Section = ({fontSize=16, text, sTime, eTime, setStime, setEtime}) => {
+    const _setTime = (sep, v) => {
+        if(sep == "stime"){
+            const hours = calTimeDiffHours(v, eTime);
+            if(hours >= 0) {
+                setStime(v)
+            }else{
+                alert("근무 시간은마이너스가 될 수없습니다.")
+            };
+            
+        }else if (sep == "etime"){
+            const hours = calTimeDiffHours(sTime, v);
+            if(hours >= 0) {
+                setEtime(v);
+            }else{
+                alert("근무 시간은마이너스가 될 수없습니다.")
+            };
+        }
+    }
+    const _Section = ({fontSize=16, text, sTime, eTime, onTapTime}) => {
         const hours = calTimeDiffHours(sTime, eTime);
         return (
             <View style={{flex:1, borderWidth:1, borderRightWidth:0, flexDirection:"row", marginBottom:5, padding:10, borderTopStartRadius:5, borderBottomStartRadius:5}} >
@@ -357,9 +377,9 @@ function BtnSetV3({ scheduleInfo, cstCo, refresh }) {
                     <Text style={{fontSize:fontSize}}>{text}</Text>
                 </View>
                 <View style={{flex:1, flexDirection:"row", justifyContent:"center"}}>
-                    <_TimeComponent fontSize={fontSize} time={sTime} setTime={setStime} />
+                    <_TimeComponent fontSize={fontSize} time={sTime} setTime={(v)=>_setTime("stime", v)} onTapTime={()=>onTapTime("stime")} />
                     <Text> ~ </Text>
-                    <_TimeComponent fontSize={fontSize} time={eTime} setTime={setEtime} />
+                    <_TimeComponent fontSize={fontSize} time={eTime} setTime={(v)=>_setTime("etime", v)} onTapTime={()=>onTapTime("etime")}/>
                 </View>
                 <View style={{justifyContent:"center", alignItems:"flex-end", marginRight:5, width:35}}>
                     <Text style={{fontSize:fontSize}}>{hours}</Text>
@@ -413,7 +433,6 @@ function BtnSetV3({ scheduleInfo, cstCo, refresh }) {
         .then((res)=>{
             refresh(()=>{
                 setRadioRefresh(!radioRefresh)
-                //dispatch(moveWeekDown({data:{sTime:sTime, jobCl:cl, jobDure:calTimeDiffHours(sTime, eTime)}}));
                 dispatch(moveWeekDown());
                 setIsFncRunning(false);
             })
@@ -450,8 +469,10 @@ function BtnSetV3({ scheduleInfo, cstCo, refresh }) {
                         text={"시간"} 
                         sTime={sTime} 
                         eTime={eTime} 
-                        setStime={setStime}
-                        setEtime={setEtime}
+                        onTapTime={(sep)=>{
+                            if (sep =="stime") openDateModal(sTime, (changeTime)=>_setTime("stime", changeTime));
+                            if (sep =="etime") openDateModal(eTime, (changeTime)=>_setTime("etime", changeTime));
+                        }}
                     />
                     <TouchableOpacity 
                         style={{ backgroundColor:theme.correct, justifyContent:"center", borderWidth:1, borderTopEndRadius:5, borderBottomEndRadius:5, marginBottom:5, marginLeft:0, padding:3}} 

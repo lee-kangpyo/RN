@@ -71,11 +71,11 @@ export default function WeekAlba({alba, onTap, onDel, week}) {
                     const ymd = item.format("YYYYMMDD");
                     const filter = alba.list.filter((item)=>item.YMD == ymd);
                     const selected = (scheduleInfo.isEditing && scheduleInfo.ymd == ymd && scheduleInfo.userId == alba.userId)?true:false;
-                    if (filter.length > 0){
+                    if (filter.length > 0 && filter[0].JOBDURE > 0){
                         const item = filter[0];
                         const jobDure = item.JOBDURE
                         const jobCl = item.JOBCL
-                        const color = _color(jobCl);
+                        const color = (jobDure == 0)?"": _color(jobCl);
                         return <ContentBox key={idx} selected={selected} onTap={onTap} item={filter} jobDure={jobDure} jobCl={jobCl} color={color} sTime={filter[0].STARTTIME}  userId={alba.userId} userNa={alba.userNa} ymd={ymd} num={idx}/>
                     }else{
                         return <ContentBox key={idx} selected={selected} onTap={onTap} blank={true} jobDure={"0"} jobCl={"2"} userId={alba.userId} userNa={alba.userNa} ymd={ymd} num={idx}/>
