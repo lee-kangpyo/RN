@@ -36,6 +36,7 @@ import CustomerServiceScreen from './CustomerServiceScreen';
 import QnAScreen from './QnAScreen';
 import ModifyCrewScreen from './ModifyCrewScreen';
 import ScheduleTimeLineScreen from './ScheduleTimeLineScreen';
+import ScheduleScreenToAlba from './ScheduleScreenToAlba';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -187,7 +188,7 @@ function CrewScreen(){
         tabBarInactiveTintColor: 'gray',
       })}
     >
-      
+      <Tab.Screen name="schedule" component={ScheduleScreenToAlba} options={{ tabBarLabel: '주간근무계획' }}/>
       <Tab.Screen name="Home" options={{ tabBarLabel: '출퇴근' }} >
         {() => (
           <LocationPermission Grant={HomeScreen}/>
