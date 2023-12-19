@@ -209,3 +209,11 @@ export const manipulateTime = (timeString, minutes) => {
       millisecond: 0,
     }).format('HH:mm');
   };
+
+  export const YYMMDD2YYDD = (dayStr) => {
+    //const year = dayStr.substring(0, 4);
+    const month = dayStr.substring(4, 6);
+    const day = dayStr.substring(6, 8);
+    const formattedString = `${month}/${day}`;
+    return formattedString;
+  }

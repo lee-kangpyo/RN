@@ -12,6 +12,9 @@ import { AntDesign } from '@expo/vector-icons';
 import { theme } from '../util/color';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
+import { nextWeek, prevWeek } from '../../redux/slices/schedule';
+import HeaderControl from '../components/common/HeaderControl';
+import ScheduleByAlba from '../components/schedule/ScheduleByAlba';
 
 export default function ScheduleViewScreen({navigation}) {
     const weekNumber = useSelector((state)=>state.schedule.weekNumber);
@@ -20,7 +23,8 @@ export default function ScheduleViewScreen({navigation}) {
     const week = useSelector((state)=>state.schedule.week);
     const weekList = getWeekList(week);
     const dispatch = useDispatch();
-    const [weekSchSearch, setWeekSchSearch] = useState([])
+    const [mode, setMode] = useState(0)
+    const [weekSchSearch, setWeekSchSearch] = useState([]);
 
     const getWeekSchedule2 = async () => {
         const param = {cls:"WeekScheduleSearch3", cstCo:cstCo, userId:"", ymdFr:weekList[0].format("yyyyMMDD"), ymdTo:weekList[6].format("yyyyMMDD"), wCnt:"0",};
@@ -33,7 +37,7 @@ export default function ScheduleViewScreen({navigation}) {
             alert("알바 일정을 조회하는중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
         })
     }
-
+    
     const handelParam = (data) => {
         // 데이터를 YMD 및 USERID 값으로 그룹화
         const groupedData = data.reduce((result, item) => {
@@ -68,7 +72,7 @@ export default function ScheduleViewScreen({navigation}) {
     
     useEffect(()=>{
         getWeekSchedule2();
-    }, [])
+    }, [weekNumber])
 
     useEffect(()=>{
         navigation.setOptions({title:""})
@@ -96,28 +100,41 @@ export default function ScheduleViewScreen({navigation}) {
               );
         });
     }
+    
     return (
         <View style={[styles.container]}>
-            <Text style={{fontSize:16, marginBottom:15}}>{weekNumber.month}월 {weekNumber.number}주차 근무 계획</Text>
+            <View style={{flexDirection:"row", justifyContent:"space-between", alignItems:"center"}}>
+                <HeaderControl title={`${weekNumber.month}월 ${weekNumber.number}주차 근무 계획`} onLeftTap={()=> dispatch(prevWeek())} onRightTap={()=> dispatch(nextWeek())} />
+                <TouchableOpacity style={styles.btn} onPress={()=>setMode(!mode)}>
+                    <Text style={styles.btnText}>{(mode == 0)?"알바별로 변경":"날짜별로 변경"}</Text>
+                </TouchableOpacity>
+            </View>
             <ViewShot ref={ref} options={{ fileName: "capture", format: "jpg", quality: 0.9 }}>
                 <View style={styles.containerBox}>
                     {
-                        (weekSchSearch.length > 0)?
-                            <ScrollView contentContainerStyle={styles.scroll}>
-                                {
-                                weekList.map((dayStr, idx)=>{
-                                    const day={ 0:"일", 1:"월", 2:"화", 3:"수", 4:"목", 5:"금", 6:"토" };
-                                    const albaList = weekSchSearch.filter((el)=>el.YMD == dayStr.format("YYYYMMDD"));
-                                    return (albaList.length > 0)?<DailyScheduleBox key={idx} mmdd={dayStr} day={day[getDayWeekNumber(dayStr)]} albaList={albaList} />:null;
-                                })
-                                }
-                            </ScrollView>
+                        (mode == 0)?
+                            (weekSchSearch.length > 0)?
+                                <ScrollView contentContainerStyle={styles.scroll}>
+                                    {
+                                    weekList.map((dayStr, idx)=>{
+                                        const day={ 0:"일", 1:"월", 2:"화", 3:"수", 4:"목", 5:"금", 6:"토" };
+                                        const albaList = weekSchSearch.filter((el)=>el.YMD == dayStr.format("YYYYMMDD"));
+                                        return (albaList.length > 0)?<DailyScheduleBox key={idx} mmdd={dayStr} day={day[getDayWeekNumber(dayStr)]} albaList={albaList} />:null;
+                                    })
+                                    }
+                                </ScrollView>
+                            :
+                                <View style={{flex:1, justifyContent:"center", alignItems:"center"}}>
+                                    <Text>데이터가 없습니다.</Text>
+                                </View>
                         :
-                            <View style={{alignSelf:"center"}}>
-                                <Text>데이터가 없습니다.</Text>
+                        (mode == 1)?
+                            <ScheduleByAlba cstCo={cstCo} userId={""} ymdFr={weekList[0].format("yyyyMMDD")} ymdTo={weekList[6].format("yyyyMMDD")}/>
+                        :
+                            <View style={{flex:1, justifyContent:"center", alignItems:"center"}}>
+                                <Text>오류가 발생했습니다. 잠시후 다시 시도해주세요</Text>
                             </View>
-                    }
-                
+                    }           
                 </View>
             </ViewShot>
         </View>
@@ -127,21 +144,22 @@ export default function ScheduleViewScreen({navigation}) {
 const DailyScheduleBox = ({mmdd, day, albaList}) => {
     const navigation = useNavigation();
     const color={2:theme.open,5:theme.middle,9:theme.close,1:theme.etc,};
+    const dayColor = (day=="일")?"red":(day=="토")?"blue":"black"
     return(
         <View style={styles.day}>
             <TouchableOpacity style={styles.mmdd} onPress={()=>navigation.push("scheduleTimeLine", {ymd:mmdd.format("YYYYMMDD"), mmdd:mmdd.format("MM / DD") + " " + day})}>
-                <Text>{mmdd.format("MM / DD")}</Text>
-                <Text>({day})</Text>
+                <Text style={{fontSize:16, color:dayColor}}>{mmdd.format("MM / DD")}</Text>
+                <Text style={{fontSize:16, color:dayColor}}>({day})</Text>
             </TouchableOpacity>
             <View style={styles.albaList}>
                 {
-                    albaList.map((alba)=>{
+                    albaList.map((alba, idx)=>{
                         return(
-                            <View style={styles.alba}>
+                            <View key={idx} style={styles.alba}>
                                 <AntDesign name="checkcircle" size={16} color={color[alba.JOBCL]} style={styles.circle}/>
                                 <View style={{flexDirection:"row",}}>
-                                    <Text style={{fontSize:16, width:70}}>{alba.USERNA}</Text>
-                                    <Text style={{fontSize:16}}>{alba.SCHTIME} 근무 ({alba.JOBDURE})</Text>
+                                    <Text style={{fontSize:16, width:75}} numberOfLines={1} ellipsizeMode='tail'>{alba.USERNA}</Text>
+                                    <Text style={{fontSize:16}}>     {alba.SCHTIME} ({alba.JOBDURE})</Text>
                                 </View>
                             </View>
                         );
@@ -155,6 +173,7 @@ const DailyScheduleBox = ({mmdd, day, albaList}) => {
 const styles = StyleSheet.create({
     container:{ flex: 1, justifyContent:"flex-start", margin:15},
     containerBox:{
+        marginTop:10,
         backgroundColor:"white",
         borderWidth: 0.5, // 테두리 두께
         borderColor: 'gray', // 테두리 색상
@@ -162,7 +181,6 @@ const styles = StyleSheet.create({
         height:"95%"
     },
     scroll:{
-
         alignItems:"flex-start",
     },
     day:{
@@ -196,4 +214,12 @@ const styles = StyleSheet.create({
         verticalAlign:"middle",
         paddingRight:5
     },
+    btn:{
+        borderWidth:1,
+        padding:5,
+        borderRadius:5
+    },
+    btnText:{
+        fontSize:10
+    }
 });
