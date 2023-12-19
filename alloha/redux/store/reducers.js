@@ -7,6 +7,7 @@ import scheduleSlice from '../slices/schedule';
 import workSlice from '../slices/work';
 import commonSlice from '../slices/common';
 import rltSlice from '../slices/result';
+import albaSlice from '../slices/alba';
 
 const rootReducer = combineReducers({
   user: userSlice.reducer,
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
   work: workSlice.reducer,
   common:commonSlice.reducer,
   result:rltSlice.reducer,
+  alba:albaSlice.reducer,
 });
 
 export default rootReducer;
