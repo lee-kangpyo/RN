@@ -534,6 +534,29 @@ router.get("/v1/searchAlbaChedule", async (req, res, next) => {
         res.status(200).json({ resultCode:"-1"});
     }
 })
+
+router.get("/v1/WeekAlbaScheduleSearch", async (req, res, next) => {
+    try{
+        const { cstCo,  userId, ymdFr, ymdTo } = req.query;
+        const param = {cls:"WeekAlbaScheduleSearch", cstCo:cstCo, userId:userId, ymdFr:ymdFr, ymdTo:ymdTo, jobCl:"", sTime:"", eTime:""};
+        const result = await execSql(albaSchedulemanager2, param);
+        
+        const groupedData = {};
+        result.recordset.forEach(item => {
+            const { USERNA, USERID, ...rest } = item;
+            if (groupedData[USERNA]) {
+                groupedData[USERNA].list.push(rest);
+            } else {
+                groupedData[USERNA] = { userNa: USERNA, userId:USERID, list: [rest] };
+            }
+        });
+
+        res.status(200).json({result:groupedData, resultCode:"00"});
+    } catch (error) {
+        console.log(error.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+})
 // 구버전 근무 계획 상세 에서 사용
 router.post("/v1/saveAlbaChedule", async (req, res, next) => {
     try {

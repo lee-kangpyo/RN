@@ -459,7 +459,7 @@ function BtnSetV3({ scheduleInfo, cstCo, refresh, openDateModal }) {
                             {id: 3, label: '기타', value: '1', color:theme.etc}
                         ]), [])
                     } 
-                    onPress={(v)=>{console.log(v);radioChange(v)}}
+                    onPress={(v)=>{radioChange(v)}}
                     selectedId={selectRadio}
                 />
                 <View style={{flexDirection:"row"}}>
