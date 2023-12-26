@@ -37,6 +37,7 @@ import QnAScreen from './QnAScreen';
 import ModifyCrewScreen from './ModifyCrewScreen';
 import ScheduleTimeLineScreen from './ScheduleTimeLineScreen';
 import ScheduleScreenToAlba from './ScheduleScreenToAlba';
+import CommuteCheckScreen from './CommuteCheckScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -189,7 +190,8 @@ function CrewScreen(){
       })}
     >
       <Tab.Screen name="schedule" component={ScheduleScreenToAlba} options={{ tabBarLabel: '주간근무계획' }}/>
-      <Tab.Screen name="Home" options={{ tabBarLabel: '출퇴근' }} >
+      <Tab.Screen name="CommuteCheck" component={CommuteCheckScreen} options={{ tabBarLabel: '근무현황' }}/>
+      <Tab.Screen name="Home" options={{ tabBarLabel: '출퇴근(구버전)' }} >
         {() => (
           <LocationPermission Grant={HomeScreen}/>
         )}
@@ -212,7 +214,7 @@ function CrewScreen(){
 const setTabBarIcon = (focused, color, size, name) =>{
   let iconName;
   let icon;
-  if (name === 'Home') {
+  if (name === 'Home' || name === 'CommuteCheck') {
     iconName = focused ? 'coffee' : 'coffee-outline';
     icon = "MaterialCommunityIcons"
   }else if (name === 'ManageCrew'){
