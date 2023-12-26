@@ -158,7 +158,7 @@ export default function HomeScreen() {
         }
         return result.trim();
     }
-
+    
     const getSelStoreRecords = async () =>{
         setChangePickerLoad(true)
         await axios.get(URL+"/api/v1/getSelStoreRecords", {params:{userId:userId, cstCo:selectedStore.CSTCO}})
@@ -199,7 +199,7 @@ export default function HomeScreen() {
 
 
     useEffect(()=>{
-        navigation.setOptions({title:"출퇴근"})
+        navigation.setOptions({title:"출퇴근(구버전)"})
     }, [navigation])
 
     useEffect(() => {
