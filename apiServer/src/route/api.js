@@ -16,6 +16,7 @@ const workRouter = require("../route/work")
 const resultRouter = require("../route/result")
 const palRouter = require("../route/profitAndLoss")
 const boardRouter = require("../route/board")
+const commuteRouter = require("../route/commute")
 
 router.get("/v1/test", async (req, res, next)=>{
     const result = await execSql(test, {userId:'asdf'})
@@ -623,6 +624,7 @@ router.use('/v1/work', workRouter);
 router.use('/v1/rlt', resultRouter); 
 router.use('/v1/profitAndLoss', palRouter); 
 router.use('/v1/board', boardRouter); 
+router.use('/v1/commute', commuteRouter); 
 
 module.exports = router;
 
