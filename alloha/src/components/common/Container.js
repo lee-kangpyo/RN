@@ -154,6 +154,7 @@ function ProfitBox({style={}, onTapToEdit, isSub, isOpen, setIsOpen, text, text2
 }
 
 export function PayDetailContainer({header, contents, ondeataTap}){
+    console.log(contents)
     return(
         <View>
             <View style={styles.row}>
@@ -202,7 +203,7 @@ const PayDetailLine = ({item, onDeataTap}) => {
                     <ContentBox text={spcWage.toLocaleString()} subText={item.spcDure.toLocaleString()}  alignItems='flex-end'/>
                 :null
             }
-            <ContentBox text={item.salary.toLocaleString()} subText={item.jobDure + item.spcDure} alignItems='flex-end'/>
+            <ContentBox text={item.salary.toLocaleString()} alignItems='flex-end'/>
         </View>
     )
 }
