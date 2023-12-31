@@ -7,7 +7,7 @@ import { URL } from "@env";
 import { useDispatch, useSelector } from 'react-redux';
 import { setMyStores, setSelectedStore } from '../../../redux/slices/alba';
 
-export default function MyStorePicker({userId}) {
+export default function MyStorePicker({width="100%", borderColor=theme.purple, userId}) {
     //const [selCstCo, setSelCstco] = useState();
     //const [selectedStore, setSelectedStore] = useState({});             // 선택된 점포
     //const [myStores, setmyStores] = useState([]);                       // 내 알바 점포들
@@ -35,46 +35,46 @@ export default function MyStorePicker({userId}) {
     useEffect(()=>{
         searchMyAlbaList(true);
     }, [])
-
   return (
-    <View style={styles.container}>
-        <View style={styles.border}>
-            <Picker
-                style={{fontSize:"16"}}
-                selectedValue={sCstCo}
-                onValueChange={ (itemValue, itemIndex) =>{
-                    dispatch(setSelectedStore({data:myStores.filter((el)=>{return el.CSTCO === itemValue})[0]}));
-                }
-                }
-                >
-                {
-                myStores.map((el, idx)=>{
-                        return (el.RTCL === "N")
-                            ?
-                                <Picker.Item key={idx} label={el.CSTNA} value={el.CSTCO}/>
-                            :(el.RTCL === "R")?
-                                <Picker.Item key={idx} label={el.CSTNA + "(승인 대기 중)"} value={el.CSTCO}/>
-                            :  
-                                null;
-                    })
-                }
-                
-            </Picker>
+    (sCstCo > 0)?
+        <View style={[styles.container, {width:width}]}>
+            <View style={[styles.border, {borderColor:borderColor, height:35, justifyContent:"center", overflow:'hidden'}]}>
+                <Picker
+                    style={{fontSize:"16",}}
+                    selectedValue={sCstCo}
+                    onValueChange={ (itemValue, itemIndex) =>{
+                        dispatch(setSelectedStore({data:myStores.filter((el)=>{return el.CSTCO === itemValue})[0]}));
+                    }
+                    }
+                    >
+                    {
+                    myStores.map((el, idx)=>{
+                            return (el.RTCL === "N")
+                                ?
+                                    <Picker.Item key={idx} label={el.CSTNA} value={el.CSTCO}/>
+                                :(el.RTCL === "R")?
+                                    <Picker.Item key={idx} label={el.CSTNA + "(승인 대기 중)"} value={el.CSTCO}/>
+                                :  
+                                    null;
+                        })
+                    }
+                    
+                </Picker>
+            </View>
         </View>
-    </View>
+    :
+        null
   );
 };
 
 const styles = StyleSheet.create({
     container: {
-        width:"100%",
         textAlign:"center", 
-        padding:15,
+        
     },
     border:{
         borderWidth:1,
         borderRadius:5,
         padding:5,
-        borderColor:theme.purple
     },
   });
