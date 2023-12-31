@@ -35,33 +35,35 @@ export default function MyStorePicker({width="100%", borderColor=theme.purple, u
     useEffect(()=>{
         searchMyAlbaList(true);
     }, [])
-
   return (
-    <View style={[styles.container, {width:width}]}>
-        <View style={[styles.border, {borderColor:borderColor, height:35, justifyContent:"center", overflow:'hidden'}]}>
-            <Picker
-                style={{fontSize:"16",}}
-                selectedValue={sCstCo}
-                onValueChange={ (itemValue, itemIndex) =>{
-                    dispatch(setSelectedStore({data:myStores.filter((el)=>{return el.CSTCO === itemValue})[0]}));
-                }
-                }
-                >
-                {
-                myStores.map((el, idx)=>{
-                        return (el.RTCL === "N")
-                            ?
-                                <Picker.Item key={idx} label={el.CSTNA} value={el.CSTCO}/>
-                            :(el.RTCL === "R")?
-                                <Picker.Item key={idx} label={el.CSTNA + "(승인 대기 중)"} value={el.CSTCO}/>
-                            :  
-                                null;
-                    })
-                }
-                
-            </Picker>
+    (sCstCo > 0)?
+        <View style={[styles.container, {width:width}]}>
+            <View style={[styles.border, {borderColor:borderColor, height:35, justifyContent:"center", overflow:'hidden'}]}>
+                <Picker
+                    style={{fontSize:"16",}}
+                    selectedValue={sCstCo}
+                    onValueChange={ (itemValue, itemIndex) =>{
+                        dispatch(setSelectedStore({data:myStores.filter((el)=>{return el.CSTCO === itemValue})[0]}));
+                    }
+                    }
+                    >
+                    {
+                    myStores.map((el, idx)=>{
+                            return (el.RTCL === "N")
+                                ?
+                                    <Picker.Item key={idx} label={el.CSTNA} value={el.CSTCO}/>
+                                :(el.RTCL === "R")?
+                                    <Picker.Item key={idx} label={el.CSTNA + "(승인 대기 중)"} value={el.CSTCO}/>
+                                :  
+                                    null;
+                        })
+                    }
+                    
+                </Picker>
+            </View>
         </View>
-    </View>
+    :
+        null
   );
 };
 

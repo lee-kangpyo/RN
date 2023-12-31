@@ -1,5 +1,5 @@
 
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Linking, Alert } from 'react-native';
 import React, {useState, useEffect, useCallback} from 'react';
 import MyStorePicker from '../components/alba/MyStorePicker';
 import { useSelector } from 'react-redux';
@@ -8,6 +8,7 @@ import { YYMMDD2YYDD, getStartAndEndOfWeek } from './../util/moment';
 import { useFocusEffect } from '@react-navigation/native';
 import { AntDesign } from '@expo/vector-icons';
 import CurTimer from '../components/common/CurTimer';
+import { getLocation } from '../util/location';
 
 export default function CommuteCheckScreen({navigation}) {
     const userId = useSelector((state)=>state.login.userId)
@@ -16,6 +17,8 @@ export default function CommuteCheckScreen({navigation}) {
     const [jobChk, setJobChk] = useState([]);
     const [daySchedule, setDaySchedule] = useState([]);
     const [isCommonJob, setJobCls] = useState(true);
+    const [weekInfo, setWeekInfo] = useState({});
+
     const jobchksearch = async (cstCo) => {
         await HTTP("GET", "/api/v1/commute/jobchksearch", {userId:userId, cstCo:cstCo})
         .then((res)=>{
@@ -29,7 +32,7 @@ export default function CommuteCheckScreen({navigation}) {
         // exec PR_PLYD02_SALARY 'MonthAlbaSlySearch', '20231203', '20231209', 1010, '', 'mega7438226_0075', '', 0
         await HTTP("GET", "/api/v1/commute/monthCstSlySearch", {userId:userId, cstCo:sCstCo, ymdFr:thisSunday, ymdTo:thisSaturday})
         .then((res)=>{
-            //console.log(res.data.result)
+            setWeekInfo(res.data.result[0])
             //const data = res.data.result.sort((a, b) => a.ORDBY - b.ORDBY);
             //dispatch(setMonthCstPl({data:data}));
         }).catch(function (error) {
@@ -53,17 +56,49 @@ export default function CommuteCheckScreen({navigation}) {
 
     
     const insertJobChk = async (chkYn) => {
-        const jobCl = (isCommonJob)?"G":"S"
-        await HTTP("POST", "/api/v1/commute/insertJobChk", {userId:userId, cstCo:sCstCo, lat:0, lon:0, chkYn:chkYn, apvYn:"Y", jobCl:jobCl})
-        .then((res)=>{
-            jobchksearch();
-        }).catch(function (error) {
-            console.log(error);
-            alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
-        })
+        console.log("insert3")
+        const result = await getLocation();
+        
+        console.log(result);
+        if(result && result.mocked) {
+            alert("모의 위치가 설정되어있습니다.")
+        }else{
+            console.log("####")    
+            if(result){
+                const jobCl = (isCommonJob)?"G":"S"
+                await HTTP("POST", "/api/v1/commute/insertJobChk", {userId:userId, cstCo:sCstCo, lat:result.latitude, lon:result.longitude, chkYn:chkYn, apvYn:"Y", jobCl:jobCl})
+                .then((res)=>{
+                    jobchksearch(sCstCo);
+                    getDaySchedule(sCstCo);
+                }).catch(function (error) {
+                    console.log(error);
+                    alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
+                })
+            }else{
+                
+                console.log("널")
+                Alert.alert(
+                    '위치 권한 요청',
+                    '위치 권한을 허용해주세요',
+                    [
+                        {text: '취소', onPress: () => {}, style: 'cancel'},
+                        {
+                        text: '설정창열기',
+                        onPress: () => Linking.openSettings(),
+                        style: 'destructive',
+                        },
+                    ],
+                    {
+                        cancelable: true,
+                        onDismiss: () => {},
+                    },
+                )
+            }
+        }
+        
 
     }
-    
+
     useFocusEffect(
         useCallback(() => {
             jobchksearch(sCstCo);
@@ -72,59 +107,116 @@ export default function CommuteCheckScreen({navigation}) {
             return () => { 
                 //console.log("unFocused");
             };
+            
         }, [sCstCo])
     )
-    useEffect(()=>{
-        jobchksearch(sCstCo);
-        getDaySchedule(sCstCo);
-    }, [sCstCo])
+    // useEffect(()=>{
+    //     jobchksearch(sCstCo);
+    //     getDaySchedule(sCstCo);
+    // }, [sCstCo])
 
     useEffect(()=>{
         navigation.setOptions({title:"근무 현황"})
         //navigation.setOptions({headerShown:false})
     }, [navigation])
+    return (
+        (sCstCo > 0)?
+            <>
+            <View style={styles.container}>
+                <View style={styles.row}>
+                    <MyStorePicker width={'75%'} borderColor='rgba(9,9,9,1)' userId={userId} />    
+                    <View style={{flexDirection:"row"}}>
+                        <AntDesign name="checksquareo" size={24} color="black" />
+                        <Text>수동체크</Text>
+                    </View>
+                </View>
+                <View style={[styles.row, {marginBottom:10}]}>
+                    <View>
+                        <Text>근무계획</Text>
+                        {(daySchedule.length > 0)
+                            ?
+                                daySchedule.map((el, idx)=>{
+                                    const dateString = el.YMD;
+                                    const date = new Date(`${dateString.slice(0, 4)}-${dateString.slice(4, 6)}-${dateString.slice(6, 8)}`);
+                                    const dayOfWeek = ["일", "월", "화", "수", "목", "금", "토"][date.getDay()];
+                                    return <Text key={idx}>{YYMMDD2YYDD(el.YMD)} ({dayOfWeek}) {el.SCHTIME} ({el.JOBDURE})</Text>
+                                })
+                            :
+                                <Text>근무계획이없습니다.</Text>
+                        }
+                    </View>
+                    <View style={[styles.pill, {backgroundColor:"#D9D9D9",}]}>
+                        <Text>{(isCommonJob)?"일반근무":"대타근무"}</Text>
+                    </View>
+                </View>
+                <CommuteButton onButtnPressed={insertJobChk} data={jobChk} sTime={(jobChk.length > 0)?jobChk[0].chkTime.split(" ")[1]:"00:00"}/>
+                <View style={[styles.center, {marginBottom:20}]}>
+                    <CurTimer />
+                </View>
+                <CommuteBar data={jobChk} isCommonJob={isCommonJob} onPressed={()=>alert("전환 기능은 아직 확정되지 않음")/*setJobCls(!isCommonJob)*/} />
+            </View>
+            <Bottom data={weekInfo} />
+            </>
+        :   
+            <View style={{flex:1, justifyContent:"center", alignItems:"center"}}>
+                <MyStorePicker userId={userId} />
+                <Text>등록된 점포가 없습니다. 점포검색을 이용해 주세요</Text>
+            </View>
+    );
+}
+
+const Bottom = ({data}) => {
+    const convertTime = (num) => {
+        const hours = Math.floor(num);
+        const minutes = Math.round((num - hours) * 60);
+        return `${hours}시간 ${minutes}분`;
+    }
 
     return (
-        <>
-        <View style={styles.container}>
-            <View style={styles.row}>
-                <MyStorePicker width={'75%'} borderColor='rgba(9,9,9,1)' userId={userId} />    
-                <View style={{flexDirection:"row"}}>
-                    <AntDesign name="checksquareo" size={24} color="black" />
-                    <Text>수동체크</Text>
+        (data && Object.keys(data).length > 0)?
+            <View style={{backgroundColor:"#5372D7", borderTopLeftRadius:15, borderTopRightRadius:15, paddingHorizontal:25, paddingVertical:10, position:"absolute", bottom:0, width:"100%"}}>
+                <View style={[styles.row, {alignItems:"flex-start"}]}>
+                    <View style={{flex:1}}>
+                        <Text style={{color:"white", fontSize:16}}>주간 근무 시간</Text>
+                        <Text style={{color:"white", paddingHorizontal:15}}>{convertTime(data.jobDure)}</Text>
+                        <Text style={{color:"white", paddingHorizontal:15}}>(대타 {convertTime(data.spcDure)})</Text>
+                    </View>
+                    <View style={{flex:1}}>
+                        <Text style={{color:"white", fontSize:16}}>급여내역</Text>
+                        <View style={{flexDirection:"row", justifyContent:"space-between", paddingHorizontal:15}}>
+                            <Text style={{color:"white"}}>일반 :</Text>
+                            <Text style={{color:"white"}}>{data.jobWage.toLocaleString()} 원</Text>
+                        </View>
+                        <View style={{flexDirection:"row", justifyContent:"space-between", paddingHorizontal:15}}>
+                            <Text style={{color:"white"}}>플러스 :</Text>
+                            <Text style={{color:"white"}}>{data.incentive.toLocaleString()} 원</Text>
+                        </View>
+                        <View style={{flexDirection:"row", justifyContent:"space-between", paddingHorizontal:15}}>
+                            <Text style={{color:"white"}}>주휴 : </Text>
+                            <Text style={{color:"white"}}>{data.spcWage.toLocaleString()} 원</Text>
+                        </View>
+                    </View>
+                </View>
+                <View style={[styles.row, {alignItems:"flex-start"}]}>
+                    <View style={{flex:1}}>
+                        <Text style={{color:"white", fontSize:16}}>이슈요약</Text>
+                        <Text style={{color:"white", paddingHorizontal:15}}>지각 {data.ATTCL}</Text>
+                        <Text style={{color:"white", paddingHorizontal:15}}>조회 {data.ATTCL2}</Text>
+                        <Text style={{color:"white", paddingHorizontal:15}}>결근 {data.ATTCL3}</Text>
+                    </View>
+                    <View style={{flex:1}}>
+                        <Text style={{color:"white", fontSize:16}}>주간 총 급여</Text>
+                        <Text style={{color:"white", paddingHorizontal:15, alignSelf:"flex-end"}}>{data.salary.toLocaleString()} 원</Text>
+                    </View>
                 </View>
             </View>
-            <View style={[styles.row, {marginBottom:10}]}>
-                <View>
-                    <Text>근무계획</Text>   
-                    {(daySchedule.length > 0)
-                        ?
-                            daySchedule.map((el, idx)=>{
-                                const dateString = el.YMD;
-                                const date = new Date(`${dateString.slice(0, 4)}-${dateString.slice(4, 6)}-${dateString.slice(6, 8)}`);
-                                const dayOfWeek = ["일", "월", "화", "수", "목", "금", "토"][date.getDay()];
-                                return <Text key={idx}>{YYMMDD2YYDD(el.YMD)} ({dayOfWeek}) {el.SCHTIME} ({el.JOBDURE})</Text>
-                            })
-                        :
-                            <Text>근무계획이없습니다.</Text>
-                    }
-                </View>
-                <View style={[styles.pill, {backgroundColor:"#D9D9D9",}]}>
-                    <Text>{(isCommonJob)?"일반근무":"대타근무"}</Text>
-                </View>
-            </View>
-            <CommuteButton onButtnPressed={insertJobChk} data={jobChk} sTime={(jobChk.length > 0)?jobChk[0].chkTime.split(" ")[1]:"00:00"}/>
-            <View style={[styles.center, {marginBottom:20}]}>
-                <CurTimer />
-            </View>
-            <CommuteBar data={jobChk} isCommonJob={isCommonJob} onPressed={()=>alert("전환 기능은 아직 확정되지 않음")/*setJobCls(!isCommonJob)*/} />
-        </View>
-        <View style={{backgroundColor:"#5372D7", borderTopLeftRadius:15, borderTopRightRadius:15, paddingHorizontal:25, paddingVertical:10, position:"absolute", bottom:0, width:"100%"}}>
+        :
+        <View style={{backgroundColor:"#5372D7", borderTopLeftRadius:15, borderTopRightRadius:15, paddingHorizontal:25, paddingVertical:10, position:"absolute", bottom:0, width:"100%", height:200}}>
             <View style={[styles.row, {alignItems:"flex-start"}]}>
                 <View style={{flex:1}}>
                     <Text style={{color:"white", fontSize:16}}>주간 근무 시간</Text>
-                    <Text style={{color:"white", paddingHorizontal:15}}>13시간 30분</Text>
-                    <Text style={{color:"white", paddingHorizontal:15}}>(대타 1:30)</Text>
+                    <Text style={{color:"white", paddingHorizontal:15}}>00:00</Text>
+                    <Text style={{color:"white", paddingHorizontal:15}}>(대타 00:00)</Text>
                 </View>
                 <View style={{flex:1}}>
                     <Text style={{color:"white", fontSize:16}}>급여내역</Text>
@@ -138,27 +230,25 @@ export default function CommuteCheckScreen({navigation}) {
                     </View>
                     <View style={{flexDirection:"row", justifyContent:"space-between", paddingHorizontal:15}}>
                         <Text style={{color:"white"}}>주휴 : </Text>
-                        <Text>0 원</Text>
+                        <Text style={{color:"white"}}>0 원</Text>
                     </View>
                 </View>
             </View>
             <View style={[styles.row, {alignItems:"flex-start"}]}>
                 <View style={{flex:1}}>
                     <Text style={{color:"white", fontSize:16}}>이슈요약</Text>
-                    <Text style={{color:"white", paddingHorizontal:15}}>지각 3</Text>
-                    <Text style={{color:"white", paddingHorizontal:15}}>조회 4</Text>
-                    <Text style={{color:"white", paddingHorizontal:15}}>결근 4</Text>
+                    <Text style={{color:"white", paddingHorizontal:15}}>지각 0</Text>
+                    <Text style={{color:"white", paddingHorizontal:15}}>조회 0</Text>
+                    <Text style={{color:"white", paddingHorizontal:15}}>결근 0</Text>
                 </View>
                 <View style={{flex:1}}>
                     <Text style={{color:"white", fontSize:16}}>주간 총 급여</Text>
-                    <Text style={{color:"white", paddingHorizontal:15, alignSelf:"flex-end"}}>129,879 원</Text>
+                    <Text style={{color:"white", paddingHorizontal:15, alignSelf:"flex-end"}}>0 원</Text>
                 </View>
             </View>
         </View>
-        </>
-    );
+    )
 }
-
 const CommuteButton = ({data, sTime, onButtnPressed}) => {
     var top = "", main = "", bot = "", color = "";
     const length = data.length;
@@ -214,13 +304,22 @@ const CommuteButton = ({data, sTime, onButtnPressed}) => {
 
 const CommuteBar = ({data, isCommonJob, onPressed}) => {
     const start = (data[0])?data[0].chkTime.split(" ")[1]:"--:--";
-    const end = (data[1])?data[1].chkTime.split(" ")[1]:"--:--";;
+    const start2 = (data[0])?data[0].chkTime.split(" ")[2]:null;
+
+    const end = (data[1])?data[1].chkTime.split(" ")[1]:"--:--";
+    const end2 = (data[1])?data[1].chkTime.split(" ")[2]:null;
     const text = (isCommonJob)?"대타근무":"일반근무";
     return(
         <View style={[styles.center, {flexDirection:"row"}]}>
             <View style={styles.center}>
                 <Text>출근</Text>
                 <Text>{start}</Text>
+                {
+                    (start2)?
+                        <Text>{start2}</Text>
+                    : 
+                        null
+                }
             </View>
             <TouchableOpacity onPress={onPressed} style={[styles.box, styles.row, {borderRadius:5}]}>
                 <View>
@@ -235,6 +334,12 @@ const CommuteBar = ({data, isCommonJob, onPressed}) => {
             <View  style={styles.center}>
                 <Text>퇴근</Text>
                 <Text>{end}</Text>
+                {
+                    (end2)?
+                        <Text>{end2}</Text>
+                    : 
+                        null
+                }
             </View>
         </View>
     )
