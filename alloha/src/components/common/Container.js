@@ -154,7 +154,6 @@ function ProfitBox({style={}, onTapToEdit, isSub, isOpen, setIsOpen, text, text2
 }
 
 export function PayDetailContainer({header, contents, ondeataTap}){
-    console.log(contents)
     return(
         <View>
             <View style={styles.row}>
