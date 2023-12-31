@@ -11,9 +11,9 @@ export const getWeekByWeekNumber = (startMonth, weekNumber) => {
     return {startOfWeek, endOfWeek}
 }
 
-export const getCurMM = () => {
+export const getCurYYYYMM = () => {
     const currentDate = moment();
-    return currentDate.format("MM");
+    return currentDate.format("YYYYMM");
 }
 export const getCurMonth = () => {
     const currentDate = moment();
@@ -46,7 +46,7 @@ export const moveNextMonth = (date) => {
     const nextWeekStart = dateObject.clone().add(1, 'month');
     const start = nextWeekStart.startOf('month').clone();
     const end = nextWeekStart.endOf('month').clone();
-    return ({start : start.format("YYYYMMDD"), end : end.format("YYYYMMDD"), mm:nextWeekStart.format("MM")});
+    return ({start : start.format("YYYYMMDD"), end : end.format("YYYYMMDD"), mm:nextWeekStart.format("MM"), YYYYMM:nextWeekStart.format("YYYYMM")});
 }
 
 export const getNextWeek = () => {

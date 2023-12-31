@@ -1,9 +1,9 @@
 import {createSlice} from '@reduxjs/toolkit';
-import { getCurMM, getCurMonth, moveNextMonth, movePrevMonth } from '../../src/util/moment';
+import { getCurYYYYMM, getCurMonth, moveNextMonth, movePrevMonth } from '../../src/util/moment';
 
 const initialState = {
   month:getCurMonth(),
-  MM:getCurMM(),
+  YYYYMM:getCurYYYYMM(),
   workResultList:[],
   workDetailResultList:[],
   //ProfitAndLoss
@@ -30,7 +30,7 @@ const rltSlice = createSlice({
     },
     nextMonth(state, action){
       const data = moveNextMonth(state.month)
-      if(state.MM >= data.mm) state.month = data;
+      if(state.YYYYMM >= data.YYYYMM) state.month = data;
     },
     setMonthCstPl(state, action){
       state.monthCstPl = action.payload.data;
