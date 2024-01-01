@@ -49,21 +49,22 @@ TaskManager.defineTask(LOCATION_TASK,  async ({ data, error } ) => {
       const id = await AsyncStorage.getItem("id")
       const uid = await SecureStore.getItemAsync("uuid");
       const { locations } = data;
-      await axios.get(TASK_URL+"/api/v1/task/checkStoreLocation", {params:{id:id, uuid:uid, lat:locations[0].coords.latitude, lon:locations[0].coords.longitude, ymd:getCurrentTimeWithDate()}})
-      .then(async (res)=>{
-        if(res.data.resultCode === "-2"){
-          console.log("기기 변경됨")
-          if( TaskManager.isTaskDefined(LOCATION_TASK)){
-            await TaskManager.unregisterTaskAsync(LOCATION_TASK)
-          }
-        }
-      })
-      .catch(async (err)=>{
-        console.log(err)
-        console.log("다른 에러 발생")
-        //testLog(err);
-        //await TaskManager.unregisterTaskAsync(LOCATION_TASK)
-      })
+      //태스크 매니저 작동 중지
+      // await axios.get(TASK_URL+"/api/v1/task/checkStoreLocation", {params:{id:id, uuid:uid, lat:locations[0].coords.latitude, lon:locations[0].coords.longitude, ymd:getCurrentTimeWithDate()}})
+      // .then(async (res)=>{
+      //   if(res.data.resultCode === "-2"){
+      //     console.log("기기 변경됨")
+      //     if( TaskManager.isTaskDefined(LOCATION_TASK)){
+      //       await TaskManager.unregisterTaskAsync(LOCATION_TASK)
+      //     }
+      //   }
+      // })
+      // .catch(async (err)=>{
+      //   console.log(err)
+      //   console.log("다른 에러 발생")
+      //   //testLog(err);
+      //   //await TaskManager.unregisterTaskAsync(LOCATION_TASK)
+      // })
   }
 });
 
