@@ -14,7 +14,7 @@ export default function CommuteCheckDetailScreen({navigation, route}) {
     }, [navigation])
 
     const onModifyBtnpressed = () => {
-        console.log("근무기록변경버튼클릭")
+        alert("근무기록변경버튼클릭")
     }
 
     return (
