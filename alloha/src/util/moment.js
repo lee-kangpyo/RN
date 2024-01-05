@@ -217,17 +217,31 @@ export const manipulateTime = (timeString, minutes) => {
     const formattedString = `${month}/${day}`;
     return formattedString;
   }
-  
 
+//"20240104" -> "2024-01-04"
+export const getISOFormattedDate = (dateString) => {
+    const year = dateString.substring(0, 4);
+    const month = dateString.substring(4, 6);
+    const day = dateString.substring(6, 8);
+
+    return `${year}-${month}-${day}`;
+}
+// Date 객체 -> "20240104"  
+export const getFormattedDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}${month}${day}`;
+}
   // moment를사용하지 않고 오늘 날짜를 기준으로 이번주 일요일부터 다음주 일요일날짜 리턴
   export const getStartAndEndOfWeek = () => {
     
-    function getFormattedDate(date) {
-        const year = date.getFullYear();
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        const day = date.getDate().toString().padStart(2, '0');
-        return `${year}${month}${day}`;
-    }
+    // function getFormattedDate(date) {
+    //     const year = date.getFullYear();
+    //     const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    //     const day = date.getDate().toString().padStart(2, '0');
+    //     return `${year}${month}${day}`;
+    // }
     
     const now = new Date();
     const currentDayOfWeek = now.getDay(); // 0: 일요일, 1: 월요일, ..., 6: 토요일
@@ -251,3 +265,22 @@ export const manipulateTime = (timeString, minutes) => {
         nextSaturday: getFormattedDate(nextSaturday),
     };
 }
+
+// 변환 20230103 => {ymd:"23.01.03", day:일, color:"red"}
+export const YYYYMMDD2Obj = (ymdStr) => {
+    const date = new Date(ymdStr.slice(0, 4), ymdStr.slice(4, 6) - 1, ymdStr.slice(6));
+    const dayOfWeek = date.getDay();
+    const dayInfo = [
+        { color: "red", day: "일" },    // 일요일
+        { color: "black", day: "월" },  // 월요일
+        { color: "black", day: "화" },  // 화요일
+        { color: "black", day: "수" },  // 수요일
+        { color: "black", day: "목" },  // 목요일
+        { color: "black", day: "금" },  // 금요일
+        { color: "blue", day: "토" }    // 토요일
+    ];
+
+    const { color, day } = dayInfo[dayOfWeek];
+    const formattedDate = `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
+    return { ymd: formattedDate, day, color };
+};

@@ -18,7 +18,6 @@ export default function CommuteCheckScreen({navigation}) {
     const [daySchedule, setDaySchedule] = useState([]);
     const [isCommonJob, setJobCls] = useState(true);
     const [weekInfo, setWeekInfo] = useState({});
-
     const jobchksearch = async (cstCo) => {
         await HTTP("GET", "/api/v1/commute/jobchksearch", {userId:userId, cstCo:cstCo})
         .then((res)=>{
@@ -31,6 +30,7 @@ export default function CommuteCheckScreen({navigation}) {
     const MonthAlbaSlySearch = async () => {
         // exec PR_PLYD02_SALARY 'MonthAlbaSlySearch', '20231203', '20231209', 1010, '', 'mega7438226_0075', '', 0
         await HTTP("GET", "/api/v1/commute/monthCstSlySearch", {userId:userId, cstCo:sCstCo, ymdFr:thisSunday, ymdTo:thisSaturday})
+        
         .then((res)=>{
             setWeekInfo(res.data.result[0])
             //const data = res.data.result.sort((a, b) => a.ORDBY - b.ORDBY);
@@ -56,14 +56,10 @@ export default function CommuteCheckScreen({navigation}) {
 
     
     const insertJobChk = async (chkYn) => {
-        console.log("insert3")
         const result = await getLocation();
-        
-        console.log(result);
         if(result && result.mocked) {
             alert("모의 위치가 설정되어있습니다.")
         }else{
-            console.log("####")    
             if(result){
                 const jobCl = (isCommonJob)?"G":"S"
                 await HTTP("POST", "/api/v1/commute/insertJobChk", {userId:userId, cstCo:sCstCo, lat:result.latitude, lon:result.longitude, chkYn:chkYn, apvYn:"Y", jobCl:jobCl})
@@ -76,7 +72,6 @@ export default function CommuteCheckScreen({navigation}) {
                 })
             }else{
                 
-                console.log("널")
                 Alert.alert(
                     '위치 권한 요청',
                     '위치 권한을 허용해주세요',
@@ -156,6 +151,11 @@ export default function CommuteCheckScreen({navigation}) {
                 <CommuteBar data={jobChk} isCommonJob={isCommonJob} onPressed={()=>alert("전환 기능은 아직 확정되지 않음")/*setJobCls(!isCommonJob)*/} />
             </View>
             <Bottom data={weekInfo} />
+            <View>
+                <TouchableOpacity onPress={()=>navigation.push("CommuteCheckInfo")}>
+                    <Text>근무정보이동</Text>
+                </TouchableOpacity>
+            </View>
             </>
         :   
             <View style={{flex:1, justifyContent:"center", alignItems:"center"}}>
@@ -174,6 +174,7 @@ const Bottom = ({data}) => {
 
     return (
         (data && Object.keys(data).length > 0)?
+        <>
             <View style={{backgroundColor:"#5372D7", borderTopLeftRadius:15, borderTopRightRadius:15, paddingHorizontal:25, paddingVertical:10, position:"absolute", bottom:0, width:"100%"}}>
                 <View style={[styles.row, {alignItems:"flex-start"}]}>
                     <View style={{flex:1}}>
@@ -210,6 +211,8 @@ const Bottom = ({data}) => {
                     </View>
                 </View>
             </View>
+
+        </>
         :
         <View style={{backgroundColor:"#5372D7", borderTopLeftRadius:15, borderTopRightRadius:15, paddingHorizontal:25, paddingVertical:10, position:"absolute", bottom:0, width:"100%", height:200}}>
             <View style={[styles.row, {alignItems:"flex-start"}]}>

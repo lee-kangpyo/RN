@@ -38,6 +38,8 @@ import ModifyCrewScreen from './ModifyCrewScreen';
 import ScheduleTimeLineScreen from './ScheduleTimeLineScreen';
 import ScheduleScreenToAlba from './ScheduleScreenToAlba';
 import CommuteCheckScreen from './CommuteCheckScreen';
+import CommuteCheckInfoScreen from './CommuteCheckInfoScreen';
+import CommuteCheckDetailScreen from './CommuteCheckDetailScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -190,7 +192,7 @@ function CrewScreen(){
       })}
     >
       <Tab.Screen name="schedule" component={ScheduleScreenToAlba} options={{ tabBarLabel: '주간근무계획' }}/>
-      <Tab.Screen name="CommuteCheck" component={CommuteCheckScreen} options={{ tabBarLabel: '근무현황' }}/>
+      <Tab.Screen name="CommuteCheck" component={CommuteCheckStack} options={{ headerShown:false, tabBarLabel: '근무현황' }}/>
       <Tab.Screen name="Home" options={{ tabBarLabel: '출퇴근(구버전)' }} >
         {() => (
           <LocationPermission Grant={HomeScreen}/>
@@ -210,7 +212,15 @@ function CrewScreen(){
   )
 }
 //<Tab.Screen name="community" component={BoardScreen} options={{ tabBarLabel: '커뮤니티' }}/>
-
+function CommuteCheckStack(){
+  return(
+  <Stack.Navigator>
+    <Stack.Screen name="CommuteCheckMain" component={CommuteCheckScreen} />
+    <Stack.Screen name="CommuteCheckInfo" component={CommuteCheckInfoScreen} />
+    <Stack.Screen name="CommuteCheckDetail" component={CommuteCheckDetailScreen} />
+  </Stack.Navigator>
+  )
+}
 const setTabBarIcon = (focused, color, size, name) =>{
   let iconName;
   let icon;
