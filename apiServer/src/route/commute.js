@@ -3,9 +3,10 @@ var router = express.Router();
 const {execSql} = require("../utils/excuteSql");
 
 const dotenv = require('dotenv');
-const { jobChk } = require('../query/auth');
+const { jobChk, jobChk2 } = require('../query/auth');
 const { monthCstSlySearch } = require('../query/workResult');
 const { insertManualJobChk, daySchedule } = require('../query/commute');
+const { reverseGeocode } = require('../utils/kakao');
 dotenv.config();
 
 function getDate() {
@@ -15,6 +16,7 @@ function getDate() {
     const day = String(today.getDate()).padStart(2, '0');
     return `${year}${month}${day}`;
 }
+
 
 router.get("/jobchksearch", async (req, res, next)=>{
     console.log("GET commute.jobchksearch");
@@ -27,6 +29,46 @@ router.get("/jobchksearch", async (req, res, next)=>{
         res.status(200).json({ resultCode:"-1"});
     }
 })
+
+
+router.get("/commuteCheckInfo", (req, res, next) => {
+    console.log("GET commute.commuteCheckInfo - CommuteCheckInfoScreen 에서호출됨");
+    jobChk2Handler(req, res, next, false)
+});
+router.get("/jobDetailInfo", (req, res, next) => {
+    console.log("GET commute.jobDetailInfo - CommuteCheckDetailScreen 에서호출됨");
+    jobChk2Handler(req, res, next, true)
+});
+const jobChk2Handler = async (req, res, next, isReverseGeoCode) => {
+    try {
+        const {cls, userId, cstCo, ymdFr, ymdTo} = req.query;
+        const result = await execSql(jobChk2, {cls, userId, cstCo, ymdFr, ymdTo});
+        if(isReverseGeoCode){
+            const rst = result.recordset
+            for (idx in rst){
+                const item = rst[idx];
+                console.log("item###############")
+                console.log(item)
+                if( item.LAT !== "" && item.LAT !== "0" && item.LON !== "" && item.LON !== "0" ){
+                    const addressObj = await reverseGeocode(item.LAT, item.LON)  
+                    console.log(addressObj)
+                    item["address"] = addressObj.address.address_name
+                }else{
+                    item["address"] = ""
+                }
+                //console.log(rst[idx])
+            }
+            console.log(result.recordset)
+            console.log("geoCode")
+            //
+        }
+        res.status(200).json({result:result.recordset, resultCode:"00"});
+    } catch (error) {
+        console.log(error.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+}
+
 
 router.get("/monthCstSlySearch", async (req, res, next) => {
     console.log("GET commute.monthCstSlySearch");

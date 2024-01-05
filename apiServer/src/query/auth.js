@@ -171,6 +171,8 @@ const checkJobChk = `
 //근무시간 체크, 일변 근무이력
 const jobChk=`exec PR_PLYC01_JOBCHECK @cls, @ymd, @cstCo, @userId`
 
+const jobChk2=`exec PR_PLYC02_JOBCHECK @cls, @ymdFr, @ymdTo, @cstCo, @userId`
+
 const salary=`exec PR_PLYD01_SALARY @cls, @ymdFr, @ymdTo, @cstCo, '', @userId, '', ''`
 
 const getUUID = `
@@ -215,4 +217,4 @@ const albaSchedulemanager2 = `
     exec PR_PLYA02_ALBASCHMNG @cls, @cstCo, @userId, @ymdFr, @ymdTo, @jobCl, @sTime, @eTime
 `
 
-module.exports = {login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, insertJobChk, geofencingTest, checkJobChk, insert_Uuid_Token, autoLogin, getUUID, jobChk, salary, getTermsDetail, updateTaxNo, modifyStoreInfo, easyAlbaMng, albaSchedulemanager, albaSchedulemanager2, changeCrewName}
+module.exports = {login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, insertJobChk, geofencingTest, checkJobChk, insert_Uuid_Token, autoLogin, getUUID, jobChk, jobChk2, salary, getTermsDetail, updateTaxNo, modifyStoreInfo, easyAlbaMng, albaSchedulemanager, albaSchedulemanager2, changeCrewName}
