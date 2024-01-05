@@ -47,20 +47,13 @@ const jobChk2Handler = async (req, res, next, isReverseGeoCode) => {
             const rst = result.recordset
             for (idx in rst){
                 const item = rst[idx];
-                console.log("item###############")
-                console.log(item)
                 if( item.LAT !== "" && item.LAT !== "0" && item.LON !== "" && item.LON !== "0" ){
                     const addressObj = await reverseGeocode(item.LAT, item.LON)  
-                    console.log(addressObj)
                     item["address"] = addressObj.address.address_name
                 }else{
                     item["address"] = ""
                 }
-                //console.log(rst[idx])
             }
-            console.log(result.recordset)
-            console.log("geoCode")
-            //
         }
         res.status(200).json({result:result.recordset, resultCode:"00"});
     } catch (error) {

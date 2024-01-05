@@ -16,7 +16,6 @@ export default function CommuteInfo({day}) {
         //await HTTP("GET", "/api/v1/commute/commuteCheckInfo", {cls:"dayJobInfo", userId:'mega7438226_0075', cstCo:'1010', ymdFr:'20231203', ymdTo:'20231209'})
         await HTTP("GET", "/api/v1/commute/commuteCheckInfo", {cls:"dayJobInfo", userId:userId, cstCo:sCstCo, ymdFr:day, ymdTo:day})
         .then((res)=>{
-            console.log(res.data.result)
             if(res.data.result.length > 0) setDayJobInfo(res.data.result[0]);
             setLoadin(false);
         }).catch(function (error) {
@@ -29,7 +28,6 @@ export default function CommuteInfo({day}) {
         setLoadin(true);
         dayJobSearch();
     }, [])
-    console.log(dayJobInfo)
     return(
         (loading)?
             <ActivityIndicator />

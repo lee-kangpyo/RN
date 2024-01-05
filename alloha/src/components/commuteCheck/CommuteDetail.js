@@ -55,11 +55,6 @@ export default function CommuteDetail({day, onModifyBtnpressed}) {
 }
 
 const BottomItem = ({data, isLast}) => {
-    console.log(data) 
-    const location = (data.LAT != "" && data.LON != "")?getReverseGeocodeAsync(37.5495, 127.108):"";
-    console.log(location)
-    // 예제: 경위도값 (37.7749, -122.4194)에 대한 주소 검색
-    
     const style = (isLast)?{backgroundColor:"rgba(0,0,0,0)"}:{}
     return(
         <View style={[styles.bItemContainer, styles.row]}>
