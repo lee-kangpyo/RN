@@ -44,6 +44,7 @@ export default function MyStorePicker({width="100%", borderColor=theme.purple, u
                     style={{fontSize:"16",}}
                     selectedValue={sCstCo}
                     onValueChange={ (itemValue, itemIndex) =>{
+                        console.log(myStores)
                         dispatch(setSelectedStore({data:myStores.filter((el)=>{return el.CSTCO === itemValue})[0]}));
                     }
                     }
