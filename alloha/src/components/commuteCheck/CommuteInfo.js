@@ -4,6 +4,7 @@ import React, {useState, useEffect} from 'react';
 import { useSelector } from 'react-redux';
 import { HTTP } from '../../util/http';
 import ConvertDayStr from './ConvertDayStr';
+import { YYYYMMDD2Obj } from '../../util/moment';
 
 export default function CommuteInfo({day}) {
     const userId = useSelector((state)=>state.login.userId);
@@ -28,6 +29,16 @@ export default function CommuteInfo({day}) {
         setLoadin(true);
         dayJobSearch();
     }, [])
+    const PlanAlba = ()=>{
+        const date = YYYYMMDD2Obj(dayJobInfo.ymd);
+        return(
+            <View style={styles.row}>
+                <Text>{date.ymd.split(".")[1]} / {date.ymd.split(".")[2]} </Text> 
+                <Text style={{color:date.color}}>({date.day})</Text>
+                <Text> {dayJobInfo.schFrom} ~ {dayJobInfo.schTo} ({dayJobInfo.schDure})</Text>
+            </View>
+        )
+    }
     return(
         (loading)?
             <ActivityIndicator />
@@ -53,7 +64,13 @@ export default function CommuteInfo({day}) {
                 </View>
                 <View style={styles.row}>
                     <Text style={styles.grey}>근무계획 : </Text>
-                    <Text>1</Text>
+                    {
+                        (dayJobInfo.ymd)?
+                        <PlanAlba />
+                        :
+                        null
+                    }
+
                 </View>
                 <View style={styles.row}>
                     <Text style={styles.grey}>근무상태 : </Text>

@@ -1,5 +1,5 @@
 
-import { StyleSheet, Text, View, TouchableOpacity, Linking, Alert } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Linking, Alert, ScrollView } from 'react-native';
 import React, {useState, useEffect, useCallback} from 'react';
 import MyStorePicker from '../components/alba/MyStorePicker';
 import { useSelector } from 'react-redux';
@@ -9,6 +9,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { AntDesign } from '@expo/vector-icons';
 import CurTimer from '../components/common/CurTimer';
 import { getLocation } from '../util/location';
+import { MaterialIcons } from '@expo/vector-icons'; 
 
 export default function CommuteCheckScreen({navigation}) {
     const userId = useSelector((state)=>state.login.userId)
@@ -117,7 +118,11 @@ export default function CommuteCheckScreen({navigation}) {
     return (
         (sCstCo > 0)?
             <>
-            <View style={styles.container}>
+            <TouchableOpacity onPress={()=>navigation.push("CommuteCheckInfo")} style={{ backgroundColor:"rgba(0,0,0,1)", padding:10, flexDirection:"row", justifyContent:"space-between"}}>
+                <Text style={{color:"white"}}>근무정보이동 임시버튼</Text>
+                <Text style={{color:"white"}}>→</Text>
+            </TouchableOpacity>
+            <ScrollView style={styles.container}>
                 <View style={styles.row}>
                     <MyStorePicker width={'75%'} borderColor='rgba(9,9,9,1)' userId={userId} />    
                     <View style={{flexDirection:"row"}}>
@@ -149,13 +154,8 @@ export default function CommuteCheckScreen({navigation}) {
                     <CurTimer />
                 </View>
                 <CommuteBar data={jobChk} isCommonJob={isCommonJob} onPressed={()=>alert("전환 기능은 아직 확정되지 않음")/*setJobCls(!isCommonJob)*/} />
-            </View>
+            </ScrollView>
             <Bottom data={weekInfo} />
-            <View>
-                <TouchableOpacity onPress={()=>navigation.push("CommuteCheckInfo")}>
-                    <Text>근무정보이동</Text>
-                </TouchableOpacity>
-            </View>
             </>
         :   
             <View style={{flex:1, justifyContent:"center", alignItems:"center"}}>
@@ -166,90 +166,120 @@ export default function CommuteCheckScreen({navigation}) {
 }
 
 const Bottom = ({data}) => {
+    const [isMin, setIsMin] = useState(true);
     const convertTime = (num) => {
         const hours = Math.floor(num);
         const minutes = Math.round((num - hours) * 60);
         return `${hours}시간 ${minutes}분`;
     }
+    const item = (data && Object.keys(data).length > 0)?data:{jobDure:0, spcDure:0, jobWage:0, incentive:0, spcWage:0, ATTCL:0, ATTCL2:0, ATTCL3:0, salary:0 }
+
+    const TouchableIcon = ({name, onPress}) => {
+        return(
+            <View style={styles.iconBox}>
+                <TouchableOpacity onPress={onPress}>
+                    <MaterialIcons name={name} size={40} color="white" />
+                </TouchableOpacity> 
+            </View>
+        )
+    }
 
     return (
-        (data && Object.keys(data).length > 0)?
+        // (data && Object.keys(data).length > 0)?
+        <View style={styles.bottomSheet}>
+        {
+        (isMin)?
         <>
-            <View style={{backgroundColor:"#5372D7", borderTopLeftRadius:15, borderTopRightRadius:15, paddingHorizontal:25, paddingVertical:10, position:"absolute", bottom:0, width:"100%"}}>
-                <View style={[styles.row, {alignItems:"flex-start"}]}>
-                    <View style={{flex:1}}>
-                        <Text style={{color:"white", fontSize:16}}>주간 근무 시간</Text>
-                        <Text style={{color:"white", paddingHorizontal:15}}>{convertTime(data.jobDure)}</Text>
-                        <Text style={{color:"white", paddingHorizontal:15}}>(대타 {convertTime(data.spcDure)})</Text>
-                    </View>
-                    <View style={{flex:1}}>
-                        <Text style={{color:"white", fontSize:16}}>급여내역</Text>
-                        <View style={{flexDirection:"row", justifyContent:"space-between", paddingHorizontal:15}}>
-                            <Text style={{color:"white"}}>일반 :</Text>
-                            <Text style={{color:"white"}}>{data.jobWage.toLocaleString()} 원</Text>
-                        </View>
-                        <View style={{flexDirection:"row", justifyContent:"space-between", paddingHorizontal:15}}>
-                            <Text style={{color:"white"}}>플러스 :</Text>
-                            <Text style={{color:"white"}}>{data.incentive.toLocaleString()} 원</Text>
-                        </View>
-                        <View style={{flexDirection:"row", justifyContent:"space-between", paddingHorizontal:15}}>
-                            <Text style={{color:"white"}}>주휴 : </Text>
-                            <Text style={{color:"white"}}>{data.spcWage.toLocaleString()} 원</Text>
-                        </View>
-                    </View>
-                </View>
-                <View style={[styles.row, {alignItems:"flex-start"}]}>
-                    <View style={{flex:1}}>
-                        <Text style={{color:"white", fontSize:16}}>이슈요약</Text>
-                        <Text style={{color:"white", paddingHorizontal:15}}>지각 {data.ATTCL}</Text>
-                        <Text style={{color:"white", paddingHorizontal:15}}>조회 {data.ATTCL2}</Text>
-                        <Text style={{color:"white", paddingHorizontal:15}}>결근 {data.ATTCL3}</Text>
-                    </View>
-                    <View style={{flex:1}}>
-                        <Text style={{color:"white", fontSize:16}}>주간 총 급여</Text>
-                        <Text style={{color:"white", paddingHorizontal:15, alignSelf:"flex-end"}}>{data.salary.toLocaleString()} 원</Text>
-                    </View>
+            <TouchableIcon name={"keyboard-arrow-up"} onPress={()=>setIsMin(false)} />
+            <View style={[styles.row, {alignItems:"flex-start", marginBottom:0}]}>
+                <Text style={{color:"white", fontSize:16}}>주간 근무 시간</Text>
+                <View style={{flexDirection:"row"}}>
+                    <Text style={{color:"white", paddingRight:5}}>{convertTime(item.jobDure)}</Text>
+                    <Text style={{color:"white",}}>(대타 {convertTime(item.spcDure)})</Text>
                 </View>
             </View>
-
+            <View style={[styles.row, {alignItems:"flex-start"}]}>
+                <Text style={{color:"white", fontSize:16}}>주간 총 급여</Text>
+                <Text style={{color:"white", paddingHorizontal:15, alignSelf:"flex-end"}}>{item.salary.toLocaleString()} 원</Text>
+            </View>
         </>
         :
-        <View style={{backgroundColor:"#5372D7", borderTopLeftRadius:15, borderTopRightRadius:15, paddingHorizontal:25, paddingVertical:10, position:"absolute", bottom:0, width:"100%", height:200}}>
+        <>
+            <TouchableIcon name={"keyboard-arrow-down"} onPress={()=>setIsMin(true)} />
             <View style={[styles.row, {alignItems:"flex-start"}]}>
                 <View style={{flex:1}}>
                     <Text style={{color:"white", fontSize:16}}>주간 근무 시간</Text>
-                    <Text style={{color:"white", paddingHorizontal:15}}>00:00</Text>
-                    <Text style={{color:"white", paddingHorizontal:15}}>(대타 00:00)</Text>
+                    <Text style={{color:"white", paddingHorizontal:15}}>{convertTime(item.jobDure)}</Text>
+                    <Text style={{color:"white", paddingHorizontal:15}}>(대타 {convertTime(item.spcDure)})</Text>
                 </View>
                 <View style={{flex:1}}>
                     <Text style={{color:"white", fontSize:16}}>급여내역</Text>
                     <View style={{flexDirection:"row", justifyContent:"space-between", paddingHorizontal:15}}>
                         <Text style={{color:"white"}}>일반 :</Text>
-                        <Text style={{color:"white"}}>0 원</Text>
+                        <Text style={{color:"white"}}>{item.jobWage.toLocaleString()} 원</Text>
                     </View>
                     <View style={{flexDirection:"row", justifyContent:"space-between", paddingHorizontal:15}}>
                         <Text style={{color:"white"}}>플러스 :</Text>
-                        <Text style={{color:"white"}}>0 원</Text>
+                        <Text style={{color:"white"}}>{item.incentive.toLocaleString()} 원</Text>
                     </View>
                     <View style={{flexDirection:"row", justifyContent:"space-between", paddingHorizontal:15}}>
                         <Text style={{color:"white"}}>주휴 : </Text>
-                        <Text style={{color:"white"}}>0 원</Text>
+                        <Text style={{color:"white"}}>{item.spcWage.toLocaleString()} 원</Text>
                     </View>
                 </View>
             </View>
             <View style={[styles.row, {alignItems:"flex-start"}]}>
                 <View style={{flex:1}}>
                     <Text style={{color:"white", fontSize:16}}>이슈요약</Text>
-                    <Text style={{color:"white", paddingHorizontal:15}}>지각 0</Text>
-                    <Text style={{color:"white", paddingHorizontal:15}}>조회 0</Text>
-                    <Text style={{color:"white", paddingHorizontal:15}}>결근 0</Text>
+                    <Text style={{color:"white", paddingHorizontal:15}}>지각 {item.ATTCL}</Text>
+                    <Text style={{color:"white", paddingHorizontal:15}}>조회 {item.ATTCL2}</Text>
+                    <Text style={{color:"white", paddingHorizontal:15}}>결근 {item.ATTCL3}</Text>
                 </View>
                 <View style={{flex:1}}>
                     <Text style={{color:"white", fontSize:16}}>주간 총 급여</Text>
-                    <Text style={{color:"white", paddingHorizontal:15, alignSelf:"flex-end"}}>0 원</Text>
+                    <Text style={{color:"white", paddingHorizontal:15, alignSelf:"flex-end"}}>{item.salary.toLocaleString()} 원</Text>
                 </View>
             </View>
+        </>
+        }
         </View>
+        // :
+        // <View style={styles.bottomSheet}>
+        //     <View style={[styles.row, {alignItems:"flex-start"}]}>
+        //         <View style={{flex:1}}>
+        //             <Text style={{color:"white", fontSize:16}}>주간 근무 시간</Text>
+        //             <Text style={{color:"white", paddingHorizontal:15}}>00:00</Text>
+        //             <Text style={{color:"white", paddingHorizontal:15}}>(대타 00:00)</Text>
+        //         </View>
+        //         <View style={{flex:1}}>
+        //             <Text style={{color:"white", fontSize:16}}>급여내역</Text>
+        //             <View style={{flexDirection:"row", justifyContent:"space-between", paddingHorizontal:15}}>
+        //                 <Text style={{color:"white"}}>일반 :</Text>
+        //                 <Text style={{color:"white"}}>0 원</Text>
+        //             </View>
+        //             <View style={{flexDirection:"row", justifyContent:"space-between", paddingHorizontal:15}}>
+        //                 <Text style={{color:"white"}}>플러스 :</Text>
+        //                 <Text style={{color:"white"}}>0 원</Text>
+        //             </View>
+        //             <View style={{flexDirection:"row", justifyContent:"space-between", paddingHorizontal:15}}>
+        //                 <Text style={{color:"white"}}>주휴 : </Text>
+        //                 <Text style={{color:"white"}}>0 원</Text>
+        //             </View>
+        //         </View>
+        //     </View>
+        //     <View style={[styles.row, {alignItems:"flex-start"}]}>
+        //         <View style={{flex:1}}>
+        //             <Text style={{color:"white", fontSize:16}}>이슈요약</Text>
+        //             <Text style={{color:"white", paddingHorizontal:15}}>지각 0</Text>
+        //             <Text style={{color:"white", paddingHorizontal:15}}>조회 0</Text>
+        //             <Text style={{color:"white", paddingHorizontal:15}}>결근 0</Text>
+        //         </View>
+        //         <View style={{flex:1}}>
+        //             <Text style={{color:"white", fontSize:16}}>주간 총 급여</Text>
+        //             <Text style={{color:"white", paddingHorizontal:15, alignSelf:"flex-end"}}>0 원</Text>
+        //         </View>
+        //     </View>
+        // </View>
     )
 }
 const CommuteButton = ({data, sTime, onButtnPressed}) => {
@@ -362,11 +392,11 @@ function timeCalculation(sTime) {
         const elapsedMinutes = diffInMinutes % 60;
         const formattedRemainingTime = `${String(elapsedHours).padStart(2, '0')}:${String(elapsedMinutes).padStart(2, '0')}`;
         result = formattedRemainingTime;
-    } 
+    }
     return result;
 }
 const styles = StyleSheet.create({
-    container:{ padding:15 },
+    container:{ padding:15, flex:1 },
     center:{ justifyContent: 'center', alignItems: 'center', marginBottom:10 },
     row:{ flexDirection:"row", justifyContent:"space-between", alignItems:"center", marginBottom:10 },
     pill:{
@@ -404,5 +434,17 @@ const styles = StyleSheet.create({
         borderWidth:1,
         padding:5,
         marginHorizontal:20,
-    }
+    },
+    bottomSheet:{
+        backgroundColor:"#5372D7", 
+        borderTopLeftRadius:15, 
+        borderTopRightRadius:15, 
+        paddingHorizontal:25, 
+        paddingVertical:10, 
+        width:"100%",
+    },
+    iconBox:{
+        alignItems:"center",
+    },
+    
 });

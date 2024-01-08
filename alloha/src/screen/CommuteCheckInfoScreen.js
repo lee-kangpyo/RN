@@ -170,7 +170,7 @@ const BotContainer = () => {
                 <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
             </TouchableOpacity>
             <TouchableOpacity style={styles.row}>
-                <Text>근무유형필터링 </Text>
+                <Text>근무유형 </Text>
                 <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
             </TouchableOpacity>
         </View>
