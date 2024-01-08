@@ -126,19 +126,19 @@ const ContentBox = React.memo(({item, color, sTime, jobDure, jobCl, userId, user
                     <>
                         {
                             (n > 0)?
-                                <Text style={{fontSize:boxWidth*0.3}}>{n}</Text>
+                                <Text style={{fontSize:boxWidth*0.3}}>{n.toFixed(1)}</Text>
                             :
                                 null
                         }
                         {
                             (g > 0)?
-                                <Text style={{fontSize:boxWidth*0.3}}>{g}</Text>
+                                <Text style={{fontSize:boxWidth*0.3}}>{g.toFixed(1)}</Text>
                             :
                                 null
                         }
                         {
                             (s > 0)?
-                                <Text style={{fontSize:boxWidth*0.3, color:"red"}}>{s}</Text>
+                                <Text style={{fontSize:boxWidth*0.3, color:"red"}}>{s.toFixed(1)}</Text>
                             :
                                 null
                         }
@@ -173,7 +173,7 @@ function TotalBox({sum, sumSub}){
     const boxWidth = Dimensions.get('window').width / 9; // 박스의 너비
     return (
         <View style={{...styles.box, flex:2, width:boxWidth, backgroundColor:"#F9F3CC"}}>
-            <Text style={{fontSize:boxWidth*0.3}}>{sum}</Text>
+            <Text style={{fontSize:boxWidth*0.3}}>{sum.toFixed(1)}</Text>
             {
                 (sumSub == "")?
                     null

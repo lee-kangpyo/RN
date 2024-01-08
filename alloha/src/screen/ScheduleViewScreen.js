@@ -157,9 +157,9 @@ const DailyScheduleBox = ({mmdd, day, albaList}) => {
                         return(
                             <View key={idx} style={styles.alba}>
                                 <AntDesign name="checkcircle" size={16} color={color[alba.JOBCL]} style={styles.circle}/>
-                                <View style={{flexDirection:"row",}}>
+                                <View style={{flex:1, flexDirection:"row", justifyContent:"space-between"}}>
                                     <Text style={{fontSize:16, width:75}} numberOfLines={1} ellipsizeMode='tail'>{alba.USERNA}</Text>
-                                    <Text style={{fontSize:16}}>     {alba.SCHTIME} ({alba.JOBDURE})</Text>
+                                    <Text style={{fontSize:16}}>{alba.SCHTIME} ({alba.JOBDURE.toFixed(1)})</Text>
                                 </View>
                             </View>
                         );
