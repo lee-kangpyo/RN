@@ -47,14 +47,13 @@ export default function ScheduleByAlba({cstCo, userId, ymdFr, ymdTo}) {
     );
 };
 
-
 const DailyScheduleBox = ({alba}) => {
     const day={ 0:"일", 1:"월", 2:"화", 3:"수", 4:"목", 5:"금", 6:"토" };
     const color={2:theme.open,5:theme.middle,9:theme.close,1:theme.etc,};
     return(
         <View style={styles.box}>
             <View style={styles.userNa}>
-                <Text style={{fontSize:16}}>{alba.userNa}</Text>
+                <Text style={{fontSize:16}} numberOfLines={1} ellipsizeMode='tail'>{alba.userNa}</Text>
             </View>
             <View style={styles.albaList}>
                 {
@@ -62,9 +61,9 @@ const DailyScheduleBox = ({alba}) => {
                         return(
                             <View key={idx} style={styles.alba}>
                                 <AntDesign name="checkcircle" size={16} color={color[alba.JOBCL]} style={styles.circle}/>
-                                <View style={{flexDirection:"row",}}>
-                                    <Text style={{fontSize:16, width:90}} numberOfLines={1} ellipsizeMode='tail'>{YYMMDD2YYDD(alba.YMD)} {day[getDayWeekNumber(alba.YMD)]}</Text>
-                                    <Text style={{fontSize:16}}>{alba.SCHTIME} ({alba.JOBDURE})</Text>
+                                <View style={{flex:1, flexDirection:"row", justifyContent:"space-between"}}>
+                                    <Text style={{fontSize:16}} numberOfLines={1} ellipsizeMode='tail'>{YYMMDD2YYDD(alba.YMD)} {day[getDayWeekNumber(alba.YMD)]}</Text>
+                                    <Text style={{fontSize:16}}>{alba.SCHTIME} ({alba.JOBDURE.toFixed(1)})</Text>
                                 </View>
                             </View>
                         );
@@ -85,7 +84,7 @@ const styles = StyleSheet.create({
         padding:15
     },
     userNa:{
-        width:80
+        width:70
     },
     albaList:{
         flex:1,
