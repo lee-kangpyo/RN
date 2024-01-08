@@ -7,7 +7,7 @@ import { URL } from "@env";
 import { useDispatch, useSelector } from 'react-redux';
 import { setMyStores, setSelectedStore } from '../../../redux/slices/alba';
 
-export default function MyStorePicker({width="100%", borderColor=theme.purple, userId}) {
+export default function MyStorePicker({width="100%", borderColor=theme.purple, userId, isComplete}) {
     //const [selCstCo, setSelCstco] = useState();
     //const [selectedStore, setSelectedStore] = useState({});             // 선택된 점포
     //const [myStores, setmyStores] = useState([]);                       // 내 알바 점포들
@@ -23,6 +23,7 @@ export default function MyStorePicker({width="100%", borderColor=theme.purple, u
                 if(res.data.result.length > 0 && init == true){
                     dispatch(setSelectedStore({data:res.data.result[0]}));
                 }
+                if(isComplete) isComplete();
              }else{
                 Alert.alert("알림", "내 알바 리스트 요청 중 오류가 발생했습니다. 잠시후 다시 시도해 주세요.")
             }
