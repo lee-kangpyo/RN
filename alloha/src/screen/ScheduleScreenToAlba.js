@@ -16,7 +16,6 @@ export default function ScheduleScreenToAlba({navigation}) {
     useEffect(()=>{
         navigation.setOptions({title:"주간근무계획"})
     }, [navigation])
-    console.log(loading)
     return (
         (loading)?
             <View style={{flex:1, justifyContent:"center", alignItems:"center"}}>
@@ -24,16 +23,18 @@ export default function ScheduleScreenToAlba({navigation}) {
                 <ActivityIndicator />
             </View>
         :
-            (sCstCo > 0)?
+            (sCstCo  == -1)?
+                <View style={{flex:1, justifyContent:"center", alignItems:"center"}}>
+                    <Text>등록된 점포가 없습니다. 점포검색을 이용해 주세요</Text>
+                </View>
+                
+            :
                 <View style={styles.container}>
                     <MyStorePicker userId={userId} />
                     <ScheduleByAlba cstCo={sCstCo} userId={userId} ymdFr={thisSunday} ymdTo={nextSaturday}/>
                 </View>
-            :
             
-                <View style={{flex:1, justifyContent:"center", alignItems:"center"}}>
-                    <Text>등록된 점포가 없습니다. 점포검색을 이용해 주세요</Text>
-                </View>
+                
     );
 }
 
