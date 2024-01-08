@@ -7,6 +7,7 @@ import { useDispatch } from 'react-redux';
 import { setUserInfo } from '../../redux/slices/login';
 import * as SecureStore from 'expo-secure-store';
 import * as TaskManager from 'expo-task-manager';
+import { initAlbaSlice } from '../../redux/slices/alba';
 
 export default function ComunityScreen({navigation}) {
     const dispatch = useDispatch();
@@ -17,6 +18,7 @@ export default function ComunityScreen({navigation}) {
 
     const logOut = async () => {
         //로그아웃 실행.
+        dispatch(initAlbaSlice());
         dispatch(setUserInfo({isLogin:false, userId:""}));
         await SecureStore.setItemAsync("uuid", "");
         TaskManager.unregisterAllTasksAsync();

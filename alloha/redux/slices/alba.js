@@ -49,8 +49,15 @@ const albaSlice = createSlice({
       const { thisSunday:start, thisSaturday:end } = getStartAndEndOfWeek();
       state.date = { start:start, end:end };
     },
+    initAlbaSlice(state, action){
+      const {thisSunday:start, thisSaturday:end} = getStartAndEndOfWeek();
+      state.sCstCo = -1;
+      state.selectedStore = {};
+      state.myStores=[];
+      state.date = { start:start, end:end };
+    },
   },
 });
 
-export let { setMyStores, setSelectedStore, prevWeek, nextWeek, currentWeek } = albaSlice.actions
+export let { setMyStores, setSelectedStore, prevWeek, nextWeek, currentWeek, initAlbaSlice } = albaSlice.actions
 export default albaSlice;

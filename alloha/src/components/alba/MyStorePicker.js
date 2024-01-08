@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, ActivityIndicator, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { View, ActivityIndicator, StyleSheet, TouchableOpacity, Text, Alert } from 'react-native';
 import { theme } from '../../util/color';
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
@@ -16,6 +16,7 @@ export default function MyStorePicker({width="100%", borderColor=theme.purple, u
 
     const dispatch = useDispatch();
     const searchMyAlbaList = async (init) => {
+        console.log("SDf")
         await axios.get(URL+"/api/v1/searchMyAlbaList", {params:{userId:userId}})
         .then((res)=>{
             if(res.data.resultCode === "00"){
@@ -45,7 +46,8 @@ export default function MyStorePicker({width="100%", borderColor=theme.purple, u
                     selectedValue={sCstCo}
                     onValueChange={ (itemValue, itemIndex) =>{
                         console.log(myStores)
-                        dispatch(setSelectedStore({data:myStores.filter((el)=>{return el.CSTCO === itemValue})[0]}));
+                        const data = myStores.filter((el)=>{return el.CSTCO === itemValue})[0];
+                        dispatch(setSelectedStore({data:data}));
                     }
                     }
                     >
