@@ -11,7 +11,7 @@ dotenv.config();
 router.get("/test", async (req, res, next)=>{
     console.log("test");
     //sendPush(["hH-w5iBNoyx5lpqCeRg7sw", "fkqkgnChudm9c2A7_015hL"]);
-    sendPush([ "fkqkgnChudm9c2A7_015hL"]);
+    sendPush([ "oDUOauOiW_AIgC4YvagvKF"]);
     res.json({status_code:"00", result:"테스트"});
 })
 

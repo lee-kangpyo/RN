@@ -104,6 +104,11 @@ export default function Excel({header, type="sharing", custom, btntext, data, fi
       ws["!cols"].push({ wpx: 100 });
       const item = Object.values(data[i]);
       const row = i + 1;
+      // // 병합 시작 행을 찾음
+      // if (item[0] && item[0]["구분"] !== "") {
+      //   mergeStartRow = row;
+      // }
+
       for (var j = 0; j < item.length; j++) {
         if (j >= 26) break;
         const col = String.fromCharCode(65 + j);
@@ -118,7 +123,50 @@ export default function Excel({header, type="sharing", custom, btntext, data, fi
           };
         }
       }
+      // // 다음 행의 구분이 없을 경우, 현재 행과 다음 행을 병합
+      // if (mergeStartRow !== -1 && (i === data.length - 1 || !item[0] || item[0]["구분"] === "")) {
+      //   const mergeEndRow = i + 1;
+      //   ws[`A${mergeStartRow}:A${mergeEndRow}`].s = { border: _border.basic };
+      //   mergeStartRow = -1; // 초기화
+      // }
     }
+    
+    // 셀병합
+    // 병합할 시작 행 인덱스
+    let startRow = 1;
+
+    // 마지막 행 번호 계산
+    const lastRow = ws['!ref'].split(':').pop(); // 마지막 행 얻기
+    const lastRowIndex = parseInt(lastRow.substring(1), 10); // 행 번호 추출
+
+    // 병합 정보를 저장할 배열
+    let merges = [];
+
+    // A1부터 시작하여 비어있지 않은 셀을 찾아 병합
+    for (let row = 1; row <= lastRowIndex; row++) {
+      const cell = ws[`A${row}`];
+
+      console.log(`DEBUG: Checking row ${row}, cell value:`, cell ? cell.v : null);
+
+      if (cell && cell.v) {
+        // 현재 셀이 비어있지 않은 경우
+        if (startRow !== row) {
+          console.log(`DEBUG: Merging rows ${startRow-1} to ${row - 1}`);
+          // 병합된 셀의 정보를 merges 배열에 추가
+          merges.push({ s: { r: startRow - 2, c: 0 }, e: { r: row - 2, c: 0 } });
+        }
+        startRow = row + 1; // 시작 행을 현재 행 다음으로 설정
+      }
+    }
+
+    // 마지막으로 남은 부분도 처리
+    if (startRow <= lastRowIndex) {
+      console.log(`DEBUG: Merging rows ${startRow} to ${lastRowIndex}`);
+      // 병합된 셀의 정보를 merges 배열에 추가
+      merges.push({ s: { r: startRow - 2, c: 0 }, e: { r: lastRowIndex - 1, c: 0 } });
+    }
+    ws['!merges'] = merges;
+
     return ws;
   }
   // 결과 현황 디자인
