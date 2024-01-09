@@ -193,11 +193,11 @@ function CrewScreen(){
     >
       <Tab.Screen name="schedule" component={ScheduleScreenToAlba} options={{ tabBarLabel: '주간근무계획' }}/>
       <Tab.Screen name="CommuteCheck" component={CommuteCheckStack} options={{ headerShown:false, tabBarLabel: '근무현황' }}/>
-      <Tab.Screen name="Home" options={{ tabBarLabel: '출퇴근(구버전)' }} >
+      {/* <Tab.Screen name="Home" options={{ tabBarLabel: '출퇴근(구버전)' }} >
         {() => (
           <LocationPermission Grant={HomeScreen}/>
         )}
-      </Tab.Screen>
+      </Tab.Screen> */}
       <Tab.Screen name="Wage" options={{ headerShown: false, tabBarLabel: '급여' }} >
         {() => (
           <Stack.Navigator>

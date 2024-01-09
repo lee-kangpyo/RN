@@ -19,17 +19,23 @@ export default function ProfitAndLossScreen({navigation}) {
     const getExcelData = () => {
         const data = monthCstPl.map((el) => {
             if(el.ORDBY % 100 == 0){
-                return {"메인":el.CONA,"하위":"", "금액":el.AMT}
+                const sep = el.CONA;
+                if(sep == "손익"){
+                    return {"구분":el.CONA, "내용":"", "금액":el.AMT}    
+                }else {
+                    return {"구분":el.CONA, "내용":"계", "금액":el.AMT}
+                }
+                
             }else{
-                return {"메인":"", "하위":el.CONA, "금액":el.AMT}
+                return {"구분":"", "내용":el.CONA, "금액":el.AMT}
             }
-
         })
         const alba = albaFeeList.map((el) => {
-            return {"메인":"","하위":el.userNa, "금액":el.salary}
+            return {"구분":"","내용":el.userNa, "금액":el.salary}
         })
-        const index = data.findIndex(item => item.메인 === '인건비');
+        const index = data.findIndex(item => item.구분 === '인건비');
         if(index > -1) data.splice(index + 1, 0, ...alba);
+        console.log(data);
         return data
     }
 
