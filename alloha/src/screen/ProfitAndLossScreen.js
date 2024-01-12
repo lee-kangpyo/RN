@@ -14,38 +14,54 @@ export default function ProfitAndLossScreen({navigation}) {
     const date = useSelector((state) => state.result.month);
     const monthCstPl = useSelector((state) => state.result.monthCstPl);
     const albaFeeList = useSelector((state) => state.result.albaFeeList);
+    const [excelData, setExcelData] = useState([]);
     const dispatch = useDispatch()
 
     const getExcelData = () => {
+        const month = date.mm;
+        let totalAlbaFee = 0;
+        let totalSales = 0;
         const data = monthCstPl.map((el) => {
-            if(el.ORDBY % 100 == 0){
+            if(el.ORDBY % 100 == 0){ // 상위 항목
                 const sep = el.CONA;
                 if(sep == "손익"){
-                    return {"구분":el.CONA, "내용":"", "금액":el.AMT}    
+                    return {"구분":el.CONA, [month+"월"]:"", "금액":el.AMT, "비율":(el.AMT / totalSales * 100).toFixed(2),}    
+                }else if(sep == "매출"){
+                    totalSales = el.AMT
+                    return {"구분":el.CONA, [month+"월"]:"계", "금액":el.AMT, "비율":"100.00",}
+                }else if(sep == "인건비"){
+                    totalAlbaFee = el.AMT
+                    return {"구분":el.CONA, [month+"월"]:"계", "금액":el.AMT, "비율":(el.AMT / totalSales * 100).toFixed(2),}
                 }else {
-                    return {"구분":el.CONA, "내용":"계", "금액":el.AMT}
+                    return {"구분":el.CONA, [month+"월"]:"계", "금액":el.AMT, "비율":(el.AMT / totalSales * 100).toFixed(2),}
                 }
-                
-            }else{
-                return {"구분":"", "내용":el.CONA, "금액":el.AMT}
+            }else{  // 하위 항목
+                return {"구분":"", [month+"월"]:el.CONA, "금액":el.AMT, "비율":(el.AMT / totalSales * 100).toFixed(2),}
             }
         })
+        // 인건비 세부
         const alba = albaFeeList.map((el) => {
-            return {"구분":"","내용":el.userNa, "금액":el.salary}
+            return {"구분":"", [month+"월"]:el.userNa, "금액":el.salary, "비율":(el.salary / totalAlbaFee * 100).toFixed(2)}
         })
         const index = data.findIndex(item => item.구분 === '인건비');
         if(index > -1) data.splice(index + 1, 0, ...alba);
-        console.log(data);
-        return data
+        // 디버그 로그
+        // for (idx in data){
+        //     console.log(data[idx]);
+        // }
+        return data;
     }
 
     useEffect(()=>{
         navigation.setOptions({ headerShown:false, title:"매출현황"})
     }, [navigation])
-    
+    useEffect(()=>{
+        setExcelData(getExcelData())
+    }, [monthCstPl, albaFeeList])
     useEffect(()=>{
         getData();
         getAlbaData();
+        
     }, [cstCo, date])
 
     const getData = async () => {
@@ -97,12 +113,11 @@ export default function ProfitAndLossScreen({navigation}) {
                 <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:5}}>
                     <HeaderControl title={`${date.mm}월`} onLeftTap={() => headerControl("left")} onRightTap={() =>  headerControl("right")} />
                     <Excel 
-                        header={false}
                         custom={"profit"}
                         type={"sharing"}
                         btntext={"공유하기"} 
                         fileName={"매출 현황"}
-                        data={getExcelData()} 
+                        data={excelData} 
                     />
                 </View>
                 

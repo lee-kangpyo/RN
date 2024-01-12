@@ -72,9 +72,9 @@ export function ProfitLossPl({data, albaList, onChangeValue}){
                     mainData.map((item, idx)=>{
                         const subItems = data.filter(el => el.ORDBY > item.ORDBY && el.ORDBY < item.ORDBY + 100);
                         if(item.CONA == "인건비"){
-                            return <ProfitLossMainLine item = {item} albaList={albaList} />               
+                            return <ProfitLossMainLine key={idx} item = {item} albaList={albaList} />               
                         }else{
-                            return <ProfitLossMainLine item = {item} subItems={subItems} onChangeValue={onChangeValue}/>                   
+                            return <ProfitLossMainLine key={idx} item = {item} subItems={subItems} onChangeValue={onChangeValue}/>                   
                         }
                     })
                 :

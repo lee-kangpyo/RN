@@ -91,11 +91,10 @@ export default function ResultScreen({navigation}) {
                 <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:5}}>
                     <HeaderControl title={`${date.mm}월`} onLeftTap={()=> dispatch(prevMonth())} onRightTap={()=> dispatch(nextMonth())} />
                     <Excel
-                        header={true}
                         custom={"result"}
                         type={"sharing"}
                         btntext={"공유하기"}
-                        fileName={`${cstNa} 결과현황표`}
+                        fileName={`결과현황표`}
                         data={excelData}
                     />
                 </View>
