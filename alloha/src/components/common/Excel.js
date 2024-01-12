@@ -6,13 +6,12 @@ import * as XLSX from 'xlsx-js-style';
 import { theme } from '../../util/color';
 const { StorageAccessFramework } = FileSystem;
 
-export default function Excel({header, type="sharing", custom, btntext, data, fileName }) {
+export default function Excel({header = true, type="sharing", custom, btntext, data, fileName }) {
   // 엑셀 공유
   const execlSharing = async () => {
     const date = new Date()
-    
     const wbout = makeExcelData();
-    const fileNa = `${fileName}_${date.getFullYear()}_${date.getMonth() + 1}_${date.getDate()}.xlsx`;
+    const fileNa = `${fileName}_${date.getFullYear()}_${date.getMonth() + 1}_${date.getDate()}_${date.getHours()}_${date.getMinutes()}_${date.getSeconds()}.xlsx`;
     const uri = FileSystem.cacheDirectory + fileNa;
     await FileSystem.writeAsStringAsync(uri, wbout, {
       encoding: FileSystem.EncodingType.Base64
@@ -26,7 +25,7 @@ export default function Excel({header, type="sharing", custom, btntext, data, fi
   };
   
 
-  // 엑셀 다운.
+  // 엑셀 다운 지금은 안씀. 공유사용하기.
   // 1. 유저가 지정한 디렉토리 경로 저장 작업필요
   // 2. 디렉토리 경로 불러오는 작업 필요
   // 3. 
@@ -83,6 +82,110 @@ export default function Excel({header, type="sharing", custom, btntext, data, fi
     });
     return wbout;
   }
+
+  const _profit = (ws) => {
+  //inner function
+    const _cellstyle = (cell, style, format) => {
+      cell.s = style;
+      if(format) cell.z = format;
+    };
+    const merging = (ws) => {
+      // 셀병합 시작
+      let startRow = 1;                                                                   // 병합할 시작 행 인덱스
+      const lastRow = ws['!ref'].split(':').pop();                                        // 마지막 행 구하기
+      const lastRowIndex = parseInt(lastRow.substring(1), 10);                            // 마지막 행 인덱스
+      let merges = [{ s: { r: 0, c: 1 }, e: { r: 0, c: 3 } }];                            // 병합 정보를 저장할 배열
+
+      // A1 시작해서 다음 비어있지 않은 셀을 찾은 후 그전까지 행을 병합하는 코드를 merges에 push
+      // ex A1:값있음 A2:값없음 A3:값없음 A4:값있음 -> startRow는 A2까지 커서 이동 A4까지 row 커서이동 후 A1 부터 A3까지 병합
+      for (let row = 1; row <= lastRowIndex; row++) {
+        const cell = ws[`A${row}`];
+        // console.log(`DEBUG: Checking row ${row}, cell value:`, cell ? cell.v : null);
+        if (cell && cell.v) {                                                             // 현재 셀이 비어있지 않은 경우
+          if (startRow !== row) {
+            //console.log(`DEBUG: Merging rows ${startRow-2} to ${row - 2}`);
+            merges.push({ s: { r: startRow - 2, c: 0 }, e: { r: row - 2, c: 0 } });       // 병합된 셀의 정보를 merges 배열에 추가
+          }
+          startRow = row + 1;                                                             // 시작 행을 현재 행 다음으로 설정
+        }
+      }
+      if (startRow <= lastRowIndex) {                                                     // 마지막이 값 없음으로 끝난다면 추가 병합 코드
+        //console.log(`DEBUG: Merging rows ${startRow} to ${lastRowIndex}`);
+        merges.push({ s: { r: startRow - 1, c: 0 }, e: { r: lastRowIndex - 1, c: 0 } });
+      }
+      ws['!merges'] = merges;
+    }
+  //inner function
+    ws["!cols"] = [];
+    for (var i = 0, len = data.length; i < len; i++) {
+      ws["!cols"].push({ wpx: 100 });                 // width 설정
+      const item = Object.values(data[i]);
+      const row = i + 1;
+      let colorStyle = {fgColor: { rgb: null }, patternType: 'solid'};
+
+      for (var j = 0; j < item.length; j++) {
+        if (j >= 26) break; // A-Z 열까지만 적용
+        const col = String.fromCharCode(65 + j), cell = ws[`${col}${row}`];
+        if(col == "B" && cell.v == "계")colorStyle = {fill: {fgColor: { rgb: 'FFCC00' }, patternType: 'solid'}};
+        const lastCell = (row == len)?ws[`${col}${row+1}`]:null;
+        if (col == "C") {
+          const style = {border: _border.basic,};
+          _cellstyle(cell, {...style, ...colorStyle}, "#,##0");
+          if (lastCell) _cellstyle(lastCell, {...style, fill: { fgColor: { rgb: 'FFCC00' }, patternType: 'solid'}}, "#,##0");
+        }else if(col == "D"){
+          const style = {alignment: { horizontal: 'right', vertical: 'middle' }, border: _border.basic,};
+          _cellstyle(cell, {...style, ...colorStyle}, "#,##0");
+          if (lastCell) _cellstyle(lastCell, {...style, fill: { fgColor: { rgb: 'FFCC00' }, patternType: 'solid'}}, "#,##0");
+        } else {
+          const style = { alignment: { horizontal: 'center', vertical: 'middle' }, border: _border.basic, };
+          _cellstyle(cell, {...style, ...colorStyle});
+          if(lastCell) _cellstyle(lastCell, {...style, fill: { fgColor: { rgb: 'FFCC00' }, patternType: 'solid'}});
+        }
+      }
+    }
+    merging(ws);
+    return ws;
+  }
+
+  // 결과 현황 디자인
+  const _result = (ws) => {
+    ws["!cols"] = [ { wpx : 100 }, { wpx : 100 }, { wpx : 100 }, { wpx : 30 }, { wpx : 30 },
+                    { wpx : 30 }, { wpx : 30 }, { wpx : 30 }, { wpx : 30 }, { wpx : 30 },
+                    { wpx : 100 }, { wpx : 100 }, { wpx : 100 }, { wpx : 100 }, { wpx : 100 }, 
+                    { wpx : 100 }, { wpx : 100 }, { wpx : 100 }, ];
+    for (var i = 0; i < data.length; i++) {
+      el = data[i];
+      const item = Object.values(data[i]);
+      const row = i + 2;
+      for (var j = 0; j < item.length; j++) {
+        if (j >= 26) break;
+        const col = String.fromCharCode(65 + j);
+        // 헤더 시작
+        if(i == 0){
+          ws[`${col}1`].s = {
+            alignment: { horizontal: 'center', vertical: 'middle' },
+            border: _border.basic,
+          };
+        }
+        if (col == "L" || col == "Q") {
+          ws[`${col}${row}`].z = '#,##0';
+          ws[`${col}${row}`].s = {
+            alignment : { horizontal: 'right', vertical: 'middle' },
+          }
+        }
+        // 헤더 끝
+        if(el.주차 == "소계" || el.주차 == "총계" ){
+          ws[`${col}${row}`].s = {
+            border : _border.bottom_thick,
+            font: {
+              color: { rgb: (el.주차 == "소계")?'#3C7BB9':'#508D69' },
+            },
+          }
+        }
+      }
+    }
+    return ws;
+  }
   // 매출 현황 디자인
   const _border = {
     basic:{
@@ -98,133 +201,6 @@ export default function Excel({header, type="sharing", custom, btntext, data, fi
       left: { style: 'thin', color: { rgb: '000000' } },
     }
   }
-  const _profit = (ws) => {
-    ws["!cols"] = [];
-    for (var i = 0; i < data.length; i++) {
-      ws["!cols"].push({ wpx: 100 });
-      const item = Object.values(data[i]);
-      const row = i + 1;
-      // // 병합 시작 행을 찾음
-      // if (item[0] && item[0]["구분"] !== "") {
-      //   mergeStartRow = row;
-      // }
-
-      for (var j = 0; j < item.length; j++) {
-        if (j >= 26) break;
-        const col = String.fromCharCode(65 + j);
-        const cell = ws[`${col}${row}`]
-        if (col == "C") {
-          cell.z = '#,##0'; // 열 "C"에 대한 서식
-          cell.s = {border: _border.basic,};
-        } else {
-          cell.s = {
-            alignment: { horizontal: 'center', vertical: 'middle' },
-            border: _border.basic,
-          };
-        }
-      }
-      // // 다음 행의 구분이 없을 경우, 현재 행과 다음 행을 병합
-      // if (mergeStartRow !== -1 && (i === data.length - 1 || !item[0] || item[0]["구분"] === "")) {
-      //   const mergeEndRow = i + 1;
-      //   ws[`A${mergeStartRow}:A${mergeEndRow}`].s = { border: _border.basic };
-      //   mergeStartRow = -1; // 초기화
-      // }
-    }
-    
-    // 셀병합
-    // 병합할 시작 행 인덱스
-    let startRow = 1;
-
-    // 마지막 행 번호 계산
-    const lastRow = ws['!ref'].split(':').pop(); // 마지막 행 얻기
-    const lastRowIndex = parseInt(lastRow.substring(1), 10); // 행 번호 추출
-
-    // 병합 정보를 저장할 배열
-    let merges = [];
-
-    // A1부터 시작하여 비어있지 않은 셀을 찾아 병합
-    for (let row = 1; row <= lastRowIndex; row++) {
-      const cell = ws[`A${row}`];
-
-      console.log(`DEBUG: Checking row ${row}, cell value:`, cell ? cell.v : null);
-
-      if (cell && cell.v) {
-        // 현재 셀이 비어있지 않은 경우
-        if (startRow !== row) {
-          console.log(`DEBUG: Merging rows ${startRow-1} to ${row - 1}`);
-          // 병합된 셀의 정보를 merges 배열에 추가
-          merges.push({ s: { r: startRow - 2, c: 0 }, e: { r: row - 2, c: 0 } });
-        }
-        startRow = row + 1; // 시작 행을 현재 행 다음으로 설정
-      }
-    }
-
-    // 마지막으로 남은 부분도 처리
-    if (startRow <= lastRowIndex) {
-      console.log(`DEBUG: Merging rows ${startRow} to ${lastRowIndex}`);
-      // 병합된 셀의 정보를 merges 배열에 추가
-      merges.push({ s: { r: startRow - 2, c: 0 }, e: { r: lastRowIndex - 1, c: 0 } });
-    }
-    ws['!merges'] = merges;
-
-    return ws;
-  }
-  // 결과 현황 디자인
-  const _result = (ws) => {
-    ws["!cols"] = [
-      { wpx : 100 }, 
-      { wpx : 100 }, 
-      { wpx : 100 }, 
-      { wpx : 30 },
-      { wpx : 30 },
-      { wpx : 30 },
-      { wpx : 30 },
-      { wpx : 30 },
-      { wpx : 30 },
-      { wpx : 30 },
-      { wpx : 100 }, //작업시간(합계)
-      { wpx : 100 }, //시급
-      { wpx : 100 }, 
-      { wpx : 100 },
-      { wpx : 100 }, 
-      { wpx : 100 }, 
-      { wpx : 100 },
-      { wpx : 100 },
-    ];
-    for (var i = 0; i < data.length; i++) {
-      el = data[i];
-      const item = Object.values(data[i]);
-      const row = i + 2;
-      for (var j = 0; j < item.length; j++) {
-        if (j >= 26) break;
-        const col = String.fromCharCode(65 + j);
-        // 헤더
-        if(i == 0){
-          ws[`${col}1`].s = {
-            alignment: { horizontal: 'center', vertical: 'middle' },
-            border: _border.basic,
-          };
-        }
-        if (col == "L" || col == "Q") {
-          ws[`${col}${row}`].z = '#,##0';
-          ws[`${col}${row}`].s = {
-            alignment : { horizontal: 'right', vertical: 'middle' },
-          }
-        }
-        
-        if(el.주차 == "소계" || el.주차 == "총계" ){
-          ws[`${col}${row}`].s = {
-            border : _border.bottom_thick,
-            font: {
-              color: { rgb: (el.주차 == "소계")?'#3C7BB9':'#508D69' },
-            },
-          }
-        }
-      }
-    }
-    return ws;
-  }
-
   const saveStorage = async (uri, fileName, excelData) => {
     return await StorageAccessFramework.createFileAsync(uri, fileName, 'application/xlsx')
     .then(async (uri) => {
