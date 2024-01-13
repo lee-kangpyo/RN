@@ -40,6 +40,7 @@ import ScheduleScreenToAlba from './ScheduleScreenToAlba';
 import CommuteCheckScreen from './CommuteCheckScreen';
 import CommuteCheckInfoScreen from './CommuteCheckInfoScreen';
 import CommuteCheckDetailScreen from './CommuteCheckDetailScreen';
+import EtcCrewScreen from './EtcCrewScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -208,6 +209,13 @@ function CrewScreen(){
       </Tab.Screen>
       <Tab.Screen name="community" component={ComunityScreen} options={{ tabBarLabel: '커뮤니티' }}/>
       <Tab.Screen name="manageStore" component={SearchStoreScreen} backBehavior={"none"} options={{ tabBarLabel: '점포검색' }} />
+      <Tab.Screen name="etc" options={{ headerShown: false, }}>
+        {() => (
+          <Stack.Navigator initialRouteName="etc2">
+            <Stack.Screen name="etc2" component={EtcCrewScreen} options={{ tabBarLabel: '기타' }}/>
+          </Stack.Navigator>
+        )}
+      </Tab.Screen>
     </Tab.Navigator>
   )
 }

@@ -15,6 +15,10 @@ export default function ProfitAndLossScreen({navigation}) {
     const monthCstPl = useSelector((state) => state.result.monthCstPl);
     const albaFeeList = useSelector((state) => state.result.albaFeeList);
     const [excelData, setExcelData] = useState([]);
+
+    const storeList = useSelector((state)=>state.common.storeList);
+    const store = storeList.filter((el)=>el.CSTCO == cstCo)
+    const [cstNa, setCstNa] = useState("");
     const dispatch = useDispatch()
 
     const getExcelData = () => {
@@ -61,7 +65,9 @@ export default function ProfitAndLossScreen({navigation}) {
     useEffect(()=>{
         getData();
         getAlbaData();
-        
+        if(store.length > 0){
+            setCstNa(store[0].CSTNA);
+        }
     }, [cstCo, date])
 
     const getData = async () => {
@@ -116,7 +122,7 @@ export default function ProfitAndLossScreen({navigation}) {
                         custom={"profit"}
                         type={"sharing"}
                         btntext={"공유하기"} 
-                        fileName={"매출 현황"}
+                        fileName={`${cstNa}_${date.mm}월_매출 현황`}
                         data={excelData} 
                     />
                 </View>
