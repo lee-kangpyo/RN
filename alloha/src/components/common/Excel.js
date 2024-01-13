@@ -11,7 +11,7 @@ export default function Excel({header = true, type="sharing", custom, btntext, d
   const execlSharing = async () => {
     const date = new Date()
     const wbout = makeExcelData();
-    const fileNa = `${fileName}_${date.getFullYear()}_${date.getMonth() + 1}_${date.getDate()}_${date.getHours()}_${date.getMinutes()}_${date.getSeconds()}.xlsx`;
+    const fileNa = `${fileName}_${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}${date.getHours()}${date.getMinutes()}${date.getSeconds()}.xlsx`;
     const uri = FileSystem.cacheDirectory + fileNa;
     await FileSystem.writeAsStringAsync(uri, wbout, {
       encoding: FileSystem.EncodingType.Base64
@@ -67,15 +67,23 @@ export default function Excel({header = true, type="sharing", custom, btntext, d
       //throw new Error(e);
     }
   };
+
   const makeExcelData = () => {
-    var ws = XLSX.utils.json_to_sheet(data, { skipHeader: !header, });
     if(custom == "profit"){
+      var ws = XLSX.utils.json_to_sheet(data, { skipHeader: !header, });
       ws = _profit(ws)
     }else if(custom == "result") {
+      // 추가 헤더 셋팅
+      var Heading = [["근무자", "주간별근무시간", "", "", "", "", "", "", "", "", "", "", "주휴", "", "", "", "근무현황", "", "", "", "", "", ""],]; 
+      var ws = XLSX.utils.json_to_sheet(data, { origin: 'A2' });
+      XLSX.utils.sheet_add_aoa(ws, Heading); //heading: array of arrays
       ws = _result(ws)
+    } else{
+      var ws = XLSX.utils.json_to_sheet(data, { skipHeader: !header, });
     }
     var wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+
     const wbout = XLSX.write(wb, {
       type: 'base64',
       bookType: "xlsx"
@@ -149,38 +157,67 @@ export default function Excel({header = true, type="sharing", custom, btntext, d
 
   // 결과 현황 디자인
   const _result = (ws) => {
-    ws["!cols"] = [ { wpx : 100 }, { wpx : 100 }, { wpx : 100 }, { wpx : 30 }, { wpx : 30 },
+    //헤더 병합
+    ws['!merges'] = [
+      { s: { r: 0, c: 1 }, e: { r: 0, c: 11 } },  // 주간별근무시간
+      { s: { r: 0, c: 12 }, e: { r: 0, c: 14 } },  // 주휴
+      { s: { r: 0, c: 16 }, e: { r: 0, c: 21 } },  // G1:H1
+    ];
+    // 열 너비 설정
+    ws["!cols"] = [ { wpx : 100 }, { wpx : 30 }, { wpx : 100 }, { wpx : 30 }, { wpx : 30 },
                     { wpx : 30 }, { wpx : 30 }, { wpx : 30 }, { wpx : 30 }, { wpx : 30 },
-                    { wpx : 100 }, { wpx : 100 }, { wpx : 100 }, { wpx : 100 }, { wpx : 100 }, 
-                    { wpx : 100 }, { wpx : 100 }, { wpx : 100 }, ];
+                    { wpx : 50 }, { wpx : 100 }, { wpx : 50 }, { wpx : 50 }, { wpx : 100 }, 
+                    { wpx : 100 }, { wpx : 50 }, { wpx : 50 }, { wpx : 80 }, { wpx : 50 }, 
+                    { wpx : 50 } ];
+    // 하나의 행을 뽑는다.
     for (var i = 0; i < data.length; i++) {
       el = data[i];
       const item = Object.values(data[i]);
-      const row = i + 2;
-      for (var j = 0; j < item.length; j++) {
+      const row = i + 3;
+      for (var j = 0; j < item.length; j++) {   // 한개 셀을 선택
         if (j >= 26) break;
         const col = String.fromCharCode(65 + j);
-        // 헤더 시작
-        if(i == 0){
-          ws[`${col}1`].s = {
-            alignment: { horizontal: 'center', vertical: 'middle' },
-            border: _border.basic,
-          };
-        }
-        if (col == "L" || col == "Q") {
+
+        if (["L", "O", "P"].includes(col)) {
           ws[`${col}${row}`].z = '#,##0';
           ws[`${col}${row}`].s = {
             alignment : { horizontal: 'right', vertical: 'middle' },
+            border: _border.basic,
+          }
+        }else if(["B", "C", "D", "E", "F", "G", "H", "I", "J", "U"].includes(col)){
+          ws[`${col}${row}`].s = {
+            alignment : { horizontal: 'center', vertical: 'middle' },
+            border: _border.basic,
+          }
+        }else{
+          ws[`${col}${row}`].s = {
+            alignment : { horizontal: 'center', vertical: 'middle' },
+            border: _border.basic,
           }
         }
-        // 헤더 끝
+
+        let existingStyle = ws[`${col}${row}`].s || {};
+
         if(el.주차 == "소계" || el.주차 == "총계" ){
           ws[`${col}${row}`].s = {
+            ...existingStyle,
             border : _border.bottom_thick,
             font: {
               color: { rgb: (el.주차 == "소계")?'#3C7BB9':'#508D69' },
             },
           }
+        }
+
+        // 헤더
+        if(i == 0){
+          ws[`${col}2`].s = {
+            alignment: { horizontal: 'center', vertical: 'middle' },
+            border: _border.basic,
+          };
+          ws[`${col}1`].s = {
+            alignment: { horizontal: 'center', vertical: 'middle' },
+            border: _border.basic,
+          };
         }
       }
     }
