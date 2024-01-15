@@ -14,11 +14,15 @@ import { MaterialIcons } from '@expo/vector-icons';
 export default function CommuteCheckScreen({navigation}) {
     const userId = useSelector((state)=>state.login.userId)
     const sCstCo = useSelector((state)=>state.alba.sCstCo)
+    const myStores = useSelector((state)=>state.alba.myStores)
     const { thisSunday, thisSaturday, today } = getStartAndEndOfWeek();
     const [jobChk, setJobChk] = useState([]);
     const [daySchedule, setDaySchedule] = useState([]);
     const [isCommonJob, setJobCls] = useState(true);
     const [weekInfo, setWeekInfo] = useState({});
+    const store = myStores.find(el => el.CSTCO == sCstCo);
+    const [checkLocation, setCheckLocation] = useState(false);
+
     const jobchksearch = async (cstCo) => {
         await HTTP("GET", "/api/v1/commute/jobchksearch", {userId:userId, cstCo:cstCo})
         .then((res)=>{
@@ -57,41 +61,49 @@ export default function CommuteCheckScreen({navigation}) {
 
     
     const insertJobChk = async (chkYn) => {
-        const result = await getLocation();
-        if(result && result.mocked) {
-            alert("모의 위치가 설정되어있습니다.")
-        }else{
-            if(result){
-                const jobCl = (isCommonJob)?"G":"S"
-                await HTTP("POST", "/api/v1/commute/insertJobChk", {userId:userId, cstCo:sCstCo, lat:result.latitude, lon:result.longitude, chkYn:chkYn, apvYn:"Y", jobCl:jobCl})
-                .then((res)=>{
-                    jobchksearch(sCstCo);
-                    getDaySchedule(sCstCo);
-                }).catch(function (error) {
-                    console.log(error);
-                    alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
-                })
+        const rtcl = store.RTCL;
+        if(rtcl == "N"){
+            setCheckLocation(true)
+            const result = await getLocation();
+            if(result && result.mocked) {
+                alert("모의 위치가 설정되어있습니다.")
+                setCheckLocation(false)
             }else{
-                
-                Alert.alert(
-                    '위치 권한 요청',
-                    '위치 권한을 허용해주세요',
-                    [
-                        {text: '취소', onPress: () => {}, style: 'cancel'},
+                if(result){
+                    const jobCl = (isCommonJob)?"G":"S"
+                    await HTTP("POST", "/api/v1/commute/insertJobChk", {userId:userId, cstCo:sCstCo, lat:result.latitude, lon:result.longitude, chkYn:chkYn, apvYn:"Y", jobCl:jobCl})
+                    .then((res)=>{
+                        jobchksearch(sCstCo);
+                        getDaySchedule(sCstCo);
+                        setCheckLocation(false)
+                    }).catch(function (error) {
+                        console.log(error);
+                        alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
+                        setCheckLocation(false)
+                    })
+                }else{
+                    Alert.alert(
+                        '위치 권한 요청',
+                        '위치 권한을 허용해주세요',
+                        [
+                            {text: '취소', onPress: () => {setCheckLocation(false)}, style: 'cancel'},
+                            {
+                            text: '설정창열기',
+                            onPress: () => {setCheckLocation(false);Linking.openSettings();},
+                            style: 'destructive',
+                            },
+                        ],
                         {
-                        text: '설정창열기',
-                        onPress: () => Linking.openSettings(),
-                        style: 'destructive',
+                            cancelable: true,
+                            onDismiss: () => {setCheckLocation(false)},
                         },
-                    ],
-                    {
-                        cancelable: true,
-                        onDismiss: () => {},
-                    },
-                )
+                    )
+                }
             }
+        }else{
+            const type = {R:"승인 대기 중", Y:"퇴직", D:"거절됨"};
+            alert(`출퇴근 불가능 점포입니다. \n사유 : ${type[rtcl]}`)
         }
-        
 
     }
 
@@ -149,7 +161,7 @@ export default function CommuteCheckScreen({navigation}) {
                         <Text>{(isCommonJob)?"일반근무":"대타근무"}</Text>
                     </View>
                 </View>
-                <CommuteButton onButtnPressed={insertJobChk} data={jobChk} sTime={(jobChk.length > 0)?jobChk[0].chkTime.split(" ")[1]:"00:00"}/>
+                <CommuteButton onButtnPressed={insertJobChk} data={jobChk} sTime={(jobChk.length > 0)?jobChk[0].chkTime.split(" ")[1]:"00:00"} checkLocation={checkLocation}/>
                 <View style={[styles.center, {marginBottom:20}]}>
                     <CurTimer />
                 </View>
@@ -282,7 +294,7 @@ const Bottom = ({data}) => {
         // </View>
     )
 }
-const CommuteButton = ({data, sTime, onButtnPressed}) => {
+const CommuteButton = ({data, sTime, onButtnPressed, checkLocation}) => {
     var top = "", main = "", bot = "", color = "";
     const length = data.length;
     if(length == 0){
@@ -320,16 +332,24 @@ const CommuteButton = ({data, sTime, onButtnPressed}) => {
     return(
         <View style={styles.center}>
             <View style={styles.outerCircle}>
-                <TouchableOpacity onPress={onPressed} style={[styles.circle, {backgroundColor:color}]}>
-                    {
-                        (top != "")?<Text style={[styles.circleText, {fontSize:10, marginBottom:10}]}>{top}</Text>:null
-                    }
-                    <Text style={[styles.circleText, {fontSize:24, marginBottom:5}]}>{main}</Text>
-                    {
-                        (bot != "")?<Text style={[styles.circleText, {color:"grey"}]}>{bot}</Text>:null
-                    }
-                    
-                </TouchableOpacity>
+                {
+                    (checkLocation)?
+                    <View style={[styles.circle, {backgroundColor:color}]}>
+                        <Text style={[styles.circleText, {fontSize:18, marginBottom:0}]}>위치정보</Text>
+                        <Text style={[styles.circleText, {fontSize:18, marginBottom:0}]}>체크중</Text>
+                    </View>
+                    :
+                    <TouchableOpacity onPress={onPressed} style={[styles.circle, {backgroundColor:color}]}>
+                        {
+                            (top != "")?<Text style={[styles.circleText, {fontSize:10, marginBottom:10}]}>{top}</Text>:null
+                        }
+                        <Text style={[styles.circleText, {fontSize:24, marginBottom:5}]}>{main}</Text>
+                        {
+                            (bot != "")?<Text style={[styles.circleText, {color:"grey"}]}>{bot}</Text>:null
+                        }
+                        
+                    </TouchableOpacity>
+                }
             </View>
         </View>
     )
