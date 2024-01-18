@@ -41,6 +41,7 @@ import CommuteCheckScreen from './CommuteCheckScreen';
 import CommuteCheckInfoScreen from './CommuteCheckInfoScreen';
 import CommuteCheckDetailScreen from './CommuteCheckDetailScreen';
 import EtcCrewScreen from './EtcCrewScreen';
+import CommuteCheckChangeScreen from './CommuteCheckChangeScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -64,6 +65,7 @@ export default function MainScreen() {
   useEffect(() => {
     loadData()
   }, [])
+  
 
   return (
     <View style={{flex:1, justifyContent:"center"}}> 
@@ -72,7 +74,7 @@ export default function MainScreen() {
         <CrewScreen/>
       :
       (userInfo.ownrYn == "Y")?
-        <OwnrScreen userInfo={userInfo}/>
+        <OwnrScreen userInfo={userInfo} />
       :  
         null
     }
@@ -82,6 +84,7 @@ export default function MainScreen() {
 }
 
 function OwnrScreen({userInfo}){
+  const[owrBadge, setOwrBadge] = useState(null);
   const [refresh, setRefresh] = useState("false")
   const navigation = useNavigation();
   const storeOption = () => {
@@ -101,6 +104,8 @@ function OwnrScreen({userInfo}){
     )
   }
 
+
+
   return(
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -110,7 +115,7 @@ function OwnrScreen({userInfo}){
       })}
     >
       <Tab.Screen name="schedule" component={ScheduleStack} options={{ headerShown:false, tabBarLabel: '근무계획'}}/>
-      <Tab.Screen name="work" component={WorkStack} options={{ headerShown:false, tabBarLabel: '근무결과'}}/>
+      <Tab.Screen name="work" component={WorkStack} options={{ headerShown:false, tabBarLabel: '근무결과', tabBarBadge: owrBadge, }}/>
       <Tab.Screen name="result" component={ResultStack} options={{ headerShown:false, tabBarLabel: '결과현황표'}}/>
       <Tab.Screen name="profitAndLoss" component={ProfitAndLossScreen} options={{ tabBarLabel: '매출현황' }}/>
       <Tab.Screen name="qna" component={QnAScreen} options={{ tabBarLabel: '질문' }}/>
@@ -226,6 +231,7 @@ function CommuteCheckStack(){
     <Stack.Screen name="CommuteCheckMain" component={CommuteCheckScreen} />
     <Stack.Screen name="CommuteCheckInfo" component={CommuteCheckInfoScreen} />
     <Stack.Screen name="CommuteCheckDetail" component={CommuteCheckDetailScreen} />
+    <Stack.Screen name="CommuteCheckChange" component={CommuteCheckChangeScreen} />
   </Stack.Navigator>
   )
 }

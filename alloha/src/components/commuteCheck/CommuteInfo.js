@@ -5,13 +5,15 @@ import { useSelector } from 'react-redux';
 import { HTTP } from '../../util/http';
 import ConvertDayStr from './ConvertDayStr';
 import { YYYYMMDD2Obj } from '../../util/moment';
+import { useIsFocused } from '@react-navigation/native';
 
-export default function CommuteInfo({day}) {
+export default function CommuteInfo({day, dayJobInfo, setDayJobInfo}) {
+    const isFocused = useIsFocused();
     const userId = useSelector((state)=>state.login.userId);
     const sCstCo = useSelector((state)=>state.alba.sCstCo);
     //const date = useSelector((state)=>state.alba.date);
     const [loading, setLoadin] = useState(true);
-    const [dayJobInfo, setDayJobInfo] = useState({});
+    //const [dayJobInfo, setDayJobInfo] = useState({});
 
     const dayJobSearch = async () => {
         //await HTTP("GET", "/api/v1/commute/commuteCheckInfo", {cls:"dayJobInfo", userId:'mega7438226_0075', cstCo:'1010', ymdFr:'20231203', ymdTo:'20231209'})
@@ -26,9 +28,11 @@ export default function CommuteInfo({day}) {
     }
 
     useEffect(()=>{
-        setLoadin(true);
-        dayJobSearch();
-    }, [])
+        if(isFocused){
+            setLoadin(true);
+            dayJobSearch();
+        }
+    }, [isFocused])
     const PlanAlba = ()=>{
         const date = YYYYMMDD2Obj(dayJobInfo.ymd);
         return(
@@ -75,6 +79,23 @@ export default function CommuteInfo({day}) {
                 <View style={styles.row}>
                     <Text style={styles.grey}>근무상태 : </Text>
                     <Text>{dayJobInfo.attendence}</Text>
+                </View>
+                <View style={styles.row}>
+                    <Text style={styles.grey}>근무기록변경요청 : </Text>
+                    
+                        {
+                        (dayJobInfo.reqStat == 'N')?
+                            <Text>없음</Text>
+                        :(dayJobInfo.reqStat == 'R')?
+                            <Text>요청중</Text>
+                        :(dayJobInfo.reqStat == 'R')?
+                            <Text>승인됨</Text>
+                        :(dayJobInfo.reqStat == 'D')?
+                            <Text>거절됨</Text>
+                        :
+                            null
+                        }
+                    
                 </View>
             </View>
     )
