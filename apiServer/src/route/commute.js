@@ -107,11 +107,10 @@ router.get("/daySchedule", async (req,res,next)=>{
 router.post("/reqCommuteChange", async (req,res,next)=>{
     console.log("POST commute.reqCommuteChange")
     try {
-        const { cstCo, userId, sChkNo, eChkNo, sTime, eTime, reason, reqStat } = req.body;
-        const initRlt = await execSql(initCommuteChange, {cstCo, userId, sChkNo, eChkNo});
-        console.log(initRlt);
-        const result = await execSql(reqCommuteChange, { cstCo, userId, sChkNo, eChkNo, sTime, eTime, reason, reqStat });
-
+        const { cstCo, userId, jobNo, sTime, eTime, reason, reqStat } = req.body;
+        const initRlt = await execSql(initCommuteChange, {cstCo, jobNo, userId});
+        //console.log(initRlt);
+        const result = await execSql(reqCommuteChange, { cstCo, jobNo, userId, sTime, eTime, reason, reqStat });
         if(result.rowsAffected[0] == 1){
             res.status(200).json({result:"다녀옴", resultCode:"00"});
         }else{
