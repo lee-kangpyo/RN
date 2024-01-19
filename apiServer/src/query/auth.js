@@ -3,6 +3,11 @@ const login = `
     FROM	PLYMUSER a
     WHERE	a.USERID = @userId
 `
+const logOut = `
+    UPDATE a set a.TOKEN = ''
+    from plymuser a WHERE USERID = @userId
+`
+
 const autoLogin = `
     SELECT	a.ownrYn, a.mnrgYn, a.crewYn, a.userNa
     FROM	PLYMUSER a
@@ -217,4 +222,4 @@ const albaSchedulemanager2 = `
     exec PR_PLYA02_ALBASCHMNG @cls, @cstCo, @userId, @ymdFr, @ymdTo, @jobCl, @sTime, @eTime
 `
 
-module.exports = {login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, insertJobChk, geofencingTest, checkJobChk, insert_Uuid_Token, autoLogin, getUUID, jobChk, jobChk2, salary, getTermsDetail, updateTaxNo, modifyStoreInfo, easyAlbaMng, albaSchedulemanager, albaSchedulemanager2, changeCrewName}
+module.exports = {login, logOut, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, getSelStoreRecords, insertJobChk, geofencingTest, checkJobChk, insert_Uuid_Token, autoLogin, getUUID, jobChk, jobChk2, salary, getTermsDetail, updateTaxNo, modifyStoreInfo, easyAlbaMng, albaSchedulemanager, albaSchedulemanager2, changeCrewName}
