@@ -6,19 +6,51 @@ import Loading from './Loding';
 import Constants from 'expo-constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { setToken } from '../../redux/slices/push';
+import { setReqAlbaChangeCnt } from '../../redux/slices/owner';
 
 Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-  }),
+  handleNotification: async ({ request }) => {
+    const data = request.content.data;
+    if(data.type == "owner-badge"){
+      return {
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: false,
+      };
+    }
+    return {
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: true,
+    };
+  },
 });
 
 
 export default function Notification({ children }) {
   const [isShowChildComponent, setShowChildComponent] = useState(false);
   const dispatch = useDispatch();
+  
+  const notificationListener = useRef();
+  useEffect(() => {
+    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+      const data = notification.request.content.data;
+    });
+    notificationListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+      const data = response.notification.request.content.data;
+      if(data.type == "owner-badge"){
+        dispatch(setReqAlbaChangeCnt({cnt:data.badge}))
+      }
+      console.log(response);
+    });
+    // Clean-up function
+    return () => {
+      if (notificationListener.current) {
+        Notifications.removeNotificationSubscription(notificationListener.current);
+      }
+    };
+  }, []);
+
 
   useEffect(() => {
     //registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
@@ -104,8 +136,6 @@ export default function Notification({ children }) {
       console.log("토큰 형식이 아닙니다.");
     }
   };
-  
-  
 
   return (
     <>
@@ -116,7 +146,7 @@ export default function Notification({ children }) {
         children
         :
         <>
-        <Loading/>
+          <Loading/>
         </>
     }
     </>
