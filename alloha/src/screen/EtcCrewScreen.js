@@ -2,25 +2,28 @@
 import { StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import React, {useState, useEffect} from 'react';
 import { FontAwesome5, MaterialCommunityIcons, Ionicons, AntDesign   } from '@expo/vector-icons';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setUserInfo } from '../../redux/slices/login';
 import * as SecureStore from 'expo-secure-store';
 import * as TaskManager from 'expo-task-manager';
 import { color } from 'react-native-reanimated';
 import { initAlbaSlice } from '../../redux/slices/alba';
+import { HTTP } from '../util/http';
 
 export default function EtcCrewScreen({navigation}) {
     const dispatch = useDispatch();
-
+    const userId = useSelector((state)=>state.login.userId);
     useEffect(()=>{
         navigation.setOptions({title:"기타"})
     }, [navigation])
 
     const logOut = async () => {
+        await HTTP("POST", "/api/v1/logOut", {userId:userId});
         dispatch(initAlbaSlice());
         dispatch(setUserInfo({isLogin:false, userId:""}));
         await SecureStore.setItemAsync("uuid", "");
         TaskManager.unregisterAllTasksAsync();
+        
     }
 
     return (
