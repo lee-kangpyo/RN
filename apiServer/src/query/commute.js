@@ -7,8 +7,8 @@ const daySchedule = `
     exec PR_PLYA02_ALBASCHMNG @cls, @cstCo, @userId, @ymdFr, @ymdTo, '', '', ''
 `
 const reqCommuteChange = `
-    INSERT INTO PLYADAYJOBREQ (CSTCO, USERID, JOBNO, STIME, ETIME, REASON, REQSTAT, USEYN, IUSERID, IYMDHMD)
-    VALUES(@cstCo, @userId, @jobNo, @sTime, @eTime, @reason, @reqStat, 'Y', @userId, getdate())
+    INSERT INTO PLYADAYJOBREQ (CSTCO, USERID, JOBNO, STIME, ETIME, REASON, REQSTAT, PUSHYN, USEYN,  IUSERID, IYMDHMD)
+    VALUES(@cstCo, @userId, @jobNo, @sTime, @eTime, @reason, @reqStat, 'N', 'Y', @userId, getdate())
 `
 const initCommuteChange = `
     UPDATE a set a.USEYN = 'N', a.MUSERID=@userId, a.MYMDHMD = getdate()
@@ -19,4 +19,7 @@ const initCommuteChange = `
     AND USEYN = 'Y'
 `
 
-module.exports = {insertManualJobChk, daySchedule, reqCommuteChange, initCommuteChange}
+
+
+
+module.exports = {insertManualJobChk, daySchedule, reqCommuteChange, initCommuteChange,}

@@ -4,19 +4,14 @@ import { Ionicons, MaterialCommunityIcons, FontAwesome5, MaterialIcons   } from 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import HomeScreen from './HomeScreen';
-import SettingsScreen from './ComunityScreen';
-import BoardScreen from './BoardScreen';
 import ManageStoreScreen from './ManageStoreScreen';
 import AddStoreScreen from './AddStoreScreen';
 import SearchStoreScreen from './SearchStoreScreen';
 import ManageCrewScreen from './ManageCrewScreen';
-import LocationPermission from '../components/LocationPermissionBack'
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import React, {useEffect, useState} from 'react';
-import { color } from 'react-native-reanimated';
 import SearchAddress from '../components/SearchAddress';
 import { useNavigation } from '@react-navigation/native';
 import WageScreen from './WageScreen';
@@ -42,6 +37,7 @@ import CommuteCheckInfoScreen from './CommuteCheckInfoScreen';
 import CommuteCheckDetailScreen from './CommuteCheckDetailScreen';
 import EtcCrewScreen from './EtcCrewScreen';
 import CommuteCheckChangeScreen from './CommuteCheckChangeScreen';
+import { useSelector } from 'react-redux';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -78,13 +74,14 @@ export default function MainScreen() {
       :  
         null
     }
-    </View>  
-    
+    </View>
   );
 }
 
 function OwnrScreen({userInfo}){
-  const[owrBadge, setOwrBadge] = useState(null);
+  // 여기서 뱃지 호출.
+  const owrBadge = useSelector((state) => state.owner.reqAlbaChangeCnt);
+  //const[owrBadge, setOwrBadge] = useState(null);
   const [refresh, setRefresh] = useState("false")
   const navigation = useNavigation();
   const storeOption = () => {

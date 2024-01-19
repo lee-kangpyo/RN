@@ -1,4 +1,5 @@
 import * as Notifications from 'expo-notifications';
+import { useRef } from 'react';
 import { Platform, Linking, Alert  } from 'react-native';
 
 Notifications.setNotificationHandler({
@@ -33,6 +34,9 @@ async function sendPushNotification(expoPushToken) {
 
 async function registerForPushNotificationsAsync() {
     let token;
+
+  W
+
   
     if (Platform.OS === 'android') {
       await Notifications.setNotificationChannelAsync('default', {
