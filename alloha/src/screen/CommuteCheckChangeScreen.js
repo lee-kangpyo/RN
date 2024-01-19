@@ -10,7 +10,6 @@ import { useSelector } from 'react-redux';
 
 export default function CommuteCheckChangeScreen({navigation, route}) {
     const { dayJobInfo } = route.params;
-    
     //const [YYYYMMDD, setYYYYMMDD] = useState(ymd);
     const userId = useSelector((state)=>state.login.userId);
     useEffect(()=>{
@@ -54,11 +53,33 @@ export default function CommuteCheckChangeScreen({navigation, route}) {
             alert(`요청 사유가 입력되지 않았습니다.`)
             return;
         }
+
         // N:insert D, A:update
         // const param = {curStat:"N", cstCo:'1010', userId:'Sksksksk', sChkNo:'1', eChkNo:'2', sTime:"12:00", eTime:"18:00", reason:"사유입력", reqStat:"R"};
-        const params = {curStat:dayJobInfo.reqStat, cstCo:dayJobInfo.cstCo, userId:userId, sChkNo:dayJobInfo.sChkNo, eChkNo:dayJobInfo.eChkNo, sTime:startTime, eTime:endTime, reason:reason, reqStat:"R"};
+        console.log(dayJobInfo.ymd)
+
+        console.log(convertDate(dayJobInfo.ymd, startTime))
+        const params = {curStat:dayJobInfo.reqStat, cstCo:dayJobInfo.cstCo, userId:userId, jobNo:dayJobInfo.jobNo, sTime:convertDate(dayJobInfo.ymd, startTime), eTime:convertDate(dayJobInfo.ymd, endTime), reason:reason, reqStat:"R"};
+        //console.log(params)
         reqCommuteChange(params);
     }
+
+    const convertDate = (dateString, timeString) => {
+
+        // 'YYYYMMDD'에서 년, 월, 일을 추출
+        const year = parseInt(dateString.substring(0, 4), 10);
+        const month = parseInt(dateString.substring(4, 6), 10) - 1; // 월은 0부터 시작하므로 1을 빼줌
+        const day = parseInt(dateString.substring(6, 8), 10);
+
+        // 'HH:mm'에서 시간과 분을 추출
+        const [hours, minutes] = timeString.split(':').map(num => parseInt(num, 10));
+        // Date 객체 생성
+        const targetDate = new Date(year, month, day, hours, minutes);
+        const formattedString = `${targetDate.getFullYear()}-${String(targetDate.getMonth() + 1).padStart(2, '0')}-${String(targetDate.getDate()).padStart(2, '0')} ${String(targetDate.getHours()).padStart(2, '0')}:${String(targetDate.getMinutes()).padStart(2, '0')}`;
+        
+        return formattedString;
+    }
+
 
 
     const [startTime, setStartTime] = useState(dayJobInfo.startTime);

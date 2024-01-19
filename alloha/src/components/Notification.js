@@ -35,13 +35,15 @@ export default function Notification({ children }) {
   useEffect(() => {
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
       const data = notification.request.content.data;
+      if(data.type == "owner-badge"){
+        dispatch(setReqAlbaChangeCnt({cnt:data.badge}))
+      }
     });
     notificationListener.current = Notifications.addNotificationResponseReceivedListener(response => {
       const data = response.notification.request.content.data;
       if(data.type == "owner-badge"){
         dispatch(setReqAlbaChangeCnt({cnt:data.badge}))
       }
-      console.log(response);
     });
     // Clean-up function
     return () => {
