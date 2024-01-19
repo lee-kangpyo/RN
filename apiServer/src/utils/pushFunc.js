@@ -9,7 +9,7 @@ function testTask() {
 }
 
 const checkcommuteChange = `
-select u.USERID ownerId, u.TOKEN, c.CSTCO ownerCstCo, d.CSTNA, a.*
+  select u.USERID ownerId, u.TOKEN, c.CSTCO ownerCstCo, d.CSTNA, a.*
   from PLYADAYJOBREQ a
   inner join PLYADAYJOB b ON a.JOBNO = b.JOBNO
   inner join PLYMCSTUSER c ON a.CSTCO = c.CSTCO 
@@ -21,6 +21,8 @@ select u.USERID ownerId, u.TOKEN, c.CSTCO ownerCstCo, d.CSTNA, a.*
   and b.APVYN != 'D'
   and d.USEYN = 'Y'
   AND c.ROLECL = 'ownr'
+  and u.TOKEN != ''
+  and u.TOKEN is not null
 `
   
 async function sendBadge() {
@@ -42,15 +44,19 @@ async function sendBadge() {
       }
       return accumulator;
     }, {});
+    console.log(structured)
     sendReqCommute(structured);
     
-
     const pushNoList = [...pushNoSet]
-    const closeCommuteChange = `
-        UPDATE PLYADAYJOBREQ SET PUSHYN = 'Y'
-        WHERE REQNO IN (${pushNoList.join(', ')})
-    `
-    await execSqlNoLog(closeCommuteChange, {});
+    
+    if(pushNoList.length > 0){
+      const closeCommuteChange = `
+          UPDATE PLYADAYJOBREQ SET PUSHYN = 'Y'
+          WHERE REQNO IN (${pushNoList.join(', ')})
+      `
+
+      await execSqlNoLog(closeCommuteChange, {});
+    }
   }
   
   //console.log(structured);
