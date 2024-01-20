@@ -79,7 +79,7 @@ export default function MainScreen() {
 }
 
 function OwnrScreen({userInfo}){
-  // 여기서 뱃지 호출.
+  // TODO 여기서 뱃지 호출
   const owrBadge = useSelector((state) => state.owner.reqAlbaChangeCnt);
   //const[owrBadge, setOwrBadge] = useState(null);
   const [refresh, setRefresh] = useState("false")

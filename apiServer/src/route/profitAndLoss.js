@@ -11,9 +11,7 @@ router.get("/execPL", async (req, res, next)=>{
         const{cls, ymdFr, ymdTo, cstCo, plItCo, amt} = req.query;
         // 초기화
         const param = {cls:cls, ymdFR:ymdFr, ymdTo:ymdTo, cstCo:cstCo, plItCo:plItCo, amt:amt};
-        console.log(param);
         const result = await execSql(PLmanager, param)
-        console.log(result);
         res.status(200).json({result:result.recordset, resultCode:"00"});
     } catch (error) {
         console.log(error.message)
@@ -25,11 +23,10 @@ router.get("/getAlbaFeeList", async (req, res, next)=>{
     console.log("profitAndLoss.getAlbaFeeList");
     try {
         const{ymdFr, ymdTo, cstCo} = req.query;
-        console.log(ymdFr, ymdTo, cstCo);
         // 초기화
         const param = {cls:"MonthCstSlySearch", ymdFr:ymdFr, ymdTo:ymdTo, cstCo:cstCo, cstNa:"", userId:"", userNa:"", rtCl:"0"};
         const result = await execSql(monthCstSlySearch, param)
-        console.log(result);
+        //console.log(result);
         res.status(200).json({result:result.recordset, resultCode:"00"});
     } catch (error) {
         console.log(error.message)
