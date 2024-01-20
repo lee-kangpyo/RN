@@ -121,11 +121,6 @@ function ProfitBox({style={}, onTapToEdit, isSub, isOpen, setIsOpen, text, text2
         return <FontAwesome5 style={{marginLeft:5}} name={name} size={fontSize} color="red"/>;
     }
     
-    if(text == "발주(본사)"){
-        console.log("####")
-        console.log(isText);
-        console.log(onTapToEdit)
-    }
     return(
         (isSub)?
             <TouchableOpacity activeOpacity={1} onPress={()=>setIsOpen(!isOpen)} style={[styles.borderBox, {flexDirection:"row", justifyContent:"space-between", height:40}, style]}>
@@ -137,7 +132,7 @@ function ProfitBox({style={}, onTapToEdit, isSub, isOpen, setIsOpen, text, text2
             </TouchableOpacity>
         :
         (onTapToEdit)?
-            <TouchableOpacity onPress={()=>{console.log("여기여기?");setIsText(false);}} style={[styles.borderBox, {flexDirection:"row", justifyContent:"space-between", height:40,}, style]}>
+            <TouchableOpacity onPress={()=>{setIsText(false);}} style={[styles.borderBox, {flexDirection:"row", justifyContent:"space-between", height:40,}, style]}>
                 <Text style={{fontSize:fontSize, fontWeight:fontWeight}}>{text}</Text>
                 {
                     (isText)?
@@ -147,7 +142,7 @@ function ProfitBox({style={}, onTapToEdit, isSub, isOpen, setIsOpen, text, text2
                     :
                         <EidtNumberBox
                             initvalue={text2}
-                            onTap={(value)=>{console.log(value);onTapToEdit(value);setIsText(true);}}
+                            onTap={(value)=>{onTapToEdit(value);setIsText(true);}}
                             hasBox={false}
                         />
                 }
