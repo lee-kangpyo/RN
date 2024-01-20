@@ -5,7 +5,7 @@ const {execSql, execTranSql} = require("../utils/excuteSql");
 const { login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, 
         getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, jobChk, salary,
         insertJobChk, geofencingTest, checkJobChk, insert_Uuid_Token, autoLogin, getUUID, checkjobtotal, 
-        getTermsDetail, updateTaxNo, modifyStoreInfo, easyAlbaMng, albaSchedulemanager2, albaSchedulemanager, changeCrewName} = require('./../query/auth'); 
+        getTermsDetail, updateTaxNo, modifyStoreInfo, easyAlbaMng, albaSchedulemanager2, albaSchedulemanager, changeCrewName, logOut} = require('./../query/auth'); 
 const axios = require('axios');
 
 const dotenv = require('dotenv');
@@ -27,6 +27,12 @@ router.get("/v1/login", async(req, res, next)=>{
     const {id, passWord} = req.query;
     const result = await execSql(login, {userId:id, passWord:passWord})
     res.json({status_code:"00", result:result.recordset, length:result.rowsAffected}); 
+})
+
+router.post("/v1/logOut", async(req, res, next)=>{
+    const {userId} = req.body;
+    await execSql(logOut, {userId:userId})
+    res.json({status_code:"00"}); 
 })
 
 router.post("/v1/loginUser", async(req, res, next)=>{

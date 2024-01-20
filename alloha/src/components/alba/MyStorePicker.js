@@ -16,7 +16,6 @@ export default function MyStorePicker({width="100%", borderColor=theme.purple, u
 
     const dispatch = useDispatch();
     const searchMyAlbaList = async (init) => {
-        console.log("SDf")
         await axios.get(URL+"/api/v1/searchMyAlbaList", {params:{userId:userId}})
         .then((res)=>{
             if(res.data.resultCode === "00"){
@@ -45,7 +44,6 @@ export default function MyStorePicker({width="100%", borderColor=theme.purple, u
                     style={{fontSize:"16",}}
                     selectedValue={sCstCo}
                     onValueChange={ (itemValue, itemIndex) =>{
-                        console.log(myStores)
                         const data = myStores.filter((el)=>{return el.CSTCO === itemValue})[0];
                         dispatch(setSelectedStore({data:data}));
                     }

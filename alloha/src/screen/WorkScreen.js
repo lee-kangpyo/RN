@@ -21,6 +21,7 @@ import { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { theme } from '../util/color';
 
 export default function WorkScreen({navigation}) {
+    //TODO 여기서 알바가 요청하는 근무 수정 페이지 이동
     const userId = useSelector((state) => state.login.userId);
     const weekNumber = useSelector((state)=>state.work.weekNumber);
     const week = useSelector((state)=>state.work.week)

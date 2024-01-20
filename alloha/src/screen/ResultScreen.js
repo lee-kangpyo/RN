@@ -18,6 +18,11 @@ export default function ResultScreen({navigation}) {
     const isFocused = useIsFocused();
     const date = useSelector((state) => state.result.month)
     const items = useSelector((state) => state.result.workResultList)
+    //const cstCo = useSelector((state)=>state.common.cstCo);
+    
+    const storeList = useSelector((state)=>state.common.storeList);
+    const store = storeList.filter((el)=>el.CSTCO == cstCo)
+    
     const [cstNa, setCstNa] = useState("");
    
     const [excelData, setExcelData] = useState([]);
@@ -51,7 +56,12 @@ export default function ResultScreen({navigation}) {
 
     useEffect(() => {
         if (isFocused) {
-            if(cstCo != "") monthCstSlySearch();
+            if(cstCo != "") {
+                monthCstSlySearch();
+                if(store.length > 0){
+                    setCstNa(store[0].CSTNA);
+                }
+            }
         }
     }, [isFocused, cstCo, date]);
 
@@ -71,7 +81,7 @@ export default function ResultScreen({navigation}) {
         var param = {ymdFr:date.start, ymdTo:date.end, cstCo:cstCo}
         await axios.get(URL+`/api/v1/rlt/excelData`, {params:param})
         .then((res)=>{
-            if(res.data.result && res.data.result.length > 0) setCstNa(res.data.result[0].CSTNA);
+            //if(res.data.result && res.data.result.length > 0) setCstNa(res.data.result[0].CSTNA);
             const result = res.data.result.map(item => {
                 let { CSTCO, USERID, CSTNA, sumOrd, ...rest } = item;
                 return rest;
@@ -94,7 +104,7 @@ export default function ResultScreen({navigation}) {
                         custom={"result"}
                         type={"sharing"}
                         btntext={"공유하기"}
-                        fileName={`결과현황표`}
+                        fileName={`${cstNa}_${date.mm}월_결과현황표`}
                         data={excelData}
                     />
                 </View>

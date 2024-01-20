@@ -7,9 +7,10 @@ import { setUserInfo } from '../../redux/slices/login';
 import * as SecureStore from 'expo-secure-store';
 import * as TaskManager from 'expo-task-manager';
 import { color } from 'react-native-reanimated';
+import { initAlbaSlice } from '../../redux/slices/alba';
 import { HTTP } from '../util/http';
 
-export default function EtcScreen({navigation}) {
+export default function EtcCrewScreen({navigation}) {
     const dispatch = useDispatch();
     const userId = useSelector((state)=>state.login.userId);
     useEffect(()=>{
@@ -18,42 +19,25 @@ export default function EtcScreen({navigation}) {
 
     const logOut = async () => {
         await HTTP("POST", "/api/v1/logOut", {userId:userId});
+        dispatch(initAlbaSlice());
         dispatch(setUserInfo({isLogin:false, userId:""}));
         await SecureStore.setItemAsync("uuid", "");
         TaskManager.unregisterAllTasksAsync();
+        
     }
 
     return (
         <View style={{padding:15}}>
             <View style={[styles.container, {flexDirection:"row"}]}>
-                <GridBox 
-                    text={"점포관리"} 
-                    onPress={()=>navigation.push("storeList")} 
-                    icon={{type:"FontAwesome5", name:"store", size:48, color:"black"}} 
-                />   
-                <GridBox 
-                    text={"알바관리"} 
-                    onPress={()=>navigation.push("ManageCrew")}
-                    icon={{type:"MaterialCommunityIcons", name:"badge-account-horizontal", size:48, color:"black"}}
-                />   
                 <GridBox
                     color="red"
                     text={"로그아웃"}
                     onPress={logOut}
                     icon={{type:"MaterialCommunityIcons", name:"logout", size:48, color:"red"}}
                 />
-               
-
-            </View>
-            <View style={[styles.container, {flexDirection:"row"}]}>
                 <GridBox
-                    text={"커뮤니티"}
-                    onPress={()=>navigation.push("community")}
-                    icon={{type:"Ionicons", name:"ios-people-sharp", size:48, color:"black"}}
-                />
-                <GridBox
-                    text={"채팅"}
-                    onPress={()=>navigation.push("customerService")}
+                    text={"준비중"}
+                    onPress={()=>null}
                     icon={{type:"AntDesign", name:"appstore-o", size:48, color:"black"}}
                 />
                 <GridBox
