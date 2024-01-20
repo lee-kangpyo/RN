@@ -52,9 +52,50 @@ async function sendPush(tokens){
         }
     }
     })();
+}
+
+
+async function sendReqCommute(data){
+    const tokens = Object.keys(data);
+    let expo = new Expo();
+    let messages = [];
+    for (const token of tokens) {
+        // Each push token looks like ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]
+        const pushToken = `ExponentPushToken[${token}]`
+        // Check that all your push tokens appear to be valid Expo push tokens
+        if (!Expo.isExpoPushToken(pushToken)) {
+            console.error(`Push token ${pushToken} is not a valid Expo push token`);
+            continue;
+        }
+        console.log(data[token]);
+
+        // Construct a message (see https://docs.expo.io/push-notifications/sending-notifications/)
+        messages.push({
+            to: pushToken,
+            sound: 'default',
+            body: '근무 변경 요청이 있습니다.',
+            data: { type:"owner-badge", badge: data[token].cnt },
+        })
+    }
+
+    let chunks = expo.chunkPushNotifications(messages);
+    let tickets = [];
+    (async () => {
+    
+    for (let chunk of chunks) {
+        try {
+        let ticketChunk = await expo.sendPushNotificationsAsync(chunk);
+        console.log(ticketChunk);
+        tickets.push(...ticketChunk);
+        } catch (error) {
+        console.error(error);
+        }
+    }
+    })();
 
     
 }
+
 
 
 async function checkTicket(tickets){
@@ -104,4 +145,4 @@ async function checkTicket(tickets){
 }
 
 
-module.exports = {sendPush, checkTicket};
+module.exports = {sendPush, checkTicket, sendReqCommute};

@@ -5,7 +5,7 @@ const {execSql} = require("../utils/excuteSql");
 const dotenv = require('dotenv');
 const { jobChk, jobChk2 } = require('../query/auth');
 const { monthCstSlySearch } = require('../query/workResult');
-const { insertManualJobChk, daySchedule } = require('../query/commute');
+const { insertManualJobChk, daySchedule, reqCommuteChange, initCommuteChange } = require('../query/commute');
 const { reverseGeocode } = require('../utils/kakao');
 dotenv.config();
 
@@ -103,6 +103,24 @@ router.get("/daySchedule", async (req,res,next)=>{
     }
 })
 
+
+router.post("/reqCommuteChange", async (req,res,next)=>{
+    console.log("POST commute.reqCommuteChange")
+    try {
+        const { cstCo, userId, jobNo, sTime, eTime, reason, reqStat } = req.body;
+        const initRlt = await execSql(initCommuteChange, {cstCo, jobNo, userId});
+        //console.log(initRlt);
+        const result = await execSql(reqCommuteChange, { cstCo, jobNo, userId, sTime, eTime, reason, reqStat });
+        if(result.rowsAffected[0] == 1){
+            res.status(200).json({result:"다녀옴", resultCode:"00"});
+        }else{
+            res.status(200).json({result:"요청 중 알수 없는 오류가 발생했습니다.", resultCode:"-1"});
+        }
+    } catch (error) {
+        console.log(error.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+})
 
 //insertJobChk
 // exec PR_PLYD02_SALARY @cls, @ymdFr, @ymdTo, @cstCo, @cstNa, @userId, @userNa, @rtCl

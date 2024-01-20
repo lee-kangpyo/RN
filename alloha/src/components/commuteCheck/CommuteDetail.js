@@ -8,7 +8,7 @@ import { theme } from '../../util/color';
 import CustomButton from '../common/CustomButton';
 import { getReverseGeocodeAsync } from '../../util/reverseGeocode';
 
-export default function CommuteDetail({day, onModifyBtnpressed}) {
+export default function CommuteDetail({day}) {
     const userId = useSelector((state)=>state.login.userId);
     const sCstCo = useSelector((state)=>state.alba.sCstCo);
     const [loading, setLoadin] = useState(true);
@@ -36,7 +36,7 @@ export default function CommuteDetail({day, onModifyBtnpressed}) {
                 null
             :
             <>
-            <ScrollView style={[styles.card, {flex:1}]}>
+            <ScrollView contentContainerStyle={{paddingBottom:15}} style={[styles.card, {flex:1}]}>
                 <Text style={{color:"grey", marginBottom:8}}>근무 상세 내역</Text>
                 <View>
                 {
@@ -46,7 +46,7 @@ export default function CommuteDetail({day, onModifyBtnpressed}) {
                 }
                 </View>
             </ScrollView>
-            <CustomButton onClick={onModifyBtnpressed} text={"근무기록변경"} style={styles.btn}/>
+            
             </>
          }
          </>   
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
         paddingVertical:5,
         height:80,
     },
-    btn:{alignSelf:"flex-end"},
+    
     address:{
         color:"grey"
     }

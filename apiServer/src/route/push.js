@@ -21,7 +21,7 @@ router.get("/testicket", async (req, res, next)=>{
         [ { status: 'ok', id: '90487d8c-1020-411d-b3a7-666b20d85449' } ]
     );
     //sendPush([ "fkqkgnChudm9c2A7_015hL"]);
-    res.json({status_code:"00", result:"테스트"}); 
+    res.json({status_code:"00", result:"테스트"});
 })
 
 module.exports = router;

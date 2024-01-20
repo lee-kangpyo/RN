@@ -12,6 +12,8 @@ export default function StoreSelectBox({flex}) {
     const storeList = useSelector((state)=>state.common.storeList);
     const dispatch = useDispatch();
 
+    
+
     const getStoreList = async () => {
         await axios.get(URL+`/api/v1/getStoreList`, {params:{userId:userId,}})
         .then((res)=>{

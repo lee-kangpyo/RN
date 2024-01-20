@@ -18,10 +18,10 @@ export default function ComunityScreen({navigation}) {
 
     const logOut = async () => {
         //로그아웃 실행.
-        dispatch(initAlbaSlice());
-        dispatch(setUserInfo({isLogin:false, userId:""}));
-        await SecureStore.setItemAsync("uuid", "");
-        TaskManager.unregisterAllTasksAsync();
+        // dispatch(initAlbaSlice());
+        // dispatch(setUserInfo({isLogin:false, userId:""}));
+        // await SecureStore.setItemAsync("uuid", "");
+        // TaskManager.unregisterAllTasksAsync();
     }
 
     return (

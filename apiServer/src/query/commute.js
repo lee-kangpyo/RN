@@ -6,5 +6,20 @@ const insertManualJobChk = `
 const daySchedule = `
     exec PR_PLYA02_ALBASCHMNG @cls, @cstCo, @userId, @ymdFr, @ymdTo, '', '', ''
 `
+const reqCommuteChange = `
+    INSERT INTO PLYADAYJOBREQ (CSTCO, USERID, JOBNO, STIME, ETIME, REASON, REQSTAT, PUSHYN, USEYN,  IUSERID, IYMDHMD)
+    VALUES(@cstCo, @userId, @jobNo, @sTime, @eTime, @reason, @reqStat, 'N', 'Y', @userId, getdate())
+`
+const initCommuteChange = `
+    UPDATE a set a.USEYN = 'N', a.MUSERID=@userId, a.MYMDHMD = getdate()
+    from PLYADAYJOBREQ a 
+    WHERE CSTCO = @cstCo 
+    AND USERID = @userId
+    AND JOBNO = @jobNo
+    AND USEYN = 'Y'
+`
 
-module.exports = {insertManualJobChk, daySchedule}
+
+
+
+module.exports = {insertManualJobChk, daySchedule, reqCommuteChange, initCommuteChange,}

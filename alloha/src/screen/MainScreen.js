@@ -4,19 +4,14 @@ import { Ionicons, MaterialCommunityIcons, FontAwesome5, MaterialIcons   } from 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import HomeScreen from './HomeScreen';
-import SettingsScreen from './ComunityScreen';
-import BoardScreen from './BoardScreen';
 import ManageStoreScreen from './ManageStoreScreen';
 import AddStoreScreen from './AddStoreScreen';
 import SearchStoreScreen from './SearchStoreScreen';
 import ManageCrewScreen from './ManageCrewScreen';
-import LocationPermission from '../components/LocationPermissionBack'
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import React, {useEffect, useState} from 'react';
-import { color } from 'react-native-reanimated';
 import SearchAddress from '../components/SearchAddress';
 import { useNavigation } from '@react-navigation/native';
 import WageScreen from './WageScreen';
@@ -40,6 +35,9 @@ import ScheduleScreenToAlba from './ScheduleScreenToAlba';
 import CommuteCheckScreen from './CommuteCheckScreen';
 import CommuteCheckInfoScreen from './CommuteCheckInfoScreen';
 import CommuteCheckDetailScreen from './CommuteCheckDetailScreen';
+import EtcCrewScreen from './EtcCrewScreen';
+import CommuteCheckChangeScreen from './CommuteCheckChangeScreen';
+import { useSelector } from 'react-redux';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -63,6 +61,7 @@ export default function MainScreen() {
   useEffect(() => {
     loadData()
   }, [])
+  
 
   return (
     <View style={{flex:1, justifyContent:"center"}}> 
@@ -71,16 +70,18 @@ export default function MainScreen() {
         <CrewScreen/>
       :
       (userInfo.ownrYn == "Y")?
-        <OwnrScreen userInfo={userInfo}/>
+        <OwnrScreen userInfo={userInfo} />
       :  
         null
     }
-    </View>  
-    
+    </View>
   );
 }
 
 function OwnrScreen({userInfo}){
+  // TODO 여기서 뱃지 호출
+  const owrBadge = useSelector((state) => state.owner.reqAlbaChangeCnt);
+  //const[owrBadge, setOwrBadge] = useState(null);
   const [refresh, setRefresh] = useState("false")
   const navigation = useNavigation();
   const storeOption = () => {
@@ -100,6 +101,8 @@ function OwnrScreen({userInfo}){
     )
   }
 
+
+
   return(
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -109,7 +112,7 @@ function OwnrScreen({userInfo}){
       })}
     >
       <Tab.Screen name="schedule" component={ScheduleStack} options={{ headerShown:false, tabBarLabel: '근무계획'}}/>
-      <Tab.Screen name="work" component={WorkStack} options={{ headerShown:false, tabBarLabel: '근무결과'}}/>
+      <Tab.Screen name="work" component={WorkStack} options={{ headerShown:false, tabBarLabel: '근무결과', tabBarBadge: owrBadge, }}/>
       <Tab.Screen name="result" component={ResultStack} options={{ headerShown:false, tabBarLabel: '결과현황표'}}/>
       <Tab.Screen name="profitAndLoss" component={ProfitAndLossScreen} options={{ tabBarLabel: '매출현황' }}/>
       <Tab.Screen name="qna" component={QnAScreen} options={{ tabBarLabel: '질문' }}/>
@@ -192,7 +195,7 @@ function CrewScreen(){
       })}
     >
       <Tab.Screen name="schedule" component={ScheduleScreenToAlba} options={{ tabBarLabel: '주간근무계획' }}/>
-      <Tab.Screen name="CommuteCheck" component={CommuteCheckStack} options={{ headerShown:false, tabBarLabel: '근무현황' }}/>
+      <Tab.Screen name="CommuteCheck" component={CommuteCheckStack} options={{ headerShown:false, tabBarLabel: '근무 현황' }}/>
       {/* <Tab.Screen name="Home" options={{ tabBarLabel: '출퇴근(구버전)' }} >
         {() => (
           <LocationPermission Grant={HomeScreen}/>
@@ -208,6 +211,13 @@ function CrewScreen(){
       </Tab.Screen>
       <Tab.Screen name="community" component={ComunityScreen} options={{ tabBarLabel: '커뮤니티' }}/>
       <Tab.Screen name="manageStore" component={SearchStoreScreen} backBehavior={"none"} options={{ tabBarLabel: '점포검색' }} />
+      <Tab.Screen name="etc" options={{ headerShown: false, }}>
+        {() => (
+          <Stack.Navigator initialRouteName="etc2">
+            <Stack.Screen name="etc2" component={EtcCrewScreen} options={{ tabBarLabel: '기타' }}/>
+          </Stack.Navigator>
+        )}
+      </Tab.Screen>
     </Tab.Navigator>
   )
 }
@@ -218,6 +228,7 @@ function CommuteCheckStack(){
     <Stack.Screen name="CommuteCheckMain" component={CommuteCheckScreen} />
     <Stack.Screen name="CommuteCheckInfo" component={CommuteCheckInfoScreen} />
     <Stack.Screen name="CommuteCheckDetail" component={CommuteCheckDetailScreen} />
+    <Stack.Screen name="CommuteCheckChange" component={CommuteCheckChangeScreen} />
   </Stack.Navigator>
   )
 }
