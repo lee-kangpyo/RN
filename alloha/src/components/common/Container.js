@@ -49,6 +49,7 @@ function ProfitLossMainLine ({item, subItems, albaList, onChangeValue}) {
     const onTap = (editable.indexOf(item.PLITCO) > -1)?(value)=>onChangeValue({plItCo:item.PLITCO, value:value}):null;
     const isExistSub = (subItems && subItems.length > 0)?true:false
     const isExistAlba = (albaList && albaList.length > 0)?true:false
+    //임시조치 인건비 null로 나오는 이슈 있음.
     return (
         <>
             <ProfitBox text={item.CONA} text2={item.AMT.toLocaleString()} 
@@ -70,6 +71,7 @@ export function ProfitLossPl({data, albaList, onChangeValue}){
             {
                 (mainData.length > 0)?
                     mainData.map((item, idx)=>{
+                        item.AMT = (item.AMT)?item.AMT:0;
                         const subItems = data.filter(el => el.ORDBY > item.ORDBY && el.ORDBY < item.ORDBY + 100);
                         if(item.CONA == "인건비"){
                             return <ProfitLossMainLine key={idx} item = {item} albaList={albaList} />               
@@ -118,6 +120,12 @@ function ProfitBox({style={}, onTapToEdit, isSub, isOpen, setIsOpen, text, text2
         const name = (isOpen)?"chevron-up":"chevron-down"
         return <FontAwesome5 style={{marginLeft:5}} name={name} size={fontSize} color="red"/>;
     }
+    
+    if(text == "발주(본사)"){
+        console.log("####")
+        console.log(isText);
+        console.log(onTapToEdit)
+    }
     return(
         (isSub)?
             <TouchableOpacity activeOpacity={1} onPress={()=>setIsOpen(!isOpen)} style={[styles.borderBox, {flexDirection:"row", justifyContent:"space-between", height:40}, style]}>
@@ -129,7 +137,7 @@ function ProfitBox({style={}, onTapToEdit, isSub, isOpen, setIsOpen, text, text2
             </TouchableOpacity>
         :
         (onTapToEdit)?
-            <TouchableOpacity onPress={()=>setIsText(false)} style={[styles.borderBox, {flexDirection:"row", justifyContent:"space-between", height:40,}, style]}>
+            <TouchableOpacity onPress={()=>{console.log("여기여기?");setIsText(false);}} style={[styles.borderBox, {flexDirection:"row", justifyContent:"space-between", height:40,}, style]}>
                 <Text style={{fontSize:fontSize, fontWeight:fontWeight}}>{text}</Text>
                 {
                     (isText)?
@@ -139,7 +147,7 @@ function ProfitBox({style={}, onTapToEdit, isSub, isOpen, setIsOpen, text, text2
                     :
                         <EidtNumberBox
                             initvalue={text2}
-                            onTap={(value)=>{onTapToEdit(value);setIsText(true);}}
+                            onTap={(value)=>{console.log(value);onTapToEdit(value);setIsText(true);}}
                             hasBox={false}
                         />
                 }
