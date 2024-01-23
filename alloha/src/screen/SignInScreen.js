@@ -435,7 +435,7 @@ const emailCheck = ({ updateState }) => {
                                 </TouchableOpacity>
                                 <View style={styles.txt_sm_cont}>
                                     <Text style={styles.txt_sm}>인증번호 발송에는 시간이 소요되며 하루 최대 5회까지 전송할 수 있습니다.</Text>
-                                    <Text style={styles.txt_sm}>인증번호는 <Text style={{fontWeight:800}}>입력한 이메일 주소</Text>로 발송됩니다. 수신하지 못했다면 스팸함 또는 해당 이메일 서비스의 설정을 확인해주세요</Text>
+                                    <Text style={styles.txt_sm}>인증번호는 <Text style={{fontWeight:"800"}}>입력한 이메일 주소</Text>로 발송됩니다. 수신하지 못했다면 스팸함 또는 해당 이메일 서비스의 설정을 확인해주세요</Text>
                                 </View>
                             </View>
                             }
@@ -498,7 +498,7 @@ const styles = StyleSheet.create({
         borderRadius:5,
         color:"#DBDCE1",
         fontSize:16,
-        fontWeight:500,
+        fontWeight:"500",
         width:"33.33%",
     },
     sepSelected:{
