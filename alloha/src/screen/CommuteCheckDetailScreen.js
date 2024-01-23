@@ -50,7 +50,6 @@ export default function CommuteCheckDetailScreen({navigation, route}) {
           );
     }
 
-
     return (
         <View style={styles.container}>
             <CommuteInfo day = {YYYYMMDD} dayJobInfo={dayJobInfo} setDayJobInfo={setDayJobInfo} />
