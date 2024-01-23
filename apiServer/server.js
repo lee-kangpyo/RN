@@ -13,7 +13,6 @@ app.listen(8080, function () {
 app.use(express.json());
 
 
-
 // 주기적인 polling을 설정 (예: 5초마다)
 const pollingInterval = 5000; // 5초
 setInterval(sendBadge, pollingInterval);

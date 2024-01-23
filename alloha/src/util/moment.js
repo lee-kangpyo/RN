@@ -284,3 +284,20 @@ export const YYYYMMDD2Obj = (ymdStr) => {
     const formattedDate = `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
     return { ymd: formattedDate, day, color };
 };
+
+// 20240121 -> 2024년 01월 21일
+export const YYYYMMDD_KOR_2Obj = (ymdStr) => {
+    // 년, 월, 일 추출
+    var year = parseInt(ymdStr.substring(0, 4));
+    var month = parseInt(ymdStr.substring(4, 6)) - 1; // 월은 0부터 시작하므로 1을 빼줍니다.
+    var day = parseInt(ymdStr.substring(6, 8));
+
+    // Date 객체 생성
+    var convertedDate = new Date(year, month, day);
+
+    // 날짜 형식 출력
+    var options = { year: 'numeric', month: 'long', day: 'numeric' };
+    var formattedDate = convertedDate.toLocaleDateString('ko-KR', options);
+
+    return formattedDate
+}

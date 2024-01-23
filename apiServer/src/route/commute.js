@@ -5,7 +5,7 @@ const {execSql} = require("../utils/excuteSql");
 const dotenv = require('dotenv');
 const { jobChk, jobChk2 } = require('../query/auth');
 const { monthCstSlySearch } = require('../query/workResult');
-const { insertManualJobChk, daySchedule, reqCommuteChange, initCommuteChange } = require('../query/commute');
+const { insertManualJobChk, daySchedule, reqCommuteChange, initCommuteChange, getReqCommuteList, updateJobReq, updateDayJob } = require('../query/commute');
 const { reverseGeocode } = require('../utils/kakao');
 dotenv.config();
 
@@ -92,7 +92,7 @@ router.post("/insertJobChk", async (req,res,next)=>{
 })
 
 router.get("/daySchedule", async (req,res,next)=>{
-    console.log("POST commute.daySchedule")
+    console.log("GET commute.daySchedule")
     try {
         const {cstCo, userId, ymd} = req.query;
         const result = await execSql(daySchedule, {cls:"WeekAlbaScheduleSearch", userId, cstCo, ymdFr:ymd, ymdTo:ymd});
@@ -107,15 +107,58 @@ router.get("/daySchedule", async (req,res,next)=>{
 router.post("/reqCommuteChange", async (req,res,next)=>{
     console.log("POST commute.reqCommuteChange")
     try {
-        const { cstCo, userId, jobNo, sTime, eTime, reason, reqStat } = req.body;
+        const { cstCo, userId, jobNo, sTime, eTime, startTime, endTime, reason, reqStat } = req.body;
         const initRlt = await execSql(initCommuteChange, {cstCo, jobNo, userId});
-        //console.log(initRlt);
-        const result = await execSql(reqCommuteChange, { cstCo, jobNo, userId, sTime, eTime, reason, reqStat });
+        const result = await execSql(reqCommuteChange, { cstCo, jobNo, userId, sTime, eTime, startTime, endTime, reason, reqStat });
         if(result.rowsAffected[0] == 1){
             res.status(200).json({result:"다녀옴", resultCode:"00"});
         }else{
             res.status(200).json({result:"요청 중 알수 없는 오류가 발생했습니다.", resultCode:"-1"});
         }
+    } catch (error) {
+        console.log(error.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+})
+
+router.get("/getReqCommuteList", async (req,res,next)=>{
+    console.log("GET commute.getReqCommuteList - 점주가 알바 근무 수정 정보 호출")
+    try {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = today.getMonth() + 1; // 월은 0부터 시작하므로 1을 더합니다.
+        // 이번달의 첫 번째 날
+        const firstDay = `${year}${month.toString().padStart(2, '0')}01`;
+        // 이번달의 마지막 날
+        const lastDayOfMonth = new Date(year, month, 0);
+        const lastDay = `${year}${month.toString().padStart(2, '0')}${lastDayOfMonth.getDate()}`;
+
+        const { userId } = req.query;
+        const result = await execSql(getReqCommuteList, {userId, firstDay, lastDay});
+        const data = {reqList:result.recordset, resultCode:"00"};
+        res.status(200).json(data);
+    } catch (error) {
+        console.log(error.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+})
+
+
+router.post("/albaWorkChangeProcess", async (req,res,next)=>{
+    console.log("GET commute.albaWorkChangeProcess - 점주가 알바 근무 수정 승인 거절")
+    try {
+        const { reqStat, userId, reqNo } = req.body;
+        console.log(reqStat, userId, reqNo);
+        const result = await execSql(updateJobReq, {reqStat, userId, reqNo});
+        
+        if(result.rowsAffected[0] == 1){
+            if(reqStat == "A")await execSql(updateDayJob, {userId, reqNo, apvYn:'A'});
+        }
+
+        //const result = await execSql(getReqCommuteList, {userId});
+        //const data = {reqList:result.recordset, resultCode:"00"};
+        //console.log(data)
+        res.status(200).json({resultCode:"00"});
     } catch (error) {
         console.log(error.message)
         res.status(200).json({ resultCode:"-1"});
