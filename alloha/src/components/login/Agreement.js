@@ -60,7 +60,7 @@ export default function Agreement({closesheet, navigation}){
             </View>
             <View style={{...styles.totAgr, borderColor:(isTotChecked)?theme.primary:theme.grey}}>
                 <Checkbox style={styles.checkbox} value={isTotChecked} onValueChange={setTotCheckBox} color={(isTotChecked)?theme.primary:theme.grey} />
-                <Text style={{...styles.txt_dig, fontWeight:500,}}>전체 동의</Text>
+                <Text style={{...styles.txt_dig, fontWeight:"500",}}>전체 동의</Text>
             </View>
 
             {
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     },
     title:{
         fontSize:24,
-        fontWeight:500,
+        fontWeight:"500",
     },
     checkbox: {
         margin: 8,
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
     },
     txt_dig:{
         fontSize:16,
-        fontWeight:400,
+        fontWeight:"400",
         marginLeft:8
     },
     btn:{
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
     btnTxt:{
         color:"white",
         fontSize:20,
-        fontWeight:500,
+        fontWeight:"500",
     }
 
 })
