@@ -88,7 +88,7 @@ export default function CommuteInfo({day, dayJobInfo, setDayJobInfo}) {
                             <Text>없음</Text>
                         :(dayJobInfo.reqStat == 'R')?
                             <Text>요청중</Text>
-                        :(dayJobInfo.reqStat == 'R')?
+                        :(dayJobInfo.reqStat == 'A')?
                             <Text>승인됨</Text>
                         :(dayJobInfo.reqStat == 'D')?
                             <Text>거절됨</Text>

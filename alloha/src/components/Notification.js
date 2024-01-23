@@ -4,9 +4,9 @@ import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Loading from './Loding';
 import Constants from 'expo-constants';
-import { useDispatch, useSelector } from 'react-redux';
 import { setToken } from '../../redux/slices/push';
-import { setReqAlbaChangeCnt } from '../../redux/slices/owner';
+import { useCommuteChangeList } from '../hooks/useReqCommuteList';
+import { useDispatch, useSelector } from 'react-redux';
 
 Notifications.setNotificationHandler({
   handleNotification: async ({ request }) => {
@@ -21,7 +21,7 @@ Notifications.setNotificationHandler({
     return {
       shouldShowAlert: true,
       shouldPlaySound: true,
-      shouldSetBadge: true,
+      shouldSetBadge: false,
     };
   },
 });
@@ -30,28 +30,9 @@ Notifications.setNotificationHandler({
 export default function Notification({ children }) {
   const [isShowChildComponent, setShowChildComponent] = useState(false);
   const dispatch = useDispatch();
+
   
-  const notificationListener = useRef();
-  useEffect(() => {
-    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-      const data = notification.request.content.data;
-      if(data.type == "owner-badge"){
-        dispatch(setReqAlbaChangeCnt({cnt:data.badge}))
-      }
-    });
-    notificationListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-      const data = response.notification.request.content.data;
-      if(data.type == "owner-badge"){
-        dispatch(setReqAlbaChangeCnt({cnt:data.badge}))
-      }
-    });
-    // Clean-up function
-    return () => {
-      if (notificationListener.current) {
-        Notifications.removeNotificationSubscription(notificationListener.current);
-      }
-    };
-  }, []);
+
 
 
   useEffect(() => {

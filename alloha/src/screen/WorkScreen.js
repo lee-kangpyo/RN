@@ -28,9 +28,9 @@ export default function WorkScreen({navigation}) {
     const weekList = getWeekList(week);
     const albas = useSelector((state)=>state.work.albas);
     const workInfo = useSelector((state)=>state.work.workAlbaInfo);
-    
     const cstCo = useSelector((state)=>state.common.cstCo);
-    
+
+    const owrBadge = useSelector((state) => state.owner.reqAlbaChangeCnt);
     const dispatch = useDispatch();
 
     const [modalVisible, setModalVisible] = useState(false);
@@ -194,11 +194,18 @@ export default function WorkScreen({navigation}) {
                 <View style={{...styles.card, padding:5}}>
                     <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:5}}>
                         <HeaderControl title={`${weekNumber.month}월 ${weekNumber.number}주차`} onLeftTap={()=> dispatch(prevWeek())} onRightTap={()=> dispatch(nextWeek())} />
-                        <TouchableOpacity onPress={toggleWidth}>
-                            <View style={{...styles.btnMini, paddingVertical:0, paddingHorizontal:5, borderColor:theme.link}}>
-                                <Text style={styles.btnText}>편집</Text>
-                            </View>
-                        </TouchableOpacity>
+                        <View style={{flexDirection:"row"}}>
+                            <TouchableOpacity style={{marginRight:5}} onPress={()=>navigation.push("reqChangeWork")}>
+                                <View style={{...styles.btnMini, paddingVertical:0, paddingHorizontal:5, borderColor:(owrBadge > 0)?theme.error:theme.link}}>
+                                    <Text style={[styles.btnText, {color:(owrBadge > 0)?theme.error:theme.link}]}>알바수정요청보기</Text>
+                                </View>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={toggleWidth}>
+                                <View style={{...styles.btnMini, paddingVertical:0, paddingHorizontal:5, borderColor:theme.link}}>
+                                    <Text style={styles.btnText}>편집</Text>
+                                </View>
+                            </TouchableOpacity>
+                        </View>
                         {
                             (false)?
                                 <TouchableOpacity onPress={()=>dispatch(setAlba(alba))}>

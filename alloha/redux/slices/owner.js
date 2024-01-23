@@ -5,24 +5,21 @@ const {thisSunday:start, thisSaturday:end} = getStartAndEndOfWeek();
 const initialState = {
     //근무현황 페이지에서 단독실행
     reqAlbaChangeCnt:null,
+    reqList:[],
 };
 
 const ownerSlice = createSlice({
   name: 'owner',
   initialState,
   reducers: {
-    setReqAlbaChangeCnt(state, action){
-      const cnt = action.payload.cnt;
-      if(cnt == 0){
-        state.reqAlbaChangeCnt = null;
-      }else if( cnt > 99){
-        state.reqAlbaChangeCnt = "99+";
-      }else{
-        state.reqAlbaChangeCnt = cnt;
-      }
+    setReqAlbaChange(state, action){
+      const {cnt, reqList } = action.payload;
+      const changeCnt = (cnt == 0)?null:( cnt > 99)?"99+":cnt;
+      state.reqAlbaChangeCnt = changeCnt;
+      state.reqList = reqList;
     },
   },
 });
 
-export let { setReqAlbaChangeCnt } = ownerSlice.actions
+export let { setReqAlbaChange } = ownerSlice.actions
 export default ownerSlice;

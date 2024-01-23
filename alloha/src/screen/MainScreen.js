@@ -4,6 +4,8 @@ import { Ionicons, MaterialCommunityIcons, FontAwesome5, MaterialIcons   } from 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+
+
 import ManageStoreScreen from './ManageStoreScreen';
 import AddStoreScreen from './AddStoreScreen';
 import SearchStoreScreen from './SearchStoreScreen';
@@ -11,7 +13,7 @@ import ManageCrewScreen from './ManageCrewScreen';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import SearchAddress from '../components/SearchAddress';
 import { useNavigation } from '@react-navigation/native';
 import WageScreen from './WageScreen';
@@ -37,7 +39,10 @@ import CommuteCheckInfoScreen from './CommuteCheckInfoScreen';
 import CommuteCheckDetailScreen from './CommuteCheckDetailScreen';
 import EtcCrewScreen from './EtcCrewScreen';
 import CommuteCheckChangeScreen from './CommuteCheckChangeScreen';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useCommuteChangeList } from '../hooks/useReqCommuteList';
+import ReqChangeWorkScreen from './ReqChangeWorkScreen';
+import NotificationListener from '../components/common/NotificationListener';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -65,8 +70,11 @@ export default function MainScreen() {
 
   return (
     <View style={{flex:1, justifyContent:"center"}}> 
+    <NotificationListener />
     {
+      
       (userInfo.crewYn == 'Y')?
+        
         <CrewScreen/>
       :
       (userInfo.ownrYn == "Y")?
@@ -79,11 +87,16 @@ export default function MainScreen() {
 }
 
 function OwnrScreen({userInfo}){
-  // TODO 여기서 뱃지 호출
   const owrBadge = useSelector((state) => state.owner.reqAlbaChangeCnt);
-  //const[owrBadge, setOwrBadge] = useState(null);
   const [refresh, setRefresh] = useState("false")
+  const userId = useSelector((state) => state.login.userId);
   const navigation = useNavigation();
+  const getChageList = useCommuteChangeList(userId)
+  
+  useEffect(()=>{
+    getChageList();
+  }, [])
+
   const storeOption = () => {
     return(
       {
@@ -157,6 +170,7 @@ function WorkStack(){
   return(
   <Stack.Navigator>
     <Stack.Screen name="workMain" component={WorkScreen} />
+    <Stack.Screen name="reqChangeWork" component={ReqChangeWorkScreen} />
     <Stack.Screen name="registerAlba" component={EasyRegisterAlbaScreen} />
   </Stack.Navigator>
   )

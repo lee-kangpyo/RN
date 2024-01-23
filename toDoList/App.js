@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
   },
   btnText:{
     color:"white",
-    fontWeight: 600,
+    fontWeight: "600",
     fontSize: 35,
   },
   input:{
@@ -134,6 +134,6 @@ const styles = StyleSheet.create({
   toDoText:{
     color:"white",
     fontSize:16,
-    fontWeight:"500"
+    fontWeight:"500",
   },  
 });
