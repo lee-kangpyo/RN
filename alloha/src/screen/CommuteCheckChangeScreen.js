@@ -53,13 +53,8 @@ export default function CommuteCheckChangeScreen({navigation, route}) {
             alert(`요청 사유가 입력되지 않았습니다.`)
             return;
         }
-
-        // N:insert D, A:update
-        // const param = {curStat:"N", cstCo:'1010', userId:'Sksksksk', sChkNo:'1', eChkNo:'2', sTime:"12:00", eTime:"18:00", reason:"사유입력", reqStat:"R"};
-        console.log(dayJobInfo.ymd)
-
-        console.log(convertDate(dayJobInfo.ymd, startTime))
-        const params = {curStat:dayJobInfo.reqStat, cstCo:dayJobInfo.cstCo, userId:userId, jobNo:dayJobInfo.jobNo, sTime:convertDate(dayJobInfo.ymd, startTime), eTime:convertDate(dayJobInfo.ymd, endTime), reason:reason, reqStat:"R"};
+        const ymd = dayJobInfo.ymd;
+        const params = {curStat:dayJobInfo.reqStat, cstCo:dayJobInfo.cstCo, userId:userId, jobNo:dayJobInfo.jobNo, sTime:convertDate(ymd, startTime), eTime:convertDate(ymd, endTime), reason:reason, reqStat:"R", startTime:convertDate(ymd, dayJobInfo.startTime), endTime:convertDate(ymd, dayJobInfo.endTime)};
         //console.log(params)
         reqCommuteChange(params);
     }

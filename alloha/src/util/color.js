@@ -14,5 +14,10 @@ export const theme = {
     open:"#BEADFA",
     middle:"#AAE3E2",
     close:"#FFCACC",
-    etc:"#EEEEEE"
+    etc:"#EEEEEE",
+    yellow:"#FFEAA7",
+    orange:"#FFBB64",
+    grey2:"#B6BBC4",
+    sky:"#4CB9E7",
+    lightgrey:"#EDEDED"
 }

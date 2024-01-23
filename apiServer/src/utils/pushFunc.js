@@ -9,53 +9,56 @@ function testTask() {
 }
 
 const checkcommuteChange = `
-  select u.USERID ownerId, u.TOKEN, c.CSTCO ownerCstCo, d.CSTNA, a.*
-  from PLYADAYJOBREQ a
-  inner join PLYADAYJOB b ON a.JOBNO = b.JOBNO
-  inner join PLYMCSTUSER c ON a.CSTCO = c.CSTCO 
-  inner join PLYMCST d On c.CSTCO = d.CSTCO
-  inner join PLYMUSER u On c.USERID = u.USERID
-  WHERE a.USEYN = 'Y'
-  and a.REQSTAT = 'R'
-  and a.PUSHYN = 'N'
-  and b.APVYN != 'D'
-  and d.USEYN = 'Y'
-  AND c.ROLECL = 'ownr'
-  and u.TOKEN != ''
-  and u.TOKEN is not null
+select u.USERID ownerId, u.TOKEN, c.CSTCO ownerCstCo, d.CSTNA, a.*
+from PLYADAYJOBREQ a
+inner join PLYADAYJOB b ON a.JOBNO = b.JOBNO
+inner join PLYMCSTUSER c ON a.CSTCO = c.CSTCO 
+inner join PLYMCST d On c.CSTCO = d.CSTCO
+inner join PLYMUSER u On c.USERID = u.USERID
+WHERE a.USEYN = 'Y'
+and a.REQSTAT = 'R'
+and a.PUSHYN = 'N'
+and b.APVYN != 'D'
+and d.USEYN = 'Y'
+AND c.ROLECL = 'ownr'
+and u.TOKEN != ''
+and u.TOKEN is not null
 `
+
   
 async function sendBadge() {
   const result = await execSqlNoLog(checkcommuteChange, {});
-  const pushList = result.recordset;
-  if(pushList.length > 0){
-    console.log("근무 요청 기록이 있음.")
-    const pushNoSet = new Set()
-    const structured = pushList.reduce((accumulator, next) => {
-      const token = next.TOKEN;
-      if (token) {
-        if (!accumulator[token]) {
-          //accumulator[token] = { cnt: 0, data: [] };
-          accumulator[token] = { cnt: 0 };
+  if(result){
+    const pushList = result.recordset;
+    if(pushList.length > 0){
+      console.log("근무 요청 기록이 있음.")
+      const pushNoSet = new Set()
+      const structured = pushList.reduce((accumulator, next) => {
+        const token = next.TOKEN;
+        if (token) {
+          if (!accumulator[token]) {
+            //accumulator[token] = { cnt: 0, data: [] };
+            accumulator[token] = { cnt: 0 };
+          }
+          accumulator[token].cnt += 1;
+          //accumulator[token].data.push(next);
+          pushNoSet.add(next.REQNO);
         }
-        accumulator[token].cnt += 1;
-        //accumulator[token].data.push(next);
-        pushNoSet.add(next.REQNO);
+        return accumulator;
+      }, {});
+      console.log(structured)
+      sendReqCommute(structured);
+      
+      const pushNoList = [...pushNoSet]
+      
+      if(pushNoList.length > 0){
+        const closeCommuteChange = `
+            UPDATE PLYADAYJOBREQ SET PUSHYN = 'Y'
+            WHERE REQNO IN (${pushNoList.join(', ')})
+        `
+  
+        await execSqlNoLog(closeCommuteChange, {});
       }
-      return accumulator;
-    }, {});
-    console.log(structured)
-    sendReqCommute(structured);
-    
-    const pushNoList = [...pushNoSet]
-    
-    if(pushNoList.length > 0){
-      const closeCommuteChange = `
-          UPDATE PLYADAYJOBREQ SET PUSHYN = 'Y'
-          WHERE REQNO IN (${pushNoList.join(', ')})
-      `
-
-      await execSqlNoLog(closeCommuteChange, {});
     }
   }
   
