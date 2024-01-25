@@ -36,9 +36,9 @@ export default function EtcCrewScreen({navigation}) {
                     icon={{type:"MaterialCommunityIcons", name:"logout", size:48, color:"red"}}
                 />
                 <GridBox
-                    text={"준비중"}
-                    onPress={()=>null}
-                    icon={{type:"AntDesign", name:"appstore-o", size:48, color:"black"}}
+                    text={"커뮤니티"}
+                    onPress={()=>navigation.push("Comunity")}
+                    icon={{type:"Ionicons", name:"ios-people-sharp", size:48, color:"black"}}
                 />
                 <GridBox
                     text={"준비중"}
