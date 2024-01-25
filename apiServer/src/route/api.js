@@ -18,11 +18,6 @@ const palRouter = require("../route/profitAndLoss")
 const boardRouter = require("../route/board")
 const commuteRouter = require("../route/commute")
 
-router.get("/v1/test", async (req, res, next)=>{
-    const result = await execSql(test, {userId:'asdf'})
-    res.json({status_code:"00", result:result.recordset, length:result.rowsAffected}); 
-})
-
 router.get("/v1/login", async(req, res, next)=>{
     const {id, passWord} = req.query;
     const result = await execSql(login, {userId:id, passWord:passWord})

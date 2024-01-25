@@ -1,10 +1,9 @@
 
-import { StyleSheet, Animated, Text, View, TouchableOpacity, Keyboard, Switch, Alert, Dimensions, StatusBar, SafeAreaView } from 'react-native';
+import { StyleSheet, Animated, Text, View, TouchableOpacity, Keyboard, Switch, Alert, Dimensions, StatusBar, SafeAreaView, ScrollView } from 'react-native';
 import React, {useState, useEffect, useCallback, useRef, useMemo} from 'react';
 import WeekDate from '../components/schedule/WeekDate';
 import { useSelector, useDispatch } from 'react-redux';
 import { setAlbaList } from '../../redux/slices/schedule';
-import { ScrollView } from 'react-native-gesture-handler';
 import axios from 'axios';
 import { URL } from "@env";
 import { useIsFocused } from '@react-navigation/native';

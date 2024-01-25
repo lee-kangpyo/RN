@@ -1,12 +1,11 @@
 
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TextInput } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import sampleImage from '../../assets/community.png';
 import { HTTP } from '../util/http';
 import { useSelector } from 'react-redux';
 import { TouchableOpacity, Keyboard  } from 'react-native';
 import { AntDesign, FontAwesome  } from '@expo/vector-icons'; 
-import { TextInput } from 'react-native-gesture-handler';
 import { useRef } from 'react';
 
 export default function QnAScreen({navigation}) {

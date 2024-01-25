@@ -1,5 +1,5 @@
 
-import { StyleSheet, Text, View, TouchableOpacity, Platform} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Platform, ScrollView} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import ViewShot from "react-native-view-shot";
@@ -10,7 +10,6 @@ import axios from 'axios';
 import { URL } from "@env";
 import { AntDesign } from '@expo/vector-icons'; 
 import { theme } from '../util/color';
-import { ScrollView } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 import { nextWeek, prevWeek } from '../../redux/slices/schedule';
 import HeaderControl from '../components/common/HeaderControl';
