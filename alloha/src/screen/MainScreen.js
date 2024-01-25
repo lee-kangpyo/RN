@@ -223,12 +223,13 @@ function CrewScreen(){
           </Stack.Navigator>
         )}
       </Tab.Screen>
-      <Tab.Screen name="community" component={ComunityScreen} options={{ tabBarLabel: '커뮤니티' }}/>
+      
       <Tab.Screen name="manageStore" component={SearchStoreScreen} backBehavior={"none"} options={{ tabBarLabel: '점포검색' }} />
       <Tab.Screen name="etc" options={{ headerShown: false, }}>
         {() => (
           <Stack.Navigator initialRouteName="etc2">
             <Stack.Screen name="etc2" component={EtcCrewScreen} options={{ tabBarLabel: '기타' }}/>
+            <Stack.Screen name="Comunity" component={ComunityScreen} options={{ tabBarLabel: '커뮤니티' }}/>
           </Stack.Navigator>
         )}
       </Tab.Screen>
@@ -279,6 +280,9 @@ const setTabBarIcon = (focused, color, size, name) =>{
   }else if(name === "qna"){
     iconName = 'chat-question';
     icon = "MaterialCommunityIcons"
+  }else if(name ==='Wage'){
+    iconName = 'dollar-sign';
+    icon = "FontAwesome5"
   }
   
 
