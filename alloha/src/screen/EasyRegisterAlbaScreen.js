@@ -1,6 +1,6 @@
-import { StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput} from 'react-native';
 import React, {useState, useEffect} from 'react';
-import { TextInput } from 'react-native-gesture-handler';
+
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import * as yup from 'yup';
 import { Formik } from 'formik';

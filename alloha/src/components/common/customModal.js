@@ -1,8 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
-import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useSelector } from "react-redux";
 import { Ionicons } from '@expo/vector-icons';
-import { TextInput } from "react-native-gesture-handler";
 import { useState } from "react";
 
 export function AlbaModal({execptAlbaId, isShow, onClose, onShow, addAlba, selectAlba }){

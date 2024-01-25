@@ -1,12 +1,11 @@
 
-import { StyleSheet, Text, View,} from 'react-native';
+import { ScrollView, StyleSheet, Text, View,} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { getWeekList } from '../util/moment';
 import axios from 'axios';
 import { URL } from "@env";
 import { theme } from '../util/color';
-import { ScrollView } from 'react-native-gesture-handler';
 
 export default function ScheduleTimeLineScreen({navigation, route}) {
     const cstCo = useSelector((state)=>state.common.cstCo);

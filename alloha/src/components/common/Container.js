@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, Text, Touchable, TouchableOpacity, Keyboard } from 'react-native';
-import { ScrollView, TextInput } from 'react-native-gesture-handler';
+import { View, StyleSheet, Text, Touchable, TouchableOpacity, Keyboard, ScrollView, TextInput } from 'react-native';
+
 import { FontAwesome5 } from '@expo/vector-icons';
 
 
