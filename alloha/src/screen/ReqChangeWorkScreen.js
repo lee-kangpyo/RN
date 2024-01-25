@@ -20,14 +20,6 @@ export default function ReqChangeWorkScreen({navigation}) {
     const [searchWrd, setsearchWrd] = useState("");
     const [reqList, setReqList] = useState([]);
     const [cstList, setCstList] = useState([]);
-    const data1 = [
-        {"CSTCO": 1004, "CSTNA": "동삭커피", "JOBNO": 4613, "REASON": "사\n유\n사\n유ssakfjdklsajflkjsadlf;jsalkfjlskadflasdjfkljsdalfjsadlk;fhsalghlsa;kdjflk;sadjfl;", "REQNO": 4, "REQSTAT": "R", "USERID": "Qpqpqpqp", "USERNA": "나르바00", "YMD": "20240121", "createDate": "2024-01-21T01:12:36.120Z", "eTime": "2024-01-21T01:00:00.000Z", "reqEtime": "2024-01-21T03:00:00.000Z", "reqStime": "2024-01-21T01:30:00.000Z", "sTime": "2024-01-21T00:30:00.000Z"}, 
-        {"CSTCO": 1004, "CSTNA": "동삭커피", "JOBNO": 4613, "REASON": "사유사유", "REQNO": 4, "REQSTAT": "A", "USERID": "Qpqpqpqp", "USERNA": "가르바00", "YMD": "20240114", "createDate": "2024-01-14T01:12:36.120Z", "eTime": "2024-01-21T01:00:00.000Z", "reqEtime": "2024-01-21T03:00:00.000Z", "reqStime": "2024-01-21T01:30:00.000Z", "sTime": "2024-01-21T00:30:00.000Z"}, 
-        {"CSTCO": 1004, "CSTNA": "동삭커피", "JOBNO": 4613, "REASON": "사유사유", "REQNO": 4, "REQSTAT": "R", "USERID": "Qpqpqpqp", "USERNA": "아르바00", "YMD": "20240102", "createDate": "2024-01-02T01:12:36.120Z", "eTime": "2024-01-02T01:00:00.000Z", "reqEtime": "2024-01-21T03:00:00.000Z", "reqStime": "2024-01-21T01:30:00.000Z", "sTime": "2024-01-21T00:30:00.000Z"}, 
-        {"CSTCO": 1004, "CSTNA": "동삭커피", "JOBNO": 4613, "REASON": "사유사유", "REQNO": 4, "REQSTAT": "A", "USERID": "Qpqpqpqp", "USERNA": "아르바00", "YMD": "20240101", "createDate": "2024-01-01T01:12:36.120Z", "eTime": "2024-01-01T01:00:00.000Z", "reqEtime": "2024-01-21T03:00:00.000Z", "reqStime": "2024-01-21T01:30:00.000Z", "sTime": "2024-01-21T00:30:00.000Z"}, 
-        {"CSTCO": 1004, "CSTNA": "동삭커피", "JOBNO": 4613, "REASON": "사유사유", "REQNO": 4, "REQSTAT": "D", "USERID": "Qpqpqpqp", "USERNA": "아르바00", "YMD": "20240101", "createDate": "2024-01-01T01:12:36.120Z", "eTime": "2024-01-01T01:00:00.000Z", "reqEtime": "2024-01-21T03:00:00.000Z", "reqStime": "2024-01-21T01:30:00.000Z", "sTime": "2024-01-21T00:30:00.000Z"}, 
-        {"CSTCO": 1003, "CSTNA": "구휘커피", "JOBNO": 4614, "REASON": "Dd", "REQNO": 5, "REQSTAT": "A", "USERID": "Qpqpqpqp", "USERNA": "아르바00", "YMD": "20240121", "createDate": "2024-01-21T13:13:28.463Z", "eTime": "2024-01-21T13:00:00.000Z", "reqEtime": "2024-01-21T15:00:00.000Z", "reqStime": "2024-01-21T01:30:00.000Z", "sTime": "2024-01-21T01:30:00.000Z"}
-    ];
 
 
     useEffect(()=>{
@@ -99,7 +91,7 @@ export default function ReqChangeWorkScreen({navigation}) {
                 </View>
                 :
                 <View style={styles.container}>
-                    <View style={{width:"100%", borderWidth:1, borderColor:theme.sky, backgroundColor:"white", flex:1}}>
+                    <View style={{width:"100%", borderWidth:1, borderColor:theme.grey, backgroundColor:"white", flex:1}}>
                         <ScrollView>
                             {cstList.map((cstNa, idx) => {
                                 const filteredData = reqList.filter(item=>item.CSTNA == cstNa);
@@ -152,7 +144,7 @@ const ReqItem = ({data, refresh}) => {
 
     // 폴드 너비 변경 대응
     const fontRatio = Dimensions.get('window').width / 25;
-    const [dynamicFontSize, setDynamicFontSize] = useState((fontRatio > 16)?16:fontRatio)
+    const [dynamicFontSize, setDynamicFontSize] = useState((fontRatio > 13)?13:fontRatio)
     useEffect(() => {
         const dimensionsChange = Dimensions.addEventListener('change', (status) => {
             const fontRatio = status.window.width / 25;
@@ -163,7 +155,40 @@ const ReqItem = ({data, refresh}) => {
         };
     }, []);
 
-
+    const TimeContainer = ({sTime, eTime}) => {
+        var startParts = sTime.split(":");
+        var endParts = eTime.split(":");
+        var startDate = new Date(0, 0, 0, startParts[0], startParts[1]);
+        var endDate = new Date(0, 0, 0, endParts[0], endParts[1]);
+        var timeDiff = endDate - startDate;
+        var hours = Math.floor((timeDiff % 86400000) / 3600000);
+        var minutes = Math.round(((timeDiff % 86400000) % 3600000) / 60000);
+        return (
+            <View style={{alignItems:"center"}}>
+                <View style={styles.row}>
+                    {
+                        (hours > 0)?
+                            <Text>{hours}시간</Text>
+                        :
+                            null
+                    }
+                    {
+                        (hours > 0 && minutes > 0)?
+                            <View style={{marginHorizontal:2}}/>
+                        :
+                            null
+                    }
+                    {
+                        (minutes > 0)?
+                            <Text>{minutes}분</Text>
+                        :
+                            null
+                    }
+                </View>
+                <Text style={[styles.mainFont, {fontSize:dynamicFontSize, color:theme.grey2, alignSelf:"center"}]}>{sTime} ~ {eTime}</Text>
+            </View>
+        )
+    }
     return(
         (data.REQSTAT == "R")?
             <>
@@ -175,9 +200,9 @@ const ReqItem = ({data, refresh}) => {
                     <View style={styles.subBox}>
                         <Text style={[styles.mainFont, {marginBottom:5}]}>{YMD.ymd}</Text>
                         <View style={styles.row}>
-                            <Text style={[styles.mainFont, {fontSize:dynamicFontSize, alignSelf:"center"}]}>{sTime[1]} ~ {eTime[1]}</Text>
+                            <TimeContainer sTime={sTime[1]} eTime={eTime[1]}/>
                             <FontAwesome name="arrow-circle-right" size={24} color="black" style={{alignSelf:"center"}} />
-                            <Text style={[styles.mainFont, {fontSize:dynamicFontSize, alignSelf:"center"}]}>{reqStime[1]} ~ {reqEtime[1]}</Text>
+                            <TimeContainer sTime={reqStime[1]} eTime={reqEtime[1]}/>
                         </View>
                     </View>
                     <View style={[styles.row, {justifyContent:"space-between"}]}>
@@ -222,9 +247,9 @@ const ReqItem = ({data, refresh}) => {
                 <View style={styles.subBox}>
                     <Text style={[styles.mainFont, {marginBottom:5}]}>{YMD.ymd}</Text>
                     <View style={styles.row}>
-                        <Text style={[styles.mainFont, {fontSize:dynamicFontSize, alignSelf:"center"}]}>{sTime[1]} ~ {eTime[1]}</Text>
-                        <FontAwesome name="arrow-circle-right" size={24} color="black" style={{alignSelf:"center"}}/>
-                        <Text style={[styles.mainFont, {fontSize:dynamicFontSize, alignSelf:"center"}]}>{reqStime[1]} ~ {reqEtime[1]}</Text>
+                        <TimeContainer sTime={sTime[1]} eTime={eTime[1]}/>
+                        <FontAwesome name="arrow-circle-right" size={24} color="black" style={{alignSelf:"center"}} />
+                        <TimeContainer sTime={reqStime[1]} eTime={reqEtime[1]}/>
                     </View>
                 </View>
                 <View style={[styles.statNa, {backgroundColor:theme.orange}]}>
@@ -271,7 +296,7 @@ const styles = StyleSheet.create({
         color:"white",
         fontWeight:"bold"
     },
-    cstTitle:{backgroundColor:theme.sky, borderColor:theme.sky, borderWidth:1, padding:5, marginBottom:5},
+    cstTitle:{backgroundColor:theme.grey, borderColor:theme.grey, borderWidth:1, padding:5, marginBottom:5},
     mainFont:{fontSize:16, marginHorizontal:15},
     row:{flexDirection:"row"},
     statNa:{ marginTop:15, borderRadius:20, paddingVertical:2, paddingHorizontal:10, alignSelf:"flex-end"},

@@ -33,7 +33,6 @@ const getReqCommuteList = `
     AND c.ROLECL = 'ownr'
     AND u.USERID = @userId
     AND a.YMD BETWEEN @firstDay AND @lastDay;
-
 `
 
 //점주 알바 수정 요청 승인 쿼리
