@@ -8,6 +8,19 @@ function testTask() {
   // 여기서 /push/send 호출 등의 작업을 추가할 수 있습니다.
 }
 
+const getday = ()=> {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth() + 1; // 월은 0부터 시작하므로 1을 더합니다.
+  // 이번달의 첫 번째 날
+  const firstDay = `${year}${month.toString().padStart(2, '0')}01`;
+  // 이번달의 마지막 날
+  const lastDayOfMonth = new Date(year, month, 0);
+  const lastDay = `${year}${month.toString().padStart(2, '0')}${lastDayOfMonth.getDate()}`;
+  return {firstDay, lastDay};
+
+}
+
 const checkcommuteChange = `
 select u.USERID ownerId, u.TOKEN, c.CSTCO ownerCstCo, d.CSTNA, a.*
 from PLYADAYJOBREQ a
@@ -27,7 +40,9 @@ and u.TOKEN is not null
 
   
 async function sendBadge() {
-  const result = await execSqlNoLog(checkcommuteChange, {});
+  const dayObj = getday();
+  const query =  checkcommuteChange + `AND a.YMD BETWEEN ${dayObj.firstDay} AND ${dayObj.lastDay}`
+  const result = await execSqlNoLog(query, {});
   if(result){
     const pushList = result.recordset;
     if(pushList.length > 0){
