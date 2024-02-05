@@ -79,11 +79,8 @@ router.get("/monthCstSlySearch", async (req, res, next) => {
 router.post("/insertJobChk", async (req,res,next)=>{
     console.log("POST commute.insertJobChk")
     try {
-        const {cstCo, userId, lat, lon, chkYn, apvYn, jobCl} = req.body;
-        // 1. JOBYN ==> CHKYN 필드명 변경, 입력시 I(출근), X(퇴근)으로 내용 변경
-        // 2. DAY ==> YMD 필드명 변경 및 일자로 변경 -> query에서 해결
-        // 3. JOBCL 추가, G:일반, S:대타
-        const result = await execSql(insertManualJobChk, {userId:userId, cstCo:cstCo, lat:lat, lon:lon, chkYn:chkYn, apvYn:apvYn, jobCl:jobCl});
+        const {cstCo, userId, lat, lon, chkYn, apvYn, stat, jobCl} = req.body;
+        const result = await execSql(insertManualJobChk, {userId:userId, cstCo:cstCo, lat:lat, lon:lon, chkYn:chkYn, apvYn:apvYn, jobCl:jobCl, stat,stat});
         res.status(200).json({result:result.recordset, resultCode:"00"});
     } catch (error) {
         console.log(error.message)

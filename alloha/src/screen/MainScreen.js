@@ -3,19 +3,20 @@ import { Text, View, TouchableOpacity, StyleSheet, Button } from 'react-native';
 import { Ionicons, MaterialCommunityIcons, FontAwesome5, MaterialIcons   } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, {useEffect, useRef, useState} from 'react';
+import SearchAddress from '../components/SearchAddress';
+import { useNavigation } from '@react-navigation/native';
+import ScheduleScreenToAlba from './ScheduleScreenToAlba';
+import EtcCrewScreen from './EtcCrewScreen';
+import { useDispatch, useSelector } from 'react-redux';
+import { useCommuteChangeList } from '../hooks/useReqCommuteList';
+import NotificationListener from '../components/common/NotificationListener';
 
 import ManageStoreScreen from './ManageStoreScreen';
 import AddStoreScreen from './AddStoreScreen';
 import SearchStoreScreen from './SearchStoreScreen';
 import ManageCrewScreen from './ManageCrewScreen';
-
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-import React, {useEffect, useRef, useState} from 'react';
-import SearchAddress from '../components/SearchAddress';
-import { useNavigation } from '@react-navigation/native';
 import WageScreen from './WageScreen';
 import WageDetailScreen from './WageDetailScreen';
 import ComunityScreen from './ComunityScreen';
@@ -33,16 +34,12 @@ import CustomerServiceScreen from './CustomerServiceScreen';
 import QnAScreen from './QnAScreen';
 import ModifyCrewScreen from './ModifyCrewScreen';
 import ScheduleTimeLineScreen from './ScheduleTimeLineScreen';
-import ScheduleScreenToAlba from './ScheduleScreenToAlba';
 import CommuteCheckScreen from './CommuteCheckScreen';
 import CommuteCheckInfoScreen from './CommuteCheckInfoScreen';
 import CommuteCheckDetailScreen from './CommuteCheckDetailScreen';
-import EtcCrewScreen from './EtcCrewScreen';
 import CommuteCheckChangeScreen from './CommuteCheckChangeScreen';
-import { useDispatch, useSelector } from 'react-redux';
-import { useCommuteChangeList } from '../hooks/useReqCommuteList';
 import ReqChangeWorkScreen from './ReqChangeWorkScreen';
-import NotificationListener from '../components/common/NotificationListener';
+import DailyReportScreen from './DailyReportScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -124,6 +121,7 @@ function OwnrScreen({userInfo}){
         tabBarInactiveTintColor: 'gray',
       })}
     >
+      <Tab.Screen name="daylyReport" component={DailyReportScreen} options={{ headerShown:false, tabBarLabel: '일일보고서'}}/>
       <Tab.Screen name="schedule" component={ScheduleStack} options={{ headerShown:false, tabBarLabel: '근무계획'}}/>
       <Tab.Screen name="work" component={WorkStack} options={{ headerShown:false, tabBarLabel: '근무결과', tabBarBadge: owrBadge, }}/>
       <Tab.Screen name="result" component={ResultStack} options={{ headerShown:false, tabBarLabel: '결과현황표'}}/>
@@ -180,7 +178,7 @@ function ScheduleStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen name="scheduleMain" component={ScheduleScreen} 
-        // options={
+        // options={s
         //   {
         //     headerRight: () => (
         //       <TouchableOpacity onPress={() => navigation.navigate("scheduleView")}>
