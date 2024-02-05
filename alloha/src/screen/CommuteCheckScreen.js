@@ -4,7 +4,7 @@ import React, {useState, useEffect, useCallback} from 'react';
 import MyStorePicker from '../components/alba/MyStorePicker';
 import { useSelector } from 'react-redux';
 import { HTTP } from '../util/http';
-import { YYMMDD2YYDD, getStartAndEndOfWeek } from './../util/moment';
+import { YYMMDD2YYDD, getStartAndEndOfWeek, isBetween } from './../util/moment';
 import { useFocusEffect } from '@react-navigation/native';
 import { AntDesign } from '@expo/vector-icons';
 import CurTimer from '../components/common/CurTimer';
@@ -60,7 +60,8 @@ export default function CommuteCheckScreen({navigation}) {
     }
 
     
-    const insertJobChk = async (chkYn) => {
+    
+    const insertJobChk = async (chkYn, stat) => {
         const rtcl = store.RTCL;
         if(rtcl == "N"){
             setCheckLocation(true)
@@ -71,7 +72,7 @@ export default function CommuteCheckScreen({navigation}) {
             }else{
                 if(result){
                     const jobCl = (isCommonJob)?"G":"S"
-                    await HTTP("POST", "/api/v1/commute/insertJobChk", {userId:userId, cstCo:sCstCo, lat:result.latitude, lon:result.longitude, chkYn:chkYn, apvYn:"Y", jobCl:jobCl})
+                    await HTTP("POST", "/api/v1/commute/insertJobChk", {userId:userId, cstCo:sCstCo, lat:result.latitude, lon:result.longitude, chkYn:chkYn, apvYn:"Y", stat:stat, jobCl:jobCl})
                     .then((res)=>{
                         jobchksearch(sCstCo);
                         getDaySchedule(sCstCo);
@@ -131,7 +132,7 @@ export default function CommuteCheckScreen({navigation}) {
         (sCstCo > 0)?
             <>
             <TouchableOpacity onPress={()=>navigation.push("CommuteCheckInfo")} style={{ backgroundColor:"rgba(0,0,0,1)", padding:10, flexDirection:"row", justifyContent:"space-between"}}>
-                <Text style={{color:"white"}}>근무정보이동 임시버튼</Text>
+                <Text style={{color:"white"}}>근무 정보 보기</Text>
                 <Text style={{color:"white"}}>→</Text>
             </TouchableOpacity>
             <ScrollView style={styles.container}>
@@ -161,7 +162,7 @@ export default function CommuteCheckScreen({navigation}) {
                         <Text>{(isCommonJob)?"일반근무":"대타근무"}</Text>
                     </View>
                 </View>
-                <CommuteButton onButtnPressed={insertJobChk} data={jobChk} sTime={(jobChk.length > 0)?jobChk[0].chkTime.split(" ")[1]:"00:00"} checkLocation={checkLocation}/>
+                <CommuteButton onButtnPressed={insertJobChk} data={jobChk} daySchedule={daySchedule} sTime={(jobChk.length > 0)?jobChk[0].chkTime.split(" ")[1]:"00:00"} checkLocation={checkLocation}/>
                 <View style={[styles.center, {marginBottom:20}]}>
                     <CurTimer />
                 </View>
@@ -294,7 +295,8 @@ const Bottom = ({data}) => {
         // </View>
     )
 }
-const CommuteButton = ({data, sTime, onButtnPressed, checkLocation}) => {
+const CommuteButton = ({data, sTime, onButtnPressed, daySchedule, checkLocation}) => {
+    //console.log(data)
     var top = "", main = "", bot = "", color = "";
     const length = data.length;
     if(length == 0){
@@ -322,9 +324,71 @@ const CommuteButton = ({data, sTime, onButtnPressed, checkLocation}) => {
         top = "", main = "퇴근 완료", bot = "", color = "#2F3269";
     }
     const onPressed = () => {
+        let title, sub;
         const chkYn = (length == 0)?"I":(length == 1)?"X":"";
-        if(chkYn != ""){
-            onButtnPressed(chkYn);
+        if(chkYn == "I"){
+            //출근은 아묻따 Y
+            console.log(chkYn, "Y");
+            onButtnPressed(chkYn, "Y");
+        }else if(chkYn == "X"){
+            //현재 시간 구하기
+            const date = new Date();
+            const hours = String(date.getHours()).padStart(2, "0");
+            const minutes = String(date.getMinutes()).padStart(2, "0");
+            //계획 시간 가져오기
+            if(daySchedule.length > 0){
+                //계획있음
+                const timeFr = daySchedule[0].TimeFr;
+                const timeTo = daySchedule[0].TimeTo
+                //시간 체크
+                const isBetweenrlt = isBetween(`${hours}:${minutes}`, timeFr, timeTo)
+                if(isBetweenrlt){
+                    //퇴근 버튼 클릭 시간이 계획시간 안일떄.
+                    onButtnPressed(chkYn, "Y");
+                }else{
+                    //퇴근 버튼 클릭 시간이 계획시간을 벗어나있을때
+                    //alert(대타근무를 기록하시겠습니까?)
+                    //onButtnPressed(chkYn, "S");
+                    title = "대타근무를 기록하시겠습니까?";
+                    sub = `대타근무를 기록하지않으면 ${timeTo} 시간까지 인정됩니다.`;
+                    Alert.alert(title, sub,
+                        [
+                            {
+                            text: "네",                           
+                                onPress: () => onButtnPressed(chkYn, "S"), 
+                                style: "cancel"
+                            },
+                            { text: "아니오", onPress: () => onButtnPressed(chkYn, "Y") },
+                        ],
+                        { cancelable: false }
+                    );
+                }
+            }else{
+                //계획 없음.
+                //alert(일반/ 대타인지?)
+                title = "근무 기록을 대타 근무로 기록하시겠습니까?";
+                sub = ``;
+                Alert.alert(title, sub,
+                    [
+                        {
+                        text: "대타 근무로 기록",                           
+                            onPress: () => onButtnPressed(chkYn, "S"), 
+                            style: "cancel"
+                        },
+                        { text: "일반 근무로 기록", onPress: () => onButtnPressed(chkYn, "Y") },
+                    ],
+                    { cancelable: false }
+                );
+            }
+            
+            
+            
+
+            //console.log(chkYn, "Y");
+            //console.log(chkYn, "S");
+
+            
+            //onButtnPressed(chkYn);
         }else{
             alert("퇴근 완료 상태입니다.");
         }
@@ -464,6 +528,8 @@ const styles = StyleSheet.create({
         width:"100%",
     },
     iconBox:{
+        padding:-10,
+        margin:-10,
         alignItems:"center",
     },
     

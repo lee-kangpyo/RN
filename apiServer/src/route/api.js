@@ -17,6 +17,7 @@ const resultRouter = require("../route/result")
 const palRouter = require("../route/profitAndLoss")
 const boardRouter = require("../route/board")
 const commuteRouter = require("../route/commute")
+const dailyReportRouter = require("../route/dailyReport")
 
 router.get("/v1/login", async(req, res, next)=>{
     const {id, passWord} = req.query;
@@ -626,6 +627,7 @@ router.use('/v1/rlt', resultRouter);
 router.use('/v1/profitAndLoss', palRouter); 
 router.use('/v1/board', boardRouter); 
 router.use('/v1/commute', commuteRouter); 
+router.use('/v1/daily', dailyReportRouter); 
 
 module.exports = router;
 

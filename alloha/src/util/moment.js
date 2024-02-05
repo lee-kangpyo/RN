@@ -301,3 +301,14 @@ export const YYYYMMDD_KOR_2Obj = (ymdStr) => {
 
     return formattedDate
 }
+
+// c가 s와 e 사이의 시간인지 체크 하는 함수
+export function isBetween(c, s, e) {
+    // 현재 날짜의 년월일을 가져와서 시간 형식의 문자열로 변환
+    const currentDate = new Date().toISOString().split('T')[0];
+    const currentTime = new Date(`${currentDate}T${c}`);
+    const startTime = new Date(`${currentDate}T${s}`);
+    const endTime = new Date(`${currentDate}T${e}`);
+    // c가 s와 e 사이에 있는지 여부 판단
+    return currentTime >= startTime && currentTime <= endTime;
+}
