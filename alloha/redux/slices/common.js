@@ -15,7 +15,9 @@ const commonSlice = createSlice({
     setOwnerStoreList(state, action){
         state.storeList = action.payload.storeList;
         if(state.cstCo == ""){
-          state.cstCo = action.payload.storeList[0].CSTCO;
+          if(state.storeList.length > 0){
+            state.cstCo = action.payload.storeList[0].CSTCO;
+          }
         }
         
     },

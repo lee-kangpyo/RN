@@ -8,6 +8,7 @@ import * as SecureStore from 'expo-secure-store';
 import * as TaskManager from 'expo-task-manager';
 import { color } from 'react-native-reanimated';
 import { HTTP } from '../util/http';
+import { setOwnerCstco } from '../../redux/slices/common';
 
 export default function EtcScreen({navigation}) {
     const dispatch = useDispatch();
@@ -19,6 +20,7 @@ export default function EtcScreen({navigation}) {
     const logOut = async () => {
         await HTTP("POST", "/api/v1/logOut", {userId:userId});
         dispatch(setUserInfo({isLogin:false, userId:""}));
+        dispatch(setOwnerCstco({cstCo:""}));
         await SecureStore.setItemAsync("uuid", "");
         TaskManager.unregisterAllTasksAsync();
     }
