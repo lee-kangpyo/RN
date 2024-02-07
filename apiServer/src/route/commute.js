@@ -79,8 +79,8 @@ router.get("/monthCstSlySearch", async (req, res, next) => {
 router.post("/insertJobChk", async (req,res,next)=>{
     console.log("POST commute.insertJobChk")
     try {
-        const {cstCo, userId, lat, lon, chkYn, apvYn, stat, jobCl} = req.body;
-        const result = await execSql(insertManualJobChk, {userId:userId, cstCo:cstCo, lat:lat, lon:lon, chkYn:chkYn, apvYn:apvYn, jobCl:jobCl, stat,stat});
+        const {cstCo, userId, lat, lon, chkYn, apvYn, jobCl} = req.body;
+        const result = await execSql(insertManualJobChk, {userId:userId, cstCo:cstCo, lat:lat, lon:lon, chkYn:chkYn, apvYn:apvYn, jobCl:jobCl});
         res.status(200).json({result:result.recordset, resultCode:"00"});
     } catch (error) {
         console.log(error.message)
