@@ -71,8 +71,9 @@ export default function CommuteCheckScreen({navigation}) {
                 setCheckLocation(false)
             }else{
                 if(result){
+                    //원래는 jobCl은 계획이있으면 G 없으면 S로 저장하는데 현재는 출근시 Y 퇴근시 Y or S로 바꿈.
                     const jobCl = (isCommonJob)?"G":"S"
-                    await HTTP("POST", "/api/v1/commute/insertJobChk", {userId:userId, cstCo:sCstCo, lat:result.latitude, lon:result.longitude, chkYn:chkYn, apvYn:"Y", stat:stat, jobCl:jobCl})
+                    await HTTP("POST", "/api/v1/commute/insertJobChk", {userId:userId, cstCo:sCstCo, lat:result.latitude, lon:result.longitude, chkYn:chkYn, apvYn:"Y", jobCl:stat})
                     .then((res)=>{
                         jobchksearch(sCstCo);
                         getDaySchedule(sCstCo);
@@ -327,9 +328,8 @@ const CommuteButton = ({data, sTime, onButtnPressed, daySchedule, checkLocation}
         let title, sub;
         const chkYn = (length == 0)?"I":(length == 1)?"X":"";
         if(chkYn == "I"){
-            //출근은 아묻따 Y
-            console.log(chkYn, "Y");
-            onButtnPressed(chkYn, "Y");
+            //출근은 아묻따 Y -> G로 변경
+            onButtnPressed(chkYn, "G");
         }else if(chkYn == "X"){
             //현재 시간 구하기
             const date = new Date();
@@ -344,11 +344,9 @@ const CommuteButton = ({data, sTime, onButtnPressed, daySchedule, checkLocation}
                 const isBetweenrlt = isBetween(`${hours}:${minutes}`, timeFr, timeTo)
                 if(isBetweenrlt){
                     //퇴근 버튼 클릭 시간이 계획시간 안일떄.
-                    onButtnPressed(chkYn, "Y");
+                    onButtnPressed(chkYn, "G");
                 }else{
                     //퇴근 버튼 클릭 시간이 계획시간을 벗어나있을때
-                    //alert(대타근무를 기록하시겠습니까?)
-                    //onButtnPressed(chkYn, "S");
                     title = "대타근무를 기록하시겠습니까?";
                     sub = `대타근무를 기록하지않으면 ${timeTo} 시간까지 인정됩니다.`;
                     Alert.alert(title, sub,
@@ -358,7 +356,7 @@ const CommuteButton = ({data, sTime, onButtnPressed, daySchedule, checkLocation}
                                 onPress: () => onButtnPressed(chkYn, "S"), 
                                 style: "cancel"
                             },
-                            { text: "아니오", onPress: () => onButtnPressed(chkYn, "Y") },
+                            { text: "아니오", onPress: () => onButtnPressed(chkYn, "G") },
                         ],
                         { cancelable: false }
                     );
@@ -375,7 +373,7 @@ const CommuteButton = ({data, sTime, onButtnPressed, daySchedule, checkLocation}
                             onPress: () => onButtnPressed(chkYn, "S"), 
                             style: "cancel"
                         },
-                        { text: "일반 근무로 기록", onPress: () => onButtnPressed(chkYn, "Y") },
+                        { text: "일반 근무로 기록", onPress: () => onButtnPressed(chkYn, "G") },
                     ],
                     { cancelable: false }
                 );
