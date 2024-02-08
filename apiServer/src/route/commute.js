@@ -5,7 +5,7 @@ const {execSql} = require("../utils/excuteSql");
 const dotenv = require('dotenv');
 const { jobChk, jobChk2 } = require('../query/auth');
 const { monthCstSlySearch } = require('../query/workResult');
-const { insertManualJobChk, daySchedule, reqCommuteChange, initCommuteChange, getReqCommuteList, updateJobReq, updateDayJob } = require('../query/commute');
+const { insertManualJobChk, daySchedule, reqCommuteChange, initCommuteChange, getReqCommuteList, updateJobReq, updateDayJob, getDAYJOBREQ } = require('../query/commute');
 const { reverseGeocode } = require('../utils/kakao');
 dotenv.config();
 
@@ -156,6 +156,18 @@ router.post("/albaWorkChangeProcess", async (req,res,next)=>{
         //const data = {reqList:result.recordset, resultCode:"00"};
         //console.log(data)
         res.status(200).json({resultCode:"00"});
+    } catch (error) {
+        console.log(error.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+})
+
+router.get("/getDayJobReq", async (req, res, next)=>{
+    console.log("GET commute.getDayJobReq - 알바가 CommuteCheckChangeScreen 페이지에서 호출")
+    try {
+        const { jobNo } = req.query;
+        const result = await execSql(getDAYJOBREQ, {jobNo});
+        res.status(200).json({resultCode:"00", rows:result.rowsAffected[0], result:result.recordset});
     } catch (error) {
         console.log(error.message)
         res.status(200).json({ resultCode:"-1"});
