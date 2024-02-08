@@ -114,6 +114,8 @@ export default function CommuteCheckChangeScreen({navigation, route}) {
     useEffect(()=>{
         if(startTime == dayJobInfo.schFrom && endTime == dayJobInfo.schTo){
             setStatNa("정상");
+        }else{
+            setStatNa(dayJobInfo.attendence);
         }
     }, [startTime, endTime]);
     useEffect(() => {
@@ -148,26 +150,18 @@ export default function CommuteCheckChangeScreen({navigation, route}) {
       }, [type]);
     return (
         <View style={styles.container}>
-            <View style={styles.card}>
+            <View style={[styles.card]}>
             {
             (type == 0)?
                 <>
-                <View style={[styles.row, {marginBottom:15, justifyContent:"space-between"}]}>
+                <View style={[styles.row, {marginBottom:5, justifyContent:"space-between"}]}>
                     <View style={styles.row}>
                         <Text style={styles.title}>{date.ymd.split(".")[1]}월 {date.ymd.split(".")[2]}일 </Text> 
                         <Text style={[{color:date.color}, styles.title]}>({date.day}) </Text>
                     </View>
-                    <View style={styles.row}>
-                        <Text style={styles.title}>계획 시간</Text>
-                        <Text style={styles.title}>{dayJobInfo.schFrom}</Text>
-                        <Text style={styles.title}>~</Text>
-                        <Text style={styles.title}>{dayJobInfo.schTo}</Text>
-                    </View>
+                    
                 </View>
-                <View style={[styles.row, {marginBottom:5}]}>
-                        <Text style={styles.title}>상태 : </Text>
-                        <Text style={styles.title}>{statNa}</Text>
-                </View>
+                
                 {
                     (isKeyboardShow)?
                     <>
@@ -189,28 +183,47 @@ export default function CommuteCheckChangeScreen({navigation, route}) {
                     </>
                     :
                     <>
-                    <View style={[styles.row, {justifyContent:"flex-start", paddingLeft:50}]}>
-                        <Text style={styles.main}>{dayJobInfo.startTime}</Text>
-                        <Text style={styles.main}> ~ </Text>
-                        <Text style={styles.main}>{dayJobInfo.endTime}</Text>
-                    </View>
-                    <View style={[styles.row, {justifyContent:"center"}]}>
-                        <FontAwesome name="long-arrow-right" size={24} color="black" />
-                    </View>  
-                    {
-                        (isExistReq != null)?
-                            <View style={[styles.row, {marginBottom:5, justifyContent:"flex-end", paddingRight:50}]}>
-                                <Text style={styles.main}>{startTime}</Text>
-                                <Text style={styles.main}> ~ </Text>
-                                <Text style={styles.main}>{endTime}</Text>
-                                <TouchableOpacity onPress={()=>setType(1)} style={{alignSelf:"center", marginLeft:10}}>
-                                    <FontAwesome name="pencil-square-o" size={30} color={theme.link}/>
-                                </TouchableOpacity>
-                            </View>  
-                        : null
-                    }
+                        <View style={{backgroundColor:"white", borderRadius:15, borderWidth:0.5, alignItems:"center", paddingBottom:15, marginBottom:30, marginTop:30, borderColor:"#0082cb"}}>
+                            <View style={[styles.row, {justifyContent:"space-between", width:"100%", backgroundColor:"#0082cb", borderTopEndRadius:15, borderTopStartRadius:15, paddingHorizontal:16, paddingVertical:10, marginBottom:15}]}>
+                                <Text style={[styles.topText, {fontWeight:"bold"}]}>계획 시간</Text>
+                                <View style={styles.row}>
+                                    <Text style={styles.topText}>{dayJobInfo.schFrom}</Text>
+                                    <Text style={styles.topText}>~</Text>
+                                    <Text style={styles.topText}>{dayJobInfo.schTo}</Text>
+                                </View>
+                            </View>
+                            <View style={[styles.row, {alignItems:"space-between", borderWidth:0.8, borderColor:"#939393",borderRadius:20, paddingHorizontal:20, paddingVertical:2}]}>
+                                <Text style={[styles.pillText,{color:(statNa == "정상")?"black":"#ff6f1f"}]}>{statNa}</Text>
+                            </View>
+                            <View style={styles.row}>
+                                <View style={[styles.row]}>
+                                    <Text style={styles.main}>{dayJobInfo.startTime}</Text>
+                                    <Text style={styles.main}> ~ </Text>
+                                    <Text style={styles.main}>{dayJobInfo.endTime}</Text>
+                                </View>
+                                <View style={{justifyContent:"center", paddingHorizontal:5}}>
+                                    <FontAwesome name="long-arrow-right" size={20} color="black" />
+                                </View>  
+                                {
+                                    (isExistReq != null)?
+                                        <View style={styles.row}>
+                                            <Text style={styles.main}>{startTime}</Text>
+                                            <Text style={styles.main}> ~ </Text>
+                                            <Text style={styles.main}>{endTime}</Text>
+                                            
+                                        </View>  
+                                    : null
+                                }
+                            </View>
+                            <TouchableOpacity onPress={()=>setType(1)}>
+                                <Text style={styles.sub}>수정</Text>
+                            </TouchableOpacity>
+                            
+                        </View>
                     </>
+                    
                 }
+                
                 <Text style={[styles.title, {marginBottom:5}]}>요청 사유</Text>
                 <ScrollView contentContainerStyle={styles.text}>
                     <TextInput 
@@ -371,7 +384,17 @@ const styles = StyleSheet.create({
     container:{ flex: 1, justifyContent: 'flex-start', alignItems: 'center', padding:10 },
     row:{ flexDirection:"row" },
     title:{fontSize:16},
-    main:{fontSize:24},
+    main:{fontSize:18, fontWeight:"bold"},
+    sub:{
+        fontSize:13,
+        color:theme.link,
+        textDecorationLine:"underline"
+    },
+    topText:{
+        fontSize:13,
+        color:"white"
+    },
+    pillText:{fontSize:13, fontWeight:"bold"},
     textInput:{
         borderWidth:1,
     },
@@ -386,6 +409,10 @@ const styles = StyleSheet.create({
         width:"100%",
         marginBottom:15, 
         padding:15,
+        
+    },
+    mainCard:{
+        backgroundColor:"lightblue"
     },
     timeFont:{
         fontSize:24,
