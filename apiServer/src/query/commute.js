@@ -48,6 +48,11 @@ const updateDayJob = `
 `
 //점주 알바 수정 요청 승인 쿼리
 
+//알바 수정 요청 페이지 호출 쿼리
+const getDAYJOBREQ = `
+    select REQNO, JOBNO, STARTTIME, ENDTIME, STIME, ETIME, REASON, REQSTAT, USEYN
+    from PLYADAYJOBREQ where JOBNO = @jobNo AND USEYN = 'Y'
+`
 
 
-module.exports = {insertManualJobChk, daySchedule, reqCommuteChange, initCommuteChange, getReqCommuteList, updateJobReq, updateDayJob}
+module.exports = {insertManualJobChk, daySchedule, reqCommuteChange, initCommuteChange, getReqCommuteList, updateJobReq, updateDayJob, getDAYJOBREQ}

@@ -7,18 +7,48 @@ import { theme } from './../util/color';
 import CustomButton from '../components/common/CustomButton';
 import { HTTP } from '../util/http';
 import { useSelector } from 'react-redux';
+import { useIsFocused } from '@react-navigation/native';
 
 export default function CommuteCheckChangeScreen({navigation, route}) {
     const { dayJobInfo } = route.params;
-    //const [YYYYMMDD, setYYYYMMDD] = useState(ymd);
+    const [isExistReq, setIsExistReq] = useState(null);
     const userId = useSelector((state)=>state.login.userId);
+    const isFocused = useIsFocused();
     useEffect(()=>{
-        navigation.setOptions({title:"근무기록변경"})
-    }, [navigation])
-    const date = YYYYMMDD2Obj(dayJobInfo.ymd);
+        navigation.setOptions({title:"근무기록변경"});
+    }, [navigation]);
+    useEffect(()=>{
+        if(isFocused){
+            getDayJobReq();
+        }
+    }, [isFocused]);
 
-    const reqCommuteChange = async (params,) => {
     
+    const date = YYYYMMDD2Obj(dayJobInfo.ymd);
+    const getDayJobReq = async () => {
+        await HTTP("GET", "/api/v1/commute/getDayJobReq", {jobNo:dayJobInfo.jobNo})
+        .then((res)=>{
+            if(res.data.resultCode == "00"){
+                if(res.data.rows > 0){
+                    const data = res.data.result[0];
+                    setStartTime(data.STIME.split('T')[1].slice(0, 5));
+                    setEndTime(data.ETIME.split('T')[1].slice(0, 5));
+                    setReason(data.REASON);
+                    setIsExistReq(true)
+                }else{
+                    setStartTime(dayJobInfo.startTime);
+                    setEndTime(dayJobInfo.endTime);
+                    setReason("");
+                    setIsExistReq(false)
+                }
+            }
+        }).catch(function (error) {
+            console.log(error);
+            alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
+        })
+    }
+
+    const reqCommuteChange = async (params) => {
         await HTTP("POST", "/api/v1/commute/reqCommuteChange", params)
         .then((res)=>{
             if(res.data.resultCode == 0){
@@ -60,7 +90,6 @@ export default function CommuteCheckChangeScreen({navigation, route}) {
     }
 
     const convertDate = (dateString, timeString) => {
-
         // 'YYYYMMDD'에서 년, 월, 일을 추출
         const year = parseInt(dateString.substring(0, 4), 10);
         const month = parseInt(dateString.substring(4, 6), 10) - 1; // 월은 0부터 시작하므로 1을 빼줌
@@ -74,15 +103,19 @@ export default function CommuteCheckChangeScreen({navigation, route}) {
         
         return formattedString;
     }
-
-
-
-    const [startTime, setStartTime] = useState(dayJobInfo.startTime);
-    const [endTime, setEndTime] = useState(dayJobInfo.endTime);
+    const [statNa, setStatNa] = useState(dayJobInfo.attendence);
+    const [startTime, setStartTime] = useState("00:00");
+    const [endTime, setEndTime] = useState("00:00");
     const [reason, setReason] = useState("");
     const [type, setType] = useState(0);
     const [isKeyboardShow, setIsKeyboardShow] = useState(false);
-    
+
+
+    useEffect(()=>{
+        if(startTime == dayJobInfo.schFrom && endTime == dayJobInfo.schTo){
+            setStatNa("정상");
+        }
+    }, [startTime, endTime]);
     useEffect(() => {
         let keyboardDidShowListener;
         let keyboardDidHideListener;
@@ -119,13 +152,21 @@ export default function CommuteCheckChangeScreen({navigation, route}) {
             {
             (type == 0)?
                 <>
-                <View style={[styles.row, {marginBottom:15}]}>
-                    <Text style={styles.title}>{date.ymd.split(".")[1]}월 {date.ymd.split(".")[2]}일 </Text> 
-                    <Text style={[{color:date.color}, styles.title]}>({date.day}) </Text>
+                <View style={[styles.row, {marginBottom:15, justifyContent:"space-between"}]}>
+                    <View style={styles.row}>
+                        <Text style={styles.title}>{date.ymd.split(".")[1]}월 {date.ymd.split(".")[2]}일 </Text> 
+                        <Text style={[{color:date.color}, styles.title]}>({date.day}) </Text>
+                    </View>
+                    <View style={styles.row}>
+                        <Text style={styles.title}>계획 시간</Text>
+                        <Text style={styles.title}>{dayJobInfo.schFrom}</Text>
+                        <Text style={styles.title}>~</Text>
+                        <Text style={styles.title}>{dayJobInfo.schTo}</Text>
+                    </View>
                 </View>
                 <View style={[styles.row, {marginBottom:5}]}>
-                    <Text style={styles.title}>상태 : </Text>
-                    <Text style={styles.title}>{dayJobInfo.attendence}</Text>
+                        <Text style={styles.title}>상태 : </Text>
+                        <Text style={styles.title}>{statNa}</Text>
                 </View>
                 {
                     (isKeyboardShow)?
@@ -134,11 +175,16 @@ export default function CommuteCheckChangeScreen({navigation, route}) {
                             <View style={{marginRight:15, justifyContent:"center"}}>
                                 <Text style={[styles.title]}>변경 시간</Text>
                             </View>
-                            <View style={[styles.row]}>
-                                <Text style={styles.main}>{startTime}</Text>
-                                <Text style={styles.main}> ~ </Text>
-                                <Text style={styles.main}>{endTime}</Text>
-                            </View>
+                            {
+                                (isExistReq != null)?
+                                    <View style={[styles.row]}>
+                                        <Text style={styles.main}>{startTime}</Text>
+                                        <Text style={styles.main}> ~ </Text>
+                                        <Text style={styles.main}>{endTime}</Text>
+                                    </View>
+                                :null
+                            }
+                            
                         </View>
                     </>
                     :
@@ -151,14 +197,18 @@ export default function CommuteCheckChangeScreen({navigation, route}) {
                     <View style={[styles.row, {justifyContent:"center"}]}>
                         <FontAwesome name="long-arrow-right" size={24} color="black" />
                     </View>  
-                    <View style={[styles.row, {marginBottom:5, justifyContent:"flex-end", paddingRight:50}]}>
-                        <Text style={styles.main}>{startTime}</Text>
-                        <Text style={styles.main}> ~ </Text>
-                        <Text style={styles.main}>{endTime}</Text>
-                        <TouchableOpacity onPress={()=>setType(1)} style={{alignSelf:"center", marginLeft:10}}>
-                            <FontAwesome name="pencil-square-o" size={30} color={theme.link}/>
-                        </TouchableOpacity>
-                    </View>  
+                    {
+                        (isExistReq != null)?
+                            <View style={[styles.row, {marginBottom:5, justifyContent:"flex-end", paddingRight:50}]}>
+                                <Text style={styles.main}>{startTime}</Text>
+                                <Text style={styles.main}> ~ </Text>
+                                <Text style={styles.main}>{endTime}</Text>
+                                <TouchableOpacity onPress={()=>setType(1)} style={{alignSelf:"center", marginLeft:10}}>
+                                    <FontAwesome name="pencil-square-o" size={30} color={theme.link}/>
+                                </TouchableOpacity>
+                            </View>  
+                        : null
+                    }
                     </>
                 }
                 <Text style={[styles.title, {marginBottom:5}]}>요청 사유</Text>
@@ -187,64 +237,62 @@ export default function CommuteCheckChangeScreen({navigation, route}) {
 }
 
 const TimeContainer = ({setType, startController, endController}) => {
-            const TimeModifier = ({time, setTime, isSumit}) => {
-                const [H, M] = time.split(":")
-                const [Hour, setHour] = useState(H);
-                const [hColor, setHColor] = useState(theme.link);
-                const [Min, setMin] = useState(M);
-                const [mColor, setMColor] = useState(theme.link);
+    const TimeModifier = ({time, setTime, isSumit}) => {
+        const [H, M] = time.split(":")
+        const [Hour, setHour] = useState(H);
+        const [hColor, setHColor] = useState(theme.link);
+        const [Min, setMin] = useState(M);
+        const [mColor, setMColor] = useState(theme.link);
 
-                useEffect(()=>{
-                    var result = 0
-                    if(/^(0[1-9]|1\d|2[0-4])$/.test(Hour)){
-                        setHColor(theme.link);
-                        result++
-                    }else{
-                        setHColor(theme.error);
-                    }
-
-                    var result2 = 0
-                    if(/^(00|30)$/.test(Min)){
-                        setMColor(theme.link);
-                        result2++;
-                    }else{
-                        setMColor(theme.error);
-                    }
-
-                    if(result * result2 == 1){
-                        setTime(`${Hour}:${Min}`)
-                        //isCorrect(true);
-                        isSumit.current = true;
-                    }else{
-                        isSumit.current = false;
-                    }
-                }, [Hour, Min])
-
-
-                return (
-                    <View style={styles.row}>
-                        <TextInput
-                            style={[styles.timeFont, {width:40, borderWidth:1, borderRadius:5, borderColor:theme.grey, color:hColor, padding:5, marginBottom:10}]}
-                            onChangeText={(hour) => setHour(hour)}
-                            //onBlur={(e) => changeTime({hour:e.nativeEvent.text})}
-                            value={Hour}
-                            maxLength={2}
-                            returnKeyType="done"
-                            keyboardType="number-pad"
-                        /> 
-                        <Text style={[styles.timeFont, {borderWidth:0, borderRadius:5, borderColor:theme.grey, color:theme.link, padding:5, marginBottom:10}]}>:</Text>
-                        <TextInput
-                            style={[styles.timeFont, {width:40, borderWidth:1, borderRadius:5, borderColor:theme.grey, color:mColor, padding:5, marginBottom:10}]}
-                            onChangeText={(min) => setMin(min)}
-                            //onBlur={(e) => changeTime({min:e.nativeEvent.text})}
-                            value={Min}
-                            maxLength={2}
-                            returnKeyType="done"
-                            keyboardType="number-pad"
-                        />            
-                    </View>
-                )
+        useEffect(()=>{
+            var result = 0
+            if(/^(0[1-9]|1\d|2[0-4])$/.test(Hour)){
+                setHColor(theme.link);
+                result++
+            }else{
+                setHColor(theme.error);
             }
+
+            var result2 = 0
+            if(/^(00|30)$/.test(Min)){
+                setMColor(theme.link);
+                result2++;
+            }else{
+                setMColor(theme.error);
+            }
+
+            if(result * result2 == 1){
+                setTime(`${Hour}:${Min}`)
+                //isCorrect(true);
+                isSumit.current = true;
+            }else{
+                isSumit.current = false;
+            }
+        }, [Hour, Min])
+        return (
+            <View style={styles.row}>
+                <TextInput
+                    style={[styles.timeFont, {width:40, borderWidth:1, borderRadius:5, borderColor:theme.grey, color:hColor, padding:5, marginBottom:10}]}
+                    onChangeText={(hour) => setHour(hour)}
+                    //onBlur={(e) => changeTime({hour:e.nativeEvent.text})}
+                    value={Hour}
+                    maxLength={2}
+                    returnKeyType="done"
+                    keyboardType="number-pad"
+                /> 
+                <Text style={[styles.timeFont, {borderWidth:0, borderRadius:5, borderColor:theme.grey, color:theme.link, padding:5, marginBottom:10}]}>:</Text>
+                <TextInput
+                    style={[styles.timeFont, {width:40, borderWidth:1, borderRadius:5, borderColor:theme.grey, color:mColor, padding:5, marginBottom:10}]}
+                    onChangeText={(min) => setMin(min)}
+                    //onBlur={(e) => changeTime({min:e.nativeEvent.text})}
+                    value={Min}
+                    maxLength={2}
+                    returnKeyType="done"
+                    keyboardType="number-pad"
+                />            
+            </View>
+        )
+    }
 
     const [stime, setStime] = useState("00:00");
     const [etime, setEtime] = useState("00:00");
@@ -274,11 +322,12 @@ const TimeContainer = ({setType, startController, endController}) => {
 
     const setstime = (time) => {
         sTime.current = time;
+        setStime(time);
     }
 
     const setetime = (time) => {
         eTime.current = time;
-        
+        setEtime(time)
     }
     return(
         <>
