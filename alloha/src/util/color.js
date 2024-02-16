@@ -19,5 +19,6 @@ export const theme = {
     orange:"#FFBB64",
     grey2:"#B6BBC4",
     sky:"#4CB9E7",
-    lightgrey:"#EDEDED"
+    lightgrey:"#EDEDED",
+    backGround:"rgb(242, 242, 242)"
 }

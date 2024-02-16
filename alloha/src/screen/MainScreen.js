@@ -40,6 +40,7 @@ import CommuteCheckDetailScreen from './CommuteCheckDetailScreen';
 import CommuteCheckChangeScreen from './CommuteCheckChangeScreen';
 import ReqChangeWorkScreen from './ReqChangeWorkScreen';
 import DailyReportScreen from './DailyReportScreen';
+import DailyReportDetilaScreen from './DailyReportDetilaScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -121,7 +122,7 @@ function OwnrScreen({userInfo}){
         tabBarInactiveTintColor: 'gray',
       })}
     >
-      <Tab.Screen name="daylyReport" component={DailyReportScreen} options={{ headerShown:false, tabBarLabel: '일일보고서'}}/>
+      <Tab.Screen name="daylyReport" component={DailyStack} options={{ headerShown:false, tabBarLabel: '일일보고서'}}/>
       <Tab.Screen name="schedule" component={ScheduleStack} options={{ headerShown:false, tabBarLabel: '근무계획'}}/>
       <Tab.Screen name="work" component={WorkStack} options={{ headerShown:false, tabBarLabel: '근무결과', tabBarBadge: owrBadge, }}/>
       <Tab.Screen name="result" component={ResultStack} options={{ headerShown:false, tabBarLabel: '결과현황표'}}/>
@@ -153,6 +154,15 @@ function OwnrScreen({userInfo}){
       </Tab.Screen>
 
     </Tab.Navigator>
+  )
+}
+
+function DailyStack(){
+  return(
+    <Stack.Navigator>
+      <Stack.Screen name="DailyReport" component={DailyReportScreen} />
+      <Stack.Screen name="DailyReportDetail" component={DailyReportDetilaScreen} />
+    </Stack.Navigator>
   )
 }
 function ResultStack(){
