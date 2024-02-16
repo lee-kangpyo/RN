@@ -245,9 +245,9 @@ const Bottom = ({data}) => {
             <View style={[styles.row, {alignItems:"flex-start"}]}>
                 <View style={{flex:1}}>
                     <Text style={{color:"white", fontSize:16}}>이슈요약</Text>
-                    <Text style={{color:"white", paddingHorizontal:15}}>지각 {item.ATTCL}</Text>
-                    <Text style={{color:"white", paddingHorizontal:15}}>조회 {item.ATTCL2}</Text>
-                    <Text style={{color:"white", paddingHorizontal:15}}>결근 {item.ATTCL3}</Text>
+                    <Text style={{color:"white", paddingHorizontal:15}}>지각 {item.ATTCL2}</Text>
+                    <Text style={{color:"white", paddingHorizontal:15}}>조회 {item.ATTCL3}</Text>
+                    <Text style={{color:"white", paddingHorizontal:15}}>결근 {item.ATTCL}</Text>
                 </View>
                 <View style={{flex:1}}>
                     <Text style={{color:"white", fontSize:16}}>주간 총 급여</Text>

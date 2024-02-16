@@ -123,8 +123,8 @@ const Top = () => {
                     </View>
                 </View>
                 <View style={styles.row}>
-                    <Text style={{color:"grey"}}>이슈사항 - 지각 : {jobInfo.ATTCL}, 조퇴 : {jobInfo.ATTCL2}, </Text>
-                    <Text style={{color:"red"}}>결근 : {jobInfo.ATTCL3}</Text>
+                    <Text style={{color:"grey"}}>이슈사항 - 지각 : {jobInfo.ATTCL2}, 조퇴 : {jobInfo.ATTCL3}, </Text>
+                    <Text style={{color:"red"}}>결근 : {jobInfo.ATTCL}</Text>
                 </View>
             </View>
     )
