@@ -105,20 +105,21 @@ const Top = () => {
             <View style={[styles.card]}>
                 <TopWeek/>
                 <View style={topStyle.topMain}>
-                    <View>
+                    <View style={{paddingHorizontal:20, paddingVertical:10}}>
                         <View style={topStyle.blueBox}>
-                            <Text style={{color:"white", fontWeight:"bold", fontSize:20}}>총 근무시간</Text>
+                            <Text style={topStyle.blueBoxFont}>예상 급여액</Text>
+                            <Text style={topStyle.blueBoxFont}>:</Text>
+                            <Text style={topStyle.blueBoxFont}>{jobInfo.preJobWage.toLocaleString()}원</Text>
                         </View>
-                        <Text style={topStyle.time}>{formatTime(jobInfo.jobDure)}</Text>
                     </View>
                     <View>
-                        <View style={[styles.row, {marginBottom:10}]}>
-                            <Text style={{color:"grey"}}>일반</Text>
-                            <Text> : {formatTime(jobInfo.genDure)}</Text>
+                        <View style={styles.row}>
+                            <Text style={{color:"grey"}}>승인된 근무시간</Text>
+                            <Text> : {formatTime(jobInfo.jobDure)}</Text>
                         </View>
                         <View style={styles.row}>
-                        <Text style={{color:"grey"}}>대타</Text>
-                            <Text> : {formatTime(jobInfo.spcDure)}</Text>
+                            <Text style={{color:"grey"}}>요청중 근무시간</Text>
+                            <Text> : {formatTime(jobInfo.jobDure2)}</Text>
                         </View>
                     </View>
                 </View>
@@ -141,6 +142,7 @@ const BotContainer = () => {
         //await HTTP("GET", "/api/v1/commute/commuteCheckInfo", {cls:"dayJobInfo", userId:'mega7438226_0075', cstCo:'1010', ymdFr:'20231203', ymdTo:'20231209'})
         await HTTP("GET", "/api/v1/commute/commuteCheckInfo", {cls:"dayJobInfo", userId:userId, cstCo:sCstCo, ymdFr:date.start, ymdTo:date.end})
         .then((res)=>{
+            console.log(res.data.result)
             if(res.data.result) setDayJobInfo(res.data.result);
             setLoadin(false);
         }).catch(function (error) {
@@ -164,16 +166,21 @@ const BotContainer = () => {
             null
         :
         <>
-        <View style={[styles.row, { width:"100%", justifyContent:"flex-end"}]}>
-            <TouchableOpacity style={[styles.row, {marginRight:10}]}>
-                <Text>승인상태</Text>
-                <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.row}>
-                <Text>근무유형 </Text>
-                <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
-            </TouchableOpacity>
-        </View>
+        {
+            (1 == 1)?
+            null
+            :
+            <View style={[styles.row, { width:"100%", justifyContent:"flex-end"}]}>
+                <TouchableOpacity style={[styles.row, {marginRight:10}]}>
+                    <Text>승인상태</Text>
+                    <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.row}>
+                    <Text>근무유형 </Text>
+                    <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
+                </TouchableOpacity>
+            </View>
+        }
         <ScrollView contentContainerStyle={{padding:15}} style={[styles.scrollContainer]}>
             {
                 dayJobInfo.map((el, idx)=>{
@@ -187,20 +194,30 @@ const BotContainer = () => {
     )
 }
 const BotItem = ({data}) => {
-    //sconsole.log(data)
     const date = YYYYMMDD2Obj(data.ymd);
     const navigation = useNavigation();
+    const statColor = (["결근", "지각"].includes(data.attendence))?{color:"red"}:{color:"white"};
+    const statBox = (["결근", "지각"].includes(data.attendence))?{borderWidth:1, borderColor:"red"}:(data.attendence == "근무중")?{backgroundColor:"blue"}:{backgroundColor:theme.link};
+
     return(
-        <TouchableOpacity onPress={()=>navigation.push("CommuteCheckDetail", {"ymd":data.ymd})} style={[styles.card, {flexDirection:"row", justifyContent:"space-between"}]}>
+        <TouchableOpacity onPress={()=>navigation.push("CommuteCheckDetail", {"ymd":data.ymd})} style={[styles.card, {flexDirection:"row", justifyContent:"space-between"}]}> 
             <View>
                 <View style={styles.row}>
                     <View style={[styles.row, {paddingVertical:5}]}>
                         <Text>{date.ymd.split(".")[1]} / {date.ymd.split(".")[2]} </Text> 
                         <Text style={{color:date.color}}>({date.day})</Text>    
                     </View>
-                    <View style={{backgroundColor:theme.link, padding:5, borderRadius:15, marginLeft:15, alignSelf:"center"}}>
-                        <Text style={{color:"white", width:50, textAlign:"center", fontSize:10}}>{data.attendence}</Text>
+                    <View style={[styles.statBox, statBox]}>
+                        <Text style={[styles.statFont, statColor]}>{data.attendence}</Text>
                     </View>
+                    {
+                        (["결근", "지각"].includes(data.attendence))?
+                            <TouchableOpacity onPress={()=>{navigation.push("CommuteCheckChange", { dayJobInfo: data, isScheduled:true});}} style={{justifyContent:"center", marginLeft:5}}> 
+                                <Text style={{fontSize:11, color:theme.link}}>[인정 요청]</Text>
+                            </TouchableOpacity>
+                        :
+                            null
+                    }
                 </View>
                 <Text>출근:{data.startTime} ~ {data.endTime}</Text>
             </View>
@@ -214,23 +231,20 @@ const BotItem = ({data}) => {
 
 const topStyle = StyleSheet.create({
     blueBox:{
-        borderWidth:1,
-        paddingVertical:15,
-        paddingHorizontal:30,
-        backgroundColor:"blue",
-        borderRadius:20,
-        marginBottom:10
-    },
-    time:{
-        alignSelf:"flex-end",
-        fontSize:24,
-        color:"blue"
-    },
-    topMain:{
         flexDirection:"row",
+        justifyContent:"space-evenly",
+        borderWidth:1,
+        paddingVertical:10,
+        paddingHorizontal:15,
+        backgroundColor:"blue",
+        borderColor:"blue",
+        borderRadius:20,
+        marginBottom:5
+    },
+    blueBoxFont:{color:"white", fontWeight:"bold", fontSize:20},
+    topMain:{
         justifyContent:"space-between",
-        alignItems:"center",
-        marginBottom:15,
+        marginBottom:10,
     },
 
 });
@@ -250,4 +264,6 @@ const styles = StyleSheet.create({
         flex:1
     },
     row:{ flexDirection:"row", },
+    statBox:{paddingHorizontal:3, paddingVertical:2, borderRadius:15, marginLeft:15, alignSelf:"center"},
+    statFont:{ width:40, textAlign:"center", fontSize:10},
 });

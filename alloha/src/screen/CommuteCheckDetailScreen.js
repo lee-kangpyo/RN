@@ -11,7 +11,6 @@ export default function CommuteCheckDetailScreen({navigation, route}) {
     const [YYYYMMDD, setYYYYMMDD] = useState(ymd);
     const userId = useSelector((state)=>state.login.userId);
     const [dayJobInfo, setDayJobInfo] = useState({})
-    console.log(dayJobInfo)
     const [btnShow, setBtnShow] = useState(false);
     useEffect(()=>{
         if(Object.keys(dayJobInfo).length > 0){
