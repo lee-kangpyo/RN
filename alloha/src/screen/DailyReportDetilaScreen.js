@@ -55,7 +55,8 @@ export default function DailyReportDetilaScreen({navigation, route}) {
             <DailyCommuteInfo day={YYYYMMDD} userId={userId} sCstCo={sCstCo} dayJobInfo={dayJobInfo} setDayJobInfo={setDayJobInfo} />
             <DailyCommuteDetail day = {YYYYMMDD} userId={userId} sCstCo={sCstCo}/>
             {
-                (btnShow)?
+                //(btnShow)?
+                (1 == 2)?
                     <CustomButton onClick={onModifyBtnpressed} text={"근무기록변경"} style={styles.btn}/>
                 :
                     null

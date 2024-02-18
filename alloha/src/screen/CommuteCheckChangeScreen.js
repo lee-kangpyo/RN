@@ -10,7 +10,7 @@ import { useSelector } from 'react-redux';
 import { useIsFocused } from '@react-navigation/native';
 
 export default function CommuteCheckChangeScreen({navigation, route}) {
-    const { dayJobInfo } = route.params;
+    const { dayJobInfo, isScheduled=false } = route.params;
     const [isExistReq, setIsExistReq] = useState(null);
     const userId = useSelector((state)=>state.login.userId);
     const isFocused = useIsFocused();
@@ -29,6 +29,7 @@ export default function CommuteCheckChangeScreen({navigation, route}) {
         await HTTP("GET", "/api/v1/commute/getDayJobReq", {jobNo:dayJobInfo.jobNo})
         .then((res)=>{
             if(res.data.resultCode == "00"){
+                // 근무 변경 기록이 있을때
                 if(res.data.rows > 0){
                     const data = res.data.result[0];
                     setStartTime(data.STIME.split('T')[1].slice(0, 5));
@@ -36,9 +37,17 @@ export default function CommuteCheckChangeScreen({navigation, route}) {
                     setReason(data.REASON);
                     setIsExistReq(true)
                 }else{
-                    setStartTime(dayJobInfo.startTime);
-                    setEndTime(dayJobInfo.endTime);
-                    setReason("");
+                    //인정 요청할 때
+                    if(isScheduled){
+                        setStartTime(dayJobInfo.schFrom);
+                        setEndTime(dayJobInfo.schTo);
+                        setReason("인정 요청");
+                    }else{
+                        setStartTime(dayJobInfo.startTime);
+                        setEndTime(dayJobInfo.endTime);
+                        setReason("");
+                    }
+                    
                     setIsExistReq(false)
                 }
             }
