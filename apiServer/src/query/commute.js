@@ -8,7 +8,7 @@ const daySchedule = `
 `
 const reqCommuteChange = `
     INSERT INTO PLYADAYJOBREQ (CSTCO, USERID, JOBNO, STIME, ETIME, STARTTIME, ENDTIME, REASON, REQSTAT, YMD, PUSHYN, USEYN,  IUSERID, IYMDHMD)
-    VALUES(@cstCo, @userId, @jobNo, @sTime, @eTime, @startTime, @endTime, @reason, @reqStat,  CONVERT(CHAR(8), getdate(), 112), 'N', 'Y', @userId, getdate())
+    VALUES(@cstCo, @userId, @jobNo, @sTime, @eTime, @startTime, @endTime, @reason, @reqStat,  @ymd, 'N', 'Y', @userId, getdate())
 `
 const initCommuteChange = `
     UPDATE a set a.USEYN = 'N', a.MUSERID=@userId, a.MYMDHMD = getdate()
