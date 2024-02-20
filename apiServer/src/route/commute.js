@@ -102,11 +102,35 @@ router.get("/daySchedule", async (req,res,next)=>{
 
 
 router.post("/reqCommuteChange", async (req,res,next)=>{
+    const convertYmd = (dateString) => {
+        // 주어진 날짜 문자열
+        //var dateString = "2024-02-15 13:30";
+
+        // 날짜 객체 생성
+        var dateObject = new Date(dateString);
+
+        // 년, 월, 일 가져오기
+        var year = dateObject.getFullYear();
+        var month = dateObject.getMonth() + 1; // 월은 0부터 시작하므로 1을 더합니다.
+        var day = dateObject.getDate();
+
+        // 월과 일이 한 자리 수인 경우 앞에 0을 추가해줍니다.
+        if (month < 10) {
+            month = "0" + month;
+        }
+        if (day < 10) {
+            day = "0" + day;
+        }
+
+        // 변환된 날짜 문자열
+        return "" + year + month + day;
+    }
     console.log("POST commute.reqCommuteChange")
     try {
         const { cstCo, userId, jobNo, sTime, eTime, startTime, endTime, reason, reqStat } = req.body;
+        const ymd = convertYmd(sTime);
         const initRlt = await execSql(initCommuteChange, {cstCo, jobNo, userId});
-        const result = await execSql(reqCommuteChange, { cstCo, jobNo, userId, sTime, eTime, startTime, endTime, reason, reqStat });
+        const result = await execSql(reqCommuteChange, { cstCo, jobNo, userId, sTime, eTime, startTime, endTime, reason, reqStat, ymd });
         if(result.rowsAffected[0] == 1){
             res.status(200).json({result:"다녀옴", resultCode:"00"});
         }else{
