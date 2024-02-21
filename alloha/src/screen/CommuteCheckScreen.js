@@ -4,7 +4,7 @@ import React, {useState, useEffect, useCallback} from 'react';
 import MyStorePicker from '../components/alba/MyStorePicker';
 import { useSelector } from 'react-redux';
 import { HTTP } from '../util/http';
-import { YYMMDD2YYDD, getStartAndEndOfWeek, isBetween } from './../util/moment';
+import { YYMMDD2YYDD, formatTime, getStartAndEndOfWeek, isBetween } from './../util/moment';
 import { useFocusEffect } from '@react-navigation/native';
 import { AntDesign } from '@expo/vector-icons';
 import CurTimer from '../components/common/CurTimer';
@@ -22,6 +22,7 @@ export default function CommuteCheckScreen({navigation}) {
     const [weekInfo, setWeekInfo] = useState({});
     const store = myStores.find(el => el.CSTCO == sCstCo);
     const [checkLocation, setCheckLocation] = useState(false);
+    const [jobInfo, setJobInfo] = useState({});
 
     const jobchksearch = async (cstCo) => {
         await HTTP("GET", "/api/v1/commute/jobchksearch", {userId:userId, cstCo:cstCo})
@@ -30,8 +31,20 @@ export default function CommuteCheckScreen({navigation}) {
         }).catch(function (error) {
             console.log(error);
             alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
+        });
+    }
+
+    const commuteCheckInfo = async () => {
+        await HTTP("GET", "/api/v1/commute/commuteCheckInfo", {cls:"JobInfo", userId:userId, cstCo:sCstCo, ymdFr:today, ymdTo:today})
+        .then((res)=>{
+            console.log(res.data.result)
+            setJobInfo(res.data.result[0] ?? {})
+        }).catch(function (error) {
+            console.log(error);
+            alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
         })
     }
+
     const MonthAlbaSlySearch = async () => {
         // exec PR_PLYD02_SALARY 'MonthAlbaSlySearch', '20231203', '20231209', 1010, '', 'mega7438226_0075', '', 0
         await HTTP("GET", "/api/v1/commute/monthCstSlySearch", {userId:userId, cstCo:sCstCo, ymdFr:thisSunday, ymdTo:thisSaturday})
@@ -45,6 +58,7 @@ export default function CommuteCheckScreen({navigation}) {
             alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
         })
     }
+
     const getDaySchedule = async (cstCo) => {
         const params = {userId:userId, cstCo:cstCo, ymd:today};
         await HTTP("GET", "/api/v1/commute/daySchedule", params)
@@ -113,17 +127,14 @@ export default function CommuteCheckScreen({navigation}) {
         useCallback(() => {
             jobchksearch(sCstCo);
             getDaySchedule(sCstCo);
-            MonthAlbaSlySearch();
+            commuteCheckInfo();             // Bottom2 컴포넌트 사용하기 위한 위젯
+            //MonthAlbaSlySearch();         // Bottom 컴포넌트 사용하기 위한 위젯
             return () => { 
                 //console.log("unFocused");
             };
             
         }, [sCstCo])
     )
-    // useEffect(()=>{
-    //     jobchksearch(sCstCo);
-    //     getDaySchedule(sCstCo);
-    // }, [sCstCo])
 
     useEffect(()=>{
         navigation.setOptions({title:"근무 현황"})
@@ -169,7 +180,7 @@ export default function CommuteCheckScreen({navigation}) {
                 </View>
                 <CommuteBar data={jobChk} isCommonJob={isCommonJob} onPressed={()=>alert("전환 기능은 아직 확정되지 않음")/*setJobCls(!isCommonJob)*/} />
             </ScrollView>
-            <Bottom data={weekInfo} />
+            <Bottom2 data={jobInfo} />
             </>
         :   
             <View style={{flex:1, justifyContent:"center", alignItems:"center"}}>
@@ -179,6 +190,80 @@ export default function CommuteCheckScreen({navigation}) {
     );
 }
 
+
+const Bottom2 = ({data}) => {
+    const [isMin, setIsMin] = useState(true);
+    const convertTime = (num) => {
+        const hours = Math.floor(num);
+        const minutes = Math.round((num - hours) * 60);
+        return `${hours}시간 ${minutes}분`;
+    }
+    const item = (data && Object.keys(data).length > 0)?data:{preJobWage:0, jobDure:0, jobDure2:0, ATTCL2:0, ATTCL:0, ATTCL3:0 }
+
+    const TouchableIcon = ({name, onPress}) => {
+        return(
+            <View style={styles.iconBox}>
+                <TouchableOpacity onPress={onPress}>
+                    <MaterialIcons name={name} size={40} color="white" />
+                </TouchableOpacity> 
+            </View>
+        )
+    }
+
+    return (
+        <View style={styles.bottomSheet}>
+        {
+        (isMin)?
+        <>
+            <TouchableIcon name={"keyboard-arrow-up"} onPress={()=>setIsMin(false)} />
+            <View style={[styles.row, {alignItems:"flex-start", marginBottom:0}]}>
+                <Text style={{color:"white", fontSize:16}}>예상 급여액</Text>
+                <View style={{flexDirection:"row"}}>
+                    <Text style={{color:"white", paddingRight:5}}>{item.preJobWage.toLocaleString()}원</Text>
+                </View>
+            </View>
+        </>
+        :
+        <>
+            <TouchableIcon name={"keyboard-arrow-down"} onPress={()=>setIsMin(true)} />
+            <View style={[styles.row, {alignItems:"flex-start"}]}>
+                <View style={{flex:1}}>
+                    <Text style={{color:"white", fontSize:16}}>예상 급여액</Text>
+                    <Text style={{color:"white", paddingHorizontal:15}}>{item.preJobWage.toLocaleString()}원</Text>
+                </View>
+                <View style={{flex:1}}>
+                    <Text style={{color:"white", fontSize:16}}>근무 시간</Text>
+                    <View style={{flexDirection:"row", justifyContent:"space-between", paddingHorizontal:15}}>
+                        <Text style={{color:"white"}}>승인됨</Text>
+                        <Text style={{color:"white"}}>:</Text>
+                        <Text style={{color:"white"}}>{formatTime(item.jobDure)}</Text>
+                    </View>
+                    <View style={{flexDirection:"row", justifyContent:"space-between", paddingHorizontal:15}}>
+                        <Text style={{color:"white"}}>요청중</Text>
+                        <Text style={{color:"white"}}>:</Text>
+                        <Text style={{color:"white"}}>{formatTime(item.jobDure2)}</Text>
+                    </View>
+                </View>
+            </View>
+            <View style={[styles.row, {alignItems:"flex-start"}]}>
+                <View style={{flex:1}}>
+                    <Text style={{color:"white", fontSize:16}}>이슈사항</Text>
+                    <Text style={{color:"white", paddingHorizontal:15}}>지각 {item.ATTCL2}</Text>
+                    <Text style={{color:"white", paddingHorizontal:15}}>조회 {item.ATTCL3}</Text>
+                    <Text style={{color:"white", paddingHorizontal:15}}>결근 {item.ATTCL}</Text>
+                </View>
+                <View style={{flex:1}}>
+                    <Text style={{color:"white", fontSize:16}}></Text>
+                    <Text style={{color:"white", paddingHorizontal:15, alignSelf:"flex-end"}}>{item.salary}</Text>
+                </View>
+            </View>
+        </>
+        }
+        </View>
+    )
+}
+
+//<Bottom data={weekInfo} />
 const Bottom = ({data}) => {
     const [isMin, setIsMin] = useState(true);
     const convertTime = (num) => {
