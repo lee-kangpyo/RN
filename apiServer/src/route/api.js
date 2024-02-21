@@ -5,7 +5,7 @@ const {execSql, execTranSql} = require("../utils/excuteSql");
 const { login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, 
         getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, jobChk, salary,
         insertJobChk, geofencingTest, checkJobChk, insert_Uuid_Token, autoLogin, getUUID, checkjobtotal, 
-        getTermsDetail, updateTaxNo, modifyStoreInfo, easyAlbaMng, albaSchedulemanager2, albaSchedulemanager, changeCrewName, logOut} = require('./../query/auth'); 
+        getTermsDetail, updateTaxNo, modifyStoreInfo, easyAlbaMng, albaSchedulemanager2, albaSchedulemanager, changeCrewName, logOut, changeCrewRTCLAprov} = require('./../query/auth'); 
 const axios = require('axios');
 
 const dotenv = require('dotenv');
@@ -249,23 +249,16 @@ router.post("/v1/changeCrewName", async (req, res, next) => {
     }
 })
 
-// 다음 버전에서 지울 라우터
-router.post("/v1/approvCrew", async (req, res, next)=>{
-    try {
-        const {cstCo, userId} = req.body;
-        const result = await execSql(changeCrewRTCL, {userId:userId, cstCo:cstCo, rtCl:"N"}) 
-        res.status(200).json({result:result.rowsAffected[0], resultCode:"00"});
-    } catch (error) {
-        console.log(error.message)
-        res.status(200).json({ resultCode:"-1"});
-    }
-})
-
 router.post("/v1/changeCrew", async (req, res, next)=>{
     try {
         const {cstCo, userId, rtCl} = req.body;
-        const result = await execSql(changeCrewRTCL, {userId:userId, cstCo:cstCo, rtCl:rtCl}) 
-        res.status(200).json({result:result.rowsAffected[0], resultCode:"00"});
+        if(rtCl == "N"){
+            const result = await execSql(changeCrewRTCLAprov, {userId:userId, cstCo:cstCo, rtCl:rtCl, wage:"9860"}) 
+            res.status(200).json({result:result.rowsAffected[0], resultCode:"00"});
+        }else{
+            const result = await execSql(changeCrewRTCL, {userId:userId, cstCo:cstCo, rtCl:rtCl, wage:wage}) 
+            res.status(200).json({result:result.rowsAffected[0], resultCode:"00"});
+        }
     } catch (error) {
         console.log(error.message)
         res.status(200).json({ resultCode:"-1"});
