@@ -5,7 +5,7 @@ import { theme } from '../util/color';
 import { useNavigation } from '@react-navigation/native';
 import Notion from '../components/common/Notion';
 import { useDispatch, useSelector } from 'react-redux';
-import { YYYYMMDD2Obj } from '../util/moment';
+import { YYYYMMDD2Obj, formatTime } from '../util/moment';
 import { HTTP } from '../util/http';
 import { MaterialIcons } from '@expo/vector-icons';
 import { currentWeek, nextWeek, prevWeek } from '../../redux/slices/alba';
@@ -46,7 +46,7 @@ const Top = () => {
     const [loading, setLoadin] = useState(true);
     const [jobInfo, setJobInfo] = useState({});
 
-    const jobchksearch = async () => {
+    const commuteCheckInfo = async () => {
         //await HTTP("GET", "/api/v1/commute/commuteCheckInfo", {cls:"dayJobInfo", userId:'mega7438226_0075', cstCo:'1010', ymdFr:'20231208', ymdTo:'20231208'})
         await HTTP("GET", "/api/v1/commute/commuteCheckInfo", {cls:"JobInfo", userId:userId, cstCo:sCstCo, ymdFr:date.start, ymdTo:date.end})
         .then((res)=>{
@@ -60,7 +60,7 @@ const Top = () => {
 
     useEffect(()=>{
         setLoadin(true);
-        jobchksearch();
+        commuteCheckInfo();
     }, [date])
 
     const TopWeek = () =>{
@@ -79,13 +79,6 @@ const Top = () => {
         )
     }
 
-    function formatTime(number) {
-        const hours = Math.floor(number);
-        const minutes = (number - hours) * 60;
-        const formattedHours = String(hours).padStart(2, '0');
-        const formattedMinutes = String(Math.round(minutes)).padStart(2, '0');
-        return `${formattedHours}시간 ${formattedMinutes}분`;
-    }
 //////////////////////////////////////////////////////////////////////////////////////////////////
     return(
         (loading)?

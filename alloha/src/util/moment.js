@@ -312,3 +312,12 @@ export function isBetween(c, s, e) {
     // c가 s와 e 사이에 있는지 여부 판단
     return currentTime >= startTime && currentTime <= endTime;
 }
+
+// 숫자를 시간으로 치환 1 -> 1시간 1.5 -> 1시간 30분
+export function formatTime(number) {
+    const hours = Math.floor(number);
+    const minutes = (number - hours) * 60;
+    const formattedHours = String(hours).padStart(2, '0');
+    const formattedMinutes = String(Math.round(minutes)).padStart(2, '0');
+    return `${formattedHours}시간 ${formattedMinutes}분`;
+}
