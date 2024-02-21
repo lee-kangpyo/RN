@@ -4,7 +4,7 @@ const DailyReport1 = `
 `
 
 const approve = `
-    UPDATE PLYADAYJOB SET APVYN = 'Y', MUSERID = @userId, MYMDHMD = getdate() 
+    UPDATE PLYADAYJOB SET APVYN = 'A', MUSERID = @userId, MYMDHMD = getdate() 
     WHERE JOBNO in `
 
 module.exports = { DailyReport1, approve }
