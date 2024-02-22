@@ -16,7 +16,7 @@ export default function CustomTap({data, selectedKey, setSelectedKey}) {
                 {
                     (cnt)?
                         <View style={styles.pill}>
-                            <Text style={[styles.tapText, (isSelected)?styles.tapActiveText:null, {fontSize:10, fontWeight:"bold"}]}>{cnt}</Text>
+                            <Text style={[styles.tapText, {fontSize:10, fontWeight:"bold"}]}>{cnt}</Text>
                         </View>
                     :
                         null
