@@ -3,7 +3,7 @@ var router = express.Router();
 const {execSql} = require("../utils/excuteSql");
 
 const dotenv = require('dotenv');
-const { DailyReport1, approve } = require('../query/dailyReport');
+const { DailyReport1, approve, jobClose } = require('../query/dailyReport');
 
 dotenv.config();
 
@@ -24,9 +24,11 @@ router.get("/DailyReport1", async (req, res, next)=>{
 router.post("/approve", async (req, res, next)=>{
     console.log("GET dailyReport.approve");
     try {
-        const {jobNos, userId} = req.body;
+        const {jobNos, userId, ymd, cstCo} = req.body;
         const result = await execSql(approve + "("+jobNos.join(", ")+")", {userId});
-        console.log(result);
+        if(result && result.rowsAffected > 0){
+            const result2 = await execSql(jobClose, {ymdFr:ymd, ymdTo:ymd, cstCo:cstCo})   
+        }
         res.status(200).json({rowsAffected:result.rowsAffected[0], resultCode:"00"});
     } catch (error) {
         console.log(error.message)
