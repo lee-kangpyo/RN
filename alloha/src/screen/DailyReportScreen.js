@@ -10,6 +10,7 @@ import CustomButton from '../components/common/CustomButton';
 import StoreSelectBoxWithTitle from '../components/common/StoreSelectBoxWithTitle';
 import { AntDesign } from '@expo/vector-icons';
 import CustomTap from '../components/common/CustomTap';
+import ReqChangeWork from '../components/daily/ReqChangeWork';
 
 export default function DailyReportScreen({navigation}) {
     const getYMD = (date) => {
@@ -38,7 +39,6 @@ export default function DailyReportScreen({navigation}) {
         await HTTP("GET", "/api/v1/daily/DailyReport1", {cstCo:cstCo, ymd:ymd.ymd})
         .then((res)=>{
             const result = res.data.result;
-            console.log(result)
             // 승인 안한 항목
             const unApprovedList = result.filter(el => ["R", "P"].includes(el.APVYN));
             // 이슈 있는 항목
@@ -70,7 +70,7 @@ export default function DailyReportScreen({navigation}) {
         }else{
             const unApprovedList = datas.filter(el => ["R", "P"].includes(el.APVYN));
             const jobNos = unApprovedList.map(el => el.JOBNO);
-            await HTTP("POST", "/api/v1/daily/approve", {jobNos:jobNos, userId:userId})
+            await HTTP("POST", "/api/v1/daily/approve", {jobNos:jobNos, userId:userId, ymd:ymd.ymd, cstCo:cstCo})
             .then((res)=>{
                 const rowsAffected = res.data.rowsAffected;
                 if(rowsAffected == unApprovedList.length){
@@ -91,7 +91,6 @@ export default function DailyReportScreen({navigation}) {
         //     console.log("확정 진행")
         // }
     }
-    
     return (
         <>
         <View style={styles.container}>
@@ -116,13 +115,15 @@ export default function DailyReportScreen({navigation}) {
                         (selectedKey == 0)?
                             datas.map((el, idx)=><Item key={idx} data={el} ymd={ymd.ymd} navigator={navigation} />)
                         :
-                        (
-                            (datas.filter(el => el.REQCNT > 0).length > 0) ? (
-                                datas.filter(el => el.REQCNT > 0).map((el, idx) => <Item key={idx} data={el} ymd={ymd.ymd} navigator={navigation}/>)
-                            ) : (
-                                <Text style={{alignSelf:"center"}}>이슈가 없습니다.</Text>
-                            )
-                        )
+                            <ReqChangeWork issued = {datas}/>
+                            //<ReqChangeWork issued = {datas.filter(el => el.REQCNT > 0)}/>
+                        // (
+                        //     (datas.filter(el => el.REQCNT > 0).length > 0) ? (
+                        //         datas.filter(el => el.REQCNT > 0).map((el, idx) => <Item key={idx} data={el} ymd={ymd.ymd} navigator={navigation}/>)
+                        //     ) : (
+                        //         <Text style={{alignSelf:"center"}}>이슈가 없습니다.</Text>
+                        //     )
+                        // )
                     }
                 </ScrollView>
             </View>
