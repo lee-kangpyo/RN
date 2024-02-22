@@ -78,7 +78,7 @@ const Top = () => {
             </View>
         )
     }
-
+  
 //////////////////////////////////////////////////////////////////////////////////////////////////
     return(
         (loading)?
@@ -119,6 +119,8 @@ const Top = () => {
                 <View style={styles.row}>
                     <Text style={{color:"grey"}}>이슈사항 - 지각 : {jobInfo.ATTCL2}, 조퇴 : {jobInfo.ATTCL3}, </Text>
                     <Text style={{color:"red"}}>결근 : {jobInfo.ATTCL}</Text>
+                    <Text style={{color:"grey"}}>, 요청 : {jobInfo.issueCount}, </Text>
+                    <Text style={{color:"grey"}}>통보 : {jobInfo.issueCount2}</Text>
                 </View>
             </View>
     )
@@ -135,7 +137,6 @@ const BotContainer = () => {
         //await HTTP("GET", "/api/v1/commute/commuteCheckInfo", {cls:"dayJobInfo", userId:'mega7438226_0075', cstCo:'1010', ymdFr:'20231203', ymdTo:'20231209'})
         await HTTP("GET", "/api/v1/commute/commuteCheckInfo", {cls:"dayJobInfo", userId:userId, cstCo:sCstCo, ymdFr:date.start, ymdTo:date.end})
         .then((res)=>{
-            console.log(res.data.result)
             if(res.data.result) setDayJobInfo(res.data.result);
             setLoadin(false);
         }).catch(function (error) {
@@ -187,6 +188,7 @@ const BotContainer = () => {
     )
 }
 const BotItem = ({data}) => {
+    
     const date = YYYYMMDD2Obj(data.ymd);
     const navigation = useNavigation();
     const statColor = (["결근", "지각"].includes(data.attendence))?{color:"red"}:{color:"white"};
@@ -212,7 +214,8 @@ const BotItem = ({data}) => {
                             null
                     }
                 </View>
-                <Text>출근:{data.startTime} ~ {data.endTime}</Text>
+                <Text>근무시간:{data.startTime} ~ {data.endTime}</Text>
+                <Text style={{color:"grey"}}>요청:{data.issueCount}, 통보:{data.issueCount2}</Text>
             </View>
             <View>
                 { (data.genDure == 0)? <Text></Text>:<View style={styles.row}><Text style={{color:"grey"}}>일반 : </Text><Text>{data.genDure}</Text></View> }
