@@ -7,4 +7,8 @@ const approve = `
     UPDATE PLYADAYJOB SET APVYN = 'A', MUSERID = @userId, MYMDHMD = getdate() 
     WHERE JOBNO in `
 
-module.exports = { DailyReport1, approve }
+const jobClose = `
+    exec PR_JOB_CLOSE 'jobToSalary', @ymdFr, @ymdTo, @cstCo, '', 'Y'
+`
+
+module.exports = { DailyReport1, approve, jobClose }
