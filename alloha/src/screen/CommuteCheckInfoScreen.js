@@ -188,14 +188,14 @@ const BotContainer = () => {
     )
 }
 const BotItem = ({data}) => {
-    
     const date = YYYYMMDD2Obj(data.ymd);
     const navigation = useNavigation();
     const statColor = (["결근", "지각"].includes(data.attendence))?{color:"red"}:{color:"white"};
     const statBox = (["결근", "지각"].includes(data.attendence))?{borderWidth:1, borderColor:"red"}:(data.attendence == "근무중")?{backgroundColor:"blue"}:{backgroundColor:theme.link};
-
+    const isAbsence = ["결근"].includes(data.attendence);
+    console.log(data)
     return(
-        <TouchableOpacity onPress={()=>navigation.push("CommuteCheckDetail", {"ymd":data.ymd})} style={[styles.card, {flexDirection:"row", justifyContent:"space-between"}]}> 
+        <TouchableOpacity onPress={()=>(isAbsence)?alert("해당 일자는 결근 하셨습니다. 인정 요청으로 근무 시간 인정 요청하세요."):navigation.push("CommuteCheckDetail", {"ymd":data.ymd})} style={[styles.card, {flexDirection:"row", justifyContent:"space-between"}]}> 
             <View>
                 <View style={styles.row}>
                     <View style={[styles.row, {paddingVertical:5}]}>

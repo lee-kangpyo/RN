@@ -9,7 +9,7 @@ export const useCommuteChangeList = (userId) => {
     const fetchCommuteList = async (callBack) => {
         await HTTP("GET", "/api/v1/commute/getReqCommuteList", {userId:userId})
         .then((res)=>{
-            const reqList = res.data.reqList;
+            const reqList = res.data.reqList.filter(el => el.apvYn != "D");
             const statR = reqList.filter(el => el.REQSTAT == 'R');
             dispatch(setReqAlbaChange({cnt:statR.length, reqList:reqList}))
             if(callBack) callBack();

@@ -92,8 +92,14 @@ export default function CommuteCheckChangeScreen({navigation, route}) {
             alert(`요청 사유가 입력되지 않았습니다.`)
             return;
         }
+        
         const ymd = dayJobInfo.ymd;
-        const params = {curStat:dayJobInfo.reqStat, cstCo:dayJobInfo.cstCo, userId:userId, jobNo:dayJobInfo.jobNo, sTime:convertDate(ymd, startTime), eTime:convertDate(ymd, endTime), reason:reason, reqStat:"R", startTime:convertDate(ymd, dayJobInfo.startTime), endTime:convertDate(ymd, dayJobInfo.endTime)};
+        const sTime = convertDate(ymd, startTime);
+        const eTime = convertDate(ymd, endTime);
+        const startRealTime = (dayJobInfo.attendence == "결근")?sTime:convertDate(ymd, dayJobInfo.startTime);
+        const endRealTime = (dayJobInfo.attendence == "결근")?eTime:convertDate(ymd, dayJobInfo.startTime);
+        const jobNo = (dayJobInfo.attendence == "결근")?0:dayJobInfo.jobNo;
+        const params = {curStat:dayJobInfo.reqStat, cstCo:dayJobInfo.cstCo, userId:userId, jobNo:jobNo, sTime:sTime, eTime:eTime, reason:reason, reqStat:"R", startTime:startRealTime, endTime:endRealTime};
         //console.log(params)
         reqCommuteChange(params);
     }
@@ -205,11 +211,17 @@ export default function CommuteCheckChangeScreen({navigation, route}) {
                                 <Text style={[styles.pillText,{color:(statNa == "정상")?"black":"#ff6f1f"}]}>{statNa}</Text>
                             </View>
                             <View style={styles.row}>
-                                <View style={[styles.row]}>
-                                    <Text style={styles.main}>{dayJobInfo.startTime}</Text>
-                                    <Text style={styles.main}> ~ </Text>
-                                    <Text style={styles.main}>{dayJobInfo.endTime}</Text>
-                                </View>
+                                {
+                                    (dayJobInfo.attendence == "결근")?
+                                            <Text style={[styles.main, {color:"red"}]}>결근</Text>
+                                        :
+                                            <View style={[styles.row]}>
+                                                <Text style={styles.main}>{dayJobInfo.startTime}</Text>
+                                                <Text style={styles.main}> ~ </Text>
+                                                <Text style={styles.main}>{dayJobInfo.endTime}</Text>
+                                            </View>
+                                }
+                                
                                 <View style={{justifyContent:"center", paddingHorizontal:5}}>
                                     <FontAwesome name="long-arrow-right" size={20} color="black" />
                                 </View>  
@@ -225,7 +237,7 @@ export default function CommuteCheckChangeScreen({navigation, route}) {
                                 }
                             </View>
                             <TouchableOpacity onPress={()=>setType(1)}>
-                                <Text style={styles.sub}>수정</Text>
+                                <Text style={styles.sub}>요청 시간 수정</Text>
                             </TouchableOpacity>
                             
                         </View>
