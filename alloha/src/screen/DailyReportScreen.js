@@ -11,6 +11,7 @@ import StoreSelectBoxWithTitle from '../components/common/StoreSelectBoxWithTitl
 import { AntDesign } from '@expo/vector-icons';
 import CustomTap from '../components/common/CustomTap';
 import ReqChangeWork from '../components/daily/ReqChangeWork';
+import { setIssueCnt } from '../../redux/slices/dailyReport';
 
 export default function DailyReportScreen({navigation}) {
     const getYMD = (date) => {
@@ -19,12 +20,11 @@ export default function DailyReportScreen({navigation}) {
         const day = date.getDate().toString().padStart(2, '0');
         return {date:date, ymdKo:`${year}년 ${month}월 ${day}일`, ymd:`${year}${month}${day}`}
     }
-
     const userId = useSelector((state)=>state.login.userId);
+    const issueCnt = useSelector((state)=>state.dailyReport.issueCnt);
     const dispatch = useDispatch();
     const [datas, setDatas] = useState([]);
-    
-    const [issueCnt, setIssueCnt] = useState(0);
+    //const [issueCnt, setIssueCnt] = useState(0);
     const [isBtnDisabled, setIsBtnDisabled] = useState(false);
     const cstCo = useSelector((state)=>state.common.cstCo);
     const [ymd, setYmd] = useState(getYMD(new Date()));
@@ -43,9 +43,11 @@ export default function DailyReportScreen({navigation}) {
             const unApprovedList = result.filter(el => ["R", "P"].includes(el.APVYN));
             // 이슈 있는 항목
             const issuedList = result.filter(el => el.REQCNT > 0);
+            console.log(unApprovedList.length);
+            console.log(issuedList.length);
             setDatas(result);
             setIsBtnDisabled(unApprovedList.length == 0)
-            setIssueCnt(issuedList.length)
+            dispatch(setIssueCnt({cnt:issuedList.length}));
         }).catch(function (error) {
             console.log(error);
             alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
@@ -53,7 +55,7 @@ export default function DailyReportScreen({navigation}) {
     }
     useEffect(()=>{
         DailyReport1();
-    }, [cstCo, ymd])
+    }, [cstCo, ymd, selectedKey])
     const changeDay = (cls) =>{
         const date = new Date(ymd.date)
         if(cls == "prev"){
@@ -115,7 +117,7 @@ export default function DailyReportScreen({navigation}) {
                         (selectedKey == 0)?
                             datas.map((el, idx)=><Item key={idx} data={el} ymd={ymd.ymd} navigator={navigation} />)
                         :
-                            <ReqChangeWork issued = {datas}/>
+                            <ReqChangeWork ymd={ymd.ymd} cstCo={cstCo}/>
                             //<ReqChangeWork issued = {datas.filter(el => el.REQCNT > 0)}/>
                         // (
                         //     (datas.filter(el => el.REQCNT > 0).length > 0) ? (

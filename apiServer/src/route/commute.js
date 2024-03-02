@@ -5,7 +5,7 @@ const {execSql} = require("../utils/excuteSql");
 const dotenv = require('dotenv');
 const { jobChk, jobChk2 } = require('../query/auth');
 const { monthCstSlySearch } = require('../query/workResult');
-const { insertManualJobChk, daySchedule, reqCommuteChange, initCommuteChange, getReqCommuteList, updateJobReq, updateDayJob, getDAYJOBREQ } = require('../query/commute');
+const { insertManualJobChk, daySchedule, reqCommuteChange, initCommuteChange, getReqCommuteList, updateJobReq, updateDayJob, getDAYJOBREQ, getReqCommuteListForDay, insertPLYADAYJOB, updateJobReqAbsence } = require('../query/commute');
 const { reverseGeocode } = require('../utils/kakao');
 dotenv.config();
 
@@ -164,21 +164,39 @@ router.get("/getReqCommuteList", async (req,res,next)=>{
     }
 })
 
+router.get("/getReqCommuteListForDay", async(req, res, next) => {
+    console.log("GET commute.getReqCommuteListForDay - 점주가 일일 보고서에서 이슈 보기 탭 클릭");
+    try {
+        const { ymd, cstCo, userId } = req.query;
+        const result = await execSql(getReqCommuteListForDay, {ymd, cstCo, userId});
+        const data = {dayReqList:result.recordset, resultCode:"00"};
+        res.status(200).json(data);
+    } catch (error) {
+        console.log(error.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+})
+
 
 router.post("/albaWorkChangeProcess", async (req,res,next)=>{
     console.log("GET commute.albaWorkChangeProcess - 점주가 알바 근무 수정 승인 거절")
     try {
-        const { reqStat, userId, reqNo } = req.body;
-        console.log(reqStat, userId, reqNo);
-        const result = await execSql(updateJobReq, {reqStat, userId, reqNo});
-        
-        if(result.rowsAffected[0] == 1){
-            if(reqStat == "A")await execSql(updateDayJob, {userId, reqNo, apvYn:'A'});
+        const { reqStat, userId, reqNo, jobNo} = req.body;
+        console.log(reqStat, userId, reqNo, jobNo);
+        if(jobNo > 0){                          // 결근이 아닐때
+            const result = await execSql(updateJobReq, {reqStat, userId, reqNo});
+            if(result.rowsAffected[0] == 1){    // 승인시 PLYADAYJOB 추가 update
+                if(reqStat == "A")await execSql(updateDayJob, {userId, reqNo, apvYn:'A'});
+            }
+        }else{                                  // 결근일때
+            if(reqStat == "A"){                 // 승인 - PLYADAYJOB insert 후 PLYADAYJOBREQ에 JOBNO, reqStat 업데이트
+                const rslt = await execSql(insertPLYADAYJOB, {userId, reqNo});
+                await execSql(updateJobReqAbsence, {reqStat, userId, reqNo, jobNo:rslt.recordset[0].JOBNO});
+            }else{                              // 거절
+                const result = await execSql(updateJobReq, {reqStat, userId, reqNo});
+            }
         }
 
-        //const result = await execSql(getReqCommuteList, {userId});
-        //const data = {reqList:result.recordset, resultCode:"00"};
-        //console.log(data)
         res.status(200).json({resultCode:"00"});
     } catch (error) {
         console.log(error.message)

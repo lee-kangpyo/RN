@@ -1,7 +1,7 @@
-import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import { useCommuteChangeList } from '../../hooks/useReqCommuteList';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { YYYYMMDD2Obj, YYYYMMDD_KOR_2Obj } from '../../util/moment';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { useIsFocused } from '@react-navigation/native';
@@ -9,73 +9,54 @@ import { theme } from '../../util/color';
 import SearchBar from '../../components/SearchBar';
 import Checkbox from '../../components/common/CheckBox';
 import { HTTP } from '../../util/http';
+import { setIssueCnt } from '../../../redux/slices/dailyReport';
 
-export default function ReqChangeWork({issued}) {
-    const jobNos = issued.map(el => el.JOBNO);
+export default function ReqChangeWork({ymd, cstCo}) {
+    //const jobNos = issued.map(el => el.JOBNO);
     const userId = useSelector((state) => state.login.userId);
-    const data = useSelector((state) => state.owner.reqList)
+    //const data = useSelector((state) => state.owner.reqList)
     const isFocused = useIsFocused();
-    const getChageList = useCommuteChangeList(userId);
-    const [isChecked, setChecked] = useState(false);
-    const [inputText, setInputText] = useState("")    
-    const [searchWrd, setsearchWrd] = useState("");
+    //const getChageList = useCommuteChangeList(userId);
     const [reqList, setReqList] = useState([]);
-    const [cstList, setCstList] = useState([]);
+    //const [cstList, setCstList] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const dispatch = useDispatch();
 
-    console.log(data)
+    const getReqCommuteListForDay = async () => {
+        setIsLoading(true);
+        await HTTP("GET", "/api/v1/commute/getReqCommuteListForDay", {userId, ymd, cstCo})
+        .then((res)=>{
+            console.log(res.data.dayReqList)
+            dispatch(setIssueCnt({cnt:res.data.dayReqList.filter(el => el.REQSTAT == "R").length}));
+            setReqList(res.data.dayReqList);
+            setIsLoading(false);
+        }).catch(function (error) {
+            console.log(error);
+            alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
+        })
+    }
 
     useEffect(() => {
-        getChageList();
-    }, [isFocused]);
+        getReqCommuteListForDay();
+    }, [isFocused, ymd, cstCo]);
 
-    useEffect(()=>{
-        const cstSet = new Set(reqList.map(el => el.CSTNA));
-        setCstList([...cstSet]);
-    }, [reqList])
-
-
-    useEffect(()=>{
-        handleReqList(searchWrd);
-    }, [isChecked])
-
-    useEffect(()=>{
-        handleReqList(searchWrd);
-    }, [data])
-    
-    const onSearch = () => {
-        const text = inputText.trim();
-        setsearchWrd(text);
-        handleReqList(text);
-    }
-
-    const onCloseTap = () => {
-        setInputText("");
-        handleReqList("");
-    }
+    // useEffect(()=>{
+    //     const cstSet = new Set(reqList.map(el => el.CSTNA));
+    //     setCstList([...cstSet]);
+    // }, [reqList])
 
     const onAprovDeny = () => {
-        getChageList();
+        getReqCommuteListForDay();
     }
     
-    const handleReqList = (word) => {
-        if(word == ""){
-            if(isChecked){
-                setReqList(data.filter((el)=>el.REQSTAT == "R"))
-            }else{
-                setReqList(data);
-            }
-        }else{
-            if(isChecked){
-                setReqList(data.filter((el)=>el.REQSTAT == "R" && el.USERNA.includes(word)))
-            }else{
-                setReqList(data.filter((el)=>el.USERNA.includes(word)));
-            }
-        }
-    }
     return (
         <>
             {
-                (reqList.length == 0)?
+                (isLoading)?
+                    <View style={styles.noData}>
+                        <ActivityIndicator />
+                    </View>
+                :(reqList.length == 0)?
                 <View style={styles.noData}>
                     <Text>데이터가 없습니다.</Text>
                 </View>
@@ -86,8 +67,10 @@ export default function ReqChangeWork({issued}) {
                             <View>
                                 <View style={{paddingHorizontal:10, paddingBottom:15}}>
                             {
-                                reqList.filter(item => jobNos.includes(item.JOBNO)).map(
-                                    (el, idx)=><ReqItem key={idx} data={el} refresh={()=>onAprovDeny()}/>
+                                reqList.map(
+                                    (el, idx)=>{
+                                        return <ReqItem key={idx} data={el} refresh={()=>onAprovDeny()}/>
+                                    }
                                 )
                                   
                             // cstList.map((cstNa, idx) => {
@@ -132,7 +115,8 @@ const ReqItem = ({data, refresh}) => {
     const cofirm = async (reqStat) => reqCofirm(reqStat, data);
 
     const reqCofirm = async (reqStat, data) => {
-        await HTTP("POST", "/api/v1/commute/albaWorkChangeProcess", {reqStat:reqStat, userId:userId, reqNo:data.REQNO})
+        const params = {reqStat:reqStat, userId:userId, reqNo:data.REQNO, jobNo:data.JOBNO};
+        await HTTP("POST", "/api/v1/commute/albaWorkChangeProcess", params)
         .then((res)=>{
             refresh();
         }).catch(function (error) {
