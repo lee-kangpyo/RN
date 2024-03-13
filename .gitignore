@@ -88,6 +88,12 @@ apiServer/logs
 apiServer/.env
 apiServer/build
 
+pushServer/static/jdbc.js
+pushServer/node_modules
+pushServer/logs
+pushServer/.env
+pushServer/build
+
 taskManager/static/jdbc.js
 taskManager/node_modules
 taskManager/logs
