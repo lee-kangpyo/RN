@@ -256,7 +256,7 @@ router.post("/v1/changeCrew", async (req, res, next)=>{
             const result = await execSql(changeCrewRTCLAprov, {userId:userId, cstCo:cstCo, rtCl:rtCl, wage:"9860"}) 
             res.status(200).json({result:result.rowsAffected[0], resultCode:"00"});
         }else{
-            const result = await execSql(changeCrewRTCL, {userId:userId, cstCo:cstCo, rtCl:rtCl, wage:wage}) 
+            const result = await execSql(changeCrewRTCL, {userId:userId, cstCo:cstCo, rtCl:rtCl}) 
             res.status(200).json({result:result.rowsAffected[0], resultCode:"00"});
         }
     } catch (error) {
