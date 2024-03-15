@@ -92,8 +92,6 @@ async function sendReqCommute(data){
         }
     }
     })();
-
-    
 }
 
 
