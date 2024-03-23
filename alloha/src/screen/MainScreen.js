@@ -6,7 +6,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, {useEffect, useRef, useState} from 'react';
 import SearchAddress from '../components/SearchAddress';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import ScheduleScreenToAlba from './ScheduleScreenToAlba';
 import EtcCrewScreen from './EtcCrewScreen';
 import { useDispatch, useSelector } from 'react-redux';
@@ -41,12 +41,14 @@ import CommuteCheckChangeScreen from './CommuteCheckChangeScreen';
 import ReqChangeWorkScreen from './ReqChangeWorkScreen';
 import DailyReportScreen from './DailyReportScreen';
 import DailyReportDetilaScreen from './DailyReportDetilaScreen';
+import { setScreen } from '../../redux/slices/navigate';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 export default function MainScreen() {
-  const [userInfo, setUserInfo] = useState({})
+  const navigation = useNavigation();
+  const [userInfo, setUserInfo] = useState({});
 
   const loadData = async () => {
     if(!userInfo.id){
@@ -68,30 +70,38 @@ export default function MainScreen() {
 
   return (
     <View style={{flex:1, justifyContent:"center"}}> 
-    <NotificationListener />
-    {
-      
-      (userInfo.crewYn == 'Y')?
-        
-        <CrewScreen/>
-      :
-      (userInfo.ownrYn == "Y")?
-        <OwnrScreen userInfo={userInfo} />
-      :  
-        null
-    }
+      <NotificationListener />
+      {
+        (userInfo.crewYn == 'Y')?
+          <CrewScreen/>
+        :
+        (userInfo.ownrYn == "Y")?
+          <OwnrScreen userInfo={userInfo} />
+        :  
+          null
+      }
     </View>
   );
 }
 
-function OwnrScreen({userInfo}){
+function OwnrScreen({}){
+  const dispatch = useDispatch();
+  const screen = useSelector((state) => state.navigate.screen);
   const owrBadge = useSelector((state) => state.owner.reqAlbaChangeCnt);
   const [refresh, setRefresh] = useState("false")
   const userId = useSelector((state) => state.login.userId);
   const navigation = useNavigation();
   const getChageList = useCommuteChangeList(userId)
+
+  useEffect(()=>{
+    if(screen) {
+      navigation.navigate("hidden",{screen:screen, params:{"asdf":"zxcv"}})
+      dispatch(setScreen({screen:null}));
+    }
+  }, [screen])
   
   useEffect(()=>{
+    //
     getChageList();
   }, [])
 
@@ -131,8 +141,8 @@ function OwnrScreen({userInfo}){
       
       <Tab.Screen name="etc" options={{ headerShown: false, }}>
         {() => (
-          <Stack.Navigator initialRouteName="etc3">
-            <Stack.Screen name="etc3" component={EtcScreen} options={{ tabBarLabel: '기타' }}/>
+          <Stack.Navigator initialRouteName="etcScreen">
+            <Stack.Screen name="etcScreen" component={EtcScreen} options={{ tabBarLabel: '기타' }}/>
             <Stack.Screen name="ManageCrew" component={ManageCrewScreen} options={{ tabBarLabel: '알바관리' }}/>
             <Stack.Screen name="modifyCrew" component={ModifyCrewScreen} options={{ tabBarLabel: '알바수정' }}/>
             <Stack.Screen name="storeList" options={storeOption} backBehavior={"none"}>
@@ -152,7 +162,6 @@ function OwnrScreen({userInfo}){
           </Stack.Navigator>
         )}
       </Tab.Screen>
-
     </Tab.Navigator>
   )
 }

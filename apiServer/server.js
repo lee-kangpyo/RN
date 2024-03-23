@@ -17,6 +17,16 @@ app.use(express.json());
 const pollingInterval = 5000; // 5초
 setInterval(sendBadge, pollingInterval);
 
+app.get("/", async (req, res, next)=>{
+  console.log("GET test");
+  try {
+      res.status(200).json({result:"00", resultCode:"00"});
+  } catch (error) {
+      console.log(error.message)
+      res.status(200).json({ resultCode:"-1"});
+  }
+})
+
 app.use('/api', apiRouter);
 app.use('/push', pushRouter);
 

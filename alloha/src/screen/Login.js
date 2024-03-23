@@ -19,6 +19,7 @@ import { URL } from "@env";
 import uuid from 'react-native-uuid';
 import * as SecureStore from 'expo-secure-store';
 import { setOwnerCstco } from '../../redux/slices/common';
+import PushTest from '../components/test/PushTest';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -58,6 +59,7 @@ export default function Login({ navigation }) {
         <StatusBar style="auto" />
         
         <View style={styles.titleArea}>
+            <PushTest />
             <Text style={styles.title}>알로하</Text>
             <Text>Ver 0.01</Text>
         </View>

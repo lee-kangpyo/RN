@@ -79,14 +79,6 @@ export default function PushPermission() {
     registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
       setNotification(notification);
-
-      // // type 속성이 있는 경우 해당 유형을 체크
-      // const notificationType = notification?.request?.content?.data?.type;
-      // if (notificationType === 'owner-badge') {
-      //   // owner-badge 유형에 대한 추가 처리
-      //   console.log('owner-badge 푸시 알림을 받았습니다.');
-      // }
-
     });
 
     responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
