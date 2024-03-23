@@ -12,6 +12,7 @@ import { AntDesign } from '@expo/vector-icons';
 import CustomTap from '../components/common/CustomTap';
 import ReqChangeWork from '../components/daily/ReqChangeWork';
 import { setIssueCnt } from '../../redux/slices/dailyReport';
+import PushTest from '../components/test/PushTest';
 
 export default function DailyReportScreen({navigation}) {
     const getYMD = (date) => {
@@ -97,6 +98,7 @@ export default function DailyReportScreen({navigation}) {
         <>
         <View style={styles.container}>
             <StatusBar />
+            <PushTest />
             <StoreSelectBoxWithTitle titleText={"일일 보고서"} titleflex={4} selectBoxFlex={8} />
             <View style={[styles.row, {marginTop:10}]}>
                 <TouchableOpacity onPress={()=>changeDay("prev")}>

@@ -17,7 +17,8 @@ const resultRouter = require("../route/result")
 const palRouter = require("../route/profitAndLoss")
 const boardRouter = require("../route/board")
 const commuteRouter = require("../route/commute")
-const dailyReportRouter = require("../route/dailyReport")
+const dailyReportRouter = require("../route/dailyReport");
+const { getTemplatePushMessage, getSenderInfo, getCstOwnrInfo, pushMsgSend } = require('../query/push');
 
 router.get("/v1/login", async(req, res, next)=>{
     const {id, passWord} = req.query;
@@ -214,17 +215,34 @@ router.post("/v1/modifyStore", async (req, res, next) => {
       }
 })
 
+const sendPush = async (cstCo, userId) => {
+    const msgId = 'A0110_01';
+    const push = await execSql(getTemplatePushMessage, {msgId});
+    const push2 = await execSql(getSenderInfo, {userId:userId});
+    const push3 = await execSql(getCstOwnrInfo, {cstCo:cstCo});
+    const sender = push2.recordset[0];
+    const receiver = push3.recordset[0];
+    const msg = push.recordset[0].CONTENT.replace('{userNa}', sender.USERNA).replace("{cstNa}", receiver.CSTNA);
+    const params = {cstCo, sendId:userId, reciveId:receiver.USERID, msgId, content:msg,param:"route=etc, screen=ManageCrew"};
+    await execSql(pushMsgSend, params);
+}
+
 // 알바생 점포 지원
 router.post("/v1/applyStoreListCrew", async (req, res, next) => {
+    console.log("########## api.applyStoreListCrew - 알바생 점포 지원 호출됨.");
     try{
         const {cstCo, userId, iUserId, roleCl} = req.body;
+        console.log(cstCo, userId, iUserId, roleCl);
         const result = await execSql(insertMCSTUSER, {cstCo:cstCo, userId:userId, iUserId:iUserId, roleCl:roleCl, rtCl:"R"})
-        console.log({result:result.recordset, resultCode:"00"})
+        sendPush(cstCo, userId);
         res.status(200).json({result:result.recordset, resultCode:"00"});
     } catch (err) {
         console.log(err.message)
         res.status(200).json({ resultCode:"-1"});
+    } finally {
+        console.log("########## api.applyStoreListCrew - 알바생 점포 지원 끝.");
     }
+    
 })
 
 router.get("/v1/searchCrewList", async (req, res, next) => {
