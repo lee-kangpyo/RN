@@ -19,8 +19,8 @@ const getCstOwnrInfo = `
 `
 
 const pushMsgSend = `
-    INSERT INTO PLYGMSGSEND (CSTCO, RECIVEID, MSGID, CONTENT, SENDID, CREATEDATE, PARAM )
-    VALUES (@cstCo, @reciveId, @msgId, @content, @sendId, GETDATE(), @param)
+    INSERT INTO PLYGMSGSEND (CSTCO, RECIVEID, MSGID, CONTENT, SENDID, CREATEDATE, LINK )
+    VALUES (@cstCo, @reciveId, @msgId, @content, @sendId, GETDATE(), @link)
 `
 
 module.exports = { getTemplatePushMessage, getSenderInfo, getCstOwnrInfo, pushMsgSend }
