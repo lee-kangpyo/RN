@@ -11,7 +11,7 @@ const searchSendTable = `
                  ELSE '00' END STAT,
             GETDATE() SENDDATE,
             a.CREATEDATE,
-            a.PARAM
+            a.LINK
     from PLYGMSGSEND a
     left join PLYMUSER b On a.RECIVEID = b.USERID
 `

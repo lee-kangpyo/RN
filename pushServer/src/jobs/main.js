@@ -18,7 +18,7 @@ async function main () {
             //메시지 셋팅
             pushList.forEach(el => {
               const msg = {to:`ExponentPushToken[${el.TOKEN}]`, body:el.CONTENT};
-              if(el.PARAM) msg.data = parseJSON(el.PARAM);
+              if(el.LINK) msg.data = {url:el.LINK};
               messages.push(msg);
             });
             console.log(messages);
