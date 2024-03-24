@@ -21,7 +21,7 @@ const delSendTable = `
 `
 
 const insertResultTable = `
-    insert into PLYGMSGRESULT (YMD, CSTCO, SENDID, RECIVEID, TOKEN, MSGID, CONTENT, STAT, SENDDATE, PARAM, CREATEDATE)
+    insert into PLYGMSGRESULT (YMD, CSTCO, SENDID, RECIVEID, TOKEN, MSGID, CONTENT, STAT, SENDDATE, LINK, CREATEDATE)
     select  
              CONVERT(CHAR(8), a.CREATEDATE, 112) YMD,
             a.CSTCO, a.SENDID, isnull(a.RECIVEID, ''),
@@ -30,7 +30,7 @@ const insertResultTable = `
             CASE WHEN isnull(a.TOKEN, b.TOKEN) is null or isnull(a.TOKEN, b.TOKEN) = '' THEN '01'
             ELSE '00' END STAT,
             GETDATE() SENDDATE,
-            a.PARAM,
+            a.LINK,
             a.CREATEDATE
     from PLYGMSGSEND a
     left join PLYMUSER b On a.RECIVEID = b.USERID
