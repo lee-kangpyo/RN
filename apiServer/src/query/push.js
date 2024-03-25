@@ -5,8 +5,8 @@ const getTemplatePushMessage = `
     and CONVERT(CHAR(8), GETDATE(), 112) BETWEEN YMDFR AND YMDTO
     and MSGID = @msgId
 `
-const getSenderInfo = `
-    SELECT USERNA, HPNO, EMAIL, TOKEN from PLYMUSER WHERE USEYN = 'Y' AND USERID = @userId
+const getTriggerInfo = `
+    SELECT USERNA, USERID, HPNO, EMAIL, TOKEN from PLYMUSER WHERE USEYN = 'Y' AND USERID = @userId
 `
 
 const getCstOwnrInfo = `
@@ -23,4 +23,4 @@ const pushMsgSend = `
     VALUES (@cstCo, @reciveId, @msgId, @content, @sendId, GETDATE(), @link)
 `
 
-module.exports = { getTemplatePushMessage, getSenderInfo, getCstOwnrInfo, pushMsgSend }
+module.exports = { getTemplatePushMessage, getTriggerInfo, getCstOwnrInfo, pushMsgSend }

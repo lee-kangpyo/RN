@@ -76,8 +76,6 @@ const prefix = Linking.createURL('/');
 const Stack = createNativeStackNavigator();
 const linking = {
   prefixes: [prefix],
-  //initialRouteName: "main",
-  
   config: {
     screens: {
       main: {
@@ -88,6 +86,7 @@ const linking = {
               ManageCrew:"/owner/ManageCrew"
             }
           },
+          manageStore:"/crew/manageStore"
         },
       },
     },
