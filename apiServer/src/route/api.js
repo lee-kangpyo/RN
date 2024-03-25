@@ -19,7 +19,7 @@ const boardRouter = require("../route/board")
 const commuteRouter = require("../route/commute")
 const dailyReportRouter = require("../route/dailyReport");
 const { getTemplatePushMessage, getSenderInfo, getCstOwnrInfo, pushMsgSend } = require('../query/push');
-const { sendPush_A0110_01 } = require('../utils/templatePush');
+const { sendPush_A0110_01, sendPush_A0130_01, sendPush_A0220_01 } = require('../utils/templatePush');
 
 router.get("/v1/login", async(req, res, next)=>{
     const {id, passWord} = req.query;
@@ -259,11 +259,18 @@ router.post("/v1/changeCrewName", async (req, res, next) => {
 router.post("/v1/changeCrew", async (req, res, next)=>{
     try {
         const {cstCo, userId, rtCl} = req.body;
+        console.log(userId);
         if(rtCl == "N"){
             const result = await execSql(changeCrewRTCLAprov, {userId:userId, cstCo:cstCo, rtCl:rtCl, wage:"9860"}) 
+            sendPush_A0130_01(cstCo, userId, "승인")
             res.status(200).json({result:result.rowsAffected[0], resultCode:"00"});
         }else{
             const result = await execSql(changeCrewRTCL, {userId:userId, cstCo:cstCo, rtCl:rtCl}) 
+            if(rtCl == "D"){
+                sendPush_A0130_01(cstCo, userId, "불인")
+            }else if(rtCl == "Y"){
+                sendPush_A0220_01(cstCo, userId)
+            }
             res.status(200).json({result:result.rowsAffected[0], resultCode:"00"});
         }
     } catch (error) {
