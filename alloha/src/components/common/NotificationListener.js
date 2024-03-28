@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useCommuteChangeList } from '../../hooks/useReqCommuteList';
 import { useNavigation } from '@react-navigation/native';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { setScreen } from '../../../redux/slices/navigate';
 
 function NotificationListener() {
     const navigation = useNavigation()
@@ -25,10 +24,6 @@ function NotificationListener() {
             if(data.type == "owner-badge"){
                 getChageList();
             }
-            // console.log("addNotificationResponseReceivedListener")
-            // if(data.screen){
-            //     dispatch(setScreen({screen:data.screen}));
-            // }
         });
         // Clean-up function
         return () => {

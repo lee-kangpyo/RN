@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import ScheduleByAlba from '../components/schedule/ScheduleByAlba';
 import { getStartAndEndOfWeek } from '../util/moment';
 import MyStorePicker from '../components/alba/MyStorePicker';
+import PushTest from '../components/test/PushTest';
 
 
 
@@ -32,6 +33,7 @@ export default function ScheduleScreenToAlba({navigation}) {
                 </View>
             :
                 <View style={styles.container}>
+                    <PushTest />
                     <MyStorePicker userId={userId} />
                     <ScheduleByAlba cstCo={sCstCo} userId={userId} ymdFr={thisSunday} ymdTo={thisSaturday}/>
                 </View>
