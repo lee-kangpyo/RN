@@ -7,6 +7,7 @@ const { jobChk, jobChk2 } = require('../query/auth');
 const { monthCstSlySearch } = require('../query/workResult');
 const { insertManualJobChk, daySchedule, reqCommuteChange, initCommuteChange, getReqCommuteList, updateJobReq, updateDayJob, getDAYJOBREQ, getReqCommuteListForDay, insertPLYADAYJOB, updateJobReqAbsence } = require('../query/commute');
 const { reverseGeocode } = require('../utils/kakao');
+const { sendPush_GoToWork, sendPush_GetOffWork } = require('../utils/templatePush');
 dotenv.config();
 
 function getDate() {
@@ -80,7 +81,13 @@ router.post("/insertJobChk", async (req,res,next)=>{
     console.log("POST commute.insertJobChk")
     try {
         const {cstCo, userId, lat, lon, chkYn, apvYn, jobCl} = req.body;
+        console.log(cstCo, userId, lat, lon, chkYn, apvYn, jobCl);
         const result = await execSql(insertManualJobChk, {userId:userId, cstCo:cstCo, lat:lat, lon:lon, chkYn:chkYn, apvYn:apvYn, jobCl:jobCl});
+        if(chkYn == 'I'){
+            sendPush_GoToWork(cstCo, userId);
+        }else if(chkYn == 'X'){
+            sendPush_GetOffWork(cstCo, userId);
+        }
         res.status(200).json({result:result.recordset, resultCode:"00"});
     } catch (error) {
         console.log(error.message)

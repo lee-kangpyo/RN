@@ -41,7 +41,6 @@ import CommuteCheckChangeScreen from './CommuteCheckChangeScreen';
 import ReqChangeWorkScreen from './ReqChangeWorkScreen';
 import DailyReportScreen from './DailyReportScreen';
 import DailyReportDetilaScreen from './DailyReportDetilaScreen';
-import { setScreen } from '../../redux/slices/navigate';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -85,8 +84,6 @@ export default function MainScreen() {
 }
 
 function OwnrScreen({}){
-  const dispatch = useDispatch();
-  const screen = useSelector((state) => state.navigate.screen);
   const owrBadge = useSelector((state) => state.owner.reqAlbaChangeCnt);
   const [refresh, setRefresh] = useState("false")
   const userId = useSelector((state) => state.login.userId);
@@ -94,14 +91,6 @@ function OwnrScreen({}){
   const getChageList = useCommuteChangeList(userId)
 
   useEffect(()=>{
-    if(screen) {
-      navigation.navigate("hidden",{screen:screen, params:{"asdf":"zxcv"}})
-      dispatch(setScreen({screen:null}));
-    }
-  }, [screen])
-  
-  useEffect(()=>{
-    //
     getChageList();
   }, [])
 

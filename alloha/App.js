@@ -28,6 +28,7 @@ import Notification from './src/components/Notification';
 
 import * as Linking from 'expo-linking';
 import * as Notifications from 'expo-notifications';
+import { config } from './src/util/deepLink';
 
 // 태스크 매니저
 TaskManager.defineTask(LOCATION_TASK,  async ({ data, error } ) => {
@@ -70,52 +71,28 @@ TaskManager.defineTask(LOCATION_TASK,  async ({ data, error } ) => {
   }
 });
 
-
-
 const prefix = Linking.createURL('/');
 const Stack = createNativeStackNavigator();
 const linking = {
   prefixes: [prefix],
-  config: {
-    screens: {
-      main: {
-        screens: {
-          etc:{
-            initialRouteName: "etcScreen",
-            screens:{
-              ManageCrew:"/owner/ManageCrew"
-            }
-          },
-          manageStore:"/crew/manageStore"
-        },
-      },
-    },
-  },
+  config: config,
   async getInitialURL() {
     let url = await Linking.getInitialURL();
-
-    if (url != null) {
-      return url;
-    }
-
+    if (url != null) { return url; };
     const response = await Notifications.getLastNotificationResponseAsync();
     url = response?.notification.request.content.data.url;
-
     return url;
   },
   subscribe(listener) {
     const onReceiveURL = ({url : url}) => listener(url);
-
     // Listen to incoming links from deep linking
     Linking.addEventListener('url', onReceiveURL);
-
     // Listen to expo push notifications
     const subscription = Notifications.addNotificationResponseReceivedListener(response => {
       const url = response.notification.request.content.data.url;
       //listener(prefix + "room"); // 우선 최초화면으로 먼저 이동합니다. 이렇게 하지 않으면, 변수만 다른(:roomId) 동일한 화면이(ChatRoom) 이미 열려있던 경우, deep link로 인한 화면이동이 발생하지 않습니다.
       listener(prefix + url); // 원하는 화면으로 이동합니다.
     });
-
     return () => {
       // Clean up the event listeners
       Linking.removeEventListener('url', onReceiveURL);
