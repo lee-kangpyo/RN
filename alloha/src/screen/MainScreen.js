@@ -41,6 +41,7 @@ import CommuteCheckChangeScreen from './CommuteCheckChangeScreen';
 import ReqChangeWorkScreen from './ReqChangeWorkScreen';
 import DailyReportScreen from './DailyReportScreen';
 import DailyReportDetilaScreen from './DailyReportDetilaScreen';
+import HomeOwnerScreen from './HomeOwnerScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -121,12 +122,12 @@ function OwnrScreen({}){
         tabBarInactiveTintColor: 'gray',
       })}
     >
+      <Tab.Screen name="Home" component={HomeStack} options={{ headerShown:false, tabBarLabel: '홈'}}/>
       <Tab.Screen name="daylyReport" component={DailyStack} options={{ headerShown:false, tabBarLabel: '일일보고서'}}/>
       <Tab.Screen name="schedule" component={ScheduleStack} options={{ headerShown:false, tabBarLabel: '근무계획'}}/>
       <Tab.Screen name="work" component={WorkStack} options={{ headerShown:false, tabBarLabel: '근무결과', tabBarBadge: owrBadge, }}/>
       <Tab.Screen name="result" component={ResultStack} options={{ headerShown:false, tabBarLabel: '결과현황표'}}/>
       <Tab.Screen name="profitAndLoss" component={ProfitAndLossScreen} options={{ tabBarLabel: '매출현황' }}/>
-      <Tab.Screen name="qna" component={QnAScreen} options={{ tabBarLabel: '질문' }}/>
       
       <Tab.Screen name="etc" options={{ headerShown: false, }}>
         {() => (
@@ -142,6 +143,7 @@ function OwnrScreen({}){
             <Stack.Screen  name="SearchAddress" component={SearchAddress} options={{title:"주소 검색"}}/>
             <Stack.Screen  name="community" component={ComunityScreen} options={{title:"커뮤니티"}}/>
             <Stack.Screen  name="customerService" component={CustomerServiceScreen} options={{title:"채팅테스트"}}/>
+            <Stack.Screen  name="qna" component={QnAScreen} options={{title:"채팅테스트"}}/>
             {() => ( // 안쓰는 급여 페이지
               <Stack.Navigator>
                 <Stack.Screen name="WageList" component={WageScreen} options={{ title: '급여' }} initialParams={{userType:"owner"}} />
@@ -154,7 +156,13 @@ function OwnrScreen({}){
     </Tab.Navigator>
   )
 }
-
+function HomeStack(){
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="HomeScreen" component={HomeOwnerScreen} options={{headerShown:false}}/>
+    </Stack.Navigator>
+  )
+}
 function DailyStack(){
   return(
     <Stack.Navigator>
@@ -266,7 +274,7 @@ const setTabBarIcon = (focused, color, size, name) =>{
     iconName = 'file-invoice-dollar';
     icon = "FontAwesome5"
   } else if (name === 'community'){
-    iconName = focused ? 'ios-people-sharp' : 'ios-people-outline';
+    iconName = focused ? 'people-sharp' : 'people-outline';
     icon = "Ionicons"
   }else if (name === 'manageStore'){
     iconName = focused ? 'store' : 'store-outline';
@@ -275,7 +283,7 @@ const setTabBarIcon = (focused, color, size, name) =>{
     iconName = focused ? 'ellipsis-vertical-sharp' : 'ellipsis-vertical-outline';
     icon = "Ionicons"
   }else if (name === "schedule"){
-    iconName = focused ? 'ios-timer' : 'ios-timer-outline';
+    iconName = focused ? 'timer' : 'timer-outline';
     icon = "Ionicons"
   }else if(name === "work"){
     iconName = 'running';

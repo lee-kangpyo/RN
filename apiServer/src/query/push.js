@@ -24,7 +24,7 @@ const pushMsgSend = `
 `
 
 const commuteInfo = `
-    select top 1 usr.USERNA , cst.CSTNA, rcv.USERID receiveId, a.CHkNO, c.STARTTIME schStartTime, c.ENDTIME schEndTime, b.STARTTIME chkStartTime, b.ENDTIME chkEndTime
+    select top 1 usr.USERNA , cst.CSTNA, rcv.USERID receiveId, a.CHkNO, c.STARTTIME schStartTime, c.ENDTIME schEndTime, b.STARTTIME chkStartTime, b.ENDTIME chkEndTime, b.JOBDURE
     from PLYADAYJOB b 
     inner join PLYMUSER usr On b.USERID = usr.USERID
     inner join PLYMCST cst On b.CSTCO = cst.CSTCO

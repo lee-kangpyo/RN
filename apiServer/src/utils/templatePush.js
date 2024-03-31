@@ -235,7 +235,7 @@ const sendPush_GetOffWork = async (cstCo, userId) => {
                 }
                 if(ownr){
                     const templateMsg2 = await getMessageTemplate(ownr.msgId);
-                    msg = templateMsg2.CONTENT.replace("{userNa}", info.USERNA).replace("{cstNa}", info.CSTNA).replace("{chkTime}", chkTime).replace("{schEndTime}", schEndTime);
+                    msg = templateMsg2.CONTENT.replace("{userNa}", info.USERNA).replace("{cstNa}", info.CSTNA).replace("{chkTime}", chkTime).replace("{schEndTime}", schEndTime).replace("{dure}", info.JOBDURE);
                     insertSql({cstCo, sendId:userId, reciveId:info.receiveId, msgId:templateMsg2.MSGID, content:msg, link: templateMsg2.LINK});
                 }
             }
