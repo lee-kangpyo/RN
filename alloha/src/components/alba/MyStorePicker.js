@@ -44,13 +44,12 @@ export default function MyStorePicker({width="100%", borderColor=theme.purple, u
                     style={{fontSize:"16",}}
                     selectedValue={sCstCo}
                     onValueChange={ (itemValue, itemIndex) =>{
-                        const data = myStores.filter((el)=>{return el.CSTCO === itemValue})[0];
+                        const data = myStores.filter((el)=>{return el.CSTCO == itemValue})[0];
                         dispatch(setSelectedStore({data:data}));
-                    }
-                    }
-                    >
+                    }}
+                >
                     {
-                    myStores.map((el, idx)=>{
+                        myStores.map((el, idx)=>{
                             return (el.RTCL === "N")
                                 ?
                                     <Picker.Item key={idx} label={el.CSTNA} value={el.CSTCO}/>

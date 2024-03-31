@@ -17,6 +17,20 @@
     ],
     "plugins": [
       [
+        "expo-font",
+        {
+          "SUIT-Bold": ["./assets/fonts/SUIT-Bold.otf"],
+          "SUIT-ExtraBold": ["./assets/fonts/SUIT-ExtraBold.otf"],
+          "SUIT-ExtraLight": ["./assets/fonts/SUIT-ExtraLight.otf"],
+          "SUIT-Heavy": ["./assets/fonts/SUIT-Heavy.otf"],
+          "SUIT-Light": ["./assets/fonts/SUIT-Light.otf"],
+          "SUIT-Medium": ["./assets/fonts/SUIT-Medium.otf"],
+          "SUIT-Regular": ["./assets/fonts/SUIT-Regular.otf"],
+          "SUIT-SemiBold": ["./assets/fonts/SUIT-SemiBold.otf"],
+          "SUIT-Thin": ["./assets/fonts/SUIT-Thin.otf"],
+        }
+      ],
+      [
         "expo-location",
         {
           "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location.",
@@ -84,7 +98,6 @@
       }
     },
     "owner": "akmz",
-    "sdkVersion": "49.0.0"
   },
   "name": "alloha"
 }

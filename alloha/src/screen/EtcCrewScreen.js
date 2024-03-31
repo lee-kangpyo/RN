@@ -38,7 +38,7 @@ export default function EtcCrewScreen({navigation}) {
                 <GridBox
                     text={"커뮤니티"}
                     onPress={()=>navigation.push("Comunity")}
-                    icon={{type:"Ionicons", name:"ios-people-sharp", size:48, color:"black"}}
+                    icon={{type:"Ionicons", name:"people-sharp", size:48, color:"black"}}
                 />
                 <GridBox
                     text={"준비중"}
