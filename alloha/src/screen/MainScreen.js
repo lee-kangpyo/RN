@@ -1,6 +1,6 @@
 //import * as React from 'react';
 import { Text, View, TouchableOpacity, StyleSheet, Button } from 'react-native';
-import { Ionicons, MaterialCommunityIcons, FontAwesome5, MaterialIcons   } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons, FontAwesome5, MaterialIcons, FontAwesome   } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -41,7 +41,7 @@ import CommuteCheckChangeScreen from './CommuteCheckChangeScreen';
 import ReqChangeWorkScreen from './ReqChangeWorkScreen';
 import DailyReportScreen from './DailyReportScreen';
 import DailyReportDetilaScreen from './DailyReportDetilaScreen';
-import HomeOwnerScreen from './HomeOwnerScreen';
+import HomeCrewScreen from './HomeCrewScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -122,7 +122,7 @@ function OwnrScreen({}){
         tabBarInactiveTintColor: 'gray',
       })}
     >
-      <Tab.Screen name="Home" component={HomeStack} options={{ headerShown:false, tabBarLabel: '홈'}}/>
+      
       <Tab.Screen name="daylyReport" component={DailyStack} options={{ headerShown:false, tabBarLabel: '일일보고서'}}/>
       <Tab.Screen name="schedule" component={ScheduleStack} options={{ headerShown:false, tabBarLabel: '근무계획'}}/>
       <Tab.Screen name="work" component={WorkStack} options={{ headerShown:false, tabBarLabel: '근무결과', tabBarBadge: owrBadge, }}/>
@@ -156,13 +156,7 @@ function OwnrScreen({}){
     </Tab.Navigator>
   )
 }
-function HomeStack(){
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name="HomeScreen" component={HomeOwnerScreen} options={{headerShown:false}}/>
-    </Stack.Navigator>
-  )
-}
+
 function DailyStack(){
   return(
     <Stack.Navigator>
@@ -222,6 +216,7 @@ function CrewScreen(){
         tabBarInactiveTintColor: 'gray',
       })}
     >
+      <Tab.Screen name="Home" component={HomeCrewStack} options={{ headerShown:false, tabBarLabel: '홈'}}/>
       <Tab.Screen name="schedule" component={ScheduleScreenToAlba} options={{ tabBarLabel: '주간근무계획' }}/>
       <Tab.Screen name="CommuteCheck" component={CommuteCheckStack} options={{ headerShown:false, tabBarLabel: '근무 현황' }}/>
       {/* <Tab.Screen name="Home" options={{ tabBarLabel: '출퇴근(구버전)' }} >
@@ -248,6 +243,13 @@ function CrewScreen(){
         )}
       </Tab.Screen>
     </Tab.Navigator>
+  )
+}
+function HomeCrewStack(){
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="HomeScreen" component={HomeCrewScreen} options={{headerShown:false}}/>
+    </Stack.Navigator>
   )
 }
 //<Tab.Screen name="community" component={BoardScreen} options={{ tabBarLabel: '커뮤니티' }}/>
@@ -297,6 +299,9 @@ const setTabBarIcon = (focused, color, size, name) =>{
   }else if(name ==='Wage'){
     iconName = 'dollar-sign';
     icon = "FontAwesome5"
+  }else if (name == "daylyReport"){
+    iconName = focused ? 'file-text' : 'file-text-o';
+    icon = "FontAwesome"
   }
   
 
@@ -308,6 +313,8 @@ const setTabBarIcon = (focused, color, size, name) =>{
     return <FontAwesome5 name={iconName} size={size} color={color} />;
   }else if(icon == "MaterialIcons"){
     return <MaterialIcons name={iconName} size={size} color={color} />;
+  }else if(icon == "FontAwesome"){
+    return <FontAwesome name={iconName} size={size} color={color} />;
   }
   
 }
