@@ -4,23 +4,24 @@ import React from 'react';
 import * as Progress from 'react-native-progress';
 import ProgressBar from '../common/ProgressBar';
 
-export default function TotalSalary() {
+export default function TotalSalary({data}) {
+    const progress = (data.SRATE > 100)?1:data.SRATE/100;
     return (
         <View style={styles.container}>
             <View style={[styles.row, styles.spaceBetween, {alignContent:"center", paddingBottom:10}]}>
                 <Text style={[font.mainFont,]}>3월 총 급여</Text>
                 <Image source={require('../../../assets/icons/link-arrow.png')} style={{alignSelf:"center", width:10, height:14}} />
             </View>
-            <Text style={[font.amount, {paddingBottom:20}]}>2,569,171원</Text>
-            <ProgressBar progress={0.8} marginBottom={15}/>
+            <Text style={[font.amount, {paddingBottom:20}]}>{data.SALARY.toLocaleString()}원</Text>
+            <ProgressBar progress={progress} marginBottom={15}/>
             <View style={[styles.row, {justifyContent:"space-between"}]}>
                 <View style={[styles.row, {alignItems:"center"}]}>
                     <Text style={font.goalAmtLabel}>목표금액</Text>
                     <View style={styles.pill}>
-                        <Text style={font.goalAmt}>250만원</Text>
+                        <Text style={font.goalAmt}>{data.TSALARY/10000}만원</Text>
                     </View>
                 </View>
-                <Text style={font.progress}>80%</Text>
+                <Text style={font.progress}>{data.SRATE}%</Text>
             </View>
         </View>
     );

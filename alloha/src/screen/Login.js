@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Alert, Dimensions, TouchableOpacity, TextInput, Keyboard } from 'react-native';
+import { StyleSheet, Text, View, Alert, Dimensions, TouchableOpacity, TextInput, Image, Keyboard } from 'react-native';
 import CustomBtn from '../components/CustomBtn';
 
 import React, {useCallback, useRef, useState, useMemo} from 'react';
@@ -57,11 +57,10 @@ export default function Login({ navigation }) {
     <GestureHandlerRootView style={{flex:1}}>
       <View style={styles.container}>
         <StatusBar style="auto" />
-        
         <View style={styles.titleArea}>
             <PushTest />
-            <Text style={styles.title}>알로하</Text>
-            <Text>Ver 0.01</Text>
+            <Text style={font.title}>ALOHA</Text>
+            <Text style={font.version}>Ver 0.01</Text>
         </View>
         <LoginForm navigation={navigation}/>
         <BotSheet 
@@ -145,22 +144,34 @@ const LoginForm = ({navigation}) => {
     }
   }
 
+  const idRef = useRef(null);
+  const pwRef = useRef(null);
   return (
     <View style={styles.btnGrp}>
-      <TextInput
-        style={styles.input}
-        onChangeText={(id) => setLoginInfo({...loginInfo, id })}
-        value={loginInfo.id}
-        placeholder="아이디를 입력해주세요"
-      />
-      <TextInput
-        style={styles.input}
-        onChangeText={(password) => setLoginInfo({...loginInfo, password })}
-        value={loginInfo.password}
-        secureTextEntry={true}
-        placeholder="비밀번호를 입력해 주세요"
-      />
-      <CustomBtn txt="로그인" onPress={loginAction} style={styles.btn} color='black' disabled={isLoginButtonDisabled}/>
+      <TouchableOpacity onPress={()=>idRef.current.focus()} style={styles.inputContainer} activeOpacity={1}>
+        <TextInput
+          ref={idRef}
+          style={[styles.input, font.inputLabel]}
+          onChangeText={(id) => setLoginInfo({...loginInfo, id })}
+          value={loginInfo.id}
+          placeholder="아이디를 입력해주세요"
+          placeholderTextColor={"#999999"}
+        />
+        <Image source={require('../../assets/icons/user.png')} style={styles.inputIcon} />
+      </TouchableOpacity>
+      <TouchableOpacity onPress={()=>pwRef.current.focus()} style={styles.inputContainer} activeOpacity={1}>
+        <TextInput
+          ref={pwRef}
+          style={[styles.input, font.inputLabel]}
+          onChangeText={(password) => setLoginInfo({...loginInfo, password })}
+          value={loginInfo.password}
+          secureTextEntry={true}
+          placeholder="비밀번호를 입력해 주세요"
+          placeholderTextColor={"#999999"}
+        />
+        <Image source={require('../../assets/icons/Lock.png')} style={styles.inputIcon} />
+      </TouchableOpacity>
+      <CustomBtn txt="로그인" onPress={loginAction} style={styles.btn} textStyle={font.btn} color='white' disabled={isLoginButtonDisabled}/>
     </View>
   )
 }
@@ -169,8 +180,8 @@ const LoginForm = ({navigation}) => {
 const BotSheet = ({sheetRef, snapPoints, renderBackdrop, setIsOpen, handleSnapPress, Content}) => {
   return (
     <>
-      <TouchableOpacity  onPress={() => handleSnapPress(0)}>
-        <Text style={styles.createAcc}>계정 만들기</Text>
+      <TouchableOpacity  onPress={() => handleSnapPress(0)} style={{flex:0.3}}>
+        <Text style={font.createAcc}>회원가입</Text>
       </TouchableOpacity>
       <BottomSheet
         ref={sheetRef}
@@ -187,6 +198,51 @@ const BotSheet = ({sheetRef, snapPoints, renderBackdrop, setIsOpen, handleSnapPr
     </>
   )
 }
+const font = StyleSheet.create({
+  title:{
+    fontFamily: "Tium",
+    fontSize: 40,
+    fontWeight: "700",
+    letterSpacing: -1,
+    textAlign: "center",
+    color: "#3479EF",
+    marginBottom:4
+  },
+  version:{
+    fontFamily: "SUIT-Regular",
+    fontSize: 12,
+    fontWeight: "400",
+    textAlign: "center",
+    color: "#999999"
+  },
+  inputLabel:{
+    fontFamily: "SUIT-Regular",
+    fontSize: 15,
+    fontWeight: "400",
+    letterSpacing: -1,
+    color: "#999999"
+  },
+  btn:{
+    fontFamily: "SUIT-Bold",
+    fontSize: 15,
+    fontWeight: "700",
+    fontStyle: "normal",
+    letterSpacing: -1,
+    textAlign: "center",
+    color: "#FFFFFF"
+  },
+  createAcc:{
+    fontFamily: "SUIT-Bold",
+    fontSize: 15,
+    fontWeight: "700",
+    fontStyle: "normal",
+    lineHeight: 15,
+    letterSpacing: -1,
+    textAlign: "center",
+    color: "#555555",
+    textDecorationLine:'underline',
+  },
+})
 
 const styles = StyleSheet.create({
   container: {
@@ -201,33 +257,36 @@ const styles = StyleSheet.create({
     alignItems:"center",
     justifyContent:"center",
   },
-  title:{
-    fontSize:40,
-    fontWeight:"400"
-  },
+  
   btnGrp:{
+    paddingHorizontal:37,
     width:windowWidth,
     flex:1,
   },
   btn:{
-    height: 43,
-    backgroundColor: "#D9D9D9",
-    marginHorizontal:12,
-    marginBottom:16,
+    height: 52,
+    borderRadius: 10,
+    backgroundColor: "#3479EF",
+    marginTop:10,
   },  
-  createAcc:{
-    textDecorationLine:'underline',
-    color:"grey",
-    fontSize:16,
-    textAlign:"center",
-    marginBottom:32,
-    paddingTop:60
+        
+  inputContainer:{
+    flexDirection:"row",
+    alignItems:"center",
+    padding:15,
+    marginBottom:10,
+    height: 50,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "rgba(221, 221, 221, 1.0)",
   },
   input: {
-    height: 40,
-    marginHorizontal: 12,
-    marginBottom:16,
-    borderWidth: 1,
-    padding: 10,
+    flex:1,
+    
+    
+  },
+  inputIcon:{
+    width:18,
+    height:18,
   },
 });

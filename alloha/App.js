@@ -13,7 +13,7 @@ import MainScreen from '../alloha/src/screen/MainScreen';
 import SignInScreen from '../alloha/src/screen/SignInScreen';
 
 import SearchAddress from '../alloha/src/components/SearchAddress';
-
+import * as Font from "expo-font";
 
 import { URL, TASK_URL, LOCATION_TASK } from "@env";
 import { useDispatch } from 'react-redux';
@@ -207,15 +207,30 @@ function Index() {
 
 
 function App(){
+  //const [isFont, setIsFont] = useState(false);
+  const loadFonts = async () => {
+    await Font.loadAsync({
+        "SUIT-Bold": require('./assets/fonts/SUIT-Bold.otf'),
+        "SUIT-Medium": require('./assets/fonts/SUIT-Medium.otf'),
+        "SUIT-ExtraBold": require('./assets/fonts/SUIT-ExtraBold.otf'),
+        "SUIT-SemiBold": require('./assets/fonts/SUIT-SemiBold.otf'),
+        "SUIT-Regular": require('./assets/fonts/SUIT-Regular.otf'),
+        "Tium": require('./assets/fonts/Tium.ttf'),
+      });
+      //setIsFont(true);
+  }
+  useEffect(() => {
+      loadFonts();
+  },[]);
   //<GetLocationPermission Grant={Index}/>
   //<LocationPermissionBack Grant ={Index}/>
   //<PushPermission/>
   return (
-    <Provider store={store}>
-      <Notification >
-        <Index />
-      </Notification>
-    </Provider>
+      <Provider store={store}>
+        <Notification >
+            <Index />
+        </Notification>
+      </Provider>
   );
 }
 

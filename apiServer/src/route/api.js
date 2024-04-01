@@ -18,6 +18,7 @@ const palRouter = require("../route/profitAndLoss")
 const boardRouter = require("../route/board")
 const commuteRouter = require("../route/commute")
 const dailyReportRouter = require("../route/dailyReport");
+const mainRouter = require("../route/main");
 const { getTemplatePushMessage, getSenderInfo, getCstOwnrInfo, pushMsgSend } = require('../query/push');
 const { sendPush_A0110_01, sendPush_A0130_01, sendPush_A0220_01 } = require('../utils/templatePush');
 
@@ -635,6 +636,7 @@ router.use('/v1/profitAndLoss', palRouter);
 router.use('/v1/board', boardRouter); 
 router.use('/v1/commute', commuteRouter); 
 router.use('/v1/daily', dailyReportRouter); 
+router.use('/v1/main', mainRouter); 
 
 module.exports = router;
 
