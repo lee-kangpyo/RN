@@ -63,14 +63,10 @@ export default function Login({ navigation }) {
             <Text style={font.version}>Ver 0.01</Text>
         </View>
         <LoginForm navigation={navigation}/>
-        <BotSheet 
-          sheetRef={sheetRef} 
-          snapPoints={snapPoints} 
-          renderBackdrop={renderBackdrop} 
-          setIsOpen={setIsOpen}
-          handleSnapPress={handleSnapPress}
-          Content={<Agreement closesheet={closesheet} navigation={navigation}/>}
-        />
+        
+        <TouchableOpacity  onPress={() => navigation.push("Agreement")} style={{flex:0.3}}>
+          <Text style={font.createAcc}>회원가입</Text>
+        </TouchableOpacity>
       </View>
     </GestureHandlerRootView>
   );
@@ -176,28 +172,6 @@ const LoginForm = ({navigation}) => {
   )
 }
 
-// 바텀 시트
-const BotSheet = ({sheetRef, snapPoints, renderBackdrop, setIsOpen, handleSnapPress, Content}) => {
-  return (
-    <>
-      <TouchableOpacity  onPress={() => handleSnapPress(0)} style={{flex:0.3}}>
-        <Text style={font.createAcc}>회원가입</Text>
-      </TouchableOpacity>
-      <BottomSheet
-        ref={sheetRef}
-        snapPoints={snapPoints}
-        enablePanDownToClose={true}
-        onClose={()=>setIsOpen(false)}
-        index={-1}
-        backdropComponent={renderBackdrop}
-      >
-        <BottomSheetView>
-          {Content}     
-        </BottomSheetView>
-      </BottomSheet>
-    </>
-  )
-}
 const font = StyleSheet.create({
   title:{
     fontFamily: "Tium",
