@@ -9,8 +9,6 @@ import axios from 'axios';
 import { useFocusEffect } from '@react-navigation/native';
 
 import React, {useState, useEffect, useRef} from 'react';
-//import { setUserInfo } from '../../redux/slices/login';
-import { useSelector } from 'react-redux';
 
 import CustomBtn from '../components/CustomBtn';
 
@@ -18,15 +16,13 @@ const windowWidth = Dimensions.get('window').width;
 import { URL } from "@env";
 
 export default function SignInScreen({navigation}) {
-    //const url = useSelector((state) => state.config.url);
     const [step, setStep] = useState(1)
     const [userInfo, setUserInfo] = useState({});
-    //const [businessPlace, setBusinessPlace] = useState({});
+
     const updateState = (step, inputObj) => {
         setUserInfo({...userInfo, ...inputObj});
         setStep(step);
     }
-
 
     const saveUser = async () => {
         const response = await axios.post(URL+'/api/v1/saveUser', {...userInfo, ...getUserType()});
@@ -47,18 +43,10 @@ export default function SignInScreen({navigation}) {
         if(step === 3 ){
             saveUser();
         }
-        /*
-        if(step === 3 && userInfo.userType !==0){
-            saveUser();
-        }else if(step === 3.5 && userInfo.userType ==0){
-            saveUser();
-        }
-        */
     }, [navigation, step])
 
     const getUserType = () => {
         const result = { ownrYn:"N", mnrgYn:"N", crewYn:"N"}
-        
         if(userInfo["userType"] == 0){
             result.ownrYn = "Y"
         }else if(userInfo["userType"] == 1){
@@ -84,10 +72,6 @@ export default function SignInScreen({navigation}) {
                 <Step2 updateState={updateState} />
             :step == 3?
                 <WaitResponse />
-            //:step == 3 && userInfo.userType === 0?
-            //    <BusinessInfo navigation={navigation} updateBusiness={updateBusinessPlace}/>
-            //:step == 3 && userInfo.userType !== 0?
-            //    <WaitResponse />
             :step == 4?
                 <Step4 navigation={navigation} userInfo={userInfo} />
             :null
@@ -112,11 +96,7 @@ const SelectUserType = ({userType, setUserType}) => {
     )
 }
 const Step1 = ({updateState}) => {
-    //const url = useSelector((state) => state.config.url);
     const[userType, setUserType] = useState(0)
-
-
-
     const validationSchema = yup.object().shape({
         id:yup.string().required("아이디를 입력해주세요.").max(20, "아이디는 20자리 이하이어야 합니다.").min(8, "아이디는 8자리 이상이어야 합니다.")
             .test('id-unique', '이미 사용 중인 아이디입니다.', async (value) => {
@@ -145,7 +125,6 @@ const Step1 = ({updateState}) => {
         <View style={{flex:1, backgroundColor:"white", alignItems:"center"}}>
             <StatusBar style="auto" />
             <SelectUserType userType={userType} setUserType={setUserType}/>
-            <KeyboardAwareScrollView contentContainerStyle={styles.container} resetScrollToCoords={{ x: 0, y: 0 }} scrollEnabled={true}>
                 <Formik
                     initialValues={{ userName: '', hpNo: '', id:'' }}
                     validationSchema={validationSchema}
@@ -153,6 +132,7 @@ const Step1 = ({updateState}) => {
                 >
                     {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
                         <>
+                        <KeyboardAwareScrollView contentContainerStyle={styles.container} resetScrollToCoords={{ x: 0, y: 0 }} scrollEnabled={true}>
                         <InputEl 
                             label="아이디" 
                             placeholder={"아이디"} 
@@ -178,14 +158,14 @@ const Step1 = ({updateState}) => {
                             value={values.hpNo}
                             errorMsg={errors.hpNo}
                         />
-                        <View style={styles.viewContainer}>
-                            <CustomBtn txt="다음" onPress={handleSubmit} style={styles.next} color='white'/>
+                        </KeyboardAwareScrollView>
+                        <View style={styles.nextBtnBox}>
+                            <CustomBtn txt="다음" onPress={handleSubmit} style={styles.next} textStyle={font.nextText} color='white'/>
                         </View>
                         </>
                     )}
-
                 </Formik>
-            </KeyboardAwareScrollView>
+            
         </View>
     )
 
@@ -216,7 +196,6 @@ const Step2 = ({ updateState }) => {
     return (
         <View style={{flex:1, backgroundColor:"white", alignItems:"center"}}>
             <StatusBar style="auto" />
-            <KeyboardAwareScrollView contentContainerStyle={styles.container} resetScrollToCoords={{ x: 0, y: 0 }} scrollEnabled={true}>
                 <Formik
                     initialValues={{ password: '', confirmPassword: '' }}
                     validationSchema={validationSchema}
@@ -224,31 +203,33 @@ const Step2 = ({ updateState }) => {
                 >
                     {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
                         <>
-                            <InputEl 
-                                label="비밀번호" 
-                                placeholder={"비밀번호"} 
-                                onChangeText={handleChange('password')}
-                                onBlur={handleBlur('password')}
-                                value={values.password}
-                                errorMsg={errors.password} 
-                                secure={true}
-                            />
-                            <InputEl 
-                                label="비밀번호 확인" 
-                                placeholder={"비밀번호 확인"} 
-                                onChangeText={handleChange('confirmPassword')}
-                                onBlur={handleBlur('confirmPassword')}
-                                value={values.confirmPassword}
-                                errorMsg={errors.confirmPassword}
-                                secure={true}
-                            />
-                            <View style={styles.viewContainer}>
-                                <CustomBtn txt="가입하기" onPress={handleSubmit} style={styles.next} color='white'/>
+                        <KeyboardAwareScrollView contentContainerStyle={styles.container} resetScrollToCoords={{ x: 0, y: 0 }} scrollEnabled={true}>
+                                <InputEl 
+                                    label="비밀번호" 
+                                    placeholder={"비밀번호"} 
+                                    onChangeText={handleChange('password')}
+                                    onBlur={handleBlur('password')}
+                                    value={values.password}
+                                    errorMsg={errors.password} 
+                                    secure={true}
+                                />
+                                <InputEl 
+                                    label="비밀번호 확인" 
+                                    placeholder={"비밀번호 확인"} 
+                                    onChangeText={handleChange('confirmPassword')}
+                                    onBlur={handleBlur('confirmPassword')}
+                                    value={values.confirmPassword}
+                                    errorMsg={errors.confirmPassword}
+                                    secure={true}
+                                />
+                            </KeyboardAwareScrollView>
+                            <View style={styles.nextBtnBox}>
+                                <CustomBtn txt="가입하기" onPress={handleSubmit} style={styles.next} textStyle={font.nextText} color='white'/>
                             </View>
                         </>
                     )}
                 </Formik>
-            </KeyboardAwareScrollView>
+            
         </View>
     )
 }
@@ -258,8 +239,8 @@ const Step2 = ({ updateState }) => {
 const WaitResponse = () => {
     return(
         <>
-            <View style={{flex:1, justifyContent:"center", alignItems:"center"}}>
-                <Text >가입 중입니다. 잠시만 기달려주세요.</Text>
+            <View style={{flex:1, backgroundColor:"white", justifyContent:"center", alignItems:"center"}}>
+                <Text >처리중입니다. 잠시 기다려주세요.</Text>
             </View>
         </>
     )
@@ -270,9 +251,9 @@ const Step4 = ({navigation, userInfo}) => {
     return(
         <>
         {
-            <View style={{flex:1, justifyContent:"center", alignItems:"center"}}>
+            <View style={{flex:1, backgroundColor:"white", justifyContent:"center", alignItems:"center"}}>
                 <Text style={{fontSize:16, marginBottom:16}}>가입을 환영합니다!!</Text>
-                <CustomBtn txt="로그인 하러가기" onPress={()=>navigation.navigate('Login')} style={{...styles.next, padding:8}} color='white'/>
+                <CustomBtn txt="로그인 하러가기" onPress={()=>navigation.navigate('Login')} style={styles.next} textStyle={font.nextText} color='white'/>
             </View>
         }
         </>
@@ -459,7 +440,7 @@ const InputEl = ({label, placeholder, keyboardType="default", onChangeText, onBl
 
     return(
         <View style={styles.viewContainer}>
-            <Text style={styles.labelTxt}>{label}</Text>
+            <Text style={font.labelTxt}>{label}</Text>
             <TextInput
                 style={[styles.input, errorMsg && styles.error, !errorMsg && isFocused && styles.inputFocused,]}
                 onChangeText={onChangeText}
@@ -477,9 +458,27 @@ const InputEl = ({label, placeholder, keyboardType="default", onChangeText, onBl
 }
 
 
+const font = StyleSheet.create({
+    nextText:{
+        fontFamily: "SUIT-Bold",
+        fontSize: 15,
+        fontWeight: "700",
+        color: "#FFFFFF"
+    },
+    labelTxt:{
+        fontFamily: "SUIT-Bold",
+        fontSize: 15,
+        fontWeight: "700",
+        lineHeight: 15,
+        letterSpacing: -1,
+        color: "#111111",
+        marginBottom:10
+    },
+})
 
 const styles = StyleSheet.create({
     container:{
+        paddingTop:30,
         backgroundColor:"white",
         alignItems:"center",
         width:windowWidth,
@@ -503,22 +502,26 @@ const styles = StyleSheet.create({
     },
     sepSelected:{
         backgroundColor:"#FFFFFF", 
-        color:theme.purple
+        color:theme.primary,
     },
-    viewContainer:{width:windowWidth, paddingHorizontal:24, paddingVertical:8,marginBottom:16,},
+    viewContainer:{width:windowWidth, paddingHorizontal:16, paddingVertical:8,marginBottom:16,},
+    nextBtnBox:{width:windowWidth, paddingHorizontal:16,marginBottom:20,},
     input:{
-        height: 40,
+        paddingHorizontal:12,
+        paddingVertical:15,
+        borderRadius: 10,
         borderWidth: 1,
-        padding: 10,
-        borderBottomColor:theme.grey,
-        borderColor:"white",
+        borderColor: "rgba(221, 221, 221, 1.0)",
+
+        fontFamily: "SUIT-Regular",
+        fontSize: 15,
+        fontWeight: "400",
+        color: "#999999"
     },
     inputFocused:{
         borderBottomColor:"black"
     },
-    labelTxt:{
-        color:theme.grey,
-    },
+    
     error:{
         color:theme.error,
         borderBottomColor:theme.error,
@@ -548,7 +551,12 @@ const styles = StyleSheet.create({
         borderRadius:5,
     },
     next:{
-        backgroundColor:theme.purple,
+        height:52,
+        padding:16,
+        alignItems:"center",
+        marginTop:20,
+        borderRadius: 10,
+        backgroundColor: theme.primary
     },
     bi_row:{
         marginBottom:8,
