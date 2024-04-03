@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "alloha",
-    "scheme": "alloha",
+    "name": "aloha",
+    "scheme": "aloha",
     "slug": "alloha",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -28,6 +28,7 @@
           "SUIT-Regular": ["./assets/fonts/SUIT-Regular.otf"],
           "SUIT-SemiBold": ["./assets/fonts/SUIT-SemiBold.otf"],
           "SUIT-Thin": ["./assets/fonts/SUIT-Thin.otf"],
+          "Tium": ["./assets/fonts/Tium.ttf"],
         }
       ],
       [
@@ -58,7 +59,7 @@
     ],
     "ios": {
       "buildNumber": "3",
-      "bundleIdentifier": "com.akmz.alloha",
+      "bundleIdentifier": "com.akmz.aloha",
       "supportsTablet": true,
       "infoPlist": {
         "UIBackgroundModes": [
@@ -99,5 +100,5 @@
     },
     "owner": "akmz",
   },
-  "name": "alloha"
+  "name": "aloha"
 }
