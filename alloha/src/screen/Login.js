@@ -20,6 +20,7 @@ import uuid from 'react-native-uuid';
 import * as SecureStore from 'expo-secure-store';
 import { setOwnerCstco } from '../../redux/slices/common';
 import PushTest from '../components/test/PushTest';
+import { theme } from '../util/color';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -176,10 +177,8 @@ const font = StyleSheet.create({
   title:{
     fontFamily: "Tium",
     fontSize: 40,
-    fontWeight: "700",
-    letterSpacing: -1,
     textAlign: "center",
-    color: "#3479EF",
+    color: theme.primary,
     marginBottom:4
   },
   version:{
@@ -193,7 +192,6 @@ const font = StyleSheet.create({
     fontFamily: "SUIT-Regular",
     fontSize: 15,
     fontWeight: "400",
-    letterSpacing: -1,
     color: "#999999"
   },
   btn:{
