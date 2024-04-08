@@ -1,5 +1,5 @@
 
-import { StyleSheet, Text, View, TouchableOpacity, Linking, Alert, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Linking, Alert, ScrollView, Image, Platform } from 'react-native';
 import React, {useState, useEffect, useCallback} from 'react';
 import MyStorePicker from '../components/alba/MyStorePicker';
 import { useSelector } from 'react-redux';
@@ -10,6 +10,7 @@ import { AntDesign } from '@expo/vector-icons';
 import CurTimer from '../components/common/CurTimer';
 import { getLocation } from '../util/location';
 import { MaterialIcons } from '@expo/vector-icons'; 
+import { theme } from '../util/color';
 
 export default function CommuteCheckScreen({navigation}) {
     const userId = useSelector((state)=>state.login.userId)
@@ -143,39 +144,45 @@ export default function CommuteCheckScreen({navigation}) {
     return (
         (sCstCo > 0)?
             <>
-            <TouchableOpacity onPress={()=>navigation.push("CommuteCheckInfo")} style={{ backgroundColor:"rgba(0,0,0,1)", padding:10, flexDirection:"row", justifyContent:"space-between"}}>
-                <Text style={{color:"white"}}>근무 정보 보기</Text>
-                <Text style={{color:"white"}}>→</Text>
-            </TouchableOpacity>
             <ScrollView style={styles.container}>
-                <View style={styles.row}>
-                    <MyStorePicker width={'75%'} borderColor='rgba(9,9,9,1)' userId={userId} />    
-                    <View style={{flexDirection:"row"}}>
-                        <AntDesign name="checksquareo" size={24} color="black" />
-                        <Text>수동체크</Text>
-                    </View>
-                </View>
-                <View style={[styles.row, {marginBottom:10}]}>
+                <MyStorePicker userId={userId} />    
+                <View style={[styles.row, styles.planCard, {marginTop:8, marginBottom:10}]}>
                     <View>
-                        <Text>근무계획</Text>
+                        <Text style={font.planCardTitle}>근무계획</Text>
                         {(daySchedule.length > 0)
                             ?
                                 daySchedule.map((el, idx)=>{
                                     const dateString = el.YMD;
                                     const date = new Date(`${dateString.slice(0, 4)}-${dateString.slice(4, 6)}-${dateString.slice(6, 8)}`);
                                     const dayOfWeek = ["일", "월", "화", "수", "목", "금", "토"][date.getDay()];
-                                    return <Text key={idx}>{YYMMDD2YYDD(el.YMD)} ({dayOfWeek}) {el.SCHTIME} ({el.JOBDURE})</Text>
+                                    return (
+                                        <View key={idx} style={styles.row}>
+                                            <Text style={font.planCardContent}>{YYMMDD2YYDD(el.YMD)} ({dayOfWeek}) {el.SCHTIME}</Text>
+                                            <View style={styles.pillGray}>
+                                                <Text style={font.pillText}>{el.JOBDURE}시간</Text>
+                                            </View>
+                                            <View style={styles.sep} />
+                                            <Text style={font.planCardContent2}>{(isCommonJob)?"일반근무":"대타근무"}</Text>
+                                        </View>
+                                    )
                                 })
                             :
-                                <Text>근무계획이없습니다.</Text>
+                                <Text style={font.planCardContent}>근무계획이없습니다.</Text>
                         }
                     </View>
-                    <View style={[styles.pill, {backgroundColor:"#D9D9D9",}]}>
-                        <Text>{(isCommonJob)?"일반근무":"대타근무"}</Text>
+                </View>
+                <View style={[styles.row, {marginBottom:50}]}>
+                    <TouchableOpacity onPress={()=>navigation.push("CommuteCheckInfo")} style={[{flex:1.5, marginRight:8}, styles.showCommuteCheckInfo]}>
+                        <Text style={font.commuteCheckInfoText}>근무 정보 보기</Text>
+                        <Image source={require('../../assets/icons/link-arrow.png')} style={styles.icon} />
+                    </TouchableOpacity>
+                    <View style={[{flex:1, justifyContent:"center"}, styles.manualCheck]}>
+                        <AntDesign name="checksquareo" size={15} color="rgba(170, 170, 170, 1.0)"/>
+                        <Text style={[font.commuteCheckInfoText, {paddingLeft:10}]}>수동체크</Text>
                     </View>
                 </View>
                 <CommuteButton onButtnPressed={insertJobChk} data={jobChk} daySchedule={daySchedule} sTime={(jobChk.length > 0)?jobChk[0].chkTime.split(" ")[1]:"00:00"} checkLocation={checkLocation}/>
-                <View style={[styles.center, {marginBottom:20}]}>
+                <View style={[styles.center, {marginBottom:20, marginTop:25}]}>
                     <CurTimer />
                 </View>
                 <CommuteBar data={jobChk} isCommonJob={isCommonJob} onPressed={()=>alert("전환 기능은 아직 확정되지 않음")/*setJobCls(!isCommonJob)*/} />
@@ -216,41 +223,41 @@ const Bottom2 = ({data}) => {
         (isMin)?
         <>
             <TouchableIcon name={"keyboard-arrow-up"} onPress={()=>setIsMin(false)} />
-            <View style={[styles.row, {alignItems:"flex-start", marginBottom:0}]}>
-                <Text style={{color:"white", fontSize:16}}>예상 급여액</Text>
+            <View style={[styles.row, {alignItems:"flex-start", marginTop:10}]}>
+                <Text style={font.bottomSheetText}>예상 급여액</Text>
                 <View style={{flexDirection:"row"}}>
-                    <Text style={{color:"white", paddingRight:5}}>{item.preJobWage.toLocaleString()}원</Text>
+                    <Text style={font.bottomSheetText2}>{item.preJobWage.toLocaleString()}원</Text>
                 </View>
             </View>
         </>
         :
         <>
             <TouchableIcon name={"keyboard-arrow-down"} onPress={()=>setIsMin(true)} />
-            <View style={[styles.row, {alignItems:"flex-start"}]}>
+            <View style={[styles.row, {alignItems:"flex-start", marginTop:10}]}>
                 <View style={{flex:1}}>
-                    <Text style={{color:"white", fontSize:16}}>예상 급여액</Text>
-                    <Text style={{color:"white", paddingHorizontal:15}}>{item.preJobWage.toLocaleString()}원</Text>
+                    <Text style={font.bottomSheetText}>예상 급여액</Text>
+                    <Text style={[font.bottomSheetText, {fontSize:13, paddingHorizontal:15}]}>{item.preJobWage.toLocaleString()}원</Text>
                 </View>
                 <View style={{flex:1}}>
-                    <Text style={{color:"white", fontSize:16}}>근무 시간</Text>
+                    <Text style={font.bottomSheetText}>근무 시간</Text>
                     <View style={{flexDirection:"row", justifyContent:"space-between", paddingHorizontal:15}}>
-                        <Text style={{color:"white"}}>승인됨</Text>
-                        <Text style={{color:"white"}}>:</Text>
-                        <Text style={{color:"white"}}>{formatTime(item.jobDure)}</Text>
+                        <Text style={[font.bottomSheetText, {fontSize:13}]}>승인됨</Text>
+                        <Text style={[font.bottomSheetText, {fontSize:13}]}>:</Text>
+                        <Text style={[font.bottomSheetText, {fontSize:13}]}>{formatTime(item.jobDure)}</Text>
                     </View>
                     <View style={{flexDirection:"row", justifyContent:"space-between", paddingHorizontal:15}}>
-                        <Text style={{color:"white"}}>요청중</Text>
-                        <Text style={{color:"white"}}>:</Text>
-                        <Text style={{color:"white"}}>{formatTime(item.jobDure2)}</Text>
+                        <Text style={[font.bottomSheetText, {fontSize:13}]}>요청중</Text>
+                        <Text style={[font.bottomSheetText, {fontSize:13}]}>:</Text>
+                        <Text style={[font.bottomSheetText, {fontSize:13}]}>{formatTime(item.jobDure2)}</Text>
                     </View>
                 </View>
             </View>
             <View style={[styles.row, {alignItems:"flex-start"}]}>
                 <View style={{flex:1}}>
                     <Text style={{color:"white", fontSize:16}}>이슈사항</Text>
-                    <Text style={{color:"white", paddingHorizontal:15}}>지각 {item.ATTCL2}</Text>
-                    <Text style={{color:"white", paddingHorizontal:15}}>조회 {item.ATTCL3}</Text>
-                    <Text style={{color:"white", paddingHorizontal:15}}>결근 {item.ATTCL}</Text>
+                    <Text style={[font.bottomSheetText, {fontSize:13, paddingHorizontal:15}]}>지각 {item.ATTCL2}</Text>
+                    <Text style={[font.bottomSheetText, {fontSize:13, paddingHorizontal:15}]}>조회 {item.ATTCL3}</Text>
+                    <Text style={[font.bottomSheetText, {fontSize:13, paddingHorizontal:15}]}>결근 {item.ATTCL}</Text>
                 </View>
                 <View style={{flex:1}}>
                     <Text style={{color:"white", fontSize:16}}></Text>
@@ -386,7 +393,7 @@ const CommuteButton = ({data, sTime, onButtnPressed, daySchedule, checkLocation}
     var top = "", main = "", bot = "", color = "";
     const length = data.length;
     if(length == 0){
-        top = "출근 전", main = "출근", bot = "CLICK", color = "#2F3269";
+        top = "출근 전", main = "출근", bot = "CLICK", color = "#3479EF";
     }else if(length == 1){
         const [timerId, setTimerId] = useState(null);
         const [timer, setTime] = useState("00:00");
@@ -463,15 +470,6 @@ const CommuteButton = ({data, sTime, onButtnPressed, daySchedule, checkLocation}
                     { cancelable: false }
                 );
             }
-            
-            
-            
-
-            //console.log(chkYn, "Y");
-            //console.log(chkYn, "S");
-
-            
-            //onButtnPressed(chkYn);
         }else{
             alert("퇴근 완료 상태입니다.");
         }
@@ -482,19 +480,18 @@ const CommuteButton = ({data, sTime, onButtnPressed, daySchedule, checkLocation}
                 {
                     (checkLocation)?
                     <View style={[styles.circle, {backgroundColor:color}]}>
-                        <Text style={[styles.circleText, {fontSize:18, marginBottom:0}]}>위치정보</Text>
-                        <Text style={[styles.circleText, {fontSize:18, marginBottom:0}]}>체크중</Text>
+                        <Text style={[font.circleText, {fontSize:18, marginBottom:0}]}>위치정보</Text>
+                        <Text style={[font.circleText, {fontSize:18, marginBottom:0}]}>체크중</Text>
                     </View>
                     :
                     <TouchableOpacity onPress={onPressed} style={[styles.circle, {backgroundColor:color}]}>
                         {
-                            (top != "")?<Text style={[styles.circleText, {fontSize:10, marginBottom:10}]}>{top}</Text>:null
+                            (top != "")?<Text style={[font.circleText, {fontSize:10, marginBottom:10}]}></Text>:null
                         }
-                        <Text style={[styles.circleText, {fontSize:24, marginBottom:5}]}>{main}</Text>
+                        <Text style={[font.circleText, {fontSize:24, marginBottom:5}]}>{main}</Text>
                         {
-                            (bot != "")?<Text style={[styles.circleText, {color:"grey"}]}>{bot}</Text>:null
+                            (bot != "")?<Text style={font.circleBotText}>{bot}</Text>:null
                         }
-                        
                     </TouchableOpacity>
                 }
             </View>
@@ -512,8 +509,8 @@ const CommuteBar = ({data, isCommonJob, onPressed}) => {
     return(
         <View style={[styles.center, {flexDirection:"row"}]}>
             <View style={styles.center}>
-                <Text>출근</Text>
-                <Text>{start}</Text>
+                <Text style={font.CommuteBarText}>출근</Text>
+                <Text style={font.CommuteBarText2}>{start}</Text>
                 {
                     (start2)?
                         <Text>{start2}</Text>
@@ -521,19 +518,16 @@ const CommuteBar = ({data, isCommonJob, onPressed}) => {
                         null
                 }
             </View>
-            <TouchableOpacity onPress={onPressed} style={[styles.box, styles.row, {borderRadius:5}]}>
-                <View>
-                    <AntDesign name="arrowright" size={24} color="black" />
-                    <AntDesign name="arrowleft" size={24} color="black" />
+            <TouchableOpacity onPress={onPressed} style={[styles.box, styles.row]}>
+                <View style={{alignItems:"center", paddingLeft:5, flexDirection:"row", marginRight:6}}>
+                    <Text style={font.CommuteBarText3}>{text} </Text>
+                    <Text style={font.CommuteBarText3}>전환</Text>
                 </View>
-                <View style={{alignItems:"center", paddingLeft:5}}>
-                    <Text>{text}</Text>
-                    <Text>전환</Text>
-                </View>
+                <Image source={require('../../assets/icons/switch-horizontal.png')} style={[styles.icon, {width:16, height:16}]}/>
             </TouchableOpacity>
             <View  style={styles.center}>
-                <Text>퇴근</Text>
-                <Text>{end}</Text>
+                <Text style={font.CommuteBarText}>퇴근</Text>
+                <Text style={font.CommuteBarText2}>{end}</Text>
                 {
                     (end2)?
                         <Text>{end2}</Text>
@@ -562,14 +556,123 @@ function timeCalculation(sTime) {
     }
     return result;
 }
+
+const font = StyleSheet.create({
+    planCardTitle:{
+        fontFamily: "SUIT-ExtraBold",
+        fontSize: 14,
+        fontWeight: "800",
+        color: "#111111",
+        marginBottom:10,
+    },
+    planCardContent:{
+        fontFamily: "SUIT-Bold",
+        fontSize: 13,
+        fontWeight: "700",
+        color: "#111111"
+    },
+    planCardContent2:{
+        fontFamily: "SUIT-Bold",
+        fontSize: 13,
+        fontWeight: "700",
+        color: theme.primary
+    },
+    pillText:{
+        fontFamily: "SUIT-Bold",
+        fontSize: 12,
+        fontWeight: "700",
+        color: "#999999"
+    },
+    commuteCheckInfoText:{
+        fontFamily: "SUIT-Medium",
+        fontSize: 13,
+        fontWeight: "500",
+        color: "#333333"
+    },
+    circleText:{
+        fontFamily: "SUIT-Bold",
+        fontSize: 20,
+        fontWeight: "700",
+        fontStyle: "normal",
+        textAlign: "center",
+        color: "#FFFFFF"
+    },
+    circleBotText:{
+        fontFamily: "SUIT-Regular",
+        fontSize: 13,
+        fontWeight: "400",
+        textAlign: "center",
+        color: "#FFFFFF"
+    },
+    CommuteBarText:{
+        fontFamily: "SUIT-Medium",
+        fontSize: 13,
+        fontWeight: "500",
+        textAlign: "center",
+        color: "#555555"
+    },
+    CommuteBarText2:{
+        fontFamily: "SUIT-ExtraBold",
+        fontSize: 13,
+        fontWeight: "800",
+        textAlign: "center",
+        color: "#111111"
+    },
+    CommuteBarText3:{
+        fontFamily: "SUIT-Bold",
+        fontSize: 14,
+        fontWeight: "700",
+        fontStyle: "normal",
+        color: "#3479EF"
+    },
+    bottomSheetText:{
+        fontFamily: "SUIT-Medium",
+        fontSize: 15,
+        fontWeight: "500",
+        color: "#FFFFFF"
+    },
+    bottomSheetText2:{
+        fontFamily: "SUIT-ExtraBold",
+        fontSize: 18,
+        fontWeight: "800",
+        color: "#FFFFFF"
+    }
+})
 const styles = StyleSheet.create({
     container:{ padding:15, flex:1 },
     center:{ justifyContent: 'center', alignItems: 'center', marginBottom:10 },
+    planCard:{
+        paddingHorizontal:15,
+        paddingVertical:16,
+        borderRadius: 10,
+        backgroundColor: "#FFFFFF",
+        shadowColor: "rgba(0, 0, 0, 0.05)",
+        shadowOffset: {
+            width: 0,
+            height: 0
+        },
+        shadowRadius: 10,
+        shadowOpacity: 1
+    },
     row:{ flexDirection:"row", justifyContent:"space-between", alignItems:"center", marginBottom:10 },
     pill:{
         paddingVertical:5,
         paddingHorizontal:15,
         borderRadius:15
+    },
+    pillGray:{
+        marginLeft:8,
+        paddingHorizontal:8,
+        paddingVertical:3,
+        borderRadius: 10,
+        backgroundColor: "#EEEEEE"
+    },
+    sep:{
+        width: 0,
+        height: 12,
+        borderWidth: 1,
+        borderColor: "rgba(221, 221, 221, 1.0)",
+        marginHorizontal:10,
     },
     outerCircle:{
         borderColor:'rgba(0,0,0,0.2)',
@@ -585,25 +688,37 @@ const styles = StyleSheet.create({
         borderColor:'rgba(0,0,0,0.2)',
         alignItems:'center',
         justifyContent:'center',
-        width:150,
-        height:150,
+        width:180,
+        height:180,
         
         borderRadius:150,
-        borderWidth:5,
-        borderColor:"#D9E2FC"
-
+        borderWidth: 6,
+        borderColor: "rgba(217, 237, 255, 1.0)",
+        ...Platform.select({
+            ios:{
+                shadowColor: "rgba(52, 121, 239, 0.4)",
+                shadowOffset: {
+                    width: 0,
+                    height: 0
+                },
+                shadowRadius: 20,
+                shadowOpacity: 1,
+            },
+            android:{
+                elevation :3,
+            }
+        })
     },
-    circleText:{
-        color:"white",
-    },
+    
     box:{
-        borderColor:"#A59C9C",
-        borderWidth:1,
-        padding:5,
+        paddingHorizontal:24,
+        paddingVertical:12,
+        borderRadius: 10,
+        backgroundColor: "#DAE5F9",
         marginHorizontal:20,
     },
     bottomSheet:{
-        backgroundColor:"#5372D7", 
+        backgroundColor:"#333333", 
         borderTopLeftRadius:15, 
         borderTopRightRadius:15, 
         paddingHorizontal:25, 
@@ -614,6 +729,34 @@ const styles = StyleSheet.create({
         padding:-10,
         margin:-10,
         alignItems:"center",
+    },
+
+    showCommuteCheckInfo:{
+        flexDirection:"row",
+        justifyContent:"space-between",
+        paddingHorizontal:15,
+        paddingVertical:12,
+        borderRadius: 10,
+        backgroundColor: "#E6ECF2"
+    },
+    manualCheck:{
+        paddingHorizontal:15,
+        paddingVertical:12,
+        flexDirection:"row",
+        borderRadius: 10,
+        backgroundColor: "#FFFFFF",
+        shadowColor: "rgba(0, 0, 0, 0.05)",
+        shadowOffset: {
+            width: 0,
+            height: 0
+        },
+        shadowRadius: 10,
+        shadowOpacity: 1
+    },
+    icon:{
+        width: 8,
+        height: 14,
+        resizeMode:"contain"
     },
     
 });
