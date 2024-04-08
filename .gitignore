@@ -99,3 +99,7 @@ taskManager/node_modules
 taskManager/logs
 taskManager/.env
 taskManager/build
+
+web/node_modules
+web/build
+web/.gitignore
