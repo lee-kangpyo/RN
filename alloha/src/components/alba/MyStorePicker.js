@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, ActivityIndicator, StyleSheet, TouchableOpacity, Text, Alert } from 'react-native';
+import { View, ActivityIndicator, StyleSheet, TouchableOpacity, Text, Alert, Image } from 'react-native';
 import { theme } from '../../util/color';
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 import { URL } from "@env";
 import { useDispatch, useSelector } from 'react-redux';
 import { setMyStores, setSelectedStore } from '../../../redux/slices/alba';
+import { Platform } from 'react-native';
 
-export default function MyStorePicker({width="100%", borderColor=theme.purple, userId, isComplete}) {
+
+export default function MyStorePicker({width="100%", borderColor=theme.selectBox, userId, isComplete}) {
     //const [selCstCo, setSelCstco] = useState();
     //const [selectedStore, setSelectedStore] = useState({});             // 선택된 점포
     //const [myStores, setmyStores] = useState([]);                       // 내 알바 점포들
@@ -36,31 +38,44 @@ export default function MyStorePicker({width="100%", borderColor=theme.purple, u
     useEffect(()=>{
         searchMyAlbaList(true);
     }, [])
+
   return (
     (sCstCo > 0)?
         <View style={[styles.container, {width:width}]}>
-            <View style={[styles.border, {borderColor:borderColor, height:35, justifyContent:"center", overflow:'hidden'}]}>
-                <Picker
-                    style={{fontSize:"16",}}
-                    selectedValue={sCstCo}
-                    onValueChange={ (itemValue, itemIndex) =>{
-                        const data = myStores.filter((el)=>{return el.CSTCO == itemValue})[0];
-                        dispatch(setSelectedStore({data:data}));
-                    }}
-                >
-                    {
-                        myStores.map((el, idx)=>{
-                            return (el.RTCL === "N")
-                                ?
-                                    <Picker.Item key={idx} label={el.CSTNA} value={el.CSTCO}/>
-                                :(el.RTCL === "R")?
-                                    <Picker.Item key={idx} label={el.CSTNA + "(승인 대기 중)"} value={el.CSTCO}/>
-                                :  
-                                    null;
-                        })
-                    }
-                    
-                </Picker>
+            <View style={[styles.border, {borderColor:borderColor,}]}>
+                {
+                    (Platform.OS === 'android')?
+                    <>
+                        <Picker
+                            selectedValue={sCstCo}
+                            onValueChange={ (itemValue, itemIndex) =>{
+                                const data = myStores.filter((el)=>{return el.CSTCO == itemValue})[0];
+                                dispatch(setSelectedStore({data:data}));
+                            }}
+                            dropdownIconColor="white"
+                        >
+                            {
+                                myStores.map((el, idx)=>{
+                                    return (el.RTCL === "N")
+                                        ?
+                                            <Picker.Item key={idx} label={el.CSTNA} value={el.CSTCO} style={styles.pickerText}/>
+                                        :(el.RTCL === "R")?
+                                            <Picker.Item key={idx} label={el.CSTNA + "(승인 대기 중)"} value={el.CSTCO}/>
+                                        :  
+                                            null;
+                                })
+                            }
+                            
+                        </Picker>
+                        <Image source={require('../../../assets/icons/dropDown.png')} style={styles.dropdownIcon} />
+                    </>
+                    :
+                    <>
+                        <Text>구휘커피 ios는 추가개발 필요</Text>
+                        <Text style={{position:"absolute", right:20}}>a</Text>
+                    </>
+                }
+                
             </View>
         </View>
     :
@@ -74,8 +89,18 @@ const styles = StyleSheet.create({
         
     },
     border:{
-        borderWidth:1,
-        borderRadius:5,
-        padding:5,
+        height: 50,
+        borderRadius: 10,
+        backgroundColor: "#FFFFFF",
+        borderWidth: 1,
+        borderColor: "rgba(221, 221, 221, 1.0)",
+        justifyContent:"center",
     },
+    pickerText:{
+        fontFamily: "SUIT-Regular",
+        fontSize: 15,
+        fontWeight: "400",
+        color: "#111111"
+    },
+    dropdownIcon:{position:"absolute", right:15, width:18, height:18, resizeMode:"contain"}
   });
