@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "aloha",
+    "name": "알로하",
     "scheme": "aloha",
     "slug": "alloha",
     "version": "1.0.0",
@@ -19,16 +19,36 @@
       [
         "expo-font",
         {
-          "SUIT-Bold": ["./assets/fonts/SUIT-Bold.otf"],
-          "SUIT-ExtraBold": ["./assets/fonts/SUIT-ExtraBold.otf"],
-          "SUIT-ExtraLight": ["./assets/fonts/SUIT-ExtraLight.otf"],
-          "SUIT-Heavy": ["./assets/fonts/SUIT-Heavy.otf"],
-          "SUIT-Light": ["./assets/fonts/SUIT-Light.otf"],
-          "SUIT-Medium": ["./assets/fonts/SUIT-Medium.otf"],
-          "SUIT-Regular": ["./assets/fonts/SUIT-Regular.otf"],
-          "SUIT-SemiBold": ["./assets/fonts/SUIT-SemiBold.otf"],
-          "SUIT-Thin": ["./assets/fonts/SUIT-Thin.otf"],
-          "Tium": ["./assets/fonts/Tium.ttf"],
+          "SUIT-Bold": [
+            "./assets/fonts/SUIT-Bold.otf"
+          ],
+          "SUIT-ExtraBold": [
+            "./assets/fonts/SUIT-ExtraBold.otf"
+          ],
+          "SUIT-ExtraLight": [
+            "./assets/fonts/SUIT-ExtraLight.otf"
+          ],
+          "SUIT-Heavy": [
+            "./assets/fonts/SUIT-Heavy.otf"
+          ],
+          "SUIT-Light": [
+            "./assets/fonts/SUIT-Light.otf"
+          ],
+          "SUIT-Medium": [
+            "./assets/fonts/SUIT-Medium.otf"
+          ],
+          "SUIT-Regular": [
+            "./assets/fonts/SUIT-Regular.otf"
+          ],
+          "SUIT-SemiBold": [
+            "./assets/fonts/SUIT-SemiBold.otf"
+          ],
+          "SUIT-Thin": [
+            "./assets/fonts/SUIT-Thin.otf"
+          ],
+          "Tium": [
+            "./assets/fonts/Tium.ttf"
+          ]
         }
       ],
       [
@@ -55,11 +75,10 @@
           }
         }
       ]
-
     ],
     "ios": {
-      "buildNumber": "3",
-      "bundleIdentifier": "com.akmz.aloha",
+      "buildNumber": "4",
+      "bundleIdentifier": "com.akmz.alloha",
       "supportsTablet": true,
       "infoPlist": {
         "UIBackgroundModes": [
@@ -75,7 +94,6 @@
       }
     },
     "android": {
-      "versionCode": 3,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -88,7 +106,8 @@
       ],
       "useNextNotificationsApi": true,
       "googleServicesFile": "./google-services.json",
-      "package": "com.akmz.alloha"
+      "package": "com.akmz.alloha",
+      "versionCode": 4
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -98,7 +117,7 @@
         "projectId": "0dd79bb6-37ee-41de-ab18-ae35b01e55a2"
       }
     },
-    "owner": "akmz",
+    "owner": "akmz"
   },
   "name": "aloha"
 }
