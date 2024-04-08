@@ -20,5 +20,6 @@ export const theme = {
     grey2:"#B6BBC4",
     sky:"#4CB9E7",
     lightgrey:"#EDEDED",
-    backGround:"rgb(242, 242, 242)"
+    backGround:"rgb(242, 242, 242)",
+    selectBox:"rgba(221, 221, 221, 1.0)"
 }

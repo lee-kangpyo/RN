@@ -5,24 +5,38 @@ import * as Progress from 'react-native-progress';
 import ProgressBar from '../common/ProgressBar';
 
 export default function TotalSalary({data}) {
-    const progress = (data.SRATE > 100)?1:data.SRATE/100;
+    var progress = 0
+    if(data){
+        progress = (data.SRATE > 100)?1:data.SRATE/100;
+    }
+    
     return (
         <View style={styles.container}>
             <View style={[styles.row, styles.spaceBetween, {alignContent:"center", paddingBottom:10}]}>
                 <Text style={[font.mainFont,]}>3월 총 급여</Text>
                 <Image source={require('../../../assets/icons/link-arrow.png')} style={{alignSelf:"center", width:10, height:14}} />
             </View>
-            <Text style={[font.amount, {paddingBottom:20}]}>{data.SALARY.toLocaleString()}원</Text>
-            <ProgressBar progress={progress} marginBottom={15}/>
-            <View style={[styles.row, {justifyContent:"space-between"}]}>
-                <View style={[styles.row, {alignItems:"center"}]}>
-                    <Text style={font.goalAmtLabel}>목표금액</Text>
-                    <View style={styles.pill}>
-                        <Text style={font.goalAmt}>{data.TSALARY/10000}만원</Text>
+        {
+            (data)?
+                <>
+                
+                <Text style={[font.amount, {paddingBottom:20}]}>{data.SALARY.toLocaleString()}원</Text>
+                <ProgressBar progress={progress} marginBottom={15}/>
+                <View style={[styles.row, {justifyContent:"space-between"}]}>
+                    <View style={[styles.row, {alignItems:"center"}]}>
+                        <Text style={font.goalAmtLabel}>목표금액</Text>
+                        <View style={styles.pill}>
+                            <Text style={font.goalAmt}>{data.TSALARY/10000}만원</Text>
+                        </View>
                     </View>
+                    <Text style={font.progress}>{data.SRATE}%</Text>
                 </View>
-                <Text style={font.progress}>{data.SRATE}%</Text>
-            </View>
+                </>
+            :
+                <View style={{alignItems:"center", paddingVertical:15}}>
+                    <Text style={font.noData}>데이터가 없습니다.</Text>
+                </View>
+        }
         </View>
     );
 }
@@ -57,7 +71,15 @@ const font = StyleSheet.create({
         lineHeight: 14,
         color: "#3479EF",
         fontWeight: "700",
-    }
+    },
+    noData:{
+        fontFamily: "SUIT-SemiBold",
+        fontSize: 15,
+        fontWeight: "600",
+        fontStyle: "normal",
+        lineHeight: 15,
+        color: "#555555"
+    },
 })
 const styles = StyleSheet.create({
     container:{

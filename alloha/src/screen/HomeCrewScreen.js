@@ -45,7 +45,6 @@ export default function HomeCrewScreen({navigation}) {
             alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
         })
     }
-    //console.log(datas);
     return (
         (Object.keys(datas).length == 0)?
         //(true)?

@@ -61,8 +61,8 @@ export default function WorkPlace({data}) {
                             <Text style={[font.cstNa, {marginBottom:4}]}>근무지가 없습니다.</Text>
                         </View>
                     :
-                        data.map((el)=>{
-                            return <CstItem item={el} />    
+                        data.map((el, idx)=>{
+                            return <CstItem key={idx} item={el} />    
                         })
                 }
             </View>

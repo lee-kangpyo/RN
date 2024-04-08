@@ -17,7 +17,8 @@ export default function CurTimer() {
     const currentDay = () => {
         const date = new Date();
         const dayOfWeek = ["일", "월", "화", "수", "목", "금", "토"][date.getDay()];
-        setDay(date.getFullYear()+"년 "+(date.getMonth()+1)+"월 "+date.getDate()+"일 ("+dayOfWeek+")");
+        //setDay(date.getFullYear()+"년 "+(date.getMonth()+1)+"월 "+date.getDate()+"일 ("+dayOfWeek+")");
+        setDay(date.getFullYear()+"."+(date.getMonth()+1)+"."+date.getDate()+"("+dayOfWeek+")");
     };
     
 
@@ -33,13 +34,24 @@ export default function CurTimer() {
     return (
         <>
             <Text style={styles.timer}>{timer}</Text>
-            <Text>{day}</Text>
+            <Text style={styles.date}>{day}</Text>
         </>
     )
 };
 const styles = StyleSheet.create({
     timer: {
-      fontSize:16,
-      fontWeight:"bold"
+        fontFamily: "SUIT-ExtraBold",
+        fontSize: 18,
+        fontWeight: "800",
+        fontStyle: "normal",
+        color: "#111111",
+        marginBottom:4,
     },
+    date:{
+        fontFamily: "SUIT-Medium",
+        fontSize: 13,
+        fontWeight: "500",
+        fontStyle: "normal",
+        color: "#555555"
+    }
   });

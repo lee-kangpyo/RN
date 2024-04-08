@@ -1,5 +1,5 @@
 //import * as React from 'react';
-import { Text, View, TouchableOpacity, StyleSheet, Button } from 'react-native';
+import { Text, View, TouchableOpacity, StyleSheet, Button, Image } from 'react-native';
 import { Ionicons, MaterialCommunityIcons, FontAwesome5, MaterialIcons, FontAwesome   } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -208,6 +208,7 @@ function ScheduleStack() {
 //<Ionicons name="download-outline" size={32} color="black" />
 
 function CrewScreen(){
+  
   return(
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -218,7 +219,7 @@ function CrewScreen(){
     >
       <Tab.Screen name="Home" component={HomeCrewStack} options={{ headerShown:false, tabBarLabel: '홈'}}/>
       <Tab.Screen name="schedule" component={ScheduleScreenToAlba} options={{ tabBarLabel: '주간근무계획' }}/>
-      <Tab.Screen name="CommuteCheck" component={CommuteCheckStack} options={{ headerShown:false, tabBarLabel: '근무 현황' }}/>
+      <Tab.Screen name="CommuteCheck" component={CommuteCheckStack} options={{ headerShown:false, tabBarLabel: '근무 현황'}}/>
       {/* <Tab.Screen name="Home" options={{ tabBarLabel: '출퇴근(구버전)' }} >
         {() => (
           <LocationPermission Grant={HomeScreen}/>
@@ -254,10 +255,29 @@ function HomeCrewStack(){
 }
 //<Tab.Screen name="community" component={BoardScreen} options={{ tabBarLabel: '커뮤니티' }}/>
 function CommuteCheckStack(){
+  const navigation = useNavigation();
+
+  const headerLeft = (props) => {
+    return(
+      <TouchableOpacity                
+          onPress={() => navigation.pop()}
+      >
+      <Image source={require('../../assets/icons/goBack.png')} style={{width:13, height:22, marginRight:20}} />
+      </TouchableOpacity>
+    )
+  }
+
+  const headerTitleStyle = {
+    fontFamily: "SUIT-Bold",
+    fontSize: 16,
+    fontWeight: "700",
+    lineHeight: 16,
+    color: "#111111",
+  }
   return(
   <Stack.Navigator>
-    <Stack.Screen name="CommuteCheckMain" component={CommuteCheckScreen} />
-    <Stack.Screen name="CommuteCheckInfo" component={CommuteCheckInfoScreen} />
+    <Stack.Screen name="CommuteCheckMain" component={CommuteCheckScreen} options={{headerTitleStyle:headerTitleStyle, headerTitleAlign:"center"}}/>
+    <Stack.Screen name="CommuteCheckInfo" component={CommuteCheckInfoScreen} options={{headerLeft: headerLeft, headerTitleStyle:headerTitleStyle}}/>
     <Stack.Screen name="CommuteCheckDetail" component={CommuteCheckDetailScreen} />
     <Stack.Screen name="CommuteCheckChange" component={CommuteCheckChangeScreen} />
   </Stack.Navigator>
