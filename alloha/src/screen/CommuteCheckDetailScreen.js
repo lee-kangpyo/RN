@@ -55,15 +55,28 @@ export default function CommuteCheckDetailScreen({navigation, route}) {
             <CommuteDetail day = {YYYYMMDD}/>
             {
                 (btnShow)?
-                    <CustomButton onClick={onModifyBtnpressed} text={"근무기록변경"} style={styles.btn}/>
+                    <CustomButton onClick={onModifyBtnpressed} text={"근무 기록 변경하기"} style={styles.btn} fontStyle={fonts.btn}/>
                 :
                     null
             }
         </View>
     );
 }
-
+const fonts = StyleSheet.create({
+    btn:{
+        fontFamily: "SUIT-Bold",
+        fontSize: 15,
+        fontWeight: "700",
+        fontStyle: "normal",
+        color: "#3479EF"
+    }
+})
 const styles = StyleSheet.create({
-    container:{ flex: 1, justifyContent: 'flex-start', alignItems: 'center', padding:10 },
-    btn:{alignSelf:"flex-end"},
+    container:{ flex: 1, justifyContent: 'flex-start', alignItems: 'center', padding:10, backgroundColor:"#F6F6F8" },
+    btn:{
+        alignItems:"center",
+        borderRadius: 10,
+        backgroundColor: "#DAE5F9",
+        width:"100%"
+    },
 });
