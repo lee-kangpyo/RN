@@ -278,8 +278,8 @@ function CommuteCheckStack(){
   <Stack.Navigator>
     <Stack.Screen name="CommuteCheckMain" component={CommuteCheckScreen} options={{headerTitleStyle:headerTitleStyle, headerTitleAlign:"center"}}/>
     <Stack.Screen name="CommuteCheckInfo" component={CommuteCheckInfoScreen} options={{headerLeft: headerLeft, headerTitleStyle:headerTitleStyle}}/>
-    <Stack.Screen name="CommuteCheckDetail" component={CommuteCheckDetailScreen} />
-    <Stack.Screen name="CommuteCheckChange" component={CommuteCheckChangeScreen} />
+    <Stack.Screen name="CommuteCheckDetail" component={CommuteCheckDetailScreen} options={{headerLeft: headerLeft, headerTitleStyle:headerTitleStyle}}/>
+    <Stack.Screen name="CommuteCheckChange" component={CommuteCheckChangeScreen} options={{headerLeft: headerLeft, headerTitleStyle:headerTitleStyle}}/>
   </Stack.Navigator>
   )
 }

@@ -1,5 +1,5 @@
 
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, Keyboard, Alert } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, Keyboard, Alert, Platform, Image } from 'react-native';
 import React, {useState, useEffect, useRef} from 'react';
 import { YYYYMMDD2Obj } from '../util/moment';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
@@ -165,16 +165,14 @@ export default function CommuteCheckChangeScreen({navigation, route}) {
       }, [type]);
     return (
         <View style={styles.container}>
-            <View style={[styles.card]}>
             {
             (type == 0)?
                 <>
-                <View style={[styles.row, {marginBottom:5, justifyContent:"space-between"}]}>
+                <View style={[styles.row, {marginTop:14, marginBottom:22, justifyContent:"space-between"}]}>
                     <View style={styles.row}>
-                        <Text style={styles.title}>{date.ymd.split(".")[1]}월 {date.ymd.split(".")[2]}일 </Text> 
-                        <Text style={[{color:date.color}, styles.title]}>({date.day}) </Text>
+                        <Text style={fonts.title}>{date.ymd} </Text> 
+                        <Text style={[{color:date.color}, fonts.title]}>({date.day}) </Text>
                     </View>
-                    
                 </View>
                 
                 {
@@ -187,9 +185,9 @@ export default function CommuteCheckChangeScreen({navigation, route}) {
                             {
                                 (isExistReq != null)?
                                     <View style={[styles.row]}>
-                                        <Text style={styles.main}>{startTime}</Text>
-                                        <Text style={styles.main}> ~ </Text>
-                                        <Text style={styles.main}>{endTime}</Text>
+                                        <Text style={fonts.main}>{startTime}</Text>
+                                        <Text style={fonts.main}> ~ </Text>
+                                        <Text style={fonts.main}>{endTime}</Text>
                                     </View>
                                 :null
                             }
@@ -198,72 +196,73 @@ export default function CommuteCheckChangeScreen({navigation, route}) {
                     </>
                     :
                     <>
-                        <View style={{backgroundColor:"white", borderRadius:15, borderWidth:0.5, alignItems:"center", paddingBottom:15, marginBottom:30, marginTop:30, borderColor:"#0082cb"}}>
-                            <View style={[styles.row, {justifyContent:"space-between", width:"100%", backgroundColor:"#0082cb", borderTopEndRadius:15, borderTopStartRadius:15, paddingHorizontal:16, paddingVertical:10, marginBottom:15}]}>
-                                <Text style={[styles.topText, {fontWeight:"bold"}]}>계획 시간</Text>
+                        <View style={styles.cardContainer}>
+                            <View style={[styles.row, styles.topBar]}>
+                                <Text style={[fonts.topText, {fontWeight:"bold"}]}>계획 시간</Text>
                                 <View style={styles.row}>
-                                    <Text style={styles.topText}>{dayJobInfo.schFrom}</Text>
-                                    <Text style={styles.topText}>~</Text>
-                                    <Text style={styles.topText}>{dayJobInfo.schTo}</Text>
+                                    <Text style={fonts.topText2}>{dayJobInfo.schFrom}</Text>
+                                    <Text style={fonts.topText2}>~</Text>
+                                    <Text style={fonts.topText2}>{dayJobInfo.schTo}</Text>
                                 </View>
                             </View>
-                            <View style={[styles.row, {alignItems:"space-between", borderWidth:0.8, borderColor:"#939393",borderRadius:20, paddingHorizontal:20, paddingVertical:2}]}>
-                                <Text style={[styles.pillText,{color:(statNa == "정상")?"black":"#ff6f1f"}]}>{statNa}</Text>
+                            <View style={[styles.row, styles.pill]}>
+                                <Text style={[fonts.pillText,{color:(statNa == "정상")?"black":"#777777"}]}>{statNa}</Text>
                             </View>
-                            <View style={styles.row}>
+                            <View style={[styles.row, {marginBottom:10}]}>
                                 {
                                     (dayJobInfo.attendence == "결근")?
-                                            <Text style={[styles.main, {color:"red"}]}>결근</Text>
+                                            <View style={styles.mainPill}>
+                                                <Text style={[fonts.main, {color:"red"}]}>결근</Text>
+                                            </View>
                                         :
-                                            <View style={[styles.row]}>
-                                                <Text style={styles.main}>{dayJobInfo.startTime}</Text>
-                                                <Text style={styles.main}> ~ </Text>
-                                                <Text style={styles.main}>{dayJobInfo.endTime}</Text>
+                                            <View style={[styles.row, styles.mainPill]}>
+                                                <Text style={fonts.main}>{dayJobInfo.startTime}</Text>
+                                                <Text style={fonts.main}> ~ </Text>
+                                                <Text style={fonts.main}>{dayJobInfo.endTime}</Text>
                                             </View>
                                 }
                                 
-                                <View style={{justifyContent:"center", paddingHorizontal:5}}>
-                                    <FontAwesome name="long-arrow-right" size={20} color="black" />
+                                <View style={{justifyContent:"center", paddingHorizontal:19}}>
+                                    <Image source={require('../../assets/icons/arrow.png')} style={{width:12, height:12,}} />
                                 </View>  
                                 {
                                     (isExistReq != null)?
-                                        <View style={styles.row}>
-                                            <Text style={styles.main}>{startTime}</Text>
-                                            <Text style={styles.main}> ~ </Text>
-                                            <Text style={styles.main}>{endTime}</Text>
+                                        <View style={[styles.row, styles.mainPill]}>
+                                            <Text style={fonts.main}>{startTime}</Text>
+                                            <Text style={fonts.main}> ~ </Text>
+                                            <Text style={fonts.main}>{endTime}</Text>
                                             
                                         </View>  
                                     : null
                                 }
                             </View>
                             <TouchableOpacity onPress={()=>setType(1)}>
-                                <Text style={styles.sub}>요청 시간 수정</Text>
+                                <Text style={fonts.sub}>수정</Text>
                             </TouchableOpacity>
-                            
                         </View>
                     </>
                     
                 }
-                
-                <Text style={[styles.title, {marginBottom:5}]}>요청 사유</Text>
-                <ScrollView contentContainerStyle={styles.text}>
-                    <TextInput 
-                        onChange={(e)=>setReason(e.nativeEvent.text)}
-                        value={reason}
-                        placeholder="사유를 입력해주세요."
-                        multiline={true}	
-                        maxLength={300}
-                    />
-                </ScrollView>
+                <View style={{width:"100%"}}>
+                    <Text style={[fonts.reason, {marginBottom:10}]}>요청 사유</Text>
+                    <ScrollView contentContainerStyle={styles.text}>
+                        <TextInput 
+                            onChange={(e)=>setReason(e.nativeEvent.text)}
+                            value={reason}
+                            placeholder="사유를 입력해주세요."
+                            multiline={true}	
+                            maxLength={300}
+                        />
+                    </ScrollView>
+                </View>
                 </>
             :(type == 1)?
                 <TimeContainer setType={setType} startController={{time:startTime, setTime:setStartTime}} endController={{time:endTime, setTime:setEndTime}} />
             :
                 null
             }
-            </View>
             {
-                (type == 0)?<CustomButton onClick={onConfirm} text={"점주승인요청"} style={[styles.btn, {alignSelf:"flex-end"}]}/>:null
+                (type == 0)?<View style={{flex:1, width:"100%", justifyContent:"flex-end"}}><CustomButton onClick={onConfirm} text={"점주승인요청"} style={[styles.btn, ]} fontStyle={fonts.btnText}/></View>:null
             }
             
         </View>
@@ -400,29 +399,82 @@ const TimeContainer = ({setType, startController, endController}) => {
         </>
     )
 }
-
-const styles = StyleSheet.create({
-    container:{ flex: 1, justifyContent: 'flex-start', alignItems: 'center', padding:10 },
-    row:{ flexDirection:"row" },
-    title:{fontSize:16},
-    main:{fontSize:18, fontWeight:"bold"},
-    sub:{
-        fontSize:13,
-        color:theme.link,
-        textDecorationLine:"underline"
+const fonts=StyleSheet.create({
+    title:{
+        fontFamily: "SUIT-ExtraBold",
+        fontSize: 18,
+        fontWeight: "800",
+        color: "#111111"
     },
+    reason:{
+        fontFamily: "SUIT-Bold",
+        fontSize: 15,
+        fontWeight: "700",
+        color: "#111111"
+    },
+    btnText:{
+        fontFamily: "SUIT-Bold",
+        fontSize: 15,
+        fontWeight: "700",
+        fontStyle: "normal",
+        color: "#FFFFFF"
+    },
+    topText:{
+        fontFamily: "SUIT-ExtraBold",
+        fontSize: 14,
+        fontWeight: "800",
+        color: "#111111"
+    },
+    topText2:{
+        fontFamily: "SUIT-ExtraBold",
+        fontSize: 14,
+        fontWeight: "800",
+        fontStyle: "normal",
+        lineHeight: 14,
+        letterSpacing: -1,
+        textAlign: "right",
+        color: "#777777"
+    },
+    pillText:{
+        fontFamily: "SUIT-Bold",
+        fontSize: 13,
+        fontWeight: "700",
+        color: "#777777"
+    },
+    main:{
+        fontFamily: "SUIT-ExtraBold",
+        fontSize: 16,
+        fontWeight: "800",
+        textAlign: "center",
+        color: "#111111"
+    },
+    sub:{
+        textDecorationLine:"underline",
+        fontFamily: "SUIT-Bold",
+        fontSize: 15,
+        fontWeight: "700",
+        color: "#3479EF"
+    },
+})
+const styles = StyleSheet.create({
+    container:{ flex: 1, justifyContent: 'flex-start', alignItems: 'center', padding:16 },
+    row:{ flexDirection:"row" },
+    
     topText:{
         fontSize:13,
         color:"white"
     },
-    pillText:{fontSize:13, fontWeight:"bold"},
+    
     textInput:{
         borderWidth:1,
     },
     text:{ 
         padding:15,
-        backgroundColor:"yellow",
-        height:180,
+        height: 240,
+        borderRadius: 10,
+        backgroundColor: "#FFFFFF",
+        borderWidth: 1,
+        borderColor: "rgba(221, 221, 221, 1.0)"
     },
     card:{
         borderWidth:1,
@@ -441,4 +493,60 @@ const styles = StyleSheet.create({
     },
     timeBtn:{padding:10, borderRadius:15, backgroundColor:theme.link},
     timeBtnText:{fontSize:16, color:"white"},
+    btn:{
+        height:52,
+        alignItems:"center",
+        borderRadius: 10,
+        backgroundColor: "#3479EF",
+        width:"100%",
+        marginTop:10,
+    },
+    cardContainer:{
+        backgroundColor:"white", 
+        borderRadius:10, 
+        alignItems:"center", 
+        paddingBottom:20, 
+        marginBottom:30, 
+        ...Platform.select({
+            ios:{
+                shadowColor: "rgba(0, 0, 0, 0.05)",
+                shadowOffset: {
+                    width: 0,
+                    height: 0
+                },
+                shadowRadius: 10,
+                shadowOpacity: 1
+            },
+            android:{
+                elevation:2,
+            }
+        })
+    },
+    topBar:{
+        paddingHorizontal:16,
+        paddingVertical:12,   
+        alignItems:"center",
+        marginBottom:20,
+        justifyContent:"space-between", 
+        width:"100%", 
+        borderBottomWidth:1,
+        borderBottomColor:"rgba(238, 238, 238, 1.0)"
+    },
+    pill:{
+        paddingHorizontal:8,
+        paddingVertical:3,
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: "rgba(221, 221, 221, 1.0)",
+        marginBottom:9,
+    },
+    mainPill:{
+        minWidth:100,
+        paddingHorizontal:15,
+        paddingVertical:10,
+        borderRadius: 10,
+        backgroundColor: "#F6F8FD",
+        borderWidth: 1,
+        borderColor: "rgba(227, 234, 246, 1.0)"
+    }
 });

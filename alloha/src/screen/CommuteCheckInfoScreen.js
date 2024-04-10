@@ -28,7 +28,6 @@ export default function CommuteCheckInfoScreen({navigation}) {
         <View style={styles.container}>
             <Top />
             <BotContainer />
-            
         </View>
     );
     /*
@@ -255,8 +254,8 @@ const BotItem = ({data}) => {
                 <View style={styles.cardTag}>
                     <Text style={fonts.tagText}>통보:{data.issueCount2}</Text>
                 </View>
-                { (data.genDure == 0)? null:<View style={styles.cardTag}><Text style={fonts.tagText}>{data.genDure}시간(일반)</Text></View>}
-                { (data.spcDure == 0)? null:<View style={styles.cardTag}><Text style={fonts.tagText}>{data.spcDure}시간(대타)</Text></View>}    
+                { (false && data.genDure != 0)? <View style={styles.cardTag}><Text style={fonts.tagText}>{data.genDure}시간(일반)</Text></View>:null}
+                { (false && data.spcDure != 0)? <View style={styles.cardTag}><Text style={fonts.tagText}>{data.spcDure}시간(대타)</Text></View>:null}    
             </View>
         </TouchableOpacity>
     )
