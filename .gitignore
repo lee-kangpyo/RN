@@ -48,6 +48,7 @@ albaManager/.metro-health-check*
 alba/.metro-health-check*
 alba/node_modules/
 alba/node_modules_old/
+alba/node_modules_old/
 alba/.expo/
 alba/dist/
 alba/npm-debug.*
@@ -61,6 +62,25 @@ alba/web-build/
 alba/.DS_Store
 alba/.metro-health-check*
 alba/app.json
+
+alloha/.metro-health-check*
+alloha/node_modules/
+alloha/node_modules_old/
+alloha/.expo/
+alloha/dist/
+alloha/npm-debug.*
+alloha/*.jks
+alloha/*.p8
+alloha/*.p12
+alloha/*.key
+alloha/*.mobileprovision
+alloha/*.orig.*
+alloha/web-build/
+alloha/.DS_Store
+alloha/.metro-health-check*
+alloha/eas.json
+alloha/.env
+alloha/google-services.json
 
 alloha/.metro-health-check*
 alloha/node_modules/
