@@ -100,6 +100,27 @@ taskManager/logs
 taskManager/.env
 taskManager/build
 
+
 web/node_modules
+web/.pnp
+web/.pnp.js
+
+# testing
+web/coverage
+
+# production
 web/build
-web/.gitignore
+
+# misc
+web/.env
+web/.DS_Store
+web/.env.local
+web/.env.development.local
+web/.env.test.local
+web/.env.production.local
+
+web/npm-debug.log*
+web/yarn-debug.log*
+web/yarn-error.log*
+
+

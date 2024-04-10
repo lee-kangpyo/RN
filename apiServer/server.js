@@ -4,13 +4,20 @@ const app = express();
 
 const apiRouter = require("./src/route/api")
 const pushRouter = require("./src/route/push");
+const webRouter = require("./src/route/web");
 const { sendBadge } = require('./src/utils/pushFunc');
+
+const cors = require('cors');
 
 app.listen(8080, function () {
   console.log('listening on 8080')
 });
 
 app.use(express.json());
+
+app.use(cors({
+  origin: ["http://localhost:3000"],
+}));
 
 
 // 주기적인 polling을 설정 (예: 5초마다)
@@ -28,5 +35,6 @@ app.get("/", async (req, res, next)=>{
 })
 
 app.use('/api', apiRouter);
+app.use('/v1/web', webRouter);
 app.use('/push', pushRouter);
 

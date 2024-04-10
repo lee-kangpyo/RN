@@ -1,0 +1,20 @@
+.container{
+    padding: 37px;
+    font-family: SUIT-Medium;
+}
+
+.title{
+    margin-top: 150px;
+    margin-bottom: 90px;
+    font-family: Tium;
+    color: #3479EF;
+    font-size: 40px;
+}
+.input{
+    width: 90%;
+    height: 50px;
+    border: 1px solid #dddddd;
+    border-radius: 10px;
+}
+
+

@@ -1,5 +1,39 @@
+@font-face {
+  font-family: "";
+  font-weight: normal;
+  src: url("./assets/fonts/SUIT-Medium.otf") format("truetype");
+}
+@font-face {
+  font-family: "SUIT-Bold";
+  font-weight: normal;
+  src: url("./assets/fonts/SUIT-Bold.otf") format("truetype");
+}
+@font-face {
+  font-family: "SUIT-ExtraBold";
+  font-weight: normal;
+  src: url("./assets/fonts/SUIT-ExtraBold.otf") format("truetype");
+}
+@font-face {
+  font-family: "SUIT-Regular";
+  font-weight: normal;
+  src: url("./assets/fonts/SUIT-Regular.otf") format("truetype");
+}
+@font-face {
+  font-family: "Tium";
+  font-weight: normal;
+  src: url("./assets/fonts/Tium.ttf") format("truetype");
+}
+
 .App {
   text-align: center;
+}
+.center{
+  font-family: SUIT-Medium;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
 }
 
 .App-logo {
