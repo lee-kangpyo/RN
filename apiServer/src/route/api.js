@@ -6,7 +6,7 @@ const { login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMC
         getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, jobChk, salary,
         insertJobChk, geofencingTest, checkJobChk, insert_Uuid_Token, autoLogin, getUUID, checkjobtotal, 
         getTermsDetail, updateTaxNo, modifyStoreInfo, easyAlbaMng, albaSchedulemanager2, albaSchedulemanager, changeCrewName, logOut, changeCrewRTCLAprov,
-        delUser} = require('./../query/auth'); 
+        delUser, chekcUser} = require('./../query/auth'); 
 const axios = require('axios');
 
 const dotenv = require('dotenv');
@@ -637,9 +637,18 @@ router.get("/v1/delUser", async (req, res, next) => {
     try {
         const{userId, key} = req.query;
         if(key == "r#9t1u4J5FVcPd_h#s6cQVIlf_R!!4x6dRK1AC#qPMz3CVox7zOdF4vxuRI$JvUJaNmeKvGmJ1OvAzK8Dx6moy1fbn"){
-            await execSql(delUser, {userId});
+            const chekcUserrst = await execSql(chekcUser, {userId});
+            if(chekcUserrst.rowsAffected == 0){
+                res.status(200).json({resultCode:"-03", msg:"해당 아이디는 존재하지 않습니다."});        
+            }else{
+                if(chekcUserrst.recordset[0].USEYN == 'Y'){
+                    const result = await execSql(delUser, {userId});
+                }else{
+                    res.status(200).json({resultCode:"-04", msg:"이미 탈퇴한 계정입니다."});        
+                };
+            };
         }else{
-            res.status(200).json({resultCode:"02", msg:"탈퇴중 오류가 발생했습니다."});    
+            res.status(200).json({resultCode:"-02", msg:"탈퇴중 오류가 발생했습니다."});    
         }
         //const param = {cls:"WeekScheduleCopy", cstCo:cstCo, userId:"", ymdFr:ymdFr, ymdTo:ymdTo, wCnt:wCnt};
         //await execSql(albaSchedulemanager, param);
