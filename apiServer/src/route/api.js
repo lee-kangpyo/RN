@@ -640,15 +640,18 @@ router.get("/v1/delUser", async (req, res, next) => {
             const chekcUserrst = await execSql(chekcUser, {userId});
             if(chekcUserrst.rowsAffected == 0){
                 res.status(200).json({resultCode:"-03", msg:"해당 아이디는 존재하지 않습니다."});        
+                return;
             }else{
                 if(chekcUserrst.recordset[0].USEYN == 'Y'){
                     const result = await execSql(delUser, {userId});
                 }else{
                     res.status(200).json({resultCode:"-04", msg:"이미 탈퇴한 계정입니다."});        
+                    return;
                 };
             };
         }else{
             res.status(200).json({resultCode:"-02", msg:"탈퇴중 오류가 발생했습니다."});    
+            return;
         }
         //const param = {cls:"WeekScheduleCopy", cstCo:cstCo, userId:"", ymdFr:ymdFr, ymdTo:ymdTo, wCnt:wCnt};
         //await execSql(albaSchedulemanager, param);
