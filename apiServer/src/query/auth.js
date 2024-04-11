@@ -2,6 +2,7 @@ const login = `
     SELECT	PWDCOMPARE(@passWord, a.CRPYPW) pwCheck, a.ownrYn, a.mnrgYn, a.crewYn, a.userNa
     FROM	PLYMUSER a
     WHERE	a.USERID = @userId
+    AND     a.USEYN = 'Y'
 `
 const logOut = `
     UPDATE a set a.TOKEN = ''
@@ -13,6 +14,7 @@ const autoLogin = `
     FROM	PLYMUSER a
     WHERE	a.USERID = @userId
     AND     a.UUID = @uuid
+    AND     a.USEYN = 'Y'
 `
 const test = `
     SELECT * 
@@ -29,6 +31,10 @@ const isIdDuplicate = `
 const saveUser = `
     INSERT INTO PLYMUSER(USERID, USERNA, [PASSWORD], HPNO, STATCO, USEYN, IUSERID, IYMDHMD, CRPYPW, OWNRYN, MNRGYN, CREWYN)
     VALUES(@userId, @userName, @passWord, @hpNo, '00', 'Y', @userId, GETDATE(), PWDENCRYPT(@passWord), @ownrYn, @mnrgYn, @crewYn)
+`
+const delUser = `
+    UPDATE a set a.USEYN = 'N' , UUID = ''
+    from plymuser a where userid = @userId
 `
 
 //사업장 조회
@@ -227,4 +233,4 @@ const albaSchedulemanager2 = `
     exec PR_PLYA02_ALBASCHMNG @cls, @cstCo, @userId, @ymdFr, @ymdTo, @jobCl, @sTime, @eTime
 `
 
-module.exports = {login, logOut, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, changeCrewRTCLAprov, searchMyAlbaList, getSelStoreRecords, insertJobChk, geofencingTest, checkJobChk, insert_Uuid_Token, autoLogin, getUUID, jobChk, jobChk2, salary, getTermsDetail, updateTaxNo, modifyStoreInfo, easyAlbaMng, albaSchedulemanager, albaSchedulemanager2, changeCrewName}
+module.exports = {login, logOut, delUser, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, changeCrewRTCLAprov, searchMyAlbaList, getSelStoreRecords, insertJobChk, geofencingTest, checkJobChk, insert_Uuid_Token, autoLogin, getUUID, jobChk, jobChk2, salary, getTermsDetail, updateTaxNo, modifyStoreInfo, easyAlbaMng, albaSchedulemanager, albaSchedulemanager2, changeCrewName}

@@ -5,7 +5,8 @@ const {execSql, execTranSql} = require("../utils/excuteSql");
 const { login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, 
         getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, jobChk, salary,
         insertJobChk, geofencingTest, checkJobChk, insert_Uuid_Token, autoLogin, getUUID, checkjobtotal, 
-        getTermsDetail, updateTaxNo, modifyStoreInfo, easyAlbaMng, albaSchedulemanager2, albaSchedulemanager, changeCrewName, logOut, changeCrewRTCLAprov} = require('./../query/auth'); 
+        getTermsDetail, updateTaxNo, modifyStoreInfo, easyAlbaMng, albaSchedulemanager2, albaSchedulemanager, changeCrewName, logOut, changeCrewRTCLAprov,
+        delUser} = require('./../query/auth'); 
 const axios = require('axios');
 
 const dotenv = require('dotenv');
@@ -629,6 +630,28 @@ router.post("/v1/WeekScheduleCopy", async (req, res, next) => {
     }
     
 })
+
+
+router.get("/v1/delUser", async (req, res, next) => {
+    console.log("api.delUser");
+    try {
+        const{userId, key} = req.query;
+        if(key == "r#9t1u4J5FVcPd_h#s6cQVIlf_R!!4x6dRK1AC#qPMz3CVox7zOdF4vxuRI$JvUJaNmeKvGmJ1OvAzK8Dx6moy1fbn"){
+            await execSql(delUser, {userId});
+        }else{
+            res.status(200).json({resultCode:"02", msg:"탈퇴중 오류가 발생했습니다."});    
+        }
+        //const param = {cls:"WeekScheduleCopy", cstCo:cstCo, userId:"", ymdFr:ymdFr, ymdTo:ymdTo, wCnt:wCnt};
+        //await execSql(albaSchedulemanager, param);
+        res.status(200).json({resultCode:"00", msg:"탈퇴처리가 완료 되었습니다."});
+    } catch (error) {
+        console.log(error.message)
+        res.status(200).json({ resultCode:"-1", msg:"탈퇴 중 오류가 발생했습니다."});
+    }
+    
+})
+
+
 
 router.use('/v1/work', workRouter); 
 router.use('/v1/rlt', resultRouter); 
