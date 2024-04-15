@@ -96,7 +96,7 @@ const linking = {
     });
     return () => {
       // Clean up the event listeners
-      Linking.removeEventListener('url', onReceiveURL);
+      //Linking.removeEventListener('url', onReceiveURL);
       subscription.remove();
     };
   },
