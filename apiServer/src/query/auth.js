@@ -37,7 +37,7 @@ const delUser = `
     from plymuser a where userid = @userId
 `
 const chekcUser = `
-    SELECT * from plymuser WHERE userid = @userId 
+    SELECT * from plymuser WHERE userid = @userId  and hpNo = @hpNo
 `
 
 //사업장 조회

@@ -1,5 +1,5 @@
 
-import { StyleSheet, Text, View, StatusBar, KeyboardAvoidingView, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, StatusBar, KeyboardAvoidingView, TouchableOpacity, Platform, SafeAreaView } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import { ProfitLossAlbaList, ProfitLossContainer, ProfitLossPl, TotalContainer } from '../components/common/Container';
 import StoreSelectBoxWithTitle from '../components/common/StoreSelectBoxWithTitle';
@@ -135,7 +135,7 @@ export default function ProfitAndLossScreen({navigation}) {
 }
 
 const styles = StyleSheet.create({
-    container:{ flex: 1, alignItems: 'center', padding:5},
+    container:{ flex: 1, alignItems: 'center', padding:5, marginTop:40, marginVertical:10},
     card:{
         flex:1,
         borderWidth: 1, // 테두리 두께

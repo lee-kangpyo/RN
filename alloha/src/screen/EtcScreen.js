@@ -9,6 +9,7 @@ import * as TaskManager from 'expo-task-manager';
 import { color } from 'react-native-reanimated';
 import { HTTP } from '../util/http';
 import { setOwnerCstco } from '../../redux/slices/common';
+import DelUser from '../components/common/DelUser';
 
 export default function EtcScreen({navigation}) {
     const dispatch = useDispatch();
@@ -25,7 +26,13 @@ export default function EtcScreen({navigation}) {
         TaskManager.unregisterAllTasksAsync();
     }
 
+    const [checkDelUserModalmodalVisible, setCheckDelUserModalVisible] = useState(false);
+    checkDelUser = () => {
+        setCheckDelUserModalVisible(true)
+    }
+
     return (
+        <>
         <View style={{padding:15}}>
             <View style={[styles.container, {flexDirection:"row"}]}>
                 <GridBox 
@@ -46,23 +53,29 @@ export default function EtcScreen({navigation}) {
                 />
             </View>
             <View style={[styles.container, {flexDirection:"row"}]}>
-                <GridBox
-                    text={"커뮤니티"}
-                    onPress={()=>navigation.push("community")}
-                    icon={{type:"Ionicons", name:"people-sharp", size:48, color:"black"}}
-                />
+                
                 <GridBox
                     text={"질문"}
                     onPress={()=>navigation.push("qna")}
                     icon={{type:"MaterialCommunityIcons", name:"chat-question", size:48, color:"black"}}
                 />
                 <GridBox
+                    text={"회원탈퇴"}
+                    onPress={checkDelUser}
+                    icon={{type:"FontAwesome5", name:"user-slash", size:48, color:"red"}}
+                />
+                <GridBox
                     text={"준비중"}
                     onPress={()=>null}
                     icon={{type:"AntDesign", name:"appstore-o", size:48, color:"black"}}
+                    // text={"커뮤니티"}
+                    // onPress={()=>navigation.push("community")}
+                    // icon={{type:"Ionicons", name:"people-sharp", size:48, color:"black"}}
                 />
             </View>
         </View>
+        <DelUser isVisible = {checkDelUserModalmodalVisible} setIsVisible = {setCheckDelUserModalVisible}/>
+        </>
     );
 }
 

@@ -1,5 +1,5 @@
 
-import { StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Modal, Button, TextInput} from 'react-native';
 import React, {useState, useEffect} from 'react';
 import { FontAwesome5, MaterialCommunityIcons, Ionicons, AntDesign   } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,6 +9,7 @@ import * as TaskManager from 'expo-task-manager';
 import { color } from 'react-native-reanimated';
 import { initAlbaSlice } from '../../redux/slices/alba';
 import { HTTP } from '../util/http';
+import DelUser from './../components/common/DelUser';
 
 export default function EtcCrewScreen({navigation}) {
     const dispatch = useDispatch();
@@ -23,10 +24,16 @@ export default function EtcCrewScreen({navigation}) {
         dispatch(setUserInfo({isLogin:false, userId:""}));
         await SecureStore.setItemAsync("uuid", "");
         TaskManager.unregisterAllTasksAsync();
-        
     }
 
+    const [checkDelUserModalmodalVisible, setCheckDelUserModalVisible] = useState(false);
+    checkDelUser = () => {
+        setCheckDelUserModalVisible(true)
+    }
+
+
     return (
+        <>
         <View style={{padding:15}}>
             <View style={[styles.container, {flexDirection:"row"}]}>
                 <GridBox
@@ -36,9 +43,12 @@ export default function EtcCrewScreen({navigation}) {
                     icon={{type:"MaterialCommunityIcons", name:"logout", size:48, color:"red"}}
                 />
                 <GridBox
-                    text={"커뮤니티"}
-                    onPress={()=>navigation.push("Comunity")}
-                    icon={{type:"Ionicons", name:"people-sharp", size:48, color:"black"}}
+                    // text={"커뮤니티"}
+                    // onPress={()=>navigation.push("Comunity")}
+                    // icon={{type:"Ionicons", name:"people-sharp", size:48, color:"black"}}
+                    text={"회원탈퇴"}
+                    onPress={checkDelUser}
+                    icon={{type:"FontAwesome5", name:"user-slash", size:48, color:"red"}}
                 />
                 <GridBox
                     text={"준비중"}
@@ -47,6 +57,8 @@ export default function EtcCrewScreen({navigation}) {
                 />
             </View>
         </View>
+        <DelUser isVisible = {checkDelUserModalmodalVisible} setIsVisible = {setCheckDelUserModalVisible}/>
+        </>
     );
 }
 

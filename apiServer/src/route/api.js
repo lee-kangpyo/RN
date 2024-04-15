@@ -635,12 +635,13 @@ router.post("/v1/WeekScheduleCopy", async (req, res, next) => {
 router.get("/v1/delUser", async (req, res, next) => {
     console.log("api.delUser");
     try {
-        const{userId, key} = req.query;
+        const {userId, key, hpNo} = req.query;
         if(key == "r#9t1u4J5FVcPd_h#s6cQVIlf_R!!4x6dRK1AC#qPMz3CVox7zOdF4vxuRI$JvUJaNmeKvGmJ1OvAzK8Dx6moy1fbn"){
-            const chekcUserrst = await execSql(chekcUser, {userId});
-            if(chekcUserrst.rowsAffected == 0){
-                res.status(200).json({resultCode:"-03", msg:"해당 아이디는 존재하지 않습니다."});        
-                return;
+            const chekcUserrst = await execSql(chekcUser, {userId, hpNo});
+            console.log(chekcUserrst)
+            if(chekcUserrst.rowsAffected[0] == 0){
+                res.status(200).json({resultCode:"-03", msg:"전화번호가 일치하지 않습니다."});  
+                return;      
             }else{
                 if(chekcUserrst.recordset[0].USEYN == 'Y'){
                     const result = await execSql(delUser, {userId});
