@@ -77,16 +77,16 @@
       ]
     ],
     "ios": {
-      "buildNumber": "6",
+      "buildNumber": "7",
       "bundleIdentifier": "com.akmz.alloha",
       "supportsTablet": true,
       "infoPlist": {
-        "UIBackgroundModes": [
-          "location",
-          "fetch"
-        ],
+        // "UIBackgroundModes": [
+        //   "location",
+        //   "fetch"
+        // ],
         "NSLocationAlwaysAndWhenInUseUsageDescription": "출퇴근 체크를 위한 위치권한이 필요합니다.",
-        "NSLocationAlwaysUsageDescription": "App requires geolocation to improve the quality of the service",
+        "NSLocationAlwaysUsageDescription": "출퇴근 체크를 위한 위치권한이 필요합니다.",
         "NSLocationWhenInUseUsageDescription": "출퇴근 체크를 위한 위치권한이 필요합니다."
       },
       "config": {
@@ -107,7 +107,7 @@
       "useNextNotificationsApi": true,
       "googleServicesFile": "./google-services.json",
       "package": "com.akmz.alloha",
-      "versionCode": 6
+      "versionCode": 7
     },
     "web": {
       "favicon": "./assets/favicon.png"

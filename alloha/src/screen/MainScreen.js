@@ -217,9 +217,10 @@ function CrewScreen(){
         tabBarInactiveTintColor: 'gray',
       })}
     >
-      <Tab.Screen name="Home" component={HomeCrewStack} options={{ headerShown:false, tabBarLabel: '홈'}}/>
-      <Tab.Screen name="schedule" component={ScheduleScreenToAlba} options={{ tabBarLabel: '주간근무계획' }}/>
+      {/*<Tab.Screen name="Home" component={HomeCrewStack} options={{ headerShown:false, tabBarLabel: '홈'}}/>*/}
       <Tab.Screen name="CommuteCheck" component={CommuteCheckStack} options={{ headerShown:false, tabBarLabel: '근무 현황'}}/>
+      <Tab.Screen name="schedule" component={ScheduleScreenToAlba} options={{ tabBarLabel: '주간근무계획' }}/>
+      
       {/* <Tab.Screen name="Home" options={{ tabBarLabel: '출퇴근(구버전)' }} >
         {() => (
           <LocationPermission Grant={HomeScreen}/>
