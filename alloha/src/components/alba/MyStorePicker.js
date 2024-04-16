@@ -15,18 +15,18 @@ export default function MyStorePicker({width="100%", borderColor=theme.selectBox
     //const [myStores, setmyStores] = useState([]);                       // 내 알바 점포들
     const sCstCo = useSelector((state)=>state.alba.sCstCo);
     const myStores = useSelector((state)=>state.alba.myStores);
+    const [iosPickerVisible, setIosPickerVisible] = useState(false);
 
     const dispatch = useDispatch();
     const searchMyAlbaList = async (init) => {
         await axios.get(URL+"/api/v1/searchMyAlbaList", {params:{userId:userId}})
         .then((res)=>{
             if(res.data.resultCode === "00"){
-                //dispatch(setMyStores({data:res.data.result}));
                 const mystore = res.data.result.filter(el => ["R", "N"].includes(el.RTCL));
-                dispatch(setMyStores({data:mystore}));
                 if(mystore.length > 0 && init == true){
                     dispatch(setSelectedStore({data:mystore[0]}));
                 }
+                dispatch(setMyStores({data:mystore}));
                 if(isComplete) isComplete();
              }else{
                 Alert.alert("알림", "내 알바 리스트 요청 중 오류가 발생했습니다. 잠시후 다시 시도해 주세요.");
@@ -40,14 +40,6 @@ export default function MyStorePicker({width="100%", borderColor=theme.selectBox
     useEffect(()=>{
         searchMyAlbaList(true);
     }, [])
-    const checkCstCo = () => {
-        const curStore = myStores.filter(el => el.CSTCO == sCstCo)[0];
-        if(curStore.RTCL == "D"){
-            console.log("ASDf")
-        }
-    }
-    const [iosPickerVisible, setIosPickerVisible] = useState(false);
-    
   return (
     (myStores.length > 0)?
         <View style={[styles.container, {width:width}]}>
@@ -80,43 +72,43 @@ export default function MyStorePicker({width="100%", borderColor=theme.selectBox
                     </>
                     :
                     <>
-                        <TouchableOpacity onPress={()=>setIosPickerVisible(true)} style={{height:"100%", justifyContent:"center"}}>
-                            <Text style={{paddingLeft:20}}>{myStores.filter(el => el.CSTCO == sCstCo)[0].CSTNA}</Text>
-                            <Image source={require('../../../assets/icons/dropDown.png')} style={styles.dropdownIcon} />
-                        </TouchableOpacity>
-                        <Modal
-                            animationType="fade"
-                            transparent={true}
-                            visible={iosPickerVisible}
-                            onRequestClose={() => {
-                                setIosPickerVisible(false);
-                            }}
-                        >
-                            <View style={modal.modalContainer}>
-                                <View style={modal.modalContent}>
-                                    {/* 모달 내용 */}
-                                    {
-                                        myStores.map((el, idx)=>{
-                                            return (el.RTCL === "N")
-                                                ?
-                                                    <TouchableOpacity style={modal.item} onPress={()=>{
-                                                        const data = myStores.filter((el2)=>{return el2.CSTCO == el.CSTCO})[0];
-                                                        dispatch(setSelectedStore({data:data}));
-                                                        setIosPickerVisible(false)
-                                                    }}>
-                                                        <Text key={idx} label={el.CSTNA} value={el.CSTCO} style={styles.pickerText}>{el.CSTNA}</Text>
-                                                    </TouchableOpacity>
-                                                :(el.RTCL === "R")?
-                                                    <View style={modal.item}>
-                                                        <Text key={idx} label={el.CSTNA + "(승인 대기 중)"} value={el.CSTCO}>{el.CSTNA + "(승인 대기 중)"}</Text>
-                                                    </View>
-                                                :  
-                                                    null;
-                                        })
-                                    }
+                            <TouchableOpacity onPress={()=>setIosPickerVisible(true)} style={{height:"100%", justifyContent:"center"}}>
+                                <Text style={{paddingLeft:20}}>{myStores.filter(el => el.CSTCO == sCstCo)[0].CSTNA}</Text>
+                                <Image source={require('../../../assets/icons/dropDown.png')} style={styles.dropdownIcon} />
+                            </TouchableOpacity>
+                            <Modal
+                                animationType="fade"
+                                transparent={true}
+                                visible={iosPickerVisible}
+                                onRequestClose={() => {
+                                    setIosPickerVisible(false);
+                                }}
+                            >
+                                <View style={modal.modalContainer}>
+                                    <View style={modal.modalContent}>
+                                        {/* 모달 내용 */}
+                                        {
+                                            myStores.map((el, idx)=>{
+                                                return (el.RTCL === "N")
+                                                    ?
+                                                        <TouchableOpacity key={idx} style={modal.item} onPress={()=>{
+                                                            const data = myStores.filter((el2)=>{return el2.CSTCO == el.CSTCO})[0];
+                                                            dispatch(setSelectedStore({data:data}));
+                                                            setIosPickerVisible(false)
+                                                        }}>
+                                                            <Text key={idx} label={el.CSTNA} value={el.CSTCO} style={styles.pickerText}>{el.CSTNA}</Text>
+                                                        </TouchableOpacity>
+                                                    :(el.RTCL === "R")?
+                                                        <View  key={idx} style={modal.item}>
+                                                            <Text key={idx} label={el.CSTNA + "(승인 대기 중)"} value={el.CSTCO}>{el.CSTNA + "(승인 대기 중)"}</Text>
+                                                        </View>
+                                                    :  
+                                                        null;
+                                            })
+                                        }
+                                    </View>
                                 </View>
-                            </View>
-                        </Modal>
+                            </Modal>
                     </>
                 }
                 
