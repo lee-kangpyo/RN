@@ -1,6 +1,6 @@
 import { Picker } from '@react-native-picker/picker';
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, Platform, TouchableOpacity, Image, Modal, ScrollView } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { setOwnerCstco, setOwnerStoreList } from '../../../redux/slices/common';
 import axios from 'axios';
@@ -11,7 +11,7 @@ export default function StoreSelectBox({flex}) {
     const cstCo = useSelector((state)=>state.common.cstCo);
     const storeList = useSelector((state)=>state.common.storeList);
     const dispatch = useDispatch();
-
+    const [iosPickerVisible, setIosPickerVisible] = useState(false);
     
 
     const getStoreList = async () => {
@@ -33,8 +33,9 @@ export default function StoreSelectBox({flex}) {
         <View style = {[styles.container, viewWidth]}>
             {
                 (cstCo == "")?
-                <Text style={{alignSelf:"center"}}>등록된 점포가 없습니다.</Text>
+                <Text style={[fonts.text, {alignSelf:"center"}]}>등록된 점포가 없습니다.</Text>
                 :
+                (Platform.OS === 'android')?
                 <Picker
                     selectedValue = {cstCo}
                     onValueChange = {(cstCo) => dispatch(setOwnerCstco({cstCo:cstCo}))}
@@ -45,21 +46,102 @@ export default function StoreSelectBox({flex}) {
                         })
                     }
                 </Picker>
+                :
+                <>
+                <TouchableOpacity onPress={()=>setIosPickerVisible(true)} style={{height:"100%", justifyContent:"center", flexDirection:"row", justifyContent:"space-between", alignItems:"center"}}>
+                    <Text style={[fonts.text, {paddingLeft:20}]}>{storeList.filter(el => el.CSTCO == cstCo)[0].CSTNA}</Text>
+                    <Image source={require('../../../assets/icons/dropDown.png')} style={styles.dropdownIcon} />
+                </TouchableOpacity>
+                <Modal
+                    animationType="fade"
+                    transparent={true}
+                    visible={iosPickerVisible}
+                    onRequestClose={() => {
+                        setIosPickerVisible(false);
+                    }}
+                >
+                    <View style={modal.modalContainer}>
+                        <ScrollView style={{width:"90%", backgroundColor: 'white', borderRadius:10}} contentContainerStyle={modal.modalContent}>
+                            {/* 모달 내용 */}
+                            {
+                                storeList.map((el, idx)=>{
+                                    return (
+                                            <TouchableOpacity key={idx} style={modal.item} onPress={()=>{
+                                                //const data = myStores.filter((el2)=>{return el2.CSTCO == el.CSTCO})[0];
+                                                //dispatch(setSelectedStore({data:data}));
+                                                dispatch(setOwnerCstco({cstCo:el.CSTCO}))
+                                                setIosPickerVisible(false)
+                                            }}>
+                                                <Text key={idx} label={el.CSTNA} value={el.CSTCO} style={styles.pickerText}>{el.CSTNA}</Text>
+                                            </TouchableOpacity>
+                                    )
+                                })
+                            }
+                        </ScrollView>
+                    </View>
+                </Modal>
+                </>
             }
             
         </View>
     );
 };
 
+const fonts = StyleSheet.create({
+    text:{
+        fontFamily: "SUIT-Regular",
+        fontSize: 15,
+        fontWeight: "400",
+        fontStyle: "normal",
+        color: "#111111"
+    }
+})
+
+const modal = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    touchableText: {
+      fontSize: 18,
+      color: 'blue',
+    },
+    modalContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: 'rgba(0, 0, 0, 0.5)', // semi-transparent 회색 배경
+      paddingVertical:200,
+    },
+
+    modalContent: {
+      
+      
+      padding: 20,
+      borderRadius: 10,
+    },
+    item:{
+        width:"100%",
+        paddingVertical:15,
+        paddingHorizontal:10,
+    },
+    closeButton: {
+      marginTop: 10,
+      color: 'blue',
+    },
+  });
+
 const styles = StyleSheet.create({
     container: {
-        justifyContent:"center",
-        height:40,
-        borderWidth:1, 
-        borderColor:"black", 
-        borderRadius:10, 
+        height:50,
+        borderRadius: 10,
+        backgroundColor: "#FFFFFF",
+        borderWidth: 1,
+        borderColor: "rgba(221, 221, 221, 1.0)"
     },
     item:{
         fontSize:13,
-    }
+    },
+    dropdownIcon:{position:"absolute", right:15, width:18, height:18, resizeMode:"contain"}
 });

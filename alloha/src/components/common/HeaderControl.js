@@ -4,22 +4,30 @@ import { Ionicons } from '@expo/vector-icons';
 
 export default function HeaderControl({title, onLeftTap, onRightTap, }) {
   return (
-    <View style={{flexDirection:"row"}}>
+    <View style={styles.container}>
         <TouchableOpacity onPress={onLeftTap}>
-            <Ionicons name="caret-back-outline" size={28} color="black" />
+            <Ionicons name="caret-back-outline" size={28} color="#999999" />
         </TouchableOpacity>
-        <Text style={{fontSize:20}}>{title}</Text>
+        <Text style={fonts.title}>{title}</Text>
         <TouchableOpacity onPress={onRightTap}>
-            <Ionicons name="caret-forward-outline" size={28} color="black" />
+            <Ionicons name="caret-forward-outline" size={28} color="#999999" />
         </TouchableOpacity>
     </View>
   );
 };
-
+const fonts = StyleSheet.create({
+  title:{
+    fontFamily: "SUIT-Bold",
+    fontSize: 14,
+    fontWeight: "700",
+    fontStyle: "normal",
+    color: "#111111"
+  }
+})
 const styles = StyleSheet.create({
     container: {
-      flex: 1,
-      justifyContent: 'center',
+      flexDirection:"row",
+      justifyContent: 'space-around',
       alignItems: 'center',
     },
   });

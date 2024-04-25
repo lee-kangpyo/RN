@@ -1,5 +1,5 @@
 
-import { StyleSheet, Animated, Text, View, TouchableOpacity, Keyboard, Switch, Alert, Dimensions, StatusBar, SafeAreaView, ScrollView } from 'react-native';
+import { StyleSheet, Animated, Text, View, TouchableOpacity, Keyboard, Switch, Alert, Dimensions, StatusBar, SafeAreaView, ScrollView, Image, Platform } from 'react-native';
 import React, {useState, useEffect, useCallback, useRef, useMemo} from 'react';
 import WeekDate from '../components/schedule/WeekDate';
 import { useSelector, useDispatch } from 'react-redux';
@@ -60,7 +60,6 @@ export default function WorkScreen({navigation}) {
     
     useEffect(() => {
         if (isFocused) {
-            console.log('근무결과 화면이 활성화됨');
             if(cstCo != "") getWeekSchedule();
         }
     }, [isFocused, cstCo, week]);
@@ -68,14 +67,14 @@ export default function WorkScreen({navigation}) {
 
 
     useEffect(()=>{
-        navigation.setOptions({
-            headerShown:false,
-            title:"근무 결과", 
-            headerStyle: {
-                backgroundColor: "#FFDFDF",
-            },
-            headerTintColor: "black",
-        })
+        // navigation.setOptions({
+        //     headerShown:false,
+        //     title:"근무 결과", 
+        //     headerStyle: {
+        //         backgroundColor: "#FFDFDF",
+        //     },
+        //     headerTintColor: "black",
+        // })
     }, [navigation])
 
     const [ShowDelBtn, setShowDelBtn] = useState(false);
@@ -135,7 +134,9 @@ export default function WorkScreen({navigation}) {
       Keyboard.dismiss();
     }, []);
   
+    const [selectedAlba, setSelectedAlba] = useState([]);
     const onAlbaTap = (info, item) => {
+        setSelectedAlba((item)?item:[]);
         dispatch(setWorkAlbaInfo({data:info}));
         handleSnapPress(0)
     }
@@ -187,12 +188,14 @@ export default function WorkScreen({navigation}) {
     //###############################################################
     return (
         <SafeAreaView style={styles.container}>
-            <StatusBar />
-            <GestureHandlerRootView >
-                <StoreSelectBoxWithTitle titleText={"근무 결과"} titleflex={4} selectBoxFlex={8} />
-                <View style={{...styles.card, padding:5}}>
-                    <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:5}}>
-                        <HeaderControl title={`${weekNumber.month}월 ${weekNumber.number}주차`} onLeftTap={()=> dispatch(prevWeek())} onRightTap={()=> dispatch(nextWeek())} />
+            <StatusBar barStyle={"dark-content"}/>
+            <GestureHandlerRootView style={{paddingHorizontal:16, paddingTop:10}}>
+                <StoreSelectBoxWithTitle titleText={""} titleflex={0} selectBoxFlex={8} />
+                <View style={{...styles.card, paddingTop:20}}>
+                <HeaderControl title={`${weekNumber.month}월 ${weekNumber.number}주차`} onLeftTap={()=> dispatch(prevWeek())} onRightTap={()=> dispatch(nextWeek())} />
+                    {(false)?
+                    <>
+                    <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:5,}}>
                         <View style={{flexDirection:"row"}}>
                             <TouchableOpacity style={{marginRight:5}} onPress={()=>navigation.push("reqChangeWork")}>
                                 <View style={{...styles.btnMini, paddingVertical:0, paddingHorizontal:5, borderColor:(owrBadge > 0)?theme.error:theme.link}}>
@@ -205,6 +208,7 @@ export default function WorkScreen({navigation}) {
                                 </View>
                             </TouchableOpacity>
                         </View>
+                        
                         {
                             (false)?
                                 <TouchableOpacity onPress={()=>dispatch(setAlba(alba))}>
@@ -216,13 +220,16 @@ export default function WorkScreen({navigation}) {
                         }
                         
                     </View>
-                    <Animated.View style={{width:widthValue}}>
-                        <WeekDate sBlank={2} eBlank={2} week={week}/>
+                    
+                    </>
+                    : null}
+                    <Animated.View style={{width:widthValue, paddingTop:20, marginBottom:5}}>
+                        <WeekDate sBlank={1.3} eBlank={1} week={week}/>
                     </Animated.View>
                     <ScrollView contentContainerStyle={{paddingBottom:(bottomSheetIndex == -1)?0:Dimensions.get('window').height * 0.3, }}>
                         {
                             (albas.length == 0)?
-                                <View style={{alignItems:"center", borderWidth:1, borderColor:"grey", padding:5}}>
+                                <View style={{alignItems:"center", borderWidth:0, padding:5}}>
                                     <Text>데이터가 없습니다.</Text>
                                 </View>
                             :
@@ -230,7 +237,7 @@ export default function WorkScreen({navigation}) {
                                     return (
                                         <View key={idx} style={{flexDirection:"row"}}>
                                             <Animated.View style={{width:widthValue}} >
-                                                <WorkAlba alba={item} week={week} onTap={onAlbaTap} onDel={getWeekSchedule} />
+                                                <WorkAlba alba={item} week={week} onTap={onAlbaTap} onDel={()=>delAlba(item.userId, item.userNa)} />
                                             </Animated.View>
                                             <TouchableOpacity onPress={()=>delAlba(item.userId, item.userNa)} style={{...styles.btnMini, alignItems:"center", backgroundColor:"red", justifyContent:"center", width:50}}>
                                                 <Text style={{color:"white"}}>삭제</Text>
@@ -239,9 +246,10 @@ export default function WorkScreen({navigation}) {
                                     )
                                 })
                         }
-                        <TouchableOpacity onPress={()=>{setModalVisible(true);}}>
-                            <View style={{...styles.box, width:Dimensions.get('window').width - 22}}>
-                                <Text style={{fontSize:24}}>+</Text>
+                        <TouchableOpacity onPress={()=>{setModalVisible(true);}} style={{marginTop:12}}>
+                            <View style={{...styles.box, width:Dimensions.get('window').width - 22, flexDirection:"row",}}>
+                                <Image source={require('../../assets/icons/cross.png')} style={styles.crossIcon} />
+                                <Text style={fonts.add}>추가하기</Text>
                             </View>
                         </TouchableOpacity>
                     </ScrollView>
@@ -260,11 +268,12 @@ export default function WorkScreen({navigation}) {
                     selectAlba={selectAlba} 
                 />
                 <NumberBottomSheet 
+                    style={botsheet.topContainer}
                     sheetRef = {sheetRef}
                     onBottomSheetChanged = {(idx)=>setBottomSeetIndex(idx)}
                     onClose={()=>dispatch(disabledEditing())}
                     Content = {
-                        <BtnSet workInfo={workInfo} cstCo={cstCo} refresh={(callback) => getWeekSchedule(callback)} onDelete={delAlba} onClose={()=>sheetRef.current.close()} 
+                        <BtnSet selectedAlba={selectedAlba} workInfo={workInfo} cstCo={cstCo} refresh={(callback) => getWeekSchedule(callback)} onDelete={delAlba} onClose={()=>sheetRef.current.close()} 
                             onTypingModalShow={(param)=>{
                                 setTimeModalParams(param)
                                 setModifyTimeShow(true)
@@ -281,7 +290,8 @@ export default function WorkScreen({navigation}) {
     );
     
 }
-function BtnSet({ workInfo, cstCo, refresh, onDelete, onClose, onTypingModalShow, }){
+function BtnSet({ selectedAlba, workInfo, cstCo, refresh, onDelete, onClose, onTypingModalShow, }){
+    
     const [isEnabled, setIsEnabled] = useState(false);
     const [isFncRunning, setIsFncRunning] = useState(false);
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
@@ -310,48 +320,64 @@ function BtnSet({ workInfo, cstCo, refresh, onDelete, onClose, onTypingModalShow
             onBtnTap(num)
         };
     }
+
+    const renderNumBox = (num, idx)=>{
+        const jobCl = (isEnabled)?"S":"G";
+        const selectInfo = selectedAlba.find(el => el.JOBCL == jobCl);
+        const selected = (selectInfo && selectInfo.JOBDURE == num)?true:false;
+        const box = (selected)?{backgroundColor: "#3479EF"}:{};
+        const text = (selected)?{color:"white"}:{};
+        return (
+            <TouchableOpacity key={idx} onPress={()=>onBtnPress(num)} style={[styles.numberBox, box]}>
+                <Text style={[fonts.boxText, text]}>{num}</Text>
+            </TouchableOpacity>
+        )
+    }
     return(
-        <View style={{flex:1, justifyContent:"center"}}>
-            <View style={{ flexDirection:"row", alignItems:"center",justifyContent:"space-between", height:30, marginHorizontal:15, marginBottom:10}}>
-                <Text>{workInfo.ymd.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3')} [{workInfo.userNa}]</Text>
+        <View style={botsheet.container}>
+            <View style={{ flexDirection:"row", alignItems:"center",justifyContent:"space-between", marginHorizontal:15, marginBottom:(Platform.OS == "ios")?8:0}}>
+                <View style={[styles.row, {alignItems:"baseline"}]}>
+                    <Text style={[fonts.botYmd, {marginRight:5}]}>{workInfo.ymd.replace(/(\d{4})(\d{2})(\d{2})/, '$1.$2.$3')}</Text>
+                    <Text style={fonts.botName}>{workInfo.userNa}</Text>
+                </View>
                 <View style={{flexDirection:"row", alignItems:"center"}}>
-                    <TouchableOpacity style={{marginRight:5}} onPress={()=>{
-                        const type = (isEnabled)?"S":"G"
-                        const param = {cls:"WeekAlbaWorkSave", cstCo, userId:workInfo.userId, ymdFr:workInfo.ymd, ymdTo:"", jobCl:type, jobDure:0}
-                        onTypingModalShow(param);
-                    }}>
-                        <Text style={styles.btnMini}>직접입력</Text>
-                    </TouchableOpacity>
+                    <Text style={fonts.ge}>일반</Text>
                     <Switch
+                        style={{marginHorizontal:8,}}
                         trackColor={{false: '#767577', true: '#81b0ff'}}
                         thumbColor={isEnabled ? '#f5dd4b' : '#f4f3f4'}
-                        ios_backgroundColor="#3e3e3e"
+                        ios_backgroundColor="#3479EF"
                         onValueChange={toggleSwitch}
                         value={isEnabled}
                     />
-                    <Text style={{marginLeft:-3}}>{(isEnabled)?"특근":"일반"}</Text>
+                    <Text style={fonts.sp}>특근</Text>
                 </View>
             </View>
-            <View style={{paddingHorizontal:10,  marginBottom:10}}>
+            <View style={{paddingHorizontal:15,  marginBottom:10, alignItems:"flex-end"}}>
+                <TouchableOpacity style={{}} onPress={()=>{
+                    const type = (isEnabled)?"S":"G"
+                    const param = {cls:"WeekAlbaWorkSave", cstCo, userId:workInfo.userId, ymdFr:workInfo.ymd, ymdTo:"", jobCl:type, jobDure:0}
+                    onTypingModalShow(param);
+                }}>
+                    <Text style={fonts.btnText}>직접입력</Text>
+                </TouchableOpacity>
+            </View>
+            <View style={{paddingHorizontal:10,  marginBottom:20}}>
                 <View style={{flexDirection:"row",}}>
                     {
-                        [3, 4, 5, 6, 7, 8, 9, 0].map((num, idx)=>{
-                            return <TouchableOpacity key={idx} onPress={()=>onBtnPress(num)} style={styles.numberBox}><Text>{num}</Text></TouchableOpacity>
-                        })
+                        [3, 4, 5, 6, 7, 8, 9, 0].map(renderNumBox)
                     }
                 </View>
                 <View style={{flexDirection:"row"}}>
                     {
-                        [2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5].map((num, idx)=>{
-                            return <TouchableOpacity key={idx} onPress={()=>onBtnPress(num)} style={styles.numberBox}><Text>{num}</Text></TouchableOpacity>
-                        })
+                        [2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5].map(renderNumBox)
                     }
                     
                 </View>
             </View>
             <View style={{flexDirection:"row", justifyContent:"space-between", alignItems:"center", paddingHorizontal:15}}>
-                <TouchableOpacity style={{...styles.btn, marginRight:5}} onPress={()=>onClose()}>
-                    <Text>닫기</Text>
+                <TouchableOpacity style={{...styles.btn, backgroundColor:"#999999",marginRight:5}} onPress={()=>onClose()}>
+                    <Text style={fonts.btnTextWhite}>닫기</Text>
                 </TouchableOpacity>
                 {
                     (false)?
@@ -360,52 +386,112 @@ function BtnSet({ workInfo, cstCo, refresh, onDelete, onClose, onTypingModalShow
                     </TouchableOpacity>
                     :null
                 }
-                <TouchableOpacity style={styles.btn} onPress={()=>dispatch(moveWeekDown())}>
-                    <Text>다음</Text>
+                <TouchableOpacity style={[styles.btn, {backgroundColor:"#3479EF"}]} onPress={()=>dispatch(moveWeekDown())}>
+                    <Text style={fonts.btnTextWhite}>다음</Text>
                 </TouchableOpacity>
             </View>
         </View>
     )
 }
+const botsheet = StyleSheet.create({
+    topContainer:{
+        borderWidth:1.5,
+        borderRadius:20,
+        borderColor:"#aaa",
+        overflow:"hidden",
+    },
+    container:{
+        flex:1, 
+        justifyContent:"center",
+    },
 
+})
+const fonts = StyleSheet.create({
+    add:{
+        fontFamily: "SUIT-Medium",
+        fontSize: 13,
+        fontWeight: "500",
+        color: "#777777"
+    },
+    botYmd:{
+        fontFamily: "SUIT-Medium",
+        fontSize: 16,
+        fontWeight: "500",
+        color: "#777777"
+    },
+    botName:{
+        fontFamily: "SUIT-Bold",
+        fontSize: 16,
+        fontWeight: "700",
+        color: "#111111"
+    },
+    ge:{
+        fontFamily: "SUIT-Medium",
+        fontSize: 15,
+        fontWeight: "500",
+        fontStyle: "normal",
+        color: "#3479EF"
+    },
+    sp:{
+        fontFamily: "SUIT-Medium",
+        fontSize: 15,
+        fontWeight: "500",
+        fontStyle: "normal",
+        color: "#999999"
+    },
+    btnText:{
+        fontFamily: "SUIT-Bold",
+        fontSize: 14,
+        fontWeight: "700",
+        color: "#28B49A"
+    },
+    btnTextWhite:{
+        fontFamily: "SUIT-Bold",
+        fontSize: 15,
+        fontWeight: "700",
+        fontStyle: "normal",
+        color: "#FFFFFF"
+    },
+    boxText:{
+        fontFamily: "SUIT-ExtraBold",
+        fontSize: 15,
+        fontWeight: "800",
+        color: "#999999"  
+    },
+
+})
 const styles = StyleSheet.create({
-    container:{ flex: 1, alignItems: 'center', padding:5},
+    container:{ flex: 1, alignItems: 'center', padding:5, backgroundColor:"#FFFFFF"},
     card:{
         flex:1,
-        borderWidth: 1, // 테두리 두께
-        borderColor: 'black', // 테두리 색상
-        borderRadius: 10, // 테두리 모서리 둥글게 
     },
     box:{
-        backgroundColor:"#D7E5CA",
-        paddingVertical:10,
-        margin:1,
-        borderWidth: 0.5, // 테두리 두께
-        borderColor: 'gray', // 테두리 색상
-        borderRadius: 0, // 테두리 모서리 둥글게 
+        justifyContent:"center",
         alignItems:"center",
+        height: 36,
+        borderRadius: 5,
+        borderWidth: 1,
+        borderColor: "rgba(221, 221, 221, 1.0)"
     },
     numberBox:{
         flex:1, 
-        height:40,
+        height:52,
         margin:3,
-        borderWidth: 0.5, // 테두리 두께
-        borderColor: 'gray', // 테두리 색상
-        borderRadius: 0, // 테두리 모서리 둥글게 
         backgroundColor:"white", 
         alignItems:"center",
-        justifyContent:"center"
+        justifyContent:"center",
+        borderRadius: 5,
+        borderWidth: 1,
+        borderColor: "rgba(221, 221, 221, 1.0)"
     },
     btn:{
         flex:1,
-        backgroundColor:"#FFCD4B", 
         paddingHorizontal:10,
         paddingVertical:15, 
         borderRadius: 10, // 테두리 모서리 둥글게 
         alignSelf:"center",
         alignItems:"center", 
         marginBottom:10, 
-        
     },
     btnMini:{borderWidth:1, borderColor:"grey", borderRadius:5, padding:1,  verticalAlign:"middle", padding:4},
     title:{alignSelf:"center", fontSize:20, marginBottom:15},
@@ -422,5 +508,11 @@ const styles = StyleSheet.create({
     },
     btnText:{
         color:theme.link
-    }
+    },
+    crossIcon:{
+        width:12,
+        height:12,
+        marginRight:2,
+    },
+    row:{flexDirection:"row"}
 });

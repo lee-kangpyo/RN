@@ -6,13 +6,16 @@ export default function StoreSelectBoxWithTitle({titleflex, selectBoxFlex, title
    
     return (
         <View style={styles.comp}>
-            <Text style={[styles.text, {flex:titleflex}]}>{titleText}</Text>
+            {
+                (titleText == "")?null
+                : <Text style={[styles.text, {flex:titleflex}]}>{titleText}</Text>
+            }
             <StoreSelectBox flex={selectBoxFlex} />
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    comp: { flexDirection:"row", paddingVertical:5},
+    comp: { flexDirection:"row", },
     text: { alignSelf:"center", fontSize:20, paddingLeft:15, fontWeight:"bold" }
 });

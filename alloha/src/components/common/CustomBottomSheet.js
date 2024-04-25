@@ -3,15 +3,16 @@ import { StyleSheet, Dimensions } from 'react-native';
 import { useDispatch } from 'react-redux';
 import BottomSheet, {BottomSheetView, BottomSheetBackdrop} from '@gorhom/bottom-sheet';
 
-export function NumberBottomSheet({sheetRef, onBottomSheetChanged, onClose, Content}){
+export function NumberBottomSheet({sheetRef, onBottomSheetChanged, onClose, Content, style}){
   const windowHeight = Dimensions.get('window').height;
 
   //const [bottomSheetIndex, setBottomSeetIndex] = useState(-1)
   //const sheetRef = useRef(null);
   return(
     <CustomBottomSheet 
+      style={style}
       sheetRef={sheetRef} 
-      snapPointList={[windowHeight*0.35]} 
+      snapPointList={[windowHeight*0.40]} 
       isBackdrop={false} 
       onBottomSheetChanged={onBottomSheetChanged}
       onClose={onClose}
@@ -34,7 +35,7 @@ export function ScheduleBottomSheet({sheetRef, onBottomSheetChanged, onClose, Co
   )
 }
 
-export default function CustomBottomSheet({sheetRef, snapPointList, isBackdrop = true, Content, onBottomSheetChanged, onClose}) {
+export default function CustomBottomSheet({sheetRef, snapPointList, isBackdrop = true, Content, onBottomSheetChanged, onClose, style={}}) {
   const snapPoints = useMemo(() => snapPointList, []);
   const backdropComponent = useCallback(
     props => (
@@ -50,6 +51,7 @@ export default function CustomBottomSheet({sheetRef, snapPointList, isBackdrop =
   return (
     <>
       <BottomSheet
+        style={style}
         ref={sheetRef}
         snapPoints={snapPoints}
         enablePanDownToClose={true}

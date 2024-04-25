@@ -55,16 +55,16 @@ export function ModifyTimeModal({onShow, isShow, onClose, onConfirm}){
     return(
         <CustomTopModal isShow={isShow} onClose={onCloseModal} onShow={onShow} onConfirm={onConfirmModal}>
             <View style={{ width:"100%", }}>
-                <Text style={{marginBottom:15}}>직접입력</Text>
+                <Text style={[fonts.ModifyTimeModalTitle, {marginBottom:15}]}>직접입력</Text>
                 <TextInput
-                value={val}
-                onChange={(event) => {
-                    const {eventCount, target, text} = event.nativeEvent;
-                    setVal(text);
+                    value={val}
+                    onChange={(event) => {
+                        const {eventCount, target, text} = event.nativeEvent;
+                        setVal(text);
+                        }
                     }
-                }
-                keyboardType="decimal-pad"
-                style={{borderWidth:1}} 
+                    keyboardType="decimal-pad"
+                    style={ [styles.ModifyTimeModalInput, {borderWidth:1, padding:5}]} 
                 />
             </View>
         </CustomTopModal>
@@ -85,11 +85,11 @@ function CustomTopModal({onShow, isShow, onClose, onConfirm, children }){
                 <View style={{backgroundColor:"white", justifyContent:"center", alignItems:"center", borderWidth:1, borderColor:"black", borderRadius:10, padding:15}}>
                     {children}
                     <View style={{ flexDirection:"row"}}>
-                        <TouchableOpacity style={[styles.btn, {paddingHorizontal:30, backgroundColor:"#FFCD4B", marginRight:15}]} onPress={onClose}>
-                            <Text>취소</Text>
+                        <TouchableOpacity style={[styles.btn, {paddingHorizontal:30, backgroundColor:"#999999", marginRight:15}]} onPress={onClose}>
+                            <Text style={fonts.ModifyTimeModalBtn}>취소</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={[styles.btn, {paddingHorizontal:30, backgroundColor:"#FFCD4B"}]} onPress={onConfirm}>
-                            <Text>확인</Text>
+                        <TouchableOpacity style={[styles.btn, {paddingHorizontal:30, backgroundColor:"#3479EF"}]} onPress={onConfirm}>
+                            <Text style={fonts.ModifyTimeModalBtn}>확인</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -120,7 +120,20 @@ function CustomModal({onShow, isShow, onClose, children }){
         </Modal>
     )
 }
-
+const fonts = StyleSheet.create({
+    ModifyTimeModalTitle:{
+        fontFamily: "SUIT-Medium",
+        fontSize: 16,
+        fontWeight: "500",
+        color: "#111"
+    },
+    ModifyTimeModalBtn:{
+        fontFamily: "SUIT-Bold",
+        fontSize: 15,
+        fontWeight: "700",
+        color: "#FFFFFF"
+    }
+})
 const styles = StyleSheet.create({
     container:{ flex: 1, alignItems: 'center', padding:5},
     card:{
@@ -143,7 +156,7 @@ const styles = StyleSheet.create({
         marginTop:20,
         backgroundColor:"#D8B4F8", 
         paddingHorizontal:100,
-        paddingVertical:15, 
+        paddingVertical:10, 
         borderRadius: 10, // 테두리 모서리 둥글게 
         alignSelf:"center",
     },
@@ -157,5 +170,10 @@ const styles = StyleSheet.create({
         borderWidth:0.5,
         borderColor:"gray",
         backgroundColor:"#FAF1E4",
+    },
+    ModifyTimeModalInput:{
+        borderRadius: 5,
+        borderWidth: 1,
+        borderColor: "rgba(221, 221, 221, 1.0)"
     }
 });
