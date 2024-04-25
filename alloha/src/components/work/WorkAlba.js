@@ -20,17 +20,13 @@ export default function WeekAlba({alba, onTap, onDel, week}) {
                     const filter = alba.list.filter((item)=>item.YMD == ymd)
                     if (filter.length > 0){
                         return (
-                            <>
                                 <ContentBox selected={selected} onTap={onTap} key={idx} item={filter} userId={alba.userId} userNa={alba.userNa} ymd={ymd} num={idx} />
-                                {(idx < 6)?<View key={`sep_${idx}`} style={styles.sep}/>:null}
-                            </>
+                                
                         )
                     }else{
                         return (
-                            <>
                                 <ContentBox selected={selected} onTap={onTap} key={idx} blank={true} userId={alba.userId} userNa={alba.userNa} ymd={ymd} num={idx} />
-                                {(idx < 6)?<View key={`sep_${idx}`} style={styles.sep}/>:null}
-                            </>
+                                
                         )
                     }
                     
@@ -81,7 +77,7 @@ const ContentBox = React.memo(({item, userId, userNa, ymd, num, onTap, blank=fal
                     </>
             }
         </TouchableOpacity>
-        
+        {(num < 6)?<View style={styles.sep}/>:null}
         </>
     );
 }, (prevProps, nextProps) => {

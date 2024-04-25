@@ -254,11 +254,6 @@ export default function WorkScreen({navigation}) {
                         </TouchableOpacity>
                     </ScrollView>
                 </View>
-                <View>
-                    <Text>시간표의 (+)버튼을 클릭하면 시간표 일별 등록으로 이동합니다.</Text>
-                    <Text>등록된 시간표는 이름을 클릭하여 수정할수 있습니다.</Text>
-                    <Text>등록된 알바를 삭제하기 원하는 경우(-)버튼을 클릭하여 등록된 시간을 삭제할수 있습니다.</Text>
-                </View>
                 <AlbaModal
                     execptAlbaId={albas.map(item => item.userId)}
                     isShow={modalVisible} 
