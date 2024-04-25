@@ -30,6 +30,7 @@ import * as Linking from 'expo-linking';
 import * as Notifications from 'expo-notifications';
 import { config } from './src/util/deepLink';
 import Agreement from './src/components/login/Agreement';
+import { headerTitleStyle } from './src/util/utils';
 
 // 태스크 매니저
 TaskManager.defineTask(LOCATION_TASK,  async ({ data, error } ) => {
@@ -180,13 +181,13 @@ function Index() {
   }, [setAppStateVisible]);
   
   const isLoggedIn = useSelector((state) => state.login.isLogin);
-  const headerTitleStyle = {
-    fontFamily: "SUIT-Bold",
-    fontSize: 16,
-    fontWeight: "700",
-    lineHeight: 16,
-    color: "#111111"
-  }
+  // const headerTitleStyle = {
+  //   fontFamily: "SUIT-Bold",
+  //   fontSize: 16,
+  //   fontWeight: "700",
+  //   lineHeight: 16,
+  //   color: "#111111"
+  // }
   return (
     <NavigationContainer linking={linking} >
       <Stack.Navigator>
@@ -201,10 +202,10 @@ function Index() {
           ) : (
             <>
               <Stack.Screen name="Login" component={Login} options={{headerShown: false}}/>
-              <Stack.Screen name="Agreement" component={Agreement} options={{title:"약관 동의", headerTitleStyle: headerTitleStyle,}}/>
-              <Stack.Screen name="SignIn" component={SignInScreen} options={{title:"회원 가입", headerTitleStyle: headerTitleStyle,}}/>
-              <Stack.Screen  name="TermsDetail" component={TermsDetailScreen} options={{title:"약관 상세", headerTitleStyle: headerTitleStyle,}}/>
-              <Stack.Screen  name="SearchAddress" component={SearchAddress} options={{title:"주소 검색", headerTitleStyle: headerTitleStyle,}}/>
+              <Stack.Screen name="Agreement" component={Agreement} options={{title:"약관 동의", headerTitleAlign:"center", headerTitleStyle: headerTitleStyle,}}/>
+              <Stack.Screen name="SignIn" component={SignInScreen} options={{title:"회원 가입", headerTitleAlign:"center", headerTitleStyle: headerTitleStyle,}}/>
+              <Stack.Screen  name="TermsDetail" component={TermsDetailScreen} options={{title:"약관 상세", headerTitleAlign:"center", headerTitleStyle: headerTitleStyle,}}/>
+              <Stack.Screen  name="SearchAddress" component={SearchAddress} options={{title:"주소 검색", headerTitleAlign:"center", headerTitleStyle: headerTitleStyle,}}/>
             </>
           )
         }

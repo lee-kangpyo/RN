@@ -42,6 +42,7 @@ import ReqChangeWorkScreen from './ReqChangeWorkScreen';
 import DailyReportScreen from './DailyReportScreen';
 import DailyReportDetilaScreen from './DailyReportDetilaScreen';
 import HomeCrewScreen from './HomeCrewScreen';
+import { headerTitleStyle } from '../util/utils';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -177,7 +178,7 @@ function ResultStack(){
 function WorkStack(){
   return(
   <Stack.Navigator>
-    <Stack.Screen name="workMain" component={WorkScreen} />
+    <Stack.Screen name="workMain" component={WorkScreen} options={{headerTitleAlign: 'center', headerTitleStyle:headerTitleStyle, title:"근무결과",}}/>
     <Stack.Screen name="reqChangeWork" component={ReqChangeWorkScreen} />
     <Stack.Screen name="registerAlba" component={EasyRegisterAlbaScreen} />
   </Stack.Navigator>
@@ -208,7 +209,6 @@ function ScheduleStack() {
 //<Ionicons name="download-outline" size={32} color="black" />
 
 function CrewScreen(){
-  
   return(
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -219,27 +219,27 @@ function CrewScreen(){
     >
       {/*<Tab.Screen name="Home" component={HomeCrewStack} options={{ headerShown:false, tabBarLabel: '홈'}}/>*/}
       <Tab.Screen name="CommuteCheck" component={CommuteCheckStack} options={{ headerShown:false, tabBarLabel: '근무 현황'}}/>
-      <Tab.Screen name="schedule" component={ScheduleScreenToAlba} options={{ tabBarLabel: '주간근무계획' }}/>
+      <Tab.Screen name="schedule" component={ScheduleScreenToAlba} options={{ tabBarLabel: '주간근무계획', headerTitleStyle:headerTitleStyle, headerTitleAlign:"center"}}/>
       
       {/* <Tab.Screen name="Home" options={{ tabBarLabel: '출퇴근(구버전)' }} >
         {() => (
           <LocationPermission Grant={HomeScreen}/>
         )}
       </Tab.Screen> */}
-      <Tab.Screen name="Wage" options={{ headerShown: false, tabBarLabel: '급여' }} >
+      <Tab.Screen name="Wage" options={{ headerShown: false, tabBarLabel: '급여'}} >
         {() => (
           <Stack.Navigator>
-            <Stack.Screen name="WageList" component={WageScreen} options={{ title: '급여' }} initialParams={{userType:"crew"}}/>
+            <Stack.Screen name="WageList" component={WageScreen} options={{ title: '급여', headerTitleStyle:headerTitleStyle, headerTitleAlign:"center" }} initialParams={{userType:"crew"}}/>
             <Stack.Screen  name="WageDetail" component={WageDetailScreen} options={{title:"급여 상세"}}/>
           </Stack.Navigator>
         )}
       </Tab.Screen>
       
-      <Tab.Screen name="manageStore" component={SearchStoreScreen} backBehavior={"none"} options={{ tabBarLabel: '점포검색' }} />
+      <Tab.Screen name="manageStore" component={SearchStoreScreen} backBehavior={"none"} options={{ tabBarLabel: '점포검색', headerTitleStyle:headerTitleStyle, headerTitleAlign:"center"}} />
       <Tab.Screen name="etc" options={{ headerShown: false, }}>
         {() => (
           <Stack.Navigator initialRouteName="etc2">
-            <Stack.Screen name="etc2" component={EtcCrewScreen} options={{ tabBarLabel: '기타' }}/>
+            <Stack.Screen name="etc2" component={EtcCrewScreen} options={{ tabBarLabel: '기타', headerTitleStyle:headerTitleStyle, headerTitleAlign:"center"}}/>
             <Stack.Screen name="Comunity" component={ComunityScreen} options={{ tabBarLabel: '커뮤니티' }}/>
           </Stack.Navigator>
         )}
@@ -268,13 +268,6 @@ function CommuteCheckStack(){
     )
   }
 
-  const headerTitleStyle = {
-    fontFamily: "SUIT-Bold",
-    fontSize: 16,
-    fontWeight: "700",
-    lineHeight: 16,
-    color: "#111111",
-  }
   return(
   <Stack.Navigator>
     <Stack.Screen name="CommuteCheckMain" component={CommuteCheckScreen} options={{headerTitleStyle:headerTitleStyle, headerTitleAlign:"center"}}/>
