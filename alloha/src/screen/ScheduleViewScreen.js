@@ -74,7 +74,6 @@ export default function ScheduleViewScreen({navigation}) {
     }, [weekNumber])
 
     useEffect(()=>{
-        navigation.setOptions({title:""})
         // navigation.setOptions({
         //     headerRight: () => (
         //         <TouchableOpacity onPress={() => onShare()}>

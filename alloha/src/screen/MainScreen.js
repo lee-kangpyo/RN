@@ -42,7 +42,7 @@ import ReqChangeWorkScreen from './ReqChangeWorkScreen';
 import DailyReportScreen from './DailyReportScreen';
 import DailyReportDetilaScreen from './DailyReportDetilaScreen';
 import HomeCrewScreen from './HomeCrewScreen';
-import { headerTitleStyle } from '../util/utils';
+import { headerLeftComponent, headerTitleStyle } from '../util/utils';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -200,7 +200,7 @@ function ScheduleStack() {
         // }
       />
       <Stack.Screen name="scheduleModify" component={ScheduleModifyScreen} />
-      <Stack.Screen name="scheduleView" component={ScheduleViewScreen} />
+      <Stack.Screen name="scheduleView" component={ScheduleViewScreen} options={{headerLeft:()=>headerLeftComponent("근무계획"), title:""}} />
       <Stack.Screen name="scheduleTimeLine" component={ScheduleTimeLineScreen} />
       <Stack.Screen name="registerAlba" component={EasyRegisterAlbaScreen} />
     </Stack.Navigator>
