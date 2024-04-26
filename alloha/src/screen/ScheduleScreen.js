@@ -1,5 +1,5 @@
 
-import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, StatusBar, Keyboard, Animated, Dimensions, Alert } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, StatusBar, Keyboard, Animated, Dimensions, Alert, Image } from 'react-native';
 import React, {useState, useEffect, useRef, useCallback, useMemo} from 'react';
 import WeekDate from '../components/schedule/WeekDate';
 import WeekAlba from '../components/schedule/WeekAlba';
@@ -95,14 +95,6 @@ export default function ScheduleScreen({navigation}) {
     }, [isFocused, cstCo, week]);
 
     useEffect(()=>{
-        navigation.setOptions({
-            headerShown:false,
-            title:"근무 계획",
-            headerStyle: {
-                backgroundColor: "#A0E9FF",
-            },
-            headerTintColor: "black",
-        })
     }, [navigation])
 
     const addAlba = () => {
@@ -217,9 +209,18 @@ export default function ScheduleScreen({navigation}) {
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar />
-            <GestureHandlerRootView >
-                <StoreSelectBoxWithTitle titleText={"근무 계획"} titleflex={4} selectBoxFlex={8} />
-                <View style={{...styles.card, padding:5}}>
+            <GestureHandlerRootView style={{paddingHorizontal:16, paddingTop:10}}>
+                <StoreSelectBoxWithTitle titleText={""} titleflex={0} selectBoxFlex={12} />
+                <View style={{...styles.card, padding:5, }}>
+                <View style={{flexDirection:"row", justifyContent:"flex-end", marginVertical:8}}>
+                    <TouchableOpacity onPress={()=>setPrevScheduleModalShow(true)}>
+                        <View style={{...styles.btnMini, paddingVertical:0, paddingHorizontal:5, borderColor:theme.link, marginRight:2}}>
+                            <Text style={styles.btnText}>계획 가져오기</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+                <HeaderControl title={`${weekNumber.month}월 ${weekNumber.number}주차`} onLeftTap={()=> dispatch(prevWeek())} onRightTap={()=> dispatch(nextWeek())} />
+                    {(false)?
                     <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:5}}>
                         <HeaderControl title={`${weekNumber.month}월 ${weekNumber.number}주차`} onLeftTap={()=> dispatch(prevWeek())} onRightTap={()=> dispatch(nextWeek())} />
                         <View style={{flexDirection:"row"}}>
@@ -235,23 +236,26 @@ export default function ScheduleScreen({navigation}) {
                             </TouchableOpacity>
                         </View>
                     </View>
-                    <Animated.View style={{width:widthValue}}>
+                    :null}
+
+                    <Animated.View style={{width:widthValue, paddingTop:20, marginBottom:5}}>
                         <TouchableOpacity onPress={()=>navigation.push("scheduleView")}>
-                            <WeekDate sBlank={2} eBlank={2} week={week}/>
+                            <WeekDate sBlank={1.3} eBlank={1} week={week}/>
                         </TouchableOpacity>
                     </Animated.View>
+                    
                     <ScrollView  contentContainerStyle={{paddingBottom:(bottomSheetIndex == -1)?0:Dimensions.get('window').height * 0.3, }}>
                         {
                             (albas.length == 0)?
-                                <View style={{alignItems:"center", borderWidth:1, borderColor:"grey", padding:5}}>
-                                    <Text>데이터가 없습니다.</Text>
+                                <View style={{alignItems:"center", padding:5}}>
+                                    <Text style={fonts.add}>데이터가 없습니다.</Text>
                                 </View>
                             :
                                 albas.map((item, idx)=>{
                                     return (
                                         <View key={idx} style={{flexDirection:"row"}}>
                                             <Animated.View style={{width:widthValue}} >
-                                                <WeekAlba key={idx} alba={item} week={week} onTap={onAlbaTap} onDel={getWeekSchedule} />
+                                                <WeekAlba key={idx} alba={item} week={week} onTap={onAlbaTap} onDel={()=>delAlba(item.userId, item.userNa)/*getWeekSchedule*/} />
                                             </Animated.View>
                                             <TouchableOpacity onPress={()=>delAlba(item.userId, item.userNa)} style={{...styles.btnMini, alignItems:"center", backgroundColor:"red", justifyContent:"center", width:50}}>
                                                 <Text style={{color:"white"}}>삭제</Text>
@@ -262,9 +266,10 @@ export default function ScheduleScreen({navigation}) {
                         }
                         {
                             (isScheduleEditable)?
-                                <TouchableOpacity onPress={()=>{dispatch(initTimeBox());setModalVisible(true);}}>
-                                    <View style={{...styles.box, width:Dimensions.get('window').width - 22}}>
-                                        <Text style={{fontSize:24}}>+</Text>
+                                <TouchableOpacity onPress={()=>{dispatch(initTimeBox());setModalVisible(true);}} style={{marginTop:12}}>
+                                    <View style={{...styles.box, width:Dimensions.get('window').width - 22, flexDirection:"row",}}>
+                                        <Image source={require('../../assets/icons/cross.png')} style={styles.crossIcon} />
+                                        <Text style={fonts.add}>추가하기</Text>
                                     </View>
                                 </TouchableOpacity>
 
@@ -273,10 +278,6 @@ export default function ScheduleScreen({navigation}) {
                         }
                         
                     </ScrollView>
-                </View>
-                <View>
-                    <Text>(+)버튼을 클릭하여 알바생 등록 또는 기존 알바생 근무계획을 작성합니다.</Text>
-                    <Text>근무 계획에 등록된 알바를 클릭하면 수정 또는 삭제 할 수 있습니다.</Text>
                 </View>
                 <AlbaModal
                     execptAlbaId={albas.map(item => item.userId)}
@@ -287,6 +288,7 @@ export default function ScheduleScreen({navigation}) {
                     selectAlba={selectAlba}
                 />
                 <ScheduleBottomSheet
+                    style={botsheet.topContainer}
                     sheetRef = {sheetRef}
                     onBottomSheetChanged = {(idx)=>setBottomSeetIndex(idx)}
                     onClose={()=>dispatch(disabledEditing())}
@@ -632,25 +634,38 @@ function _BtnSet({ scheduleInfo, cstCo, refresh, onTypingModalShow, openDateTime
         </View>
     )
 }
+const botsheet = StyleSheet.create({
+    topContainer:{
+        borderWidth:1.5,
+        borderRadius:20,
+        borderColor:"#aaa",
+        overflow:"hidden",
+    },
+    container:{
+        flex:1, 
+        justifyContent:"center",
+    },
 
-
+})
+const fonts = StyleSheet.create({
+    add:{
+        fontFamily: "SUIT-Medium",
+        fontSize: 13,
+        fontWeight: "500",
+        color: "#777777"
+    },
+});
 
 const styles = StyleSheet.create({
-    container:{ flex: 1, alignItems: 'center', padding:5},
-    card:{
-        flex:1,
-        borderWidth: 1, // 테두리 두께
-        borderColor: 'black', // 테두리 색상
-        borderRadius: 10, // 테두리 모서리 둥글게 
-    },
+    container:{ flex: 1, alignItems: 'center', padding:5, backgroundColor:"#FFF"},
+    card:{ flex:1, },
     box:{
-        backgroundColor:"#D7E5CA",
-        paddingVertical:10,
-        margin:1,
-        borderWidth: 0.5, // 테두리 두께
-        borderColor: 'gray', // 테두리 색상
-        borderRadius: 0, // 테두리 모서리 둥글게 
+        justifyContent:"center",
         alignItems:"center",
+        height: 36,
+        borderRadius: 5,
+        borderWidth: 1,
+        borderColor: "rgba(221, 221, 221, 1.0)"
     },
     numberBox:{
         flex:1, 
@@ -690,5 +705,10 @@ const styles = StyleSheet.create({
     },
     btnText:{
         color:theme.link
+    },
+    crossIcon:{
+        width:12,
+        height:12,
+        marginRight:2,
     }
 });

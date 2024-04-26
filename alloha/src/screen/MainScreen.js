@@ -124,9 +124,9 @@ function OwnrScreen({}){
       })}
     >
       
-      <Tab.Screen name="daylyReport" component={DailyStack} options={{ headerShown:false, tabBarLabel: '일일보고서'}}/>
+      <Tab.Screen name="daylyReport" component={DailyStack} options={{ headerShown:false, tabBarLabel: '일일보고서', tabBarBadge: owrBadge,}}/>
       <Tab.Screen name="schedule" component={ScheduleStack} options={{ headerShown:false, tabBarLabel: '근무계획'}}/>
-      <Tab.Screen name="work" component={WorkStack} options={{ headerShown:false, tabBarLabel: '근무결과', tabBarBadge: owrBadge, }}/>
+      <Tab.Screen name="work" component={WorkStack} options={{ headerShown:false, tabBarLabel: '근무결과' }}/>
       <Tab.Screen name="result" component={ResultStack} options={{ headerShown:false, tabBarLabel: '결과현황표'}}/>
       <Tab.Screen name="profitAndLoss" component={ProfitAndLossScreen} options={{ tabBarLabel: '매출현황' }}/>
       
@@ -188,7 +188,7 @@ function WorkStack(){
 function ScheduleStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="scheduleMain" component={ScheduleScreen} 
+      <Stack.Screen name="scheduleMain" component={ScheduleScreen}  options={{headerTitleAlign: 'center', headerTitleStyle:headerTitleStyle, title:"근무계획"}}
         // options={s
         //   {
         //     headerRight: () => (

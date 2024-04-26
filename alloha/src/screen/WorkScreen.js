@@ -191,7 +191,7 @@ export default function WorkScreen({navigation}) {
             <StatusBar barStyle={"dark-content"}/>
             <GestureHandlerRootView style={{paddingHorizontal:16, paddingTop:10}}>
                 <StoreSelectBoxWithTitle titleText={""} titleflex={0} selectBoxFlex={8} />
-                <View style={{...styles.card, paddingTop:20}}>
+                <View style={{...styles.card, padding:5, marginTop:20}}>
                 <HeaderControl title={`${weekNumber.month}월 ${weekNumber.number}주차`} onLeftTap={()=> dispatch(prevWeek())} onRightTap={()=> dispatch(nextWeek())} />
                     {(false)?
                     <>
@@ -229,8 +229,8 @@ export default function WorkScreen({navigation}) {
                     <ScrollView contentContainerStyle={{paddingBottom:(bottomSheetIndex == -1)?0:Dimensions.get('window').height * 0.3, }}>
                         {
                             (albas.length == 0)?
-                                <View style={{alignItems:"center", borderWidth:0, padding:5}}>
-                                    <Text>데이터가 없습니다.</Text>
+                                <View style={{alignItems:"center", padding:5}}>
+                                    <Text style={fonts.add}>데이터가 없습니다.</Text>
                                 </View>
                             :
                                 albas.map((item, idx)=>{

@@ -21,10 +21,11 @@ export function NumberBottomSheet({sheetRef, onBottomSheetChanged, onClose, Cont
   )
 }
 
-export function ScheduleBottomSheet({sheetRef, onBottomSheetChanged, onClose, Content}){
+export function ScheduleBottomSheet({sheetRef, onBottomSheetChanged, onClose, Content, style}){
   const windowHeight = Dimensions.get('window').height;
   return(
     <CustomBottomSheet 
+      style={style}
       sheetRef={sheetRef} 
       snapPointList={[windowHeight*0.22]} 
       isBackdrop={false} 
