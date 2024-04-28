@@ -1,39 +1,112 @@
-import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, Text, View, Platform } from 'react-native';
 import { theme } from '../util/color';
 import CustomBtn from '../components/CustomBtn';
+import { FontAwesome5 } from '@expo/vector-icons';
+import { useState } from 'react';
 
 export default function StoreCard({store, btntxt, onButtonPressed}) {
-    
+    const [mode, setMode] = useState(true);
     return (
-    <View style={styles.card}>
-        <Text style={styles.card_title}>{store.CSTNA}</Text>
-        <Text style={styles.card_txt}>{store.ZIPADDR} {store.ADDR}</Text>
-        <CustomBtn txt={btntxt} onPress={()=>{onButtonPressed(store.CSTCO)}} style={styles.btn} color='black' fSize={16}/>
+    
+    <View style={[styles.card, styles.row, {justifyContent:"space-between"}]}>
+        {
+        (mode)?
+            <>
+                <View style={styles.img}>
+                    <FontAwesome5 name="coffee" size={16} color="black" />
+                </View>
+                <TouchableOpacity onPress={()=> setMode(!mode)} style={{alignItems:"flex-start", flex:1,}}>
+                    <Text numberOfLines={1} ellipsizeMode='tail' style={[fonts.card_title, {marginBottom:4}]}>{store.CSTNA}</Text>
+                    <Text numberOfLines={1} ellipsizeMode='tail' style={fonts.card_txt}>{store.ZIPADDR} {store.ADDR}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.btn,]} onPress={()=>onButtonPressed(store.CSTCO)}>
+                    <Text style={fonts.btn_text}>지원</Text>
+                </TouchableOpacity>
+            </>
+        :
+            <>
+            <TouchableOpacity onPress={()=> setMode(!mode)} style={{alignItems:"flex-start", flex:1,}}>
+                <Text style={[fonts.card_title, {marginBottom:4}]}>{store.CSTNA}</Text>
+                <Text style={fonts.card_txt}>{store.ZIPADDR} {store.ADDR}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.btn,]} onPress={()=>onButtonPressed(store.CSTCO)}>
+                <Text style={fonts.btn_text}>지원</Text>
+            </TouchableOpacity>
+            </>
+        }
     </View>
+    
+
     );
 }
-
-const styles = StyleSheet.create({
-    card: {
-        width:"100%",
-        padding:8,
-        marginBottom:8,
-        borderColor:theme.grey,
-        borderWidth:1,
-        borderRadius:5,
-    },
+const fonts = StyleSheet.create({
     card_title:{
-        fontSize:20
+        fontFamily: "SUIT-Bold",
+        fontSize: 15,
+        fontWeight: "700",
+        color: "#111111"
     },
     card_txt:{
-        fontSize:16,
-        color:theme.darkGrey
+        fontFamily: "SUIT-Medium",
+        fontSize: 13,
+        fontWeight: "500",
+        color: "#777777"
     },
+    btn_text:{
+        fontFamily: "SUIT-Bold",
+        fontSize: 14,
+        fontWeight: "700",
+        color: "#FFFFFF"
+    }
+})
+const styles = StyleSheet.create({
+    img:{
+        marginRight:10,
+        justifyContent:"center",
+        alignItems:"center",
+        width:32,
+        height:32,
+        borderWidth:1,
+        borderRadius:50,
+    },
+    row:{
+        flexDirection:"row"
+    },
+    card: {
+        alignItems:"center",
+        paddingHorizontal:16,
+        paddingVertical:30,
+        borderRadius: 10,
+        backgroundColor: "#FFFFFF",
+        marginBottom:10,
+        ...Platform.select({
+            ios:{
+                shadowColor: "rgba(0, 0, 0, 0.1)",
+                shadowOffset: {
+                    width: 0,
+                    height: 0
+                },
+                shadowRadius: 10,
+                shadowOpacity: 1,
+            },
+            android:{
+                elevation :2,
+            }
+        })
+
+
+        
+    },
+   
     btn:{
-        alignSelf:"flex-end",
-        backgroundColor:"white",
-        width:120,
-        height:40
+        borderRadius: 8,
+        backgroundColor: "#3479EF",
+        paddingVertical:7,
+        paddingHorizontal:17.5,
+        // alignSelf:"flex-end",
+        // backgroundColor:"white",
+        // width:120,
+        // height:40
     }
   });
   

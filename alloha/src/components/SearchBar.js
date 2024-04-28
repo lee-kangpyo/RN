@@ -3,7 +3,7 @@ import { View, TextInput, TouchableOpacity } from 'react-native';
 import CustomBtn from './CustomBtn';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-const SearchBar = ({ searchText, onSearch, onButtonPress, iconName, placeHolder="Search...", secondIconName, onSecondButtonPress}) => {
+const SearchBar = ({ searchText, onSearch, onButtonPress, iconName, iconColor="black", placeHolder="Search...", secondIconName, onSecondButtonPress}) => {
   return (
     <View style={styles.container}>
       <TextInput
@@ -12,16 +12,17 @@ const SearchBar = ({ searchText, onSearch, onButtonPress, iconName, placeHolder=
         value={searchText}
         onChangeText={onSearch}
       />
+      <View style={styles.sep} />
       {
         (secondIconName && onSecondButtonPress)?
           <TouchableOpacity onPress={onSecondButtonPress} style={{marginRight:10}}>
-            <MaterialCommunityIcons name={secondIconName} size={35} color="black" />
+            <MaterialCommunityIcons name={secondIconName} size={35} color={iconColor} />
           </TouchableOpacity>
         :
           null
       }
       <TouchableOpacity onPress={onButtonPress}>
-        <MaterialCommunityIcons name={iconName} size={35} color="black" />
+        <MaterialCommunityIcons name={iconName} size={35} color={iconColor} />
       </TouchableOpacity>
       
     </View>
@@ -31,15 +32,23 @@ const SearchBar = ({ searchText, onSearch, onButtonPress, iconName, placeHolder=
 const styles = {
   container: {
     flexDirection: 'row',
-    alignItems: 'center',
+    // alignItems: 'center',
+    // borderWidth: 1,
+    // borderRadius: 24,
+    padding: 15,
+    borderRadius: 10,
     borderWidth: 1,
-    borderRadius: 24,
-    padding: 8,
+    borderColor: "rgba(221, 221, 221, 1.0)"
   },
   searchInput: {
     flex: 1,
     marginRight: 8,
   },
+  sep:{
+    borderColor:"#DDD",
+    borderWidth:0.5,
+    marginRight:15,
+  }
 };
 
 export default SearchBar;

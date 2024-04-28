@@ -41,7 +41,7 @@ export default function ScheduleByAlba({cstCo, userId, ymdFr, ymdTo}) {
                             )
                         })
                     :
-                    <View style={{flex:1, justifyContent:"center"}}><Text>데이터가 없습니다.</Text></View>
+                    <View style={{justifyContent:"center"}}><Text style={fonts.noData}>데이터가 없습니다.</Text></View>
             }
         </ScrollView>
     );
@@ -73,10 +73,16 @@ const DailyScheduleBox = ({alba}) => {
         </View>
     );
 }
-
+const fonts = StyleSheet.create({
+    noData:{
+        fontFamily: "SUIT-ExtraBold",
+        fontSize: 14,
+        fontWeight: "800",
+        color: "#555555"
+    }
+})
 const styles = StyleSheet.create({
     container: {
-      flex: 1,
       alignItems: 'center',
     },
     box:{

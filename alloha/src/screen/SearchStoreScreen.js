@@ -69,11 +69,16 @@ export default function SearchStoreScreen({type, refresh, setRefresh}) {
 
     return (
         <>
-            <View style={{margin:16,}}>
-                <SearchBar searchText={searchWrd} onSearch={setsearchWrd} onButtonPress={getStoreList} iconName={"store-search"} />
+            <View style={{backgroundColor:"white", padding:16, paddingBottom:24}}>
+                <SearchBar searchText={searchWrd} placeHolder={"검색어를 입력하세요"} onSearch={setsearchWrd} onButtonPress={getStoreList} iconName={"magnify"} iconColor={"#3479EF"}/>
             </View>
+            {
+                (storeList.length > 0)?
+                    <Text style={styles.totText}>총 {storeList.length}개</Text>
+                :
+                    null
+            }
             <View style={styles.container}>
-                
                 {
                     (storeList.length > 0)
                     ?
@@ -84,8 +89,8 @@ export default function SearchStoreScreen({type, refresh, setRefresh}) {
                         </ScrollView>
                     :
                     <>
-                        <Text style={{fontSize:16}}>조회된 점포가 없습니다.</Text>
-                        <Text style={{color:theme.grey}}>점포 조회해 주세요.</Text>
+                        <Text style={[fonts.title, {marginBottom:10}]}>조회된 점포가 없습니다.</Text>
+                        <Text style={fonts.content}>점포 조회해 주세요.</Text>
                     </>
                 }
             </View>
@@ -93,10 +98,32 @@ export default function SearchStoreScreen({type, refresh, setRefresh}) {
     );
 }
 
+const fonts = StyleSheet.create({
+    title:{
+        fontFamily: "SUIT-Bold",
+        fontSize: 15,
+        fontWeight: "700",
+        color: "#111111"
+    },
+    content:{
+        fontFamily: "SUIT-Medium",
+        fontSize: 13,
+        fontWeight: "500",
+        color: "#777777"
+    },
+})
 const styles = StyleSheet.create({
-    container:{ flex: 1, justifyContent: 'center', alignItems: 'center', padding:16,},
+    container:{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal:16,},
     sampleImage:{width:"100%", height:"100%"}, 
     scrollArea:{
         width:"100%"
+    },
+    totText:{
+        marginHorizontal:16,
+        marginVertical:12,
+        fontFamily: "SUIT-Bold",
+        fontSize: 15,
+        color: "#555"
+
     }
 });

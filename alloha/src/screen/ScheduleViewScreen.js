@@ -73,17 +73,6 @@ export default function ScheduleViewScreen({navigation}) {
         getWeekSchedule2();
     }, [weekNumber])
 
-    useEffect(()=>{
-        // navigation.setOptions({
-        //     headerRight: () => (
-        //         <TouchableOpacity onPress={() => onShare()}>
-        //             <Ionicons name="download-outline" size={24} color="black" />
-        //         </TouchableOpacity>
-        //     ),
-        // });
-    }, [navigation])
-//sa/adminDba1!
-
     const test = () => {
         // 이미지 저장 관련 로직을 수행하거나 다른 함수 호출
         ref.current.capture().then(async uri => {
@@ -100,13 +89,18 @@ export default function ScheduleViewScreen({navigation}) {
     }
     
     return (
+        <>
         <View style={[styles.container]}>
-            <View style={{flexDirection:"row", justifyContent:"space-between", alignItems:"center"}}>
+            <View style={styles.whiteBox}>
                 <HeaderControl title={`${weekNumber.month}월 ${weekNumber.number}주차 근무 계획`} onLeftTap={()=> dispatch(prevWeek())} onRightTap={()=> dispatch(nextWeek())} />
-                <TouchableOpacity style={styles.btn} onPress={()=>setMode(!mode)}>
-                    <Text style={styles.btnText}>{(mode == 0)?"알바별로 변경":"날짜별로 변경"}</Text>
+            </View>
+            <View style={{alignItems:"flex-end", marginBottom:15}}>
+                <TouchableOpacity style={styles.textButton} onPress={()=>setMode(!mode)}>
+                    <Text style={fonts.textButtonText}>{(mode == 0)?"알바별로 변경":"날짜별로 변경"}</Text>
                 </TouchableOpacity>
             </View>
+        </View>
+        <View style={[styles.botContainer]}>
             <ViewShot ref={ref} options={{ fileName: "capture", format: "jpg", quality: 0.9 }}>
                 <View style={styles.containerBox}>
                     {
@@ -122,20 +116,21 @@ export default function ScheduleViewScreen({navigation}) {
                                     }
                                 </ScrollView>
                             :
-                                <View style={{flex:1, justifyContent:"center", alignItems:"center"}}>
-                                    <Text>데이터가 없습니다.</Text>
+                                <View style={{justifyContent:"center", alignItems:"center"}}>
+                                    <Text style={fonts.contents}>데이터가 없습니다.</Text>
                                 </View>
                         :
                         (mode == 1)?
                             <ScheduleByAlba cstCo={cstCo} userId={""} ymdFr={weekList[0].format("yyyyMMDD")} ymdTo={weekList[6].format("yyyyMMDD")}/>
                         :
                             <View style={{flex:1, justifyContent:"center", alignItems:"center"}}>
-                                <Text>오류가 발생했습니다. 잠시후 다시 시도해주세요</Text>
+                                <Text style={fonts.contents}>오류가 발생했습니다. 잠시후 다시 시도해주세요</Text>
                             </View>
                     }           
                 </View>
             </ViewShot>
         </View>
+        </>
     );
 }
 
@@ -145,19 +140,22 @@ const DailyScheduleBox = ({mmdd, day, albaList}) => {
     const dayColor = (day=="일")?"red":(day=="토")?"blue":"black"
     return(
         <View style={styles.day}>
-            <TouchableOpacity style={styles.mmdd} onPress={()=>navigation.push("scheduleTimeLine", {ymd:mmdd.format("YYYYMMDD"), mmdd:mmdd.format("MM / DD") + " " + day})}>
-                <Text style={{fontSize:16, color:dayColor}}>{mmdd.format("MM / DD")}</Text>
-                <Text style={{fontSize:16, color:dayColor}}>({day})</Text>
-            </TouchableOpacity>
             <View style={styles.albaList}>
+                <TouchableOpacity style={styles.mmdd} onPress={()=>navigation.push("scheduleTimeLine", {ymd:mmdd.format("YYYYMMDD"), mmdd:mmdd.format("MM / DD") + " " + day})}>
+                    <Text style={[fonts.mmdd, {color:dayColor}]}>{mmdd.format("MM.DD")}</Text>
+                    <Text style={[fonts.mmdd, {color:dayColor}]}>({day})</Text>
+                </TouchableOpacity>
                 {
                     albaList.map((alba, idx)=>{
                         return(
-                            <View key={idx} style={styles.alba}>
-                                <AntDesign name="checkcircle" size={16} color={color[alba.JOBCL]} style={styles.circle}/>
-                                <View style={{flex:1, flexDirection:"row", justifyContent:"space-between"}}>
-                                    <Text style={{fontSize:16, width:75}} numberOfLines={1} ellipsizeMode='tail'>{alba.USERNA}</Text>
-                                    <Text style={{fontSize:16}}>{alba.SCHTIME} ({alba.JOBDURE.toFixed(1)})</Text>
+                            <View key={idx} style={[styles.alba, {justifyContent:"space-between"}]}>
+                                <View style={{flexDirection:"row"}}>
+                                    <AntDesign name="checkcircle" size={16} color={color[alba.JOBCL]} style={[styles.circle, {marginRight:10}]}/>
+                                    <Text style={[fonts.contents, {width:60}]} numberOfLines={1} ellipsizeMode='tail'>{alba.USERNA}</Text>
+                                </View>
+                                <Text style={fonts.contents2}>{alba.SCHTIME}</Text>
+                                <View style={styles.pill}>
+                                    <Text style={fonts.pillText}>{alba.JOBDURE.toFixed(1)}</Text>
                                 </View>
                             </View>
                         );
@@ -167,34 +165,80 @@ const DailyScheduleBox = ({mmdd, day, albaList}) => {
         </View>
     );
 }
-
+const fonts = StyleSheet.create({
+    textButtonText:{
+        fontFamily: "SUIT-Bold",
+        fontSize: 14,
+        fontWeight: "700",
+        color: "#28B49A"
+    },
+    contents:{
+        fontFamily: "SUIT-ExtraBold",
+        fontSize: 14,
+        fontWeight: "800",
+        color: "#555555"
+    },
+    contents2:{
+        fontFamily: "SUIT-Bold",
+        fontSize: 14,
+        fontWeight: "700",
+        color: "#555555"
+    },
+    mmdd:{
+        fontFamily: "SUIT-ExtraBold",
+        fontSize: 14,
+        fontWeight: "800",
+        color: "#111111"
+    },
+    pillText:{
+        fontFamily: "SUIT-Bold",
+        fontSize: 13,
+        fontWeight: "700",
+        fontStyle: "normal",
+        lineHeight: 13,
+        letterSpacing: -1,
+        color: "#999999"
+    }
+})
 const styles = StyleSheet.create({
-    container:{ flex: 1, justifyContent:"flex-start", margin:15},
+    container:{ justifyContent:"flex-start", padding:15, backgroundColor:"#FFF"},
+    botContainer:{ flex: 1, justifyContent:"flex-start", paddingVertical:25, paddingHorizontal:16, backgroundColor:"#F6F6F8"},
     containerBox:{
         marginTop:10,
-        backgroundColor:"white",
-        borderWidth: 0.5, // 테두리 두께
-        borderColor: 'gray', // 테두리 색상
-        borderRadius: 10, // 테두리 모서리 둥글게 
-        height:"95%"
     },
     scroll:{
         alignItems:"flex-start",
     },
     day:{
+        marginBottom:8,
         flexDirection:"row",
-        padding:15
+        padding:15,
+        borderRadius: 10,
+        backgroundColor: "#FFFFFF",
+        ...Platform.select({
+            ios:{
+                shadowColor: "rgba(0, 0, 0, 0.1)",
+                shadowOffset: {
+                    width: 0,
+                    height: 0
+                },
+                shadowRadius: 10,
+                shadowOpacity: 1,
+            },
+            android:{
+                elevation :2,
+            }
+        })
     },
     mmdd:{
+        marginBottom:15,
+        flexDirection:"row",
         paddingRight:15,
         alignItems:"center"
     },
     albaList:{
         flex:1,
         padding:5,
-        borderWidth: 0.5, // 테두리 두께
-        borderColor: 'gray', // 테두리 색상
-        borderRadius: 5, // 테두리 모서리 둥글게 
     },
     box:{
         paddingVertical:10,
@@ -206,7 +250,8 @@ const styles = StyleSheet.create({
     },
     alba:{
         flexDirection:"row",
-        paddingBottom:2
+        paddingBottom:2,
+        marginBottom:10,
     },
     circle:{
         verticalAlign:"middle",
@@ -219,5 +264,37 @@ const styles = StyleSheet.create({
     },
     btnText:{
         fontSize:10
+    },
+    textButton:{
+        padding:5
+    },
+    whiteBox:{
+        marginVertical:20,
+        padding:15,
+        borderRadius: 10,
+        backgroundColor: "#FFFFFF",
+        ...Platform.select({
+            ios:{
+                shadowColor: "rgba(0, 0, 0, 0.1)",
+                shadowOffset: {
+                    width: 0,
+                    height: 0
+                },
+                shadowRadius: 10,
+                shadowOpacity: 1,
+            },
+            android:{
+                elevation :2,
+            }
+        })
+    },
+    pill:{
+        paddingHorizontal:14,
+        paddingVertical:3,
+        borderRadius: 10,
+        backgroundColor: "#EEEEEE",
+        justifyContent:"center",
+        alignItems:"center",
+        width:55,
     }
 });
