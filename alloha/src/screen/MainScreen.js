@@ -169,7 +169,7 @@ function DailyStack(){
 function ResultStack(){
   return(
     <Stack.Navigator>
-      <Stack.Screen name="resultMain" component={ResultScreen} />
+      <Stack.Screen name="resultMain" component={ResultScreen} options={{headerTitleAlign: 'center', headerTitleStyle:headerTitleStyle, title:"결과 현황표"}}/>
       <Stack.Screen name="resultDetail" component={ResultDetailScreen} />
     </Stack.Navigator>
   )

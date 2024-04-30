@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, ActivityIndicator, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { View, ActivityIndicator, StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import * as XLSX from 'xlsx-js-style';
@@ -256,13 +256,21 @@ export default function Excel({header = true, type="sharing", custom, btntext, d
 
   return (
     <View>
-        <TouchableOpacity style={styles.btn} onPress={onPress}>
-            <Text style={styles.btntext}>{btntext}</Text>
+        <TouchableOpacity style={[styles.btn, {flexDirection:"row"}]} onPress={onPress}>
+            <Image source={require('../../../assets/icons/upload.png')} style={styles.uploadIcon} />
+            <Text style={fonts.btnText}>{btntext}</Text>
         </TouchableOpacity>
     </View>
   );
 };
-
+const fonts = StyleSheet.create({
+  btnText:{
+    fontFamily: "SUIT-Bold",
+    fontSize: 13,
+    fontWeight: "700",
+    color: "#28B49A"
+  }
+})
 const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -270,14 +278,21 @@ const styles = StyleSheet.create({
       alignItems: 'center',
     },
     btn:{
+      alignSelf:"flex-end",
       borderColor:theme.link,
       fontSize:8,
-      borderWidth:1,
+      borderWidth:0,
       borderRadius:5,
       paddingHorizontal:5,
-      paddingVertical:2
+      paddingVertical:5,
+      marginBottom:6,
     },
     btntext:{
       color:theme.link
+    },
+    uploadIcon:{
+      width:20,
+      height:20,
+      marginRight:4
     }
   });

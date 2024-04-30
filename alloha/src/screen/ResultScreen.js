@@ -37,9 +37,6 @@ export default function ResultScreen({navigation}) {
         return result; 
     }, {jobWage:0, weekWage:0, incentive:0, salary:0})
     
-    useEffect(()=>{
-        navigation.setOptions({headerShown:false, title:"결과 현황표"})
-    }, [navigation])
 
     
     const monthCstSlySearch = async () => {
@@ -96,18 +93,19 @@ export default function ResultScreen({navigation}) {
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar />
-            <StoreSelectBoxWithTitle titleText={"결과 현황표"} titleflex={4} selectBoxFlex={8} />
-            <View style={{...styles.card, padding:5, width:"100%", overflow:"hidden"}}>
-                <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:5}}>
+            <StoreSelectBoxWithTitle titleText={""} titleflex={0} selectBoxFlex={12} />
+            <View style={{...styles.card, marginTop:20, padding:5, width:"100%", overflow:"hidden"}}>
+                <View style={{marginBottom:20}}>
                     <HeaderControl title={`${date.mm}월`} onLeftTap={()=> dispatch(prevMonth())} onRightTap={()=> dispatch(nextMonth())} />
-                    <Excel
-                        custom={"result"}
-                        type={"sharing"}
-                        btntext={"공유하기"}
-                        fileName={`${cstNa}_${date.mm}월_결과현황표`}
-                        data={excelData}
-                    />
+
                 </View>
+                <Excel
+                    custom={"result"}
+                    type={"sharing"}
+                    btntext={"공유하기"}
+                    fileName={`${cstNa}_${date.mm}월_결과현황표`}
+                    data={excelData}
+                />
                 <PayContainer header={["성명", "시급", "주휴", "플러스", "합계"]} contents={items} onNameTap={onNameTap} onIncentiveTap={onIncentiveTap}/>
             </View>
             <View style={{padding:5, width:"100%"}}>
@@ -118,12 +116,9 @@ export default function ResultScreen({navigation}) {
 }
 
 const styles = StyleSheet.create({
-    container:{ flex: 1, alignItems: 'center', padding:5},
+    container:{ flex: 1, alignItems: 'center', paddingHorizontal:16, paddingVertical: 10, backgroundColor:"#fff"},
     card:{
         flex:1,
-        borderWidth: 1, // 테두리 두께
-        borderColor: 'black', // 테두리 색상
-        borderRadius: 10, // 테두리 모서리 둥글게 
     },
     
 

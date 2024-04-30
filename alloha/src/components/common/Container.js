@@ -81,7 +81,7 @@ export function ProfitLossPl({data, albaList, onChangeValue}){
                     })
                 :
                     <View style={{alignItems:"center"}}>
-                        <Text>데이터가 없습니다.</Text>
+                        <Text style={table.contentText}>데이터가 없습니다.</Text>
                     </View>
             }
         </ScrollView>
@@ -176,8 +176,8 @@ export function PayDetailContainer({header, contents, ondeataTap}){
                         }
                     </View>
                     :
-                    <View style={{alignItems:"center", borderWidth:0.5, margin:1, padding:3}}>
-                        <Text>데이터가 없습니다.</Text>
+                    <View style={{alignItems:"center", borderWidth:0, margin:1, padding:3}}>
+                        <Text style={table.contentText}>데이터가 없습니다.</Text>
                     </View>
                 }
         </View>
@@ -212,30 +212,33 @@ const PayDetailLine = ({item, onDeataTap}) => {
 
 export function PayContainer({header, contents, onNameTap, onIncentiveTap}) {
     return(
-        <ScrollView stickyHeaderIndices={[0]}>
+        <ScrollView stickyHeaderIndices={[0]} contentContainerStyle={{borderWidth:1, borderColor:"#DDD", borderRadius:10, overflow:"hidden"}}>
             <View>
-                <View style={styles.row}>
+                <View style={[styles.row, {marginTop:0, marginBottom:-0.1}]}>
                     {
                         header.map((label, idx)=>{
-                            return <NameBox key={idx} text={label} fontSize={14}/>
+                            return <NameBox key={idx} text={label} fontSize={14} backgroundColor={"#999"} sep={(header.length != idx+1)?<Sep/>:null}/>
                         })
                     }
                 </View>
             </View>
-                {
-                    (contents.length > 0)?
-                    <>
-                        {
-                            contents.map((el, idx)=>{
-                                return <PayLine key={idx} item={el} onNameTap={onNameTap} onIncentiveTap={onIncentiveTap} />
-                            })
-                        }
-                    </>
-                    :
-                    <View style={{alignItems:"center", borderWidth:0.5, margin:1, padding:3}}>
-                        <Text>데이터가 없습니다.</Text>
-                    </View>
-                }
+            <Sep />
+            {
+                (contents.length > 0)?
+                <>
+                    {
+                        contents.map((el, idx)=>{
+                            return <PayLine key={idx} item={el} onNameTap={onNameTap} onIncentiveTap={onIncentiveTap} underLine={contents.length > idx + 1}/>
+                        })
+                    }
+                    
+                    
+                </>
+                :
+                <View style={{alignItems:"center", borderWidth:0, margin:1, padding:3}}>
+                    <Text style={table.contentText}>데이터가 없습니다.</Text>
+                </View>
+            }
         </ScrollView>
     )
 };
@@ -243,17 +246,16 @@ export function PayContainer({header, contents, onNameTap, onIncentiveTap}) {
 export function TotalContainer({contents}) {
     return(
         <View>
-            <View style={styles.row}>
+            <View style={[styles.row, {borderRadius:5, overflow:"hidden"}]}>
                 {
                     contents.map((label, idx)=>{
-                        const fontSize = (label == "합계")?16:11;
+                        const fontSize = 13;
                         if(Array.isArray(label)){
-                            return <NameBox2  key={idx} list={label} alignItems={"flex-end"} fontSize={fontSize}/>
+                            return <NameBox2 key={idx} list={label} alignItems={"flex-end"} fontSize={fontSize} backgroundColor='#333' paddingVertical={17} sep={<Sep style={{borderColor:"#555"}}/>}/>
                         }else{
                             const s = (label == "합계")?"center":"flex-end"
-                            return <NameBox key={idx} text={label} alignItems={s}  fontSize={fontSize}/>
+                            return <NameBox key={idx} text={label} alignItems={s}  fontSize={fontSize} backgroundColor='#333' paddingVertical={17} sep={<Sep style={{borderColor:"#555"}}/>}/>
                         }
-                        
                     })
                 }
             </View>
@@ -261,38 +263,62 @@ export function TotalContainer({contents}) {
     )
 };
 
-const NameBox = ({text, alignItems = "center", fontSize=11, backgroundColor="#EBF3E8"}) => {
+const NameBox = ({text, alignItems = "center", fontSize=11, backgroundColor="#EBF3E8", paddingVertical=5, sep = null}) => {
     return (
-        <View style={[styles.box, {alignItems:alignItems, paddingHorizontal:5, backgroundColor:backgroundColor}]}>
-            <Text style={{fontSize:fontSize}}>{text}</Text>
+        <>
+        <View style={[styles.box, {alignItems:alignItems, paddingVertical:paddingVertical, paddingHorizontal:5, backgroundColor:backgroundColor, }]}>
+            <Text style={[fonts.main, {fontSize:fontSize}]}>{text}</Text>
         </View>
+        {
+            (sep)?sep:null
+        
+        }
+        </>
     )
 }
-const NameBox2 = ({list, alignItems = "center", fontSize=11, backgroundColor="#EBF3E8"}) => {
+const NameBox2 = ({list, alignItems = "center", fontSize=11, backgroundColor="#EBF3E8", paddingVertical=5, sep = null}) => {
     return (
-        <View style={[styles.box, {alignItems:alignItems, paddingHorizontal:5, backgroundColor:backgroundColor}]}>
+        <>
+        <View style={[styles.box, {alignItems:alignItems, paddingVertical:paddingVertical, paddingHorizontal:5, backgroundColor:backgroundColor}]}>
             <Text style={{fontSize:fontSize}}>{list[0]}</Text>
             <Text style={{fontSize:fontSize}}>{list[1]}</Text>
         </View>
+        {
+            (sep)?sep:null
+        
+        }
+        </>
     )
 }
 
-const PayLine = ({item, onNameTap, onIncentiveTap}) => {
+const PayLine = ({item, onNameTap, onIncentiveTap, underLine=false}) => {
     const [isEdit, setEdit] = useState(false);
     return(
-        <View style={[styles.row, {justifyContent:"space-between", height:40}]}>
+        <>
+        <View style={[styles.row, {justifyContent:"space-between", height:40, marginTop:-0.3}]}>
             <ContentBox text={item.userNa} onTap={()=>onNameTap(item)}/>
+            <Sep />
             <ContentBox text={item.jobWage.toLocaleString()} alignItems='flex-end'/>
+            <Sep />
             <ContentBox text={item.weekWage.toLocaleString()} subText={item.weekWageNa}  alignItems='flex-end' />
-            
+            <Sep />
             {
                 (isEdit)?
+                <>
                     <EidtNumberBox text={item.incentive.toLocaleString()} onTap={(value)=>{onIncentiveTap({value, userId:item.userId});setEdit(false);}} />
+                    <Sep />
+                </>
                 :
+                <>
                     <ContentBox text={item.incentive.toLocaleString()} onTap={()=>setEdit(true)}  alignItems='flex-end' />
+                    <Sep />
+                </>
             }
+            
             <ContentBox text={item.salary.toLocaleString()}  alignItems='flex-end'/>
         </View>
+        {(underLine)?<Sep />:null}
+        </>
     )
 }
 
@@ -307,10 +333,11 @@ const EidtNumberBox = ({ initvalue="0", onTap, alignItems = "center", hasBox=tru
             ref.current.focus();
         }
     }
+    const inputStyle = {borderRadius:4, borderColor:"rgba(221, 221, 221, 1.0)", marginRight:3, padding:2}
     return(
         (hasBox)?
             <TouchableOpacity activeOpacity={(onTap)?0.2:1} style={[styles.box, {alignItems:alignItems, paddingHorizontal:5, flexDirection:"row"}]} onPress={onTap}>
-                <TextInput autoFocus={true} style={[styles.input, {flex:1}]} ref={ref} value={value} keyboardType='number-pad' onChange={(e)=>setValue(e.nativeEvent.text)} 
+                <TextInput autoFocus={true} style={[styles.input, inputStyle, {flex:1}]} ref={ref} value={value} keyboardType='number-pad' onChange={(e)=>setValue(e.nativeEvent.text)} 
                     onBlur={onSave}
                 />
                 <TouchableOpacity style={{ justifyContent:"center"}} onPress={onSave}>
@@ -319,7 +346,7 @@ const EidtNumberBox = ({ initvalue="0", onTap, alignItems = "center", hasBox=tru
             </TouchableOpacity>
         :
             <View style={{flexDirection:"row", justifyContent:"flex-end"}}>
-                <TextInput autoFocus={true} style={[styles.input, {width:"50%"}]} ref={ref} value={value} keyboardType='number-pad' onChange={(e)=>setValue(e.nativeEvent.text)} 
+                <TextInput autoFocus={true} style={[styles.input, inputStyle, {width:"50%", borderRadius:10}]} ref={ref} value={value} keyboardType='number-pad' onChange={(e)=>setValue(e.nativeEvent.text)} 
                     onBlur={onSave}
                 />
                 <TouchableOpacity style={{borderWidth:1, justifyContent:"center", borderColor:"grey"}} onPress={onSave}>
@@ -331,16 +358,49 @@ const EidtNumberBox = ({ initvalue="0", onTap, alignItems = "center", hasBox=tru
 const ContentBox = ({text, subText, onTap, alignItems = "center", fontSize = 12}) => {
     return(
         <TouchableOpacity activeOpacity={(onTap)?0.2:1} style={[styles.box, {alignItems:alignItems, paddingHorizontal:5}]} onPress={onTap}>
-            <Text style={{fontSize:fontSize}}>{text}</Text>
+            <Text style={[fonts.content, {fontSize:fontSize}]}>{text}</Text>
             {
                 (subText)?
-                    <Text style={{fontSize:fontSize}}>{subText}</Text>
+                    <Text style={[fonts.subContnet, {fontSize:fontSize}]}>{subText}</Text>
                 :null
             }
         </TouchableOpacity>
     )
 }
 
+const Sep = ({style}) => {
+    return <View style={[styles.sep, style]} />
+}
+
+
+const fonts = StyleSheet.create({
+    main:{
+        fontFamily: "SUIT-Bold",
+        fontSize: 13,
+        fontWeight: "700",
+        color: "#FFFFFF"
+    },
+    content:{
+        fontFamily: "SUIT-Bold",
+        fontSize: 13,
+        fontWeight: "700",
+        color: "#333333"
+    },
+    subContnet:{
+        fontFamily: "SUIT-Bold",
+        fontSize: 13,
+        fontWeight: "700",
+        color: "#3479EF"
+    }
+})
+const table = StyleSheet.create({
+    contentText:{
+        fontFamily: "SUIT-Bold",
+        fontSize: 13,
+        fontWeight: "700",
+        color: "#333333"
+    }
+})
 const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -356,8 +416,8 @@ const styles = StyleSheet.create({
         alignItems:"center",
         paddingVertical:5,
         flex:1,
-        marginHorizontal:0.5,
-        borderWidth:1,
+        marginHorizontal:-1,
+        borderWidth:0,
         borderColor:"grey",
         justifyContent:"center",
     },
@@ -392,5 +452,11 @@ const styles = StyleSheet.create({
         borderColor:"grey",
         justifyContent:"center",
         
+    },
+    sep:{
+        zIndex:5,
+        borderRightWidth: 1,
+        borderBottomWidth:1,
+        borderColor: "rgba(221, 221, 221, 1.0)"
     }
 });
