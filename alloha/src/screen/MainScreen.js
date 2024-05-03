@@ -134,12 +134,12 @@ function OwnrScreen({}){
         {() => (
           <Stack.Navigator initialRouteName="etcScreen">
             <Stack.Screen name="etcScreen" component={EtcScreen} options={{ tabBarLabel: '기타' }}/>
-            <Stack.Screen name="ManageCrew" component={ManageCrewScreen} options={{ tabBarLabel: '알바관리' }}/>
+            <Stack.Screen name="ManageCrew" component={ManageCrewScreen} options={{ headerLeft:()=>headerLeftComponent("알바관리"), title:"" }}/>
             <Stack.Screen name="modifyCrew" component={ModifyCrewScreen} options={{ tabBarLabel: '알바수정' }}/>
             <Stack.Screen name="storeList" options={storeOption} backBehavior={"none"}>
               {() => <ManageStoreScreen type={"ownr"} refresh={refresh} setRefresh={setRefresh} />}
             </Stack.Screen>
-            <Stack.Screen name="addStore" component={AddStoreScreen} options={{ title: '점포추가' }}/>
+            <Stack.Screen name="addStore" component={AddStoreScreen} options={{ headerLeft:()=>headerLeftComponent("점포추가"), title:"" }}/>
             <Stack.Screen name="modifyStore" component={ModifyStoreScreen} options={{ title: '점포수정' }}/>
             <Stack.Screen  name="SearchAddress" component={SearchAddress} options={{title:"주소 검색"}}/>
             <Stack.Screen  name="community" component={ComunityScreen} options={{title:"커뮤니티"}}/>
@@ -170,7 +170,7 @@ function ResultStack(){
   return(
     <Stack.Navigator>
       <Stack.Screen name="resultMain" component={ResultScreen} options={{headerTitleAlign: 'center', headerTitleStyle:headerTitleStyle, title:"결과 현황표"}}/>
-      <Stack.Screen name="resultDetail" component={ResultDetailScreen} />
+      <Stack.Screen name="resultDetail" component={ResultDetailScreen} options={{headerLeft:()=>headerLeftComponent("결과 상세 보기"), title:""}} />
     </Stack.Navigator>
   )
 }

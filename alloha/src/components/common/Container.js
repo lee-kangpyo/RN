@@ -158,42 +158,48 @@ function ProfitBox({style={}, onTapToEdit, isSub, isOpen, setIsOpen, text, text2
 
 export function PayDetailContainer({header, contents, ondeataTap}){
     return(
-        <View>
-            <View style={styles.row}>
+        <View style={{borderWidth:1, borderColor:"#DDD", borderRadius:10, overflow:"hidden"}}>
+            <View style={[styles.row, {marginTop:0, marginBottom:-0.1}]}>
                 {
                     header.map((label, idx)=>{
-                        return <NameBox key={idx} text={label} fontSize={14}/>
+                        return <NameBox key={idx} text={label} fontSize={14} backgroundColor={"#999"} sep={(header.length != idx+1)?<Sep/>:null}/>
                     })
                 }
             </View>
-                {
-                    (contents.length > 0)?
-                    <View>
-                        {
-                            contents.map((el, idx)=>{
-                                return <PayDetailLine key={idx} item={el} onDeataTap={ondeataTap}/>
-                            })
-                        }
-                    </View>
-                    :
-                    <View style={{alignItems:"center", borderWidth:0, margin:1, padding:3}}>
-                        <Text style={table.contentText}>데이터가 없습니다.</Text>
-                    </View>
-                }
+            <Sep />
+            {
+                (contents.length > 0)?
+                <View>
+                    {
+                        contents.map((el, idx)=>{
+                            return <PayDetailLine key={idx} item={el} onDeataTap={ondeataTap} underLine={contents.length > idx + 1}/>
+                        })
+                    }
+                </View>
+                :
+                <View style={{alignItems:"center", borderWidth:0, margin:1, padding:3}}>
+                    <Text style={table.contentText}>데이터가 없습니다.</Text>
+                </View>
+            }
         </View>
     )
 }
 
 
-const PayDetailLine = ({item, onDeataTap}) => {
+const PayDetailLine = ({item, onDeataTap, underLine=false}) => {
     const [isEdit, setEdit] = useState(false);
     const spcWage = (item.spcWage > 0)?item.spcWage.toLocaleString():"0";
     return(
-        <View style={[styles.row, {justifyContent:"space-between"}]}>
+        <>
+        <View style={[styles.row, {justifyContent:"space-between", marginVertical:-0.3}]}>
             <ContentBox text={item.week1+"주"} fontSize={14}/>
+            <Sep />
             <ContentBox text={item.jobWage.toLocaleString()} subText={item.jobDure} alignItems='flex-end'/>
+            <Sep />
             <ContentBox text={item.weekWage.toLocaleString()} alignItems='flex-end'/>
+            <Sep />
             <ContentBox text={item.incentive.toLocaleString()} alignItems='flex-end'/>
+            <Sep />
             {
                 (false)?
                     (false && isEdit && item.spcDure > 0)?
@@ -207,6 +213,8 @@ const PayDetailLine = ({item, onDeataTap}) => {
             }
             <ContentBox text={item.salary.toLocaleString()} alignItems='flex-end'/>
         </View>
+        {(underLine)?<Sep />:null}
+        </>
     )
 }
 
@@ -249,6 +257,7 @@ export function TotalContainer({contents}) {
             <View style={[styles.row, {borderRadius:5, overflow:"hidden"}]}>
                 {
                     contents.map((label, idx)=>{
+                        console.log(label)
                         const fontSize = 13;
                         if(Array.isArray(label)){
                             return <NameBox2 key={idx} list={label} alignItems={"flex-end"} fontSize={fontSize} backgroundColor='#333' paddingVertical={17} sep={<Sep style={{borderColor:"#555"}}/>}/>
@@ -280,8 +289,8 @@ const NameBox2 = ({list, alignItems = "center", fontSize=11, backgroundColor="#E
     return (
         <>
         <View style={[styles.box, {alignItems:alignItems, paddingVertical:paddingVertical, paddingHorizontal:5, backgroundColor:backgroundColor}]}>
-            <Text style={{fontSize:fontSize}}>{list[0]}</Text>
-            <Text style={{fontSize:fontSize}}>{list[1]}</Text>
+            <Text style={[fonts.main, {fontSize:fontSize}]}>{list[0]}</Text>
+            <Text style={[fonts.subContnet, {fontSize:fontSize,}]}>{list[1]}</Text>
         </View>
         {
             (sep)?sep:null

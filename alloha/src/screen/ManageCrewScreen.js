@@ -1,4 +1,4 @@
-import { Modal, StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, Alert, TextInput } from 'react-native';
+import { Modal, StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, Alert, TextInput, Dimensions } from 'react-native';
 import React, {useState, useEffect, useCallback} from 'react';
 import SearchBar from '../components/SearchBar';
 import StoreCard from '../components/StoreCard';
@@ -19,6 +19,12 @@ export default function ManageCrewScreen({navigation}) {
     const [searchWrd, setsearchWrd] = useState("");
     const [filterWrd, setfilterWrd] = useState("");
     const [crewList, setCrewList] = useState([]);
+
+    // 탭에서 사용하는 상태
+    const [selectCstCo, setSelectCstCo] = useState(0); //0 이면 전체 나머지는 cstCo
+    const [storeList, setStoreList] = useState([]);
+
+//    const [storeList, setStoreList] = useState([]);
 
     const onApprov = (userNa, cstCo, userId) => {
         Confirm("승인", `지원 하신${userNa}님을 승인하시겠습니까?`, "아니오", "네", async ()=>{
@@ -74,11 +80,15 @@ export default function ManageCrewScreen({navigation}) {
     const searchCrewList = async () => {
         const response = await axios.get(URL+'/api/v1/searchCrewList', {params:{userId:userId}});
         if(JSON.stringify(crewList) !=  JSON.stringify(response.data.result)) setCrewList(response.data.result);
+        var initStore = response.data.result.reduce((acc, curr) => {
+            if (!acc.some(item => item.CSTCO === curr.CSTCO)) {
+              acc.push({ CSTCO: curr.CSTCO, CSTNA:curr.CSTNA });
+            }
+            return acc;
+        }, [{CSTCO:"0", CSTNA:"전체"}])
+        setStoreList(initStore);
     };
 
-    useEffect(()=>{
-        navigation.setOptions({title:"알바관리"})
-    }, [navigation])
 
     useEffect(()=>{
         searchCrewList()
@@ -87,11 +97,18 @@ export default function ManageCrewScreen({navigation}) {
     useFocusEffect(
         useCallback(() => {
             searchCrewList()
+            
             return () => {};
-          }, [])
+        }, [])
     )
     
-    const filterList = (filterWrd == "")?crewList:crewList.filter((el)=>el.USERNA == filterWrd);
+    const filterList = (filterWrd == "")?crewList.filter(el=>{
+        if(selectCstCo == 0) return el;
+        return el.CSTCO == selectCstCo
+    }):crewList.filter((el)=>{
+        if(selectCstCo == 0) return el.USERNA.includes(filterWrd);
+        return el.USERNA.includes(filterWrd) && el.CSTCO == selectCstCo
+    });
     
     // 이름 수정
     const[modifyUser, setModifyUser] = useState({});
@@ -136,17 +153,39 @@ export default function ManageCrewScreen({navigation}) {
         setIsShow(true);
     }
     // 이름 수정
+    const tapWidth = Dimensions.get('window').width / 3.1;
+ 
+    const tapAction = (cstCo) => {
+        setSelectCstCo(cstCo)
+    }
+
     return (
         <>
-            <View style={{margin:16,}}>
+            <View style={{padding:16, paddingBottom:10, backgroundColor:"#fff"}}>
                 <SearchBar placeHolder='이름 조회' searchText={searchWrd} onSearch={setsearchWrd} onButtonPress={()=>{setfilterWrd(searchWrd)}} iconName={"account-search-outline"} />
             </View>
+            {
+                (storeList.length > 0)?
+                <View style={{height:40, backgroundColor:"#fff"}}>
+                    <ScrollView showsHorizontalScrollIndicator={false} horizontal = {true} style={{ flexDirection: 'row', height: 40 }}>
+                        {storeList.map((item, idx) => (
+                            <TouchableOpacity key={idx} onPress={()=>tapAction(item.CSTCO)} style={[styles.tap, { width: tapWidth, borderBlockColor:(item.CSTCO == selectCstCo)?"#3479EF":"#fff"}]}>
+                                <Text ellipsizeMode='tail' numberOfLines={1} style={(item.CSTCO == selectCstCo)?fonts.tapText_selected:fonts.tapText}>{item.CSTNA}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </ScrollView>
+                </View>
+                :
+                null
+            }
             <View style={styles.container}>
                 {
                     (crewList.length > 0)
                     ?
                         (filterList.length > 0)
                         ?
+                        <>
+                            <Text style={fonts.count}>총 {filterList.length}명</Text>
                             <ScrollView style={styles.scrollArea}>
                                 {filterList.map((el, idx)=>{
                                     return <CrewCard 
@@ -163,6 +202,7 @@ export default function ManageCrewScreen({navigation}) {
                                             />
                                 })}
                             </ScrollView>
+                        </>
                         :
                         <Text style={{fontSize:16}}>조회 결과가 없습니다.</Text>
                     :
@@ -190,12 +230,34 @@ export default function ManageCrewScreen({navigation}) {
     );
     
 }
-
+const fonts = StyleSheet.create({
+    tapText:{
+        fontFamily: "SUIT-Medium",
+        fontSize: 15,
+        color: "#999999"
+    },
+    tapText_selected:{
+        fontFamily: "SUIT-Bold",
+        fontSize: 15,
+        color: "#3479EF"
+    },
+    count:{
+        fontFamily: "SUIT-Medium",
+        fontSize: 13,
+        color: "#555",
+        alignSelf:"flex-start", 
+        marginBottom:12
+    }
+})
 // visible, title, body, confBtnTxt, confirm, cBtnTxt, onCancel, onClose
 const styles = StyleSheet.create({
-    container:{ flex: 1, justifyContent: 'center', alignItems: 'center', padding:8},
+    container:{ flex: 1, justifyContent: 'center', alignItems: 'center', padding:16, backgroundColor:"#F6F6F8"},
     modalBody:{padding:15, flexDirection:"row", alignItems:"center"},
     modalInput:{borderWidth:1, borderRadius:5, flex:1, padding:5},
-    scrollArea:{width:"100%"}
-
+    scrollArea:{width:"100%"},
+    tap:{
+        justifyContent:"center", 
+        alignItems:"center",
+        borderBottomWidth:1,
+    }
 });

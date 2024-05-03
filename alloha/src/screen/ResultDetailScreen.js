@@ -35,7 +35,6 @@ export default function ResultDetailScreen({navigation, route}) {
         const param = {cls:"MonthAlbaSlySearch", ymdFr:date.start, ymdTo:date.end, cstCo:cstCo, cstNa:"", userId:item.userId, userNa:"", rtCl:"0"};
         await axios.get(URL+`/api/v1/rlt/monthCstSlySearch`, {params:param})
         .then((res)=>{
-            // TODO: 김이사님과 처리해야할일. 결과 현황표 상세에 점주는 모든 알바생의 데이터를 가져오는 문제가 있음 일단 빼둠.
             const data = res.data.result.filter((el)=>el.userId == item.userId);
             dispatch(setWorkDetailResultList({data}))
         }).catch(function (error) {
@@ -51,10 +50,6 @@ export default function ResultDetailScreen({navigation, route}) {
     }, [isFocused, cstCo, date]);
 
     
-    useEffect(()=>{
-        navigation.setOptions({title:"결과 현황표 - 상세"})
-    }, [navigation])
-
     const onDeataTap = async (info) => {
         const week = getWeekByWeekNumber(date.start, info.weekNumber);
         var param = {cls:"DetaAmtUpdate", ymdFr:week.startOfWeek, ymdTo:week.endOfWeek, cstCo:cstCo, userId:info.userId, userNa:"", rtCl:info.value}
@@ -69,13 +64,13 @@ export default function ResultDetailScreen({navigation, route}) {
 
     return (
         <View style={styles.container}>
-            <View style={{...styles.card, padding:5, width:"100%"}}>
-                <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:5}}>
+            <View style={{flex:1, width:"100%"}}>
+                <View style={{paddingTop:10, paddingBottom:20}}>
                     <HeaderControl title={`${item.userNa}님 ${date.mm}월 급여표`} onLeftTap={()=> dispatch(prevMonth())} onRightTap={()=> dispatch(nextMonth())} />
                 </View>
                 <PayDetailContainer header={["주차", "시급", "주휴", "플러스", "합계"]} contents={items} ondeataTap={onDeataTap}/>
             </View>
-            <View style={{padding:5, width:"100%"}}>
+            <View style={{width:"100%"}}>
                 <TotalContainer contents={["합계", [total.jobWage.toLocaleString(), total.jobDure], total.weekWage.toLocaleString(), total.incentive.toLocaleString(), total.salary.toLocaleString()]}/>
             </View>
         </View>
@@ -83,13 +78,5 @@ export default function ResultDetailScreen({navigation, route}) {
 }
 
 const styles = StyleSheet.create({
-    container:{ flex: 1, alignItems: 'center', padding:5},
-    card:{
-        flex:1,
-        borderWidth: 1, // 테두리 두께
-        borderColor: 'black', // 테두리 색상
-        borderRadius: 10, // 테두리 모서리 둥글게 
-    },
-    
-
+    container:{ flex: 1, alignItems: 'center', paddingHorizontal:16, paddingVertical:10, backgroundColor:"#FFF"},
 });

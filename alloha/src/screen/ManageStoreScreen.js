@@ -11,6 +11,7 @@ import axios from 'axios';
 import { theme } from '../util/color';
 
 import { URL } from "@env";
+import { headerLeftComponent } from '../util/utils';
 
 export default function ManageStoreScreen({type, refresh, setRefresh}) {
     //const url = useSelector((state) => state.config.url);
@@ -31,7 +32,7 @@ export default function ManageStoreScreen({type, refresh, setRefresh}) {
 
     useEffect(()=>{
         const title = (type === "ownr")?"점포관리":"점포검색"
-        navigation.setOptions({title:title})
+        navigation.setOptions({headerLeft:()=>headerLeftComponent(title), title:""})
     }, [navigation])
 
     // useEffect( () => {
