@@ -99,6 +99,7 @@ function OwnrScreen({}){
   const storeOption = () => {
     return(
       {
+        headerLeft:()=>headerLeftComponent("점포관리"), title:"",
         headerRight: () => (
           <TouchableOpacity
             onPress={() => navigation.navigate('addStore', { setRefresh }) }
@@ -218,7 +219,8 @@ function CrewScreen(){
       })}
     >
       {/*<Tab.Screen name="Home" component={HomeCrewStack} options={{ headerShown:false, tabBarLabel: '홈'}}/>*/}
-      <Tab.Screen name="CommuteCheck" component={CommuteCheckStack} options={{ headerShown:false, tabBarLabel: '근무 현황'}}/>
+      <Tab.Screen name="CommuteCheck" component={CommuteCheckScreen} options={{headerTitleStyle:headerTitleStyle, headerTitleAlign:"center", tabBarLabel:"근무현황"}}/>
+      <Tab.Screen name="CommuteCheckInfo" component={CommuteCheckStack} options={{ headerShown:false, tabBarLabel: '근무정보'}}/>
       <Tab.Screen name="schedule" component={ScheduleScreenToAlba} options={{ tabBarLabel: '주간근무계획', headerTitleStyle:headerTitleStyle, headerTitleAlign:"center"}}/>
       
       {/* <Tab.Screen name="Home" options={{ tabBarLabel: '출퇴근(구버전)' }} >
@@ -270,13 +272,13 @@ function CommuteCheckStack(){
 
   return(
   <Stack.Navigator>
-    <Stack.Screen name="CommuteCheckMain" component={CommuteCheckScreen} options={{headerTitleStyle:headerTitleStyle, headerTitleAlign:"center"}}/>
-    <Stack.Screen name="CommuteCheckInfo" component={CommuteCheckInfoScreen} options={{headerLeft: headerLeft, headerTitleStyle:headerTitleStyle}}/>
+    <Stack.Screen name="CommuteCheckInfo" component={CommuteCheckInfoScreen} options={{headerTitleStyle:headerTitleStyle, headerTitleAlign:"center", title:"근무 정보"}}/>
     <Stack.Screen name="CommuteCheckDetail" component={CommuteCheckDetailScreen} options={{headerLeft: headerLeft, headerTitleStyle:headerTitleStyle}}/>
     <Stack.Screen name="CommuteCheckChange" component={CommuteCheckChangeScreen} options={{headerLeft: headerLeft, headerTitleStyle:headerTitleStyle}}/>
   </Stack.Navigator>
   )
 }
+
 const setTabBarIcon = (focused, color, size, name) =>{
   let iconName;
   let icon;
@@ -316,6 +318,9 @@ const setTabBarIcon = (focused, color, size, name) =>{
   }else if (name == "daylyReport"){
     iconName = focused ? 'file-text' : 'file-text-o';
     icon = "FontAwesome"
+  }else if (name == "CommuteCheckInfo"){
+    iconName = focused ? 'clipboard-text' : 'clipboard-text-outline';
+    icon = "MaterialCommunityIcons"
   }
   
 

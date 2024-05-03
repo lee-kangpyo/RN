@@ -162,7 +162,7 @@ export default function ManageCrewScreen({navigation}) {
     return (
         <>
             <View style={{padding:16, paddingBottom:10, backgroundColor:"#fff"}}>
-                <SearchBar placeHolder='이름 조회' searchText={searchWrd} onSearch={setsearchWrd} onButtonPress={()=>{setfilterWrd(searchWrd)}} iconName={"account-search-outline"} />
+                <SearchBar placeHolder='이름 조회' searchText={searchWrd} onSearch={setsearchWrd} onButtonPress={()=>{setfilterWrd(searchWrd)}} iconName={"magnify"}  iconColor={"#3479EF"}/>
             </View>
             {
                 (storeList.length > 0)?

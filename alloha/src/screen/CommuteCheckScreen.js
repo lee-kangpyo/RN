@@ -146,7 +146,7 @@ export default function CommuteCheckScreen({navigation}) {
             <>
             <ScrollView style={styles.container}>
                 <MyStorePicker userId={userId} />    
-                <View style={[styles.row, styles.planCard, {marginTop:8, marginBottom:10}]}>
+                <View style={[styles.row, styles.planCard, {marginTop:8, marginBottom:30}]}>
                     <View>
                         <Text style={font.planCardTitle}>근무계획</Text>
                         {(daySchedule.length > 0)
@@ -171,16 +171,21 @@ export default function CommuteCheckScreen({navigation}) {
                         }
                     </View>
                 </View>
-                <View style={[styles.row, {marginBottom:50}]}>
-                    <TouchableOpacity onPress={()=>navigation.push("CommuteCheckInfo")} style={[{flex:1.5, marginRight:8}, styles.showCommuteCheckInfo]}>
-                        <Text style={font.commuteCheckInfoText}>근무 정보 보기</Text>
-                        <Image source={require('../../assets/icons/link-arrow.png')} style={styles.icon} />
-                    </TouchableOpacity>
-                    <View style={[{flex:1, justifyContent:"center"}, styles.manualCheck]}>
-                        <AntDesign name="checksquareo" size={15} color="rgba(170, 170, 170, 1.0)"/>
-                        <Text style={[font.commuteCheckInfoText, {paddingLeft:10}]}>수동체크</Text>
+                {
+                    (false)?
+                    <View style={[styles.row, {marginBottom:50}]}>
+                        <TouchableOpacity onPress={()=>navigation.push("CommuteCheckInfo")} style={[{flex:1.5, marginRight:8}, styles.showCommuteCheckInfo]}>
+                            <Text style={font.commuteCheckInfoText}>근무 정보 보기</Text>
+                            <Image source={require('../../assets/icons/link-arrow.png')} style={styles.icon} />
+                        </TouchableOpacity>
+                        <View style={[{flex:1, justifyContent:"center"}, styles.manualCheck]}>
+                            <AntDesign name="checksquareo" size={15} color="rgba(170, 170, 170, 1.0)"/>
+                            <Text style={[font.commuteCheckInfoText, {paddingLeft:10}]}>수동체크</Text>
+                        </View>
                     </View>
-                </View>
+                :null
+                }
+                
                 <CommuteButton onButtnPressed={insertJobChk} data={jobChk} daySchedule={daySchedule} sTime={(jobChk.length > 0)?jobChk[0].chkTime.split(" ")[1]:"00:00"} checkLocation={checkLocation}/>
                 <View style={[styles.center, {marginBottom:20, marginTop:25}]}>
                     <CurTimer />
@@ -507,7 +512,7 @@ const CommuteBar = ({data, isCommonJob, onPressed}) => {
     const end2 = (data[1])?data[1].chkTime.split(" ")[2]:null;
     const text = (isCommonJob)?"대타근무":"일반근무";
     return(
-        <View style={[styles.center, {flexDirection:"row"}]}>
+        <View style={[styles.center, {flexDirection:"row", justifyContent:"space-evenly"}]}>
             <View style={styles.center}>
                 <Text style={font.CommuteBarText}>출근</Text>
                 <Text style={font.CommuteBarText2}>{start}</Text>
@@ -518,6 +523,9 @@ const CommuteBar = ({data, isCommonJob, onPressed}) => {
                         null
                 }
             </View>
+
+            {
+            (false)?
             <TouchableOpacity onPress={onPressed} style={[styles.box, styles.row]}>
                 <View style={{alignItems:"center", paddingLeft:5, flexDirection:"row", marginRight:6}}>
                     <Text style={font.CommuteBarText3}>{text} </Text>
@@ -525,6 +533,9 @@ const CommuteBar = ({data, isCommonJob, onPressed}) => {
                 </View>
                 <Image source={require('../../assets/icons/switch-horizontal.png')} style={[styles.icon, {width:16, height:16}]}/>
             </TouchableOpacity>
+            :
+            null
+            }
             <View  style={styles.center}>
                 <Text style={font.CommuteBarText}>퇴근</Text>
                 <Text style={font.CommuteBarText2}>{end}</Text>

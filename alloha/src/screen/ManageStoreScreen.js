@@ -30,17 +30,17 @@ export default function ManageStoreScreen({type, refresh, setRefresh}) {
         })
     }, [])
 
-    useEffect(()=>{
-        const title = (type === "ownr")?"점포관리":"점포검색"
-        navigation.setOptions({headerLeft:()=>headerLeftComponent(title), title:""})
-    }, [navigation])
+    // useEffect(()=>{
+    //     const title = (type === "ownr")?"점포관리":"점포검색"
+    //     navigation.setOptions({headerLeft:()=>headerLeftComponent(title), title:""})
+    // }, [navigation])
 
-    // useEffect( () => {
-    //     if(refresh){
-    //         getStoreList();
-    //         setRefresh(false);
-    //     }
-    // }, [refresh])
+    useEffect( () => {
+        if(refresh){
+            getStoreList();
+            setRefresh(false);
+        }
+    }, [refresh])
 
     useFocusEffect(
         React.useCallback(() => {

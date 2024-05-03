@@ -11,12 +11,11 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { currentWeek, nextWeek, prevWeek } from '../../redux/slices/alba';
 import ConvertDayStr from '../components/commuteCheck/ConvertDayStr';
 import { LinearGradient } from 'expo-linear-gradient';
+import MyStorePicker from '../components/alba/MyStorePicker';
 
 export default function CommuteCheckInfoScreen({navigation}) {
+    const userId = useSelector((state)=>state.login.userId);
     const dispatch = useDispatch();
-    useEffect(()=>{
-        navigation.setOptions({title:"근무정보"})
-    }, [navigation])
 
     useEffect(() => {
         return () => {
@@ -26,8 +25,11 @@ export default function CommuteCheckInfoScreen({navigation}) {
 
     return (
         <View style={styles.container}>
-            <Top />
-            <BotContainer />
+            <View style={{flexDirection:"row", paddingHorizontal:16, paddingBottom:5, paddingTop:10}}>
+                <MyStorePicker userId={userId} />
+            </View>
+            <Top userId={userId}/>
+            <BotContainer userId={userId}/>
         </View>
     );
     /*
@@ -43,9 +45,8 @@ export default function CommuteCheckInfoScreen({navigation}) {
 
     
 //######################################################################################################3
-const Top = () => {
+const Top = ({userId}) => {
     const dispatch = useDispatch();
-    const userId = useSelector((state)=>state.login.userId);
     const sCstCo = useSelector((state)=>state.alba.sCstCo);
     const date = useSelector((state)=>state.alba.date);
     const [loading, setLoadin] = useState(true);
@@ -55,7 +56,6 @@ const Top = () => {
         //await HTTP("GET", "/api/v1/commute/commuteCheckInfo", {cls:"dayJobInfo", userId:'mega7438226_0075', cstCo:'1010', ymdFr:'20231208', ymdTo:'20231208'})
         await HTTP("GET", "/api/v1/commute/commuteCheckInfo", {cls:"JobInfo", userId:userId, cstCo:sCstCo, ymdFr:date.start, ymdTo:date.end})
         .then((res)=>{
-            console.log(res.data.result);
             setJobInfo(res.data.result[0] ?? {})
             setLoadin(false);
         }).catch(function (error) {
@@ -67,10 +67,11 @@ const Top = () => {
     useEffect(()=>{
         setLoadin(true);
         commuteCheckInfo();
-    }, [date])
+    }, [date, sCstCo])
 
     const TopWeek = () =>{
         return(
+            <>
             <View style={[styles.row, styles.TopWeekContainer, ]}>
                 <TouchableOpacity onPress={()=>dispatch(prevWeek())}>
                     <Image source={require('../../assets/icons/leftBtn.png')} style={{width:18, height:18, resizeMode: 'contain'}} />
@@ -84,6 +85,7 @@ const Top = () => {
                     <Image source={require('../../assets/icons/rightBtn.png')} style={{width:18, height:18, resizeMode: 'contain'}} />
                 </TouchableOpacity>
             </View>
+            </>
         )
     }
   
@@ -127,7 +129,7 @@ const Top = () => {
                         </View>
                     </View>
                 </View>
-                <View style={[styles.row, {justifyContent:"center", marginBottom:40}]}>
+                <View style={[styles.row, {justifyContent:"center", marginBottom:10}]}>
                     <View style={styles.topBox}>
                         <Text style={[fonts.topBoxText, fonts.colorRed]}>{jobInfo.ATTCL2}</Text>
                         <Text style={[fonts.topBoxText, fonts.colorRed]}>지각</Text>
@@ -156,8 +158,7 @@ const Top = () => {
     )
 }
 
-const BotContainer = () => {
-    const userId = useSelector((state)=>state.login.userId);
+const BotContainer = ({userId}) => {
     const sCstCo = useSelector((state)=>state.alba.sCstCo);
     const date = useSelector((state)=>state.alba.date);
     const [loading, setLoadin] = useState(true);
@@ -178,7 +179,7 @@ const BotContainer = () => {
     useEffect(()=>{
         setLoadin(true);
         dayJobSearch();
-    }, [date])
+    }, [date, sCstCo])
 //////////////////////////////////////////////////////////////////////////////////////////////////
     return(
         (loading)?
@@ -221,7 +222,6 @@ const BotItem = ({data}) => {
     const statColor = (["결근", "지각"].includes(data.attendence))?{color:"red"}:{color:"white"};
     const statBox = (["결근", "지각"].includes(data.attendence))?{borderWidth:1, borderColor:"red"}:(data.attendence == "근무중")?{backgroundColor:"blue"}:{backgroundColor:theme.link};
     const isAbsence = ["결근"].includes(data.attendence);
-    console.log(data)
     return(
         <TouchableOpacity onPress={()=>(isAbsence)?alert("해당 일자는 결근 하셨습니다. 인정 요청으로 근무 시간 인정 요청하세요."):navigation.push("CommuteCheckDetail", {"ymd":data.ymd})} style={styles.card}> 
             <View style={[styles.row, {flex:1, justifyContent:"space-between", marginBottom:8}]}>
@@ -375,7 +375,7 @@ const styles = StyleSheet.create({
     TopWeekContainer:{
         justifyContent:"space-between",
         padding:15,
-        marginVertical:20,
+        marginBottom:10,
         alignItems:"center",
         borderRadius: 10,
         backgroundColor: "#FFFFFF",
