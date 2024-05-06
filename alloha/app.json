@@ -3,7 +3,7 @@
     "name": "알로하",
     "scheme": "aloha",
     "slug": "alloha",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -77,7 +77,7 @@
       ]
     ],
     "ios": {
-      "buildNumber": "8",
+      "buildNumber": "9",
       "bundleIdentifier": "com.akmz.alloha",
       "supportsTablet": true,
       "infoPlist": {
@@ -96,14 +96,13 @@
       },
       "permissions": [
         "FOREGROUND_SERVICE",
-        "ACCESS_BACKGROUND_LOCATION",
         "ACCESS_COARSE_LOCATION",
         "ACCESS_FINE_LOCATION"
       ],
       "useNextNotificationsApi": true,
       "googleServicesFile": "./google-services.json",
       "package": "com.akmz.alloha",
-      "versionCode": 7
+      "versionCode": 9
     },
     "web": {
       "favicon": "./assets/favicon.png"
