@@ -40,6 +40,7 @@
     "expo-task-manager": "~11.7.2",
     "expo-updates": "~0.24.12",
     "formik": "^2.2.9",
+    "lodash": "^4.17.21",
     "lottie-react-native": "6.5.1",
     "moment": "^2.29.4",
     "react": "18.2.0",

@@ -43,6 +43,7 @@ import DailyReportScreen from './DailyReportScreen';
 import DailyReportDetilaScreen from './DailyReportDetilaScreen';
 import HomeCrewScreen from './HomeCrewScreen';
 import { headerLeftComponent, headerTitleStyle } from '../util/utils';
+import HomeOwnerScreen from './HomeOwnerScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -114,8 +115,6 @@ function OwnrScreen({}){
     )
   }
 
-
-
   return(
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -124,7 +123,7 @@ function OwnrScreen({}){
         tabBarInactiveTintColor: 'gray',
       })}
     >
-      
+      <Tab.Screen name="home" component={HomeOwnerScreen} options={{ headerShown:false, tabBarLabel: '근무계획'}}/>
       <Tab.Screen name="daylyReport" component={DailyStack} options={{ headerShown:false, tabBarLabel: '일일보고서', tabBarBadge: owrBadge,}}/>
       <Tab.Screen name="schedule" component={ScheduleStack} options={{ headerShown:false, tabBarLabel: '근무계획'}}/>
       <Tab.Screen name="work" component={WorkStack} options={{ headerShown:false, tabBarLabel: '근무결과' }}/>

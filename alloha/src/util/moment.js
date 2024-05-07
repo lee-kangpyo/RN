@@ -236,13 +236,6 @@ export const getFormattedDate = (date) => {
   // moment를사용하지 않고 오늘 날짜를 기준으로 이번주 일요일부터 다음주 일요일날짜 리턴
   export const getStartAndEndOfWeek = () => {
     
-    // function getFormattedDate(date) {
-    //     const year = date.getFullYear();
-    //     const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    //     const day = date.getDate().toString().padStart(2, '0');
-    //     return `${year}${month}${day}`;
-    // }
-    
     const now = new Date();
     const currentDayOfWeek = now.getDay(); // 0: 일요일, 1: 월요일, ..., 6: 토요일
     // 이번 주 일요일
@@ -320,4 +313,20 @@ export function formatTime(number) {
     const formattedHours = String(hours).padStart(2, '0');
     const formattedMinutes = String(Math.round(minutes)).padStart(2, '0');
     return `${formattedHours}시간 ${formattedMinutes}분`;
+}
+
+
+export function convertTime(dateStr, {format = 'YYYY-MM-DD HH:mm:ss'} = {}){
+    try {
+        if(dateStr){
+            const date = new Date(dateStr.replace("Z",""));
+            const formattedDateTime = moment(date).format(format);
+            return formattedDateTime;
+        } else {
+            return "";
+        }    
+    } catch (error) {
+        return "";
+    }
+    
 }

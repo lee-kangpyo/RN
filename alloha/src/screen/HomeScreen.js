@@ -1,4 +1,4 @@
-
+//출퇴근 구버전
 import { Platform, StyleSheet, Text, View, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import React, {useState, useEffect, useRef, useCallback} from 'react';
 import axios from 'axios';

@@ -15,21 +15,8 @@ import { HTTP } from '../util/http';
 
 export default function HomeCrewScreen({navigation}) {
     const userId = useSelector((state)=>state.login.userId);
-    // const [isFont, setIsFont] = useState(false);
     const [datas, setDatas] = useState({});
-    // const loadFonts = async () => {
-    //     await Font.loadAsync({
-    //         "SUIT-Bold": require('../../assets/fonts/SUIT-Bold.otf'),
-    //         "SUIT-Medium": require('../../assets/fonts/SUIT-Medium.otf'),
-    //         "SUIT-ExtraBold": require('../../assets/fonts/SUIT-ExtraBold.otf'),
-    //         "SUIT-SemiBold": require('../../assets/fonts/SUIT-SemiBold.otf'),
-    //         "SUIT-Regular": require('../../assets/fonts/SUIT-Regular.otf'),
-    //         "Tium": require('../../assets/fonts/Tium.ttf'),
-    //       });
-    //       setIsFont(true);
-    // }
     useEffect(() => {
-        // loadFonts();
         getMainINfo();
     },[]);
     const getMainINfo = async () => {
@@ -54,18 +41,7 @@ export default function HomeCrewScreen({navigation}) {
         :
         <View style={styles.container}>
             <StatusBar style='light'/>
-            <LinearGradient style={styles.top} colors={['#43ABFC', '#3479EF']} start={{x:0, y:0.5}} end={{x:1, y:0.5}}>
-                <View style={{flexDirection:"row"}}>
-                    <View style={styles.circle}>
-                        <Text style={{fontSize:25, fontFamily:"SUIT-Bold"}}>{datas.top.USERNA[0]}</Text>
-                    </View>
-                    <View style={{justifyContent:"center", width:"75%"}}>
-                        <Text style={[styles.topColor, styles.font_Medium, {fontSize:14, marginBottom:5}]}>안녕하세요</Text>
-                        <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.topColor, styles.font_Bold, {fontSize:20, marginBottom:0,}]}>{datas.top.USERNA}님</Text>
-                    </View>
-                </View>
-                <Image source={require('../../assets/icons/alarm.png')} style={{alignSelf:"center", width:24, height:24}} />
-            </LinearGradient>
+            <HomeHeader data={datas.top} />
             <ScrollView contentContainerStyle={styles.body}>
                 <TotalSalary data={datas.TotalSalary}/>
                 <WorkPlace data={datas.salaryByCst}/>

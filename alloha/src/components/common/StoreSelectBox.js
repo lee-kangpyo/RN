@@ -12,7 +12,6 @@ export default function StoreSelectBox({flex}) {
     const storeList = useSelector((state)=>state.common.storeList);
     const dispatch = useDispatch();
     const [iosPickerVisible, setIosPickerVisible] = useState(false);
-    
 
     const getStoreList = async () => {
         await axios.get(URL+`/api/v1/getStoreList`, {params:{userId:userId,}})
@@ -33,7 +32,9 @@ export default function StoreSelectBox({flex}) {
         <View style = {[styles.container, viewWidth]}>
             {
                 (cstCo == "")?
-                <Text style={[fonts.text, {alignSelf:"center"}]}>등록된 점포가 없습니다.</Text>
+                <View style={{alignSelf:"center", justifyContent:"center", height:"100%"}}>
+                    <Text style={[fonts.text, ]}>등록된 점포가 없습니다.</Text>
+                </View>
                 :
                 (Platform.OS === 'android')?
                 <Picker
