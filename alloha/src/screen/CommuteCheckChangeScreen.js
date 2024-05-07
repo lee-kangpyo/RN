@@ -92,7 +92,7 @@ export default function CommuteCheckChangeScreen({navigation, route}) {
             alert(`요청 사유가 입력되지 않았습니다.`)
             return;
         }
-        
+        console.log(dayJobInfo);
         const ymd = dayJobInfo.ymd;
         const sTime = convertDate(ymd, startTime);
         const eTime = convertDate(ymd, endTime);
@@ -100,11 +100,12 @@ export default function CommuteCheckChangeScreen({navigation, route}) {
         const endRealTime = (dayJobInfo.attendence == "결근")?eTime:convertDate(ymd, dayJobInfo.startTime);
         const jobNo = (dayJobInfo.attendence == "결근")?0:dayJobInfo.jobNo;
         const params = {curStat:dayJobInfo.reqStat, cstCo:dayJobInfo.cstCo, userId:userId, jobNo:jobNo, sTime:sTime, eTime:eTime, reason:reason, reqStat:"R", startTime:startRealTime, endTime:endRealTime};
-        //console.log(params)
+        console.log(params)
         reqCommuteChange(params);
     }
 
     const convertDate = (dateString, timeString) => {
+        if(timeString == "-") return "";
         // 'YYYYMMDD'에서 년, 월, 일을 추출
         const year = parseInt(dateString.substring(0, 4), 10);
         const month = parseInt(dateString.substring(4, 6), 10) - 1; // 월은 0부터 시작하므로 1을 빼줌

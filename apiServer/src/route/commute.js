@@ -5,7 +5,7 @@ const {execSql} = require("../utils/excuteSql");
 const dotenv = require('dotenv');
 const { jobChk, jobChk2 } = require('../query/auth');
 const { monthCstSlySearch } = require('../query/workResult');
-const { insertManualJobChk, daySchedule, reqCommuteChange, initCommuteChange, getReqCommuteList, updateJobReq, updateDayJob, getDAYJOBREQ, getReqCommuteListForDay, insertPLYADAYJOB, updateJobReqAbsence } = require('../query/commute');
+const { insertManualJobChk, daySchedule, reqCommuteChange, initCommuteChange, getReqCommuteList, updateJobReq, updateDayJob, getDAYJOBREQ, getReqCommuteListForDay, insertPLYADAYJOB, updateJobReqAbsence, getJobNo } = require('../query/commute');
 const { reverseGeocode } = require('../utils/kakao');
 const { sendPush_GoToWork, sendPush_GetOffWork } = require('../utils/templatePush');
 dotenv.config();
@@ -190,14 +190,15 @@ router.post("/albaWorkChangeProcess", async (req,res,next)=>{
     try {
         const { reqStat, userId, reqNo, jobNo} = req.body;
         console.log(reqStat, userId, reqNo, jobNo);
-        if(jobNo > 0){                          // 결근이 아닐때
+        if(jobNo != "999999" && jobNo > 0){                          // 결근이 아닐때
             const result = await execSql(updateJobReq, {reqStat, userId, reqNo});
             if(result.rowsAffected[0] == 1){    // 승인시 PLYADAYJOB 추가 update
                 if(reqStat == "A")await execSql(updateDayJob, {userId, reqNo, apvYn:'A'});
             }
         }else{                                  // 결근일때
             if(reqStat == "A"){                 // 승인 - PLYADAYJOB insert 후 PLYADAYJOBREQ에 JOBNO, reqStat 업데이트
-                const rslt = await execSql(insertPLYADAYJOB, {userId, reqNo});
+                await execSql(insertPLYADAYJOB, {userId, reqNo});
+                const rslt = await execSql(getJobNo, {userId, reqNo});
                 await execSql(updateJobReqAbsence, {reqStat, userId, reqNo, jobNo:rslt.recordset[0].JOBNO});
             }else{                              // 거절
                 const result = await execSql(updateJobReq, {reqStat, userId, reqNo});

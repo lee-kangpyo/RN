@@ -5,10 +5,16 @@ const insertManualJobChk = `
 `
 const insertPLYADAYJOB=`
     INSERT INTO PLYADAYJOB (CSTCO, USERID, YMD, JOBCL, STARTTIME, STARTCHKNO, ENDTIME, ENDCHKNO, JOBDURE, STAT, APVYN, AUSERID, AYMDHMD, USEYN, IUSERID, IYMDHMD)
-    OUTPUT INSERTED.JOBNO
+    --OUTPUT INSERTED.JOBNO
     select CSTCO, USERID, YMD, 'G', STIME, null, ETIME, null, DATEDIFF(minute, STIME, ETIME), 'Y', 'R', @userId, getdate(), 'Y', @userId, getdate()
     FROM PLYADAYJOBREQ
     WHERE REQNO = @reqNo
+`
+const getJobNo=`
+    select b.JOBNO
+    FROM PLYADAYJOBREQ a
+    inner join PLYADAYJOB b ON a.CSTCO = b.CSTCO and a.USERID = b.USERID and a.YMD = b.YMD and b.USEYN = 'Y'
+    WHERE a.REQNO = @reqNo
 `
 
 const daySchedule = `
@@ -85,4 +91,4 @@ const getDAYJOBREQ = `
 `
 
 
-module.exports = {insertManualJobChk, insertPLYADAYJOB, daySchedule, reqCommuteChange, initCommuteChange, getReqCommuteList, getReqCommuteListForDay, updateJobReq, updateJobReqAbsence, updateDayJob, getDAYJOBREQ}
+module.exports = {insertManualJobChk, insertPLYADAYJOB, daySchedule, reqCommuteChange, initCommuteChange, getReqCommuteList, getReqCommuteListForDay, updateJobReq, updateJobReqAbsence, updateDayJob, getDAYJOBREQ, getJobNo}
