@@ -5,6 +5,8 @@ const axios = require('axios');
 dotenv.config();
 
 async function reverseGeocode(lat, lon) {
+  console.log("카카오 gps -> 주소 변환 api");
+  console.log(lat, lon);
   const key = process.env.KAKAO_API
   let result = {resultCode:"-1"}
 
@@ -19,10 +21,12 @@ async function reverseGeocode(lat, lon) {
       }
   })
   .then(function (response) {
+      console.log(response);
+      const doc = response.data.documents
       result = {
           resultCode:"00", 
-          roadAddress:response.data.documents[0].road_address, 
-          address:response.data.documents[0].address
+          roadAddress:(doc.length == 0)?"":doc[0].road_address, 
+          address:(doc.length == 0)?"":doc[0].address
       }
   }).catch(function (error) {
       // 오류발생시 실행
