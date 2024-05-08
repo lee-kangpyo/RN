@@ -172,10 +172,11 @@ const CommuteBox = ({num, text, textStyle, onTap}) => {
 }
 
 const User = ({userInfo, stackText}) => {
+    console.log(userInfo)
     const rate = userInfo.jobrate;
     const backColor = (stackText)?"rgba(0,0,0, 0.6)":null
     return (
-        <View style={{alignItems:"center",}}>
+        <View style={{alignItems:"center", marginHorizontal:2}}>
             {/* 
                 <View style={styles.circle}>
                     <Text style={fonts.circleText}>{userInfo.USERNA[0]}</Text>
@@ -202,14 +203,14 @@ const User = ({userInfo, stackText}) => {
                 {
                     (stackText)?
                         <View style={{position:"absolute", top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center'}}>
-                            <Text style={{fontSize:10, color:"white"}}>13:00</Text>
+                            <Text style={{fontSize:10, color:"white"}}>{convertTime(userInfo.SCHFR, {format:"HH:mm"})}</Text>
                         </View>
                     :
                         null
                 }
             </View>
-            <View style={{width:53}}>
-                <Text numberOfLines={1} ellipsizeMode='tail' style={[fonts.userText, {alignSelf:"center"}]}>{userInfo.USERNA}{userInfo.USERNA}</Text>
+            <View style={{width:50}}>
+                <Text numberOfLines={1} ellipsizeMode='tail' style={[fonts.userText, {alignSelf:"center"}]}>{userInfo.USERNA}</Text>
             </View>
         </View>
     )

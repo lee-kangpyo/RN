@@ -61,7 +61,7 @@ export default function Login({ navigation }) {
         <View style={styles.titleArea}>
             <PushTest />
             <Text style={font.title}>ALOHA</Text>
-            <Text style={font.version}>Ver 1.01</Text>
+            <Text style={font.version}>Ver 1.0.2</Text>
         </View>
         <LoginForm navigation={navigation}/>
         
