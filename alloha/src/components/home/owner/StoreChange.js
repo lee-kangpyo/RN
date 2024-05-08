@@ -10,11 +10,16 @@ export default function StoreChange({curStore, storeList, onChangeBtnTap}) {
             <View style={{flex:1, paddingRight:5}}>
                 <Text numberOfLines={1} ellipsizeMode='tail' style={fonts.title}>{curStore.CSTNA}</Text>
             </View>
-            <View style={{justifyContent:"center",}}>
-                <TouchableOpacity onPress={()=>setIsModalVisible(true)} style={styles.storeChangeBtn}>
-                    <Text style={fonts.btnText}>변경</Text>
-                </TouchableOpacity>
-            </View>
+            {
+                (storeList.length > 1)?
+                <View style={{justifyContent:"center",}}>
+                    <TouchableOpacity onPress={()=>setIsModalVisible(true)} style={styles.storeChangeBtn}>
+                        <Text style={fonts.btnText}>변경</Text>
+                    </TouchableOpacity>
+                </View>
+                :null
+            }
+            
         </View>
         <Modal
             animationType="fade"

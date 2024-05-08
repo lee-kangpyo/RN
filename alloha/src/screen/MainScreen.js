@@ -123,7 +123,7 @@ function OwnrScreen({}){
         tabBarInactiveTintColor: 'gray',
       })}
     >
-      <Tab.Screen name="home" component={HomeOwnerScreen} options={{ headerShown:false, tabBarLabel: '근무계획'}}/>
+      <Tab.Screen name="home" component={HomeOwnerScreen} options={{ headerShown:false, tabBarLabel: '홈'}}/>
       <Tab.Screen name="daylyReport" component={DailyStack} options={{ headerShown:false, tabBarLabel: '일일보고서', tabBarBadge: owrBadge,}}/>
       <Tab.Screen name="schedule" component={ScheduleStack} options={{ headerShown:false, tabBarLabel: '근무계획'}}/>
       <Tab.Screen name="work" component={WorkStack} options={{ headerShown:false, tabBarLabel: '근무결과' }}/>
@@ -320,6 +320,9 @@ const setTabBarIcon = (focused, color, size, name) =>{
   }else if (name == "CommuteCheckInfo"){
     iconName = focused ? 'clipboard-text' : 'clipboard-text-outline';
     icon = "MaterialCommunityIcons"
+  }else if(name == "home"){
+    iconName = focused ? 'home' : 'home';
+    icon = "FontAwesome"
   }
   
 

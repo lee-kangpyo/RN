@@ -26,19 +26,17 @@ router.get("/owner", async (req, res, next) => {
     console.log("GET main.owner");
     try {
         const{cstCo, userId} = req.query;
-        const result0 = await execSql(main02, {cls:"MAIN0200", cstCo:0, userId:userId});
         const result1 = await execSql(main01, {cls:'MAIN1100', cstCo, userId});
-        
         const storeList = result1.recordset;
-        if(!cstCo && storeList.length == 0){
-            console.log("cstCo 없고 점포없음")
-            res.status(200).json({result:{top:result0.recordset, storeList:[], todayAlba:[]}, resultCode:"00"});    
+        if(!cstCo && storeList[0].CSTNA == "미등록"){ // cstCo 없고(맨처음 실행) 점포 등록 없음
+            console.log("###");
+            console.log(result1.recordset[0]);
+            res.status(200).json({result:{top:result1.recordset[0], storeList:[], todayAlba:[]}, resultCode:"00"});    
         }else{
-            console.log("그외 나머지")
             const param = {cls:"MAIN110", cstCo, userId}
             if(!cstCo) param.cstCo = storeList[0].CSTCO;
             const result2 = await execSql(main01, param)    
-            res.status(200).json({result:{top:result0.recordset, storeList:result1.recordset, todayAlba:result2.recordset, cstCo:param.cstCo}, resultCode:"00"});
+            res.status(200).json({result:{top:result1.recordset[0], storeList:result1.recordset, todayAlba:result2.recordset, cstCo:param.cstCo}, resultCode:"00"});
         }
     } catch (error) {
         console.log(error.message)

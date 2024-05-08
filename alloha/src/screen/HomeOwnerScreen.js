@@ -17,6 +17,7 @@ import { isEqual } from 'lodash';
 
 
 export default function HomeOwnerScreen({navigation}) {
+    const dispatch = useDispatch();
     const userId = useSelector((state)=>state.login.userId);
     const cstCo = useSelector((state)=>state.common.cstCo);
     const [curStore, setCurStore] = useState({CSTCO:""});
@@ -24,16 +25,17 @@ export default function HomeOwnerScreen({navigation}) {
     useFocusEffect(
         useCallback(() => {
             getMainINfo();
-        }, [curStore]),
+        }, [cstCo]),
     )
 
     const onChangeBtnTap = (cstCo) => {
         const storeList = datas.storeList;
+        dispatch(setOwnerCstco({cstCo:cstCo}))
         setCurStore(storeList.find(el => el.CSTCO == cstCo));
     }
     
     const getMainINfo = async () => {
-        await HTTP("GET", "/api/v1/main/owner", {userId, cstCo:curStore.CSTCO})
+        await HTTP("GET", "/api/v1/main/owner", {userId, cstCo:cstCo})
         .then((res)=>{
             if(res.data.resultCode == "00"){
                 const data = res.data.result;
@@ -60,7 +62,7 @@ export default function HomeOwnerScreen({navigation}) {
         :
         <View style={styles.container}>
             <StatusBar style='light'/>
-            <HomeHeader data={datas.top[0]} />
+            <HomeHeader data={datas.top} />
             {
                 (datas.storeList.length > 0)?
                 <ScrollView style={styles.container2}>

@@ -2,6 +2,8 @@
 import { Platform, ScrollView, StyleSheet, TouchableOpacity, Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { convertTime } from '../../../util/moment';
+import CircularProgress from 'react-native-circular-progress-indicator';
+import { theme } from '../../../util/color';
 
 export default function TodayAlba({todayAlba, storeList, curStore}) {
     const [detailAlba, setDetailAlba] = useState([]);           // 근태 현황 상세 카드에 사용되는 데이터 (정제 전)
@@ -16,7 +18,7 @@ export default function TodayAlba({todayAlba, storeList, curStore}) {
     }, {});
 
     const cur = alba["근무중"]??[];                             // 정제된 데이터에서 근무중 데이터만 가져옴
-    const pre = alba["근무계획"]??[];                           // 정제된 데이터에서 근무계획 데이터만 가져옴.
+    const pre = alba["근무예정"]??[];                           // 정제된 데이터에서 근무계획 데이터만 가져옴.
     let filterS = '';
     useEffect(()=>{
         if(detailShow){
@@ -73,7 +75,7 @@ export default function TodayAlba({todayAlba, storeList, curStore}) {
                             {
                                 pre.map((el, idx) => {
                                     // console.log(el);
-                                    return <User key={idx} userInfo={el}/>
+                                    return <User key={idx} userInfo={el} stackText={el.SCHFR}/>
                                 })
                             }
                             {
@@ -119,12 +121,28 @@ const DetailView = ({data}) => {
                         <View key={idx} style={{borderBottomColor:"rgba(238, 238, 238, 1.0)", borderBottomWidth:1, padding:8}}>
                             <Text style={[fonts.contents2, {marginBottom:4}]}>{el.USERNA} ({el.attendance})</Text>
                             <View style={styles.row}>
-                                <Text style={fonts.boxText}>{convertTime(el.JOBFR, {format:"HH:mm"})}</Text>
+                                <Text style={fonts.boxText}>계획시간 : </Text>
+                                <Text style={fonts.boxText}>{convertTime(el.SCHFR, {format:"HH:mm"})}</Text>
+                                {
+                                    (el.SCHTO)?
+                                    <>
+                                        <Text style={fonts.boxText}> ~ </Text>
+                                        <Text style={fonts.boxText}>{convertTime(el.SCHTO, {format:"HH:mm"})}</Text>
+                                        <Text style={fonts.boxText}>  {el.SCHDURE}시간</Text>
+                                    </>
+                                    : null
+                                }
+                            </View>
+                            <View style={styles.row}>
+                                <Text style={fonts.boxText}>결과시간 : </Text>
+                                
                                 {
                                     (jobTo)?
                                     <>
+                                        <Text style={fonts.boxText}>{convertTime(el.JOBFR, {format:"HH:mm"})}</Text>
                                         <Text style={fonts.boxText}> ~ </Text>
                                         <Text style={fonts.boxText}>{jobTo}</Text>
+                                        <Text style={fonts.boxText}>  {el.JOBDURE}시간</Text>
                                     </>
                                     : null
                                 }
@@ -153,13 +171,46 @@ const CommuteBox = ({num, text, textStyle, onTap}) => {
     )
 }
 
-const User = ({userInfo}) => {
+const User = ({userInfo, stackText}) => {
+    const rate = userInfo.jobrate;
+    const backColor = (stackText)?"rgba(0,0,0, 0.6)":null
     return (
-        <View>
-            <View style={styles.circle}>
-                <Text style={fonts.circleText}>{userInfo.USERNA[0]}</Text>
+        <View style={{alignItems:"center",}}>
+            {/* 
+                <View style={styles.circle}>
+                    <Text style={fonts.circleText}>{userInfo.USERNA[0]}</Text>
+                </View>
+            */}
+            <View style={{position:"relative", backgroundColor:backColor, borderRadius:50, marginBottom:6,}}>
+                <CircularProgress
+                    maxValue={100}
+                    value={rate}
+                    //valueSuffix={'%'}
+                    //valuePrefix={''}
+                    //progressValueStyle={{ fontSize:10 }}
+                    showProgressValue={false}
+                    radius={25}
+                    duration={200}
+                    progressValueColor={'#ecf0f1'}
+                    title={userInfo.USERNA[0]}
+                    titleStyle={fonts.circleText}
+                    activeStrokeWidth={2}
+                    activeStrokeColor={theme.primary}
+                    inActiveStrokeWidth={2}
+                    inActiveStrokeColor='rgba(238, 238, 238, 0.5)'
+                />
+                {
+                    (stackText)?
+                        <View style={{position:"absolute", top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center'}}>
+                            <Text style={{fontSize:10, color:"white"}}>13:00</Text>
+                        </View>
+                    :
+                        null
+                }
             </View>
-            <Text style={fonts.userText}>{userInfo.USERNA}</Text>
+            <View style={{width:53}}>
+                <Text numberOfLines={1} ellipsizeMode='tail' style={[fonts.userText, {alignSelf:"center"}]}>{userInfo.USERNA}{userInfo.USERNA}</Text>
+            </View>
         </View>
     )
 }
