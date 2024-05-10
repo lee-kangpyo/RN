@@ -1,7 +1,7 @@
 
-import { StyleSheet, Text, View, ScrollView, SafeAreaView, StatusBar, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, SafeAreaView, TouchableOpacity } from 'react-native';
 import React, {useState, useEffect} from 'react';
-
+import { StatusBar } from 'expo-status-bar';
 import { useDispatch, useSelector } from 'react-redux';
 import { HTTP } from '../util/http';
 import { theme } from '../util/color';
@@ -97,7 +97,7 @@ export default function DailyReportScreen({navigation}) {
     return (
         <>
         <View style={styles.container}>
-            <StatusBar />
+            <StatusBar style='dark' />
             <PushTest />
             <StoreSelectBoxWithTitle titleText={"일일 보고서"} titleflex={4} selectBoxFlex={8} />
             <View style={[styles.row, {marginTop:10}]}>
@@ -139,6 +139,7 @@ export default function DailyReportScreen({navigation}) {
 }
 
 const Item = ({data, ymd, navigator}) => {
+    const cstCo = useSelector((state)=>state.common.cstCo);
     const CalTime = ({txt, dure, sTime, eTime, isCurrectDure = true}) => {
         const modifyDure = (dure) => {
             let hours = Math.floor(dure); // 정수 부분을 시간으로 변환
@@ -169,7 +170,7 @@ const Item = ({data, ymd, navigator}) => {
             </View> 
         )
     }
-    const goToDetailScreen = () => navigator.push("DailyReportDetail", {ymd:ymd, userId:data.USERID, sCstCo:data.CSTCO});
+    const goToDetailScreen = () => navigator.push("DailyReportDetail", {ymd:ymd, userId:data.USERID, sCstCo:cstCo});
     
     const attendanceColor = (data.ATTENDANCE != "정상")?"red":theme.grey
     return(
