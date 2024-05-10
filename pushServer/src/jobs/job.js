@@ -8,7 +8,7 @@ const parseJSON = require('../utils/json');
 const { PR_PLYG01_MSGSEND, PR_JOB_CLOSE } = require('../query/jobQuery');
 
 async function job () {
-  const job = schedule.scheduleJob('50 11 * * *', async () => {
+  const job = schedule.scheduleJob('* 23 * * *', async () => {
     try {
         console.log("dailyJob 실행")
         const date = new Date();
@@ -18,7 +18,8 @@ async function job () {
         // getDate()의 결과가 한 자리 수일 경우 앞에 0을 붙입니다.
         const day = ('0' + date.getDate()).slice(-2);
         const ymd = `${year}${month}${day}`;
-
+        //await execSql(PR_PLYG01_MSGSEND, {ymd:"20240510"})
+        //await execSql(PR_JOB_CLOSE, {ymdTo:"20240510", ymdFr:"20240510"})
         await execSql(PR_PLYG01_MSGSEND, {ymd})
         await execSql(PR_JOB_CLOSE, {ymdTo:ymd, ymdFr:ymd})
     } catch (error) {

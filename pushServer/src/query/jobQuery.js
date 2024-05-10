@@ -3,7 +3,7 @@ const PR_PLYG01_MSGSEND = `
 `
 
 const PR_JOB_CLOSE = `
-    exec PR_JOB_CLOSE 'jobAutoPass', @ymdTo, @ymdFr, 0, '', 'Y’
+    exec PR_JOB_CLOSE 'jobAutoPass', @ymdTo, @ymdFr, 0, '', 'Y'
 `
 
 
