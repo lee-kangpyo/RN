@@ -11,7 +11,7 @@ const app = express();
 //const mainJob = test();
 // 스케줄링된 작업을 시작합니다.
 const mainJob = main();
-const job = job();
+const dailyJob = job();
 
 // 서버를 실행합니다.
 const PORT = process.env.PORT || 3000;
