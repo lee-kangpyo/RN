@@ -271,9 +271,9 @@ function CommuteCheckStack(){
 
   return(
   <Stack.Navigator>
-    <Stack.Screen name="CommuteCheckInfo" component={CommuteCheckInfoScreen} options={{headerTitleStyle:headerTitleStyle, headerTitleAlign:"center", title:"근무 정보"}}/>
-    <Stack.Screen name="CommuteCheckDetail" component={CommuteCheckDetailScreen} options={{headerLeft: headerLeft, headerTitleStyle:headerTitleStyle}}/>
-    <Stack.Screen name="CommuteCheckChange" component={CommuteCheckChangeScreen} options={{headerLeft: headerLeft, headerTitleStyle:headerTitleStyle}}/>
+    <Stack.Screen name="CommuteCheckInfoM" component={CommuteCheckInfoScreen} options={{headerTitleStyle:headerTitleStyle, headerTitleAlign:"center", title:"근무 정보"}}/>
+    <Stack.Screen name="CommuteCheckDetail" component={CommuteCheckDetailScreen} options={{headerLeft:()=>headerLeftComponent("근무내역"), title:""}}/>
+    <Stack.Screen name="CommuteCheckChange" component={CommuteCheckChangeScreen} options={{headerLeft:()=>headerLeftComponent("근무기록변경"), title:""}}/>
   </Stack.Navigator>
   )
 }
