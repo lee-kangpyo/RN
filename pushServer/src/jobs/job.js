@@ -10,6 +10,7 @@ const { PR_PLYG01_MSGSEND, PR_JOB_CLOSE } = require('../query/jobQuery');
 async function job () {
   const job = schedule.scheduleJob('50 11 * * *', async () => {
     try {
+        console.log("dailyJob 실행")
         const date = new Date();
         const year = date.getFullYear();
         // getMonth()는 0부터 시작하므로 1을 더해줍니다. 또한, 결과가 한 자리 수일 경우 앞에 0을 붙입니다.
