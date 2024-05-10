@@ -9,11 +9,7 @@ import ConvertDayStr from '../commuteCheck/ConvertDayStr';
 
 export default function DailyCommuteInfo({day, userId, sCstCo, dayJobInfo, setDayJobInfo}) {
     const isFocused = useIsFocused();
-    // const userId = useSelector((state)=>state.login.userId);
-    // const sCstCo = useSelector((state)=>state.alba.sCstCo);
-    //const date = useSelector((state)=>state.alba.date);
     const [loading, setLoadin] = useState(true);
-    //const [dayJobInfo, setDayJobInfo] = useState({});
 
     const dayJobSearch = async () => {
         //await HTTP("GET", "/api/v1/commute/commuteCheckInfo", {cls:"dayJobInfo", userId:'mega7438226_0075', cstCo:'1010', ymdFr:'20231203', ymdTo:'20231209'})
@@ -46,7 +42,9 @@ export default function DailyCommuteInfo({day, userId, sCstCo, dayJobInfo, setDa
     }
     return(
         (loading)?
-            <ActivityIndicator />
+            <View style={{justifyContent:"center", alignContent:"center"}}>
+                <ActivityIndicator />
+            </View>
         :
         <>
             <ConvertDayStr dayStr={day} style={styles.dayStr} fontSize={16} style={styles.dayStr} textStyle={fonts.dayStr}/>

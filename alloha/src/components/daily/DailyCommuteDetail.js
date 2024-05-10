@@ -8,7 +8,7 @@ import { theme } from '../../util/color';
 import CustomButton from '../common/CustomButton';
 import { getReverseGeocodeAsync } from '../../util/reverseGeocode';
 
-export default function DailyCommuteDetail({day, userId, sCstCo}) {
+export default function DailyCommuteDetail({day, userId, sCstCo, isActive}) {
     // const userId = useSelector((state)=>state.login.userId);
     // const sCstCo = useSelector((state)=>state.alba.sCstCo);
     const [loading, setLoadin] = useState(true);
@@ -28,7 +28,7 @@ export default function DailyCommuteDetail({day, userId, sCstCo}) {
     useEffect(()=>{
         //setLoadin(true);
         dayJobSearch();
-    }, [])
+    }, [isActive])
     return(
         <>
          {

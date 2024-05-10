@@ -1,14 +1,12 @@
 
-import { StyleSheet, Text, View, TouchableOpacity,} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Alert,} from 'react-native';
 import React, {useState, useEffect} from 'react';
 import CustomButton from '../components/common/CustomButton';
 import DailyCommuteInfo from '../components/daily/DailyCommuteInfo';
 import DailyCommuteDetail from '../components/daily/DailyCommuteDetail';
-import { EasyBottomSheet } from '../components/common/CustomBottomSheet';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { InlineTimePicker } from '../components/TimePicker';
 import { CustomBottomSheet2 } from '../components/common/CustomBottomSheet2';
-import { convertTime, convertTime2, strToDate } from '../util/moment';
+import { convertTime2, strToDate } from '../util/moment';
 import { theme } from '../util/color';
 import { HTTP } from '../util/http';
 
@@ -18,6 +16,8 @@ export default function DailyReportDetilaScreen({navigation, route}) {
     const [dayJobInfo, setDayJobInfo] = useState({});
     const [btnShow, setBtnShow] = useState(false);
     const [isOpen, setIsOpen] = useState(false); 
+
+    const [isActive, setIsActive] = useState(false);
 
     useEffect(()=>{
         if(Object.keys(dayJobInfo).length > 0){
@@ -29,33 +29,47 @@ export default function DailyReportDetilaScreen({navigation, route}) {
         navigation.setOptions({title:"근무내역"})
     }, [navigation])
 
-    const onConfirm = async (params) => {
-        await HTTP("POST", "/api/v1/daily/JumjoWorkSave", params)
+    const dayJobSearch = async () => {
+        setIsActive(!isActive);
+        await HTTP("GET", "/api/v1/commute/commuteCheckInfo", {cls:"dayJobInfo", userId:userId, cstCo:sCstCo, ymdFr:YYYYMMDD, ymdTo:YYYYMMDD})
         .then((res)=>{
-            alert("asdf")
-            //setLoadin(false);
+            if(res.data.result.length > 0) {
+                setDayJobInfo(res.data.result[0])
+                
+            };
         }).catch(function (error) {
             console.log(error);
             alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
         })
     }
-    console.log("dayJobInfo");console.log("dayJobInfo");console.log("dayJobInfo");
-    console.log(dayJobInfo);
-    console.log("dayJobInfo");console.log("dayJobInfo");console.log("dayJobInfo");
+
+    const onConfirm = async (params) => {
+        await HTTP("POST", "/api/v1/daily/JumjoWorkSave", params)
+        .then((res)=>{
+            const msg = (res.data.resultCode == "00")?"요청한 근무 기록이 변경 되었습니다.":"변경 중 오류가 발생했습니다.잠시후 다시 시도해 주세요.";
+            Alert.alert('알림', msg, [{text: '확인', onPress: () => dayJobSearch()},], { cancelable: false });
+            
+        }).catch(function (error) {
+            console.log(error);
+            alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
+        })
+    }
     return (
         <>
         <View style={styles.container}>
             <DailyCommuteInfo day={YYYYMMDD} userId={userId} sCstCo={sCstCo} dayJobInfo={dayJobInfo} setDayJobInfo={setDayJobInfo} />
-            <DailyCommuteDetail day = {YYYYMMDD} userId={userId} sCstCo={sCstCo}/>
-            <CustomButton onClick={()=>setIsOpen(true)} text={"근무기록변경"} style={styles.btn} fontStyle={fonts.btn}/>
-            
+            <DailyCommuteDetail day = {YYYYMMDD} userId={userId} sCstCo={sCstCo} isActive={isActive}/>
+            {
+                (btnShow)?
+                    <CustomButton onClick={()=>setIsOpen(true)} text={"근무기록변경"} style={styles.btn} fontStyle={fonts.btn}/>
+                :
+                    null
+            }
         </View>
         <CustomBottomSheet2 
             isOpen={isOpen} 
             onClose={()=>setIsOpen(false)}
-            content={
-                <ChangeWorkTime dayJobInfo={dayJobInfo} setIsOpen={setIsOpen} onConfirm={onConfirm}/>
-            }
+            content={<ChangeWorkTime dayJobInfo={dayJobInfo} setIsOpen={setIsOpen} onConfirm={onConfirm}/>}
         />
         </>
     );

@@ -13,8 +13,10 @@ import CustomTap from '../components/common/CustomTap';
 import ReqChangeWork from '../components/daily/ReqChangeWork';
 import { setIssueCnt } from '../../redux/slices/dailyReport';
 import PushTest from '../components/test/PushTest';
+import { useIsFocused } from '@react-navigation/native';
 
 export default function DailyReportScreen({navigation}) {
+    const isFocused = useIsFocused();
     const getYMD = (date) => {
         const year = date.getFullYear();
         const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -44,8 +46,8 @@ export default function DailyReportScreen({navigation}) {
             const unApprovedList = result.filter(el => ["R", "P"].includes(el.APVYN));
             // 이슈 있는 항목
             const issuedList = result.filter(el => el.REQCNT > 0);
-            console.log(unApprovedList.length);
-            console.log(issuedList.length);
+            //console.log(unApprovedList.length);
+            //console.log(issuedList.length);
             setDatas(result);
             setIsBtnDisabled(unApprovedList.length == 0)
             dispatch(setIssueCnt({cnt:issuedList.length}));
@@ -56,7 +58,7 @@ export default function DailyReportScreen({navigation}) {
     }
     useEffect(()=>{
         DailyReport1();
-    }, [cstCo, ymd, selectedKey])
+    }, [cstCo, ymd, selectedKey, isFocused])
     const changeDay = (cls) =>{
         const date = new Date(ymd.date)
         if(cls == "prev"){
@@ -87,12 +89,6 @@ export default function DailyReportScreen({navigation}) {
                 alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
             })
         }
-        // if(notCheck.length > 0){
-        //     alert("근무 변경 요청이있습니다.")
-        // }else{
-        //     console.log(checkedItem)
-        //     console.log("확정 진행")
-        // }
     }
     return (
         <>
@@ -132,7 +128,6 @@ export default function DailyReportScreen({navigation}) {
                 </ScrollView>
             </View>
             <CustomButton text={"확정"} onClick={confirm} style={{alignSelf:"flex-end"}} disabled={isBtnDisabled}/>
-            
         </View>
         </>
     );
