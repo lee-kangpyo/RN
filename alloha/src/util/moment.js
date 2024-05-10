@@ -328,5 +328,22 @@ export function convertTime(dateStr, {format = 'YYYY-MM-DD HH:mm:ss'} = {}){
     } catch (error) {
         return "";
     }
-    
+}
+
+export function convertTime2(date, {format = 'YYYY-MM-DD HH:mm:ss'} = {}){
+    try {
+        if(date){
+            const formattedDateTime = moment(date).format(format);
+            return formattedDateTime;
+        } else {
+            return "";
+        }    
+    } catch (error) {
+        return "";
+    }
+}
+// '20240509 05:30' -> 날짜로 변경
+export function strToDate(dateString){
+    const dateStr = moment(dateString, 'YYYYMMDD HH:mm');
+    return dateStr.toDate();
 }

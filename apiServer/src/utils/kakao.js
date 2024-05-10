@@ -21,7 +21,6 @@ async function reverseGeocode(lat, lon) {
       }
   })
   .then(function (response) {
-      console.log(response);
       const doc = response.data.documents
       result = {
           resultCode:"00", 

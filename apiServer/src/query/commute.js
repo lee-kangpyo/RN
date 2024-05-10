@@ -6,7 +6,7 @@ const insertManualJobChk = `
 const insertPLYADAYJOB=`
     INSERT INTO PLYADAYJOB (CSTCO, USERID, YMD, JOBCL, STARTTIME, STARTCHKNO, ENDTIME, ENDCHKNO, JOBDURE, STAT, APVYN, AUSERID, AYMDHMD, USEYN, IUSERID, IYMDHMD)
     --OUTPUT INSERTED.JOBNO
-    select CSTCO, USERID, YMD, 'G', STIME, null, ETIME, null, DATEDIFF(minute, STIME, ETIME), 'Y', 'R', @userId, getdate(), 'Y', @userId, getdate()
+    select CSTCO, USERID, YMD, 'G', STIME, null, ETIME, null, DATEDIFF(minute, STIME, ETIME), 'X', 'R', @userId, getdate(), 'Y', @userId, getdate()
     FROM PLYADAYJOBREQ
     WHERE REQNO = @reqNo
 `
@@ -77,7 +77,7 @@ const updateJobReqAbsence = `
     WHERE REQNO = @reqNo
 `
 const updateDayJob = `
-    UPDATE a set a.APVYN = @apvYn, a.MUSERID = @userId, a.MYMDHMD = getdate(), a.STARTTIME = b.STIME, a.ENDTIME = b.ETIME, a.JOBDURE = DATEDIFF(minute,  b.STIME, b.ETIME)
+    UPDATE a set a.APVYN = @apvYn, a.MUSERID = @userId, a.MYMDHMD = getdate(), a.STARTTIME = b.STIME, a.ENDTIME = b.ETIME, a.JOBDURE = DATEDIFF(minute,  b.STIME, b.ETIME), a.STAT = 'X'
     FROM PLYADAYJOB a 
     inner join PLYADAYJOBREQ b On a.JOBNO = b.JOBNO
     WHERE b.REQNO = @reqNo

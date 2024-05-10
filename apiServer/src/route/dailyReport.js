@@ -3,7 +3,7 @@ var router = express.Router();
 const {execSql} = require("../utils/excuteSql");
 
 const dotenv = require('dotenv');
-const { DailyReport1, approve, jobClose } = require('../query/dailyReport');
+const { DailyReport1, approve, jobClose, JumjoWorkSave } = require('../query/dailyReport');
 
 dotenv.config();
 
@@ -22,7 +22,7 @@ router.get("/DailyReport1", async (req, res, next)=>{
 
 // /v1/daily/approve
 router.post("/approve", async (req, res, next)=>{
-    console.log("GET dailyReport.approve");
+    console.log("POST dailyReport.approve");
     try {
         const {jobNos, userId, ymd, cstCo} = req.body;
         const result = await execSql(approve + "("+jobNos.join(", ")+")", {userId});
@@ -36,5 +36,18 @@ router.post("/approve", async (req, res, next)=>{
     }
 })
 
+// /v1/daily/JumjoWorkSave 
+router.post("/JumjoWorkSave", async (req, res, next)=>{
+    console.log("POST dailyReport.JumjoWorkSave");
+    try {
+        const {cls, cstCo, useId, ymd, sTime, eTime} = req.body
+        const result = await execSql(JumjoWorkSave, {cls, cstCo, useId, ymd, sTime, eTime})
+        console.log(result);
+        res.status(200).json({resultCode:"00"});
+    } catch (error) {
+        console.log(error.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+})
 module.exports = router;
 

@@ -42,13 +42,13 @@ export default function SearchStoreScreen({type, refresh, setRefresh}) {
         if(stat == "지원하기"){
 
             Confirm("지원하기", "["+cstNa+"]에 지원하시겠습니까?", "아니오", "네", async ()=>{
-                console.log(cstCo)
+                //console.log(cstCo)
                 const params = {cstCo:cstCo, userId:userId, iUserId:userId, roleCl:"CREW"};
                 
                 await axios.post(URL+`/api/v1/applyStoreListCrew`, params)
                 .then((res)=>{
-                    console.log("네네네")
-                    console.log(res.data.resultCode)
+                    //console.log("네네네")
+                    //console.log(res.data.resultCode)
                     if(res.data.resultCode === "00"){
                         Alert.alert("알림", "해당 점포에 알바 지원이 완료되었습니다.")
                     }else{

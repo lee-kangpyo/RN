@@ -1,5 +1,5 @@
 
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Platform, StyleSheet, Text, View } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import { useSelector } from 'react-redux';
 import { HTTP } from '../../util/http';
@@ -19,7 +19,7 @@ export default function DailyCommuteInfo({day, userId, sCstCo, dayJobInfo, setDa
         //await HTTP("GET", "/api/v1/commute/commuteCheckInfo", {cls:"dayJobInfo", userId:'mega7438226_0075', cstCo:'1010', ymdFr:'20231203', ymdTo:'20231209'})
         await HTTP("GET", "/api/v1/commute/commuteCheckInfo", {cls:"dayJobInfo", userId:userId, cstCo:sCstCo, ymdFr:day, ymdTo:day})
         .then((res)=>{
-            console.log(res.data.result[0])
+            console.log(res.data.result)
             if(res.data.result.length > 0) setDayJobInfo(res.data.result[0]);
             setLoadin(false);
         }).catch(function (error) {
@@ -48,27 +48,31 @@ export default function DailyCommuteInfo({day, userId, sCstCo, dayJobInfo, setDa
         (loading)?
             <ActivityIndicator />
         :
+        <>
+            <ConvertDayStr dayStr={day} style={styles.dayStr} fontSize={16} style={styles.dayStr} textStyle={fonts.dayStr}/>
             <View style={styles.card}>
-                <ConvertDayStr dayStr={day} style={styles.dayStr} fontSize={16}/>
                 <View style={styles.grid}>
                     <View style={styles.gridItem}>
-                        <Text style={styles.grey}>출근시간</Text>
-                        <Text style={{fontSize:20, fontWeight:"bold"}}>{dayJobInfo.startTime}</Text>
+                        <Text style={[fonts.grey, {marginBottom:4}]}>출근시간</Text>
+                        <Text style={[fonts.time, {color: "#111111"}]}>{dayJobInfo.startTime}</Text>
                         <Text style={[styles.grey, {fontSize:10}]}>({dayJobInfo.realStartTime})</Text>
                     </View>
                     <View style={styles.gridItem}>
-                        <Text style={styles.grey}>퇴근시간</Text>
-                        <Text style={{fontSize:20, fontWeight:"bold"}}>{dayJobInfo.endTime}</Text>
+                        <Text style={[fonts.grey, {marginBottom:4}]}>퇴근시간</Text>
+                        <Text style={[fonts.time, {color: "#111111"}]}>{dayJobInfo.endTime}</Text>
                         <Text style={[styles.grey, {fontSize:10}]}>({dayJobInfo.realEndTime})</Text>
                     </View>
                     <View style={styles.gridItem}>
-                        <Text style={styles.grey}>총 근무시간</Text>
-                        <Text style={{fontSize:20, fontWeight:"bold", color:"blue"}}>{dayJobInfo.jobDure} 시간</Text>
+                        <Text style={[fonts.grey, {marginBottom:4}]}>총 근무시간</Text>
+                        <Text style={[fonts.time, {color: "#3479EF"}]}>{dayJobInfo.jobDure} 시간</Text>
                         <Text style={[styles.grey, {fontSize:10}]}>(일반 : {dayJobInfo.genDure} 대타 : {dayJobInfo.spcDure})</Text>
                     </View>
                 </View>
-                <View style={styles.row}>
-                    <Text style={styles.grey}>근무계획 : </Text>
+                
+            </View>
+            <View style={[styles.card, {padding:16}]}>
+                <View style={[styles.row, styles.line, styles.mb10]}>
+                    <Text style={[fonts.grey, {fontSize:13}]}>근무계획</Text>
                     {
                         (dayJobInfo.ymd)?
                         <PlanAlba />
@@ -77,43 +81,85 @@ export default function DailyCommuteInfo({day, userId, sCstCo, dayJobInfo, setDa
                     }
 
                 </View>
-                <View style={styles.row}>
-                    <Text style={styles.grey}>근무상태 : </Text>
-                    <Text>{dayJobInfo.attendence}</Text>
+                <View style={[styles.row, styles.line, styles.mb10]}>
+                    <Text style={[fonts.grey, {fontSize:13}]}>근무상태</Text>
+                    <Text style={fonts.content}>{dayJobInfo.attendence}</Text>
                 </View>
-                <View style={styles.row}>
-                    <Text style={styles.grey}>근무기록변경요청 : </Text>
+                <View style={[styles.row, styles.line]}>
+                    <Text style={[fonts.grey, {fontSize:13}]}>근무기록변경요청</Text>
                     
                         {
                         (dayJobInfo.reqStat == 'N')?
-                            <Text>없음</Text>
+                            <Text style={fonts.content}>없음</Text>
                         :(dayJobInfo.reqStat == 'R')?
-                            <Text>요청중</Text>
+                            <Text style={fonts.content}>요청중</Text>
                         :(dayJobInfo.reqStat == 'A')?
-                            <Text>승인됨</Text>
+                            <Text style={fonts.content}>승인됨</Text>
                         :(dayJobInfo.reqStat == 'D')?
-                            <Text>거절됨</Text>
+                            <Text style={fonts.content}>거절됨</Text>
                         :
                             null
                         }
                     
                 </View>
             </View>
+        </>
     )
 }
 
+const fonts = StyleSheet.create({
+    dayStr:{
+        fontFamily: "SUIT-ExtraBold",
+        fontSize: 18,
+        fontWeight: "800",
+        color: "#111111"
+    },
+    grey:{
+        fontFamily: "SUIT-Medium",
+        fontSize: 14,
+        fontWeight: "500",
+        color: "#777777"
+    },
+    content:{
+        fontFamily: "SUIT-Bold",
+        fontSize: 13,
+        fontWeight: "700",
+        color: "#333333"
+    },
+    time:{
+        fontFamily: "SUIT-ExtraBold",
+        fontSize: 16,
+        fontWeight: "800",
+    }
+});
 
 const styles = StyleSheet.create({
     card:{
-        borderWidth:1,
-        borderRadius:5,
         width:"100%",
-        marginBottom:15, 
         padding:15,
+        marginBottom:10,
+        borderRadius: 10,
+        backgroundColor: "#FFFFFF",
+        ...Platform.select({
+            ios:{
+                shadowColor: "rgba(0, 0, 0, 0.05)",
+                shadowOffset: {
+                    width: 0,
+                    height: 0
+                },
+                shadowRadius: 10,
+                shadowOpacity: 1
+            },
+            android:{
+                elevation :2,
+            }
+        })
     },
     grey:{color:"grey"},
-    dayStr:{ justifyContent:"center", marginBottom:16 },
+    dayStr:{ justifyContent:"center", marginVertical:30 },
     grid:{ flexDirection:"row", justifyContent:"space-between", paddingHorizontal:24, marginBottom:16  },
     gridItem:{alignItems:"center"},
     row:{ flexDirection:"row" },
+    line:{alignItems:"baseline", justifyContent:"space-between", },
+    mb10:{marginBottom:10}
 });
