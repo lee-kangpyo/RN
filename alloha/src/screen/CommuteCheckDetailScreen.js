@@ -17,9 +17,6 @@ export default function CommuteCheckDetailScreen({navigation, route}) {
             setBtnShow(true)
         }
     },[dayJobInfo])
-    useEffect(()=>{
-        navigation.setOptions({title:"근무내역"})
-    }, [navigation])
 
     const onModifyBtnpressed = () => {
         const reqStat = dayJobInfo.reqStat;

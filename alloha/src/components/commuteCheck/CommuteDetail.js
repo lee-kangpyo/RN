@@ -56,12 +56,12 @@ const BottomItem = ({data, isLast}) => {
     return(
         <View style={[styles.bItemContainer, styles.row, {alignItems:"flex-start"}]}>
             <View>
-                <View style={{alignItems:"center", justifyContent:"center",}}>
+                <View style={{alignItems:"center", justifyContent:"center", zIndex:5}}>
                     <FontAwesome name="circle" size={30} color={theme.primary} style={{ zIndex:5}}/>
                     <Feather name="check" size={16} color="white" style={{position:"absolute",  zIndex:10,}} />
                 </View>
                 {
-                    (!isLast)?<View style={[{height:"100%", width:0, borderWidth: 0.5,borderColor: "rgba(221, 221, 221, 1.0)", position:"absolute", top:15, left:10}]} />:null
+                    (!isLast)?<View style={[{height:"100%", width:0, borderWidth: 0.5,borderColor: "rgba(221, 221, 221, 1.0)", position:"absolute", top:15, left:12}]} />:null
                 }
             </View>
             <View style={{marginLeft:12, marginTop:8}}>

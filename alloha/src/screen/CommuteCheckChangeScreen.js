@@ -15,9 +15,6 @@ export default function CommuteCheckChangeScreen({navigation, route}) {
     const userId = useSelector((state)=>state.login.userId);
     const isFocused = useIsFocused();
     useEffect(()=>{
-        navigation.setOptions({title:"근무기록변경"});
-    }, [navigation]);
-    useEffect(()=>{
         if(isFocused){
             getDayJobReq();
         }
@@ -306,7 +303,7 @@ const TimeContainer = ({setType, startController, endController}) => {
         return (
             <View style={styles.row}>
                 <TextInput
-                    style={[styles.timeFont, {width:40, borderWidth:1, borderRadius:5, borderColor:theme.grey, color:hColor, padding:5, marginBottom:10}]}
+                    style={[styles.timeFont, {width:45, borderWidth:1, borderRadius:5, borderColor:theme.grey, color:hColor, padding:5, marginBottom:10, textAlign:"center"}]}
                     onChangeText={(hour) => setHour(hour)}
                     //onBlur={(e) => changeTime({hour:e.nativeEvent.text})}
                     value={Hour}
@@ -316,7 +313,7 @@ const TimeContainer = ({setType, startController, endController}) => {
                 /> 
                 <Text style={[styles.timeFont, {borderWidth:0, borderRadius:5, borderColor:theme.grey, color:theme.link, padding:5, marginBottom:10}]}>:</Text>
                 <TextInput
-                    style={[styles.timeFont, {width:40, borderWidth:1, borderRadius:5, borderColor:theme.grey, color:mColor, padding:5, marginBottom:10}]}
+                    style={[styles.timeFont, {width:45, borderWidth:1, borderRadius:5, borderColor:theme.grey, color:mColor, padding:5, marginBottom:10, textAlign:"center"}]}
                     onChangeText={(min) => setMin(min)}
                     //onBlur={(e) => changeTime({min:e.nativeEvent.text})}
                     value={Min}
