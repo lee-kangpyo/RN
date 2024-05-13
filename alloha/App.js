@@ -1,5 +1,5 @@
 
-import { StyleSheet, Text, View, AppState, Alert } from 'react-native';
+import { StyleSheet, Text, View, AppState, Alert, ActivityIndicator } from 'react-native';
 //import React, {useEffect, useState} from 'react';
 
 import { NavigationContainer } from '@react-navigation/native';
@@ -216,7 +216,7 @@ function Index() {
 
 
 function App(){
-  //const [isFont, setIsFont] = useState(false);
+  const [isFont, setIsFont] = useState(false);
   const loadFonts = async () => {
     await Font.loadAsync({
         "SUIT-Bold": require('./assets/fonts/SUIT-Bold.otf'),
@@ -226,7 +226,7 @@ function App(){
         "SUIT-Regular": require('./assets/fonts/SUIT-Regular.otf'),
         "Tium": require('./assets/fonts/Tium.ttf'),
       });
-      //setIsFont(true);
+      setIsFont(true);
   }
   useEffect(() => {
       loadFonts();
@@ -237,7 +237,12 @@ function App(){
   return (
       <Provider store={store}>
         <Notification >
-            <Index />
+        {
+        (isFont)?
+          <Index />
+        :
+          <ActivityIndicator/>
+        }
         </Notification>
       </Provider>
   );
