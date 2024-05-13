@@ -5,9 +5,10 @@ const {execSql} = require("../utils/excuteSql");
 const dotenv = require('dotenv');
 const { jobChk, jobChk2 } = require('../query/auth');
 const { monthCstSlySearch } = require('../query/workResult');
-const { insertManualJobChk, daySchedule, reqCommuteChange, initCommuteChange, getReqCommuteList, updateJobReq, updateDayJob, getDAYJOBREQ, getReqCommuteListForDay, insertPLYADAYJOB, updateJobReqAbsence, getJobNo } = require('../query/commute');
+const { insertManualJobChk, daySchedule, reqCommuteChange, initCommuteChange, getReqCommuteList, updateJobReq, updateDayJob, getDAYJOBREQ, getReqCommuteListForDay, insertPLYADAYJOB, updateJobReqAbsence, getJobNo, updatePLYADAYJOB } = require('../query/commute');
 const { reverseGeocode } = require('../utils/kakao');
 const { sendPush_GoToWork, sendPush_GetOffWork } = require('../utils/templatePush');
+const { sendMsg_Z0110_11, useN_DayJob } = require('../query/dailyReport');
 dotenv.config();
 
 function getDate() {
@@ -134,15 +135,18 @@ router.post("/reqCommuteChange", async (req,res,next)=>{
     }
     console.log("POST commute.reqCommuteChange")
     try {
-        const { cstCo, userId, jobNo, sTime, eTime, startTime, endTime, reason, reqStat } = req.body;
+        const { cstCo, userId, jobNo, sTime, eTime, startTime, endTime, reason, reqStat, issueCount } = req.body;
+        console.log(cstCo, userId, jobNo, sTime, eTime, startTime, endTime, reason, reqStat, issueCount);
         const ymd = convertYmd(sTime);
         const initRlt = await execSql(initCommuteChange, {cstCo, jobNo, userId, ymd});
         const result = await execSql(reqCommuteChange, { cstCo, jobNo, userId, sTime, eTime, startTime, endTime, reason, reqStat, ymd });
+        const reqNo = result.recordset[0].REQNO;
         if(jobNo == "999999"){
-            const reqNo = result.recordset[0].REQNO;
             await execSql(insertPLYADAYJOB, {userId, reqNo});
             const rslt = await execSql(getJobNo, {userId, reqNo});
             await execSql(updateJobReqAbsence, {reqStat, userId, reqNo, jobNo:rslt.recordset[0].JOBNO});
+        }else if (issueCount > 0){
+            await execSql(updatePLYADAYJOB, {userId, sTime, eTime, jobNo});
         }
         if(result.rowsAffected[0] == 1){
             res.status(200).json({result:"다녀옴", resultCode:"00"});
@@ -210,6 +214,10 @@ router.post("/albaWorkChangeProcess", async (req,res,next)=>{
                 const result = await execSql(updateJobReq, {reqStat, userId, reqNo});
             }
         }
+        // reqSTAT이 D 이면 PLYADAYJOBREQ의 STARTTIME, ENDTIME이 1900-01-01 00:00:00.000 이거면 USEYN을 N으로 변경
+        if(reqStat == "D") await execSql(useN_DayJob, {reqNo})
+        // reqStat이 A이면 승인됨을 D이면 거절됨을 푸시로보냄
+        await execSql(sendMsg_Z0110_11, {reqNo});
 
         res.status(200).json({resultCode:"00"});
     } catch (error) {

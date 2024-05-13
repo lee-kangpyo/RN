@@ -3,6 +3,10 @@ const insertManualJobChk = `
     INSERT	PLYAJOBCHK(CSTCO, USERID, YMD, LAT, LON, CHKYN, APVYN, JOBCL, CHKTIME)
     VALUES ( @cstCo, @userId, CONVERT(CHAR(8), getDate(), 112), @lat, @lon, @chkYn, @apvYn, @jobCl, getDate())
 `
+const updatePLYADAYJOB=`
+    update a set a.STARTTIME = @sTime, a.ENDTIME  = @eTime, a.JOBDURE = DATEDIFF(minute, @sTime, @eTime), a.MUSERID = @userId, a.MYMDHMD = GETDATE() 
+    from PLYADAYJOB a WHERE JOBNO = @jobNo
+`
 const insertPLYADAYJOB=`
     INSERT INTO PLYADAYJOB (CSTCO, USERID, YMD, JOBCL, STARTTIME, STARTCHKNO, ENDTIME, ENDCHKNO, JOBDURE, STAT, APVYN, AUSERID, AYMDHMD, USEYN, IUSERID, IYMDHMD)
     --OUTPUT INSERTED.JOBNO
@@ -65,6 +69,7 @@ const getReqCommuteListForDay=`
     inner join PLYMUSER u On c.USERID = u.USERID
     inner join PLYMUSER alba On a.USERID = alba.USERID
     WHERE a.USEYN = 'Y'
+    and b.USEYN = 'Y'
     --and b.APVYN != 'D'
     and d.USEYN = 'Y'
     AND c.ROLECL = 'ownr'
@@ -83,6 +88,7 @@ const updateJobReqAbsence = `
     UPDATE PLYADAYJOBREQ SET JOBNO = @jobNo, REQSTAT = @reqStat, MUSERID = @userId, MYMDHMD = getdate()
     WHERE REQNO = @reqNo
 `
+
 const updateDayJob = `
     UPDATE a set a.APVYN = @apvYn, a.MUSERID = @userId, a.MYMDHMD = getdate(), a.STARTTIME = b.STIME, a.ENDTIME = b.ETIME, a.JOBDURE = DATEDIFF(minute,  b.STIME, b.ETIME), a.STAT = 'X'
     FROM PLYADAYJOB a 
@@ -98,4 +104,4 @@ const getDAYJOBREQ = `
 `
 
 
-module.exports = {insertManualJobChk, insertPLYADAYJOB, daySchedule, reqCommuteChange, initCommuteChange, getReqCommuteList, getReqCommuteListForDay, updateJobReq, updateJobReqAbsence, updateDayJob, getDAYJOBREQ, getJobNo}
+module.exports = {insertManualJobChk, insertPLYADAYJOB, daySchedule, reqCommuteChange, initCommuteChange, getReqCommuteList, getReqCommuteListForDay, updateJobReq, updateJobReqAbsence, updateDayJob, getDAYJOBREQ, getJobNo, updatePLYADAYJOB}

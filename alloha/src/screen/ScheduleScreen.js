@@ -236,9 +236,7 @@ export default function ScheduleScreen({navigation}) {
                     :null}
 
                     <Animated.View style={{width:widthValue, paddingTop:20, marginBottom:5}}>
-                        <TouchableOpacity onPress={()=>navigation.push("scheduleView")}>
-                            <WeekDate sBlank={1.3} eBlank={1} week={week}/>
-                        </TouchableOpacity>
+                        <WeekDate sBlank={1.3} eBlank={1} week={week}/>
                     </Animated.View>
                     
                     <ScrollView  contentContainerStyle={{paddingBottom:(bottomSheetIndex == -1)?0:Dimensions.get('window').height * 0.3, }}>

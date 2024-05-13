@@ -10,7 +10,7 @@ import { useSelector } from 'react-redux';
 import { useIsFocused } from '@react-navigation/native';
 
 export default function CommuteCheckChangeScreen({navigation, route}) {
-
+    const [isBtnActive, setIsBtnActive] = useState(true);
     const { dayJobInfo, isScheduled=false } = route.params;
     const [isExistReq, setIsExistReq] = useState(null);
     const userId = useSelector((state)=>state.login.userId);
@@ -20,7 +20,7 @@ export default function CommuteCheckChangeScreen({navigation, route}) {
             getDayJobReq();
         }
     }, [isFocused]);
-
+    
     
     const date = YYYYMMDD2Obj(dayJobInfo.ymd);
     const getDayJobReq = async () => {
@@ -90,21 +90,24 @@ export default function CommuteCheckChangeScreen({navigation, route}) {
     }
 
     const onConfirm = () => {
+        setIsBtnActive(false);
         if(dayJobInfo.startTime == startTime && dayJobInfo.endTime == endTime){
             alert(`${dayJobInfo.startTime} ~ ${dayJobInfo.endTime} → ${startTime} ~ ${endTime}\n근무 시간과 변경 요청 시간이 동일합니다. 다시 한번 확인해 주세요.`)
+            setIsBtnActive(true);
             return;
         }
         if(reason == ""){
             alert(`요청 사유가 입력되지 않았습니다.`)
+            setIsBtnActive(true);
             return;
         }
         const ymd = dayJobInfo.ymd;
         const sTime = convertDate(ymd, startTime);
         const eTime = convertDate(ymd, endTime);
-        const startRealTime = (dayJobInfo.attendence == "결근")?sTime:convertDate(ymd, dayJobInfo.startTime);
-        const endRealTime = (dayJobInfo.attendence == "결근")?eTime:convertDate(ymd, dayJobInfo.endTime);
+        const startRealTime = (dayJobInfo.issueCount > 0)?"":(dayJobInfo.attendence == "결근")?sTime:convertDate(ymd, dayJobInfo.startTime);
+        const endRealTime = (dayJobInfo.issueCount > 0)?"":(dayJobInfo.attendence == "결근")?eTime:convertDate(ymd, dayJobInfo.endTime);
         const jobNo = (dayJobInfo.attendence == "결근")?0:dayJobInfo.jobNo;
-        const params = {curStat:dayJobInfo.reqStat, cstCo:dayJobInfo.cstCo, userId:userId, jobNo:jobNo, sTime:sTime, eTime:eTime, reason:reason, reqStat:"R", startTime:startRealTime, endTime:endRealTime};
+        const params = {curStat:dayJobInfo.reqStat, cstCo:dayJobInfo.cstCo, userId:userId, jobNo:jobNo, sTime:sTime, eTime:eTime, reason:reason, reqStat:"R", startTime:startRealTime, endTime:endRealTime, issueCount:dayJobInfo.issueCount};
         //console.log(params)
         reqCommuteChange(params);
     }
@@ -222,9 +225,9 @@ export default function CommuteCheckChangeScreen({navigation, route}) {
                                             </View>
                                         :
                                             <View style={[styles.row, styles.mainPill]}>
-                                                <Text style={fonts.main}>{(dayJobInfo.startTime=="-")?"00:00":dayJobInfo.startTime}</Text>
+                                                <Text style={fonts.main}>{(dayJobInfo.startTime=="-" || dayJobInfo.issueCount > 0)?"00:00":dayJobInfo.startTime}</Text>
                                                 <Text style={fonts.main}> ~ </Text>
-                                                <Text style={fonts.main}>{(dayJobInfo.endTime=="-")?"00:00":dayJobInfo.endTime}</Text>
+                                                <Text style={fonts.main}>{(dayJobInfo.endTime=="-" || dayJobInfo.issueCount > 0)?"00:00":dayJobInfo.endTime}</Text>
                                             </View>
                                 }
                                 
@@ -268,7 +271,18 @@ export default function CommuteCheckChangeScreen({navigation, route}) {
                 null
             }
             {
-                (type == 0)?<View style={{flex:1, width:"100%", justifyContent:"flex-end"}}><CustomButton onClick={onConfirm} text={"점주승인요청"} style={[styles.btn, ]} fontStyle={fonts.btnText}/></View>:null
+                (type == 0)?
+                    <View style={{flex:1, width:"100%", justifyContent:"flex-end"}}>
+                    {
+                        (isBtnActive)?
+                            <CustomButton onClick={onConfirm} text={"점주승인요청"} style={[styles.btn, ]} fontStyle={fonts.btnText}/>
+                        :
+                            <CustomButton onClick={()=>console.log("중복 클릭 방지.")} text={"점주승인요청"} style={[styles.btn, ]} fontStyle={fonts.btnText}/>
+
+                    }
+                    </View>
+                :
+                    null
             }
             
         </View>
