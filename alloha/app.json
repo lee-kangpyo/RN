@@ -3,7 +3,7 @@
     "name": "알로하",
     "scheme": "aloha",
     "slug": "alloha",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -74,8 +74,17 @@
             "usesCleartextTraffic": true
           }
         }
+      ],
+      [
+        "expo-updates",
+        {
+          "username":"akmz"
+        }
       ]
     ],
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
     "ios": {
       "buildNumber": "10",
       "bundleIdentifier": "com.akmz.alloha",
