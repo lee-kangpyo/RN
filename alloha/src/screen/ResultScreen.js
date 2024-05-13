@@ -1,5 +1,5 @@
 
-import { StyleSheet, View, StatusBar, SafeAreaView } from 'react-native';
+import { StyleSheet, View, SafeAreaView } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIsFocused } from '@react-navigation/native';
@@ -11,6 +11,7 @@ import { PayContainer, TotalContainer } from '../components/common/Container';
 import HeaderControl from '../components/common/HeaderControl';
 import StoreSelectBoxWithTitle from '../components/common/StoreSelectBoxWithTitle';
 import Excel from '../components/common/Excel';
+import { StatusBar } from 'expo-status-bar';
 
 export default function ResultScreen({navigation}) {
     const userId = useSelector((state) => state.login.userId);
@@ -92,7 +93,6 @@ export default function ResultScreen({navigation}) {
 
     return (
         <SafeAreaView style={styles.container}>
-            <StatusBar />
             <StoreSelectBoxWithTitle titleText={""} titleflex={0} selectBoxFlex={12} />
             <View style={{...styles.card, marginTop:20, padding:5, width:"100%", overflow:"hidden"}}>
                 <View style={{marginBottom:20}}>

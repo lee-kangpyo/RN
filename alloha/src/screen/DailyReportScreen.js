@@ -93,7 +93,6 @@ export default function DailyReportScreen({navigation}) {
     return (
         <>
         <View style={styles.container}>
-            <StatusBar style='dark' />
             <PushTest />
             <StoreSelectBoxWithTitle titleText={"일일 보고서"} titleflex={4} selectBoxFlex={8} />
             <View style={[styles.row, {marginTop:10}]}>

@@ -1,5 +1,5 @@
 
-import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, StatusBar, Keyboard, Animated, Dimensions, Alert, Image } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, Keyboard, Animated, Dimensions, Alert, Image, StatusBar } from 'react-native';
 import React, {useState, useEffect, useRef, useCallback, useMemo} from 'react';
 import WeekDate from '../components/schedule/WeekDate';
 import WeekAlba from '../components/schedule/WeekAlba';
@@ -84,10 +84,7 @@ export default function ScheduleScreen({navigation}) {
         var params = {cls:"AlbaSave", ymdFr:weekList[0].format("yyyyMMDD"), ymdTo:weekList[6].format("yyyyMMDD")}
         return {screen:"schedule", url:'/api/v1/saveAlba', params:params};
     }
-
-
     const isFocused = useIsFocused();
-    
     useEffect(() => {
         if (isFocused) {
             if(cstCo != "") getWeekSchedule();
@@ -208,7 +205,7 @@ export default function ScheduleScreen({navigation}) {
     }
     return (
         <SafeAreaView style={styles.container}>
-            <StatusBar />
+            <StatusBar barStyle={"dark-content"} backgroundColor={"#fff"}/>
             <GestureHandlerRootView style={{paddingHorizontal:16, paddingTop:10}}>
                 <StoreSelectBoxWithTitle titleText={""} titleflex={0} selectBoxFlex={12} />
                 <View style={{...styles.card, padding:5, }}>

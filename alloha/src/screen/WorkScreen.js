@@ -1,5 +1,5 @@
 
-import { StyleSheet, Animated, Text, View, TouchableOpacity, Keyboard, Switch, Alert, Dimensions, StatusBar, SafeAreaView, ScrollView, Image, Platform } from 'react-native';
+import { StyleSheet, Animated, Text, View, TouchableOpacity, Keyboard, Switch, Alert, Dimensions, SafeAreaView, ScrollView, Image, Platform } from 'react-native';
 import React, {useState, useEffect, useCallback, useRef, useMemo} from 'react';
 import WeekDate from '../components/schedule/WeekDate';
 import { useSelector, useDispatch } from 'react-redux';
@@ -18,6 +18,7 @@ import StoreSelectBoxWithTitle from '../components/common/StoreSelectBoxWithTitl
 import CustomBottomSheet, { NumberBottomSheet } from '../components/common/CustomBottomSheet';
 import { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { theme } from '../util/color';
+import { StatusBar } from 'expo-status-bar';
 
 export default function WorkScreen({navigation}) {
     //TODO 여기서 알바가 요청하는 근무 수정 페이지 이동
@@ -188,7 +189,6 @@ export default function WorkScreen({navigation}) {
     //###############################################################
     return (
         <SafeAreaView style={styles.container}>
-            <StatusBar barStyle={"dark-content"}/>
             <GestureHandlerRootView style={{paddingHorizontal:16, paddingTop:10}}>
                 <StoreSelectBoxWithTitle titleText={""} titleflex={0} selectBoxFlex={8} />
                 <View style={{...styles.card, padding:5, marginTop:20}}>

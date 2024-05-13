@@ -1,4 +1,4 @@
-import { StatusBar } from 'expo-status-bar';
+import { StatusBar, } from 'expo-status-bar';
 import { Text, View, StyleSheet, Dimensions, TouchableWithoutFeedback, TouchableOpacity, TextInput } from "react-native";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { theme } from '../util/color';
@@ -123,7 +123,6 @@ const Step1 = ({updateState}) => {
 
     return(
         <View style={{flex:1, backgroundColor:"white", alignItems:"center"}}>
-            <StatusBar style="auto" />
             <SelectUserType userType={userType} setUserType={setUserType}/>
                 <Formik
                     initialValues={{ userName: '', hpNo: '', id:'' }}
@@ -195,7 +194,6 @@ const Step2 = ({ updateState }) => {
       };
     return (
         <View style={{flex:1, backgroundColor:"white", alignItems:"center"}}>
-            <StatusBar style="auto" />
                 <Formik
                     initialValues={{ password: '', confirmPassword: '' }}
                     validationSchema={validationSchema}
@@ -361,7 +359,6 @@ const emailCheck = ({ updateState }) => {
       }
     return (
         <View style={{flex:1, backgroundColor:"white", alignItems:"center"}}>
-            <StatusBar style="auto" />
             <View style={styles.sep}>
                 <TouchableWithoutFeedback onPress={()=>setUserType(0)}>
                     <Text style={[styles.sepTxt, userType === 0 && styles.sepSelected]}>사장님</Text>

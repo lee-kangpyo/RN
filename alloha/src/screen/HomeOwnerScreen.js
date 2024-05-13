@@ -2,7 +2,7 @@
 import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useState, useEffect, useCallback} from 'react';
 
-import { StatusBar } from 'expo-status-bar';
+import { StatusBar, setStatusBarStyle } from 'expo-status-bar';
 import { theme } from '../util/color';
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -53,7 +53,6 @@ export default function HomeOwnerScreen({navigation}) {
             alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
         })
     }
-    
     return (
         (Object.keys(datas).length == 0)?
         <View style={{flex:1, justifyContent:"center"}}>
@@ -61,7 +60,7 @@ export default function HomeOwnerScreen({navigation}) {
         </View>
         :
         <View style={styles.container}>
-            <StatusBar style='light'/>
+            <StatusBar style='dark'/>
             <HomeHeader data={datas.top} />
             {
                 (datas.storeList.length > 0)?

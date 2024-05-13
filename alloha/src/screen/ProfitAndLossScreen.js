@@ -1,5 +1,5 @@
 
-import { StyleSheet, Text, View, StatusBar, KeyboardAvoidingView, TouchableOpacity, Platform, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, KeyboardAvoidingView, TouchableOpacity, Platform, SafeAreaView } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import { ProfitLossAlbaList, ProfitLossContainer, ProfitLossPl, TotalContainer } from '../components/common/Container';
 import StoreSelectBoxWithTitle from '../components/common/StoreSelectBoxWithTitle';
@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { nextMonth, prevMonth, setAlbaFeeList, setMonthCstPl } from '../../redux/slices/result';
 import HeaderControl from '../components/common/HeaderControl';
 import Excel from '../components/common/Excel';
+import { StatusBar } from 'expo-status-bar';
 
 export default function ProfitAndLossScreen({navigation}) {
     const cstCo = useSelector((state)=>state.common.cstCo);
@@ -113,7 +114,6 @@ export default function ProfitAndLossScreen({navigation}) {
 
     return (
         <KeyboardAvoidingView style={[styles.container, { flex: 1}]} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-            <StatusBar />
             <StoreSelectBoxWithTitle titleText={"매출 현황"} titleflex={4} selectBoxFlex={8} />
             <View style={[styles.card, {padding:10}]}>
                 <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:5}}>
