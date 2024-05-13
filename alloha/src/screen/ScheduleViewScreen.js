@@ -4,7 +4,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import ViewShot from "react-native-view-shot";
 import * as Sharing from 'expo-sharing';
-import { Ionicons } from '@expo/vector-icons';
+import { FontAwesome   } from '@expo/vector-icons';
 import { getDayWeekNumber, getWeekList } from '../util/moment';
 import axios from 'axios';
 import { URL } from "@env";
@@ -14,6 +14,8 @@ import { useNavigation } from '@react-navigation/native';
 import { nextWeek, prevWeek } from '../../redux/slices/schedule';
 import HeaderControl from '../components/common/HeaderControl';
 import ScheduleByAlba from '../components/schedule/ScheduleByAlba';
+import StoreSelectBoxWithTitle from '../components/common/StoreSelectBoxWithTitle';
+
 
 export default function ScheduleViewScreen({navigation}) {
     const weekNumber = useSelector((state)=>state.schedule.weekNumber);
@@ -91,12 +93,16 @@ export default function ScheduleViewScreen({navigation}) {
     return (
         <>
         <View style={[styles.container]}>
+            <StoreSelectBoxWithTitle titleText={""} titleflex={0} selectBoxFlex={12} />
             <View style={styles.whiteBox}>
                 <HeaderControl title={`${weekNumber.month}월 ${weekNumber.number}주차 근무 계획`} onLeftTap={()=> dispatch(prevWeek())} onRightTap={()=> dispatch(nextWeek())} />
             </View>
-            <View style={{alignItems:"flex-end", marginBottom:15}}>
-                <TouchableOpacity style={styles.textButton} onPress={()=>setMode(!mode)}>
-                    <Text style={fonts.textButtonText}>{(mode == 0)?"알바별로 변경":"날짜별로 변경"}</Text>
+            <View style={{ marginBottom:15, flexDirection:"row"}}>
+                <TouchableOpacity style={{flex:1, marginRight:16}} onPress={()=>navigation.push("scheduleInsert")}>
+                    <Text style={[fonts.textButtonText, {textAlign:"center"}]}>근무 계획 입력</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={{flex:1}} onPress={()=>setMode(!mode)}>
+                    <Text style={[fonts.textButtonText, {textAlign:"center"}]}>{(mode == 0)?"알바별 보기":"날짜별 보기"}</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -118,6 +124,7 @@ export default function ScheduleViewScreen({navigation}) {
                             :
                                 <View style={{justifyContent:"center", alignItems:"center"}}>
                                     <Text style={fonts.contents}>데이터가 없습니다.</Text>
+                                    <Text style={fonts.contents}>근무 계획을 입력해주세요.</Text>
                                 </View>
                         :
                         (mode == 1)?
@@ -141,10 +148,17 @@ const DailyScheduleBox = ({mmdd, day, albaList}) => {
     return(
         <View style={styles.day}>
             <View style={styles.albaList}>
-                <TouchableOpacity style={styles.mmdd} onPress={()=>navigation.push("scheduleTimeLine", {ymd:mmdd.format("YYYYMMDD"), mmdd:mmdd.format("MM / DD") + " " + day})}>
-                    <Text style={[fonts.mmdd, {color:dayColor}]}>{mmdd.format("MM.DD")}</Text>
-                    <Text style={[fonts.mmdd, {color:dayColor}]}>({day})</Text>
-                </TouchableOpacity>
+                <View style={{flexDirection:"row", justifyContent:"space-between"}}>
+                    <View style={styles.mmdd}> 
+                        <Text style={[fonts.mmdd, {color:dayColor}]}>{mmdd.format("MM.DD")}</Text>
+                        <Text style={[fonts.mmdd, {color:dayColor}]}>({day})</Text>
+                    </View>
+                    <View>
+                        <TouchableOpacity style={styles.miniBtn} onPress={()=>navigation.push("scheduleTimeLine", {ymd:mmdd.format("YYYYMMDD"), mmdd:mmdd.format("MM / DD") + " " + day})}>
+                            <FontAwesome name="bar-chart" size={15} color="#28B49A" />
+                        </TouchableOpacity>
+                    </View>
+                </View>
                 {
                     albaList.map((alba, idx)=>{
                         return(
@@ -170,7 +184,11 @@ const fonts = StyleSheet.create({
         fontFamily: "SUIT-Bold",
         fontSize: 14,
         fontWeight: "700",
-        color: "#28B49A"
+        color: "#28B49A",
+        borderWidth:1,
+        borderColor:"#28B49A",
+        padding:8,
+        borderRadius:10
     },
     contents:{
         fontFamily: "SUIT-ExtraBold",
@@ -190,6 +208,7 @@ const fonts = StyleSheet.create({
         fontWeight: "800",
         color: "#111111"
     },
+
     pillText:{
         fontFamily: "SUIT-Bold",
         fontSize: 13,
@@ -265,9 +284,6 @@ const styles = StyleSheet.create({
     btnText:{
         fontSize:10
     },
-    textButton:{
-        padding:5
-    },
     whiteBox:{
         marginVertical:20,
         padding:15,
@@ -296,5 +312,11 @@ const styles = StyleSheet.create({
         justifyContent:"center",
         alignItems:"center",
         width:55,
+    },
+    miniBtn:{
+        borderColor:"#28B49A",
+        borderWidth:1,
+        borderRadius:5,
+        padding:2,
     }
 });

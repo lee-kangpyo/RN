@@ -188,19 +188,9 @@ function WorkStack(){
 function ScheduleStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="scheduleMain" component={ScheduleScreen}  options={{headerTitleAlign: 'center', headerTitleStyle:headerTitleStyle, title:"근무계획"}}
-        // options={s
-        //   {
-        //     headerRight: () => (
-        //       <TouchableOpacity onPress={() => navigation.navigate("scheduleView")}>
-        //         <Ionicons name="reader-outline" size={24} color="black" />
-        //       </TouchableOpacity>
-        //     ),
-        //   }
-        // }
-      />
+      <Stack.Screen name="scheduleView" component={ScheduleViewScreen} options={{headerTitleAlign: 'center', headerTitleStyle:headerTitleStyle, title:"근무계획"}} />
+      <Stack.Screen name="scheduleInsert" component={ScheduleScreen}  options={{headerLeft:()=>headerLeftComponent("근무 계획 입력"), title:""}} />
       <Stack.Screen name="scheduleModify" component={ScheduleModifyScreen} />
-      <Stack.Screen name="scheduleView" component={ScheduleViewScreen} options={{headerLeft:()=>headerLeftComponent("근무계획"), title:""}} />
       <Stack.Screen name="scheduleTimeLine" component={ScheduleTimeLineScreen} />
       <Stack.Screen name="registerAlba" component={EasyRegisterAlbaScreen} />
     </Stack.Navigator>
