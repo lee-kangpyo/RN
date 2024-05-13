@@ -57,7 +57,6 @@ export default function Login({ navigation }) {
   return (
     <GestureHandlerRootView style={{flex:1}}>
       <View style={styles.container}>
-        <StatusBar style="auto" />
         <View style={styles.titleArea}>
             <PushTest />
             <Text style={font.title}>ALOHA</Text>
