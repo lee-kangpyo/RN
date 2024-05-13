@@ -208,8 +208,8 @@ function CrewScreen(){
       })}
     >
       {/*<Tab.Screen name="Home" component={HomeCrewStack} options={{ headerShown:false, tabBarLabel: '홈'}}/>*/}
-      <Tab.Screen name="CommuteCheck" component={CommuteCheckScreen} options={{headerTitleStyle:headerTitleStyle, headerTitleAlign:"center", tabBarLabel:"근무현황"}}/>
       <Tab.Screen name="CommuteCheckInfo" component={CommuteCheckStack} options={{ headerShown:false, tabBarLabel: '근무정보'}}/>
+      <Tab.Screen name="CommuteCheck" component={CommuteCheckScreen} options={{headerTitleStyle:headerTitleStyle, headerTitleAlign:"center", tabBarLabel:"근무현황"}}/>
       <Tab.Screen name="schedule" component={ScheduleScreenToAlba} options={{ tabBarLabel: '주간근무계획', headerTitleStyle:headerTitleStyle, headerTitleAlign:"center"}}/>
       
       {/* <Tab.Screen name="Home" options={{ tabBarLabel: '출퇴근(구버전)' }} >
@@ -217,6 +217,7 @@ function CrewScreen(){
           <LocationPermission Grant={HomeScreen}/>
         )}
       </Tab.Screen> */}
+      
       <Tab.Screen name="Wage" options={{ headerShown: false, tabBarLabel: '급여'}} >
         {() => (
           <Stack.Navigator>
@@ -225,7 +226,6 @@ function CrewScreen(){
           </Stack.Navigator>
         )}
       </Tab.Screen>
-      
       <Tab.Screen name="manageStore" component={SearchStoreScreen} backBehavior={"none"} options={{ tabBarLabel: '점포검색', headerTitleStyle:headerTitleStyle, headerTitleAlign:"center"}} />
       <Tab.Screen name="etc" options={{ headerShown: false, }}>
         {() => (
