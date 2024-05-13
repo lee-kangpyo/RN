@@ -10,6 +10,7 @@ import { useSelector } from 'react-redux';
 import { useIsFocused } from '@react-navigation/native';
 
 export default function CommuteCheckChangeScreen({navigation, route}) {
+
     const { dayJobInfo, isScheduled=false } = route.params;
     const [isExistReq, setIsExistReq] = useState(null);
     const userId = useSelector((state)=>state.login.userId);
@@ -23,35 +24,43 @@ export default function CommuteCheckChangeScreen({navigation, route}) {
     
     const date = YYYYMMDD2Obj(dayJobInfo.ymd);
     const getDayJobReq = async () => {
-        await HTTP("GET", "/api/v1/commute/getDayJobReq", {jobNo:dayJobInfo.jobNo})
-        .then((res)=>{
-            if(res.data.resultCode == "00"){
-                // 근무 변경 기록이 있을때
-                if(res.data.rows > 0){
-                    const data = res.data.result[0];
-                    setStartTime(data.STIME.split('T')[1].slice(0, 5));
-                    setEndTime(data.ETIME.split('T')[1].slice(0, 5));
-                    setReason(data.REASON);
-                    setIsExistReq(true)
-                }else{
-                    //인정 요청할 때
-                    if(isScheduled){
-                        setStartTime(dayJobInfo.schFrom);
-                        setEndTime(dayJobInfo.schTo);
-                        setReason("인정 요청");
+        if(dayJobInfo.jobNo == "999999"){
+            setStartTime("00:00");
+            setEndTime("00:00");
+            setReason("");
+            setIsExistReq(true);
+        }else{
+            await HTTP("GET", "/api/v1/commute/getDayJobReq", {jobNo:dayJobInfo.jobNo})
+            .then((res)=>{
+                if(res.data.resultCode == "00"){
+                    // 근무 변경 기록이 있을때
+                    console.log(res.data)
+                    if(res.data.rows > 0){
+                        const data = res.data.result[0];
+                        setStartTime(data.STIME.split('T')[1].slice(0, 5));
+                        setEndTime(data.ETIME.split('T')[1].slice(0, 5));
+                        setReason(data.REASON);
+                        setIsExistReq(true)
                     }else{
-                        setStartTime(dayJobInfo.startTime);
-                        setEndTime(dayJobInfo.endTime);
-                        setReason("");
+                        //인정 요청할 때
+                        
+                        if(isScheduled){
+                            setStartTime(dayJobInfo.schFrom);
+                            setEndTime(dayJobInfo.schTo);
+                            setReason("인정 요청");
+                        }else{
+                            setStartTime(dayJobInfo.startTime);
+                            setEndTime(dayJobInfo.endTime);
+                            setReason("");
+                        }
+                        setIsExistReq(false)
                     }
-                    
-                    setIsExistReq(false)
                 }
-            }
-        }).catch(function (error) {
-            console.log(error);
-            alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
-        })
+            }).catch(function (error) {
+                console.log(error);
+                alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
+            })
+        }
     }
 
     const reqCommuteChange = async (params) => {
@@ -89,15 +98,14 @@ export default function CommuteCheckChangeScreen({navigation, route}) {
             alert(`요청 사유가 입력되지 않았습니다.`)
             return;
         }
-        console.log(dayJobInfo);
         const ymd = dayJobInfo.ymd;
         const sTime = convertDate(ymd, startTime);
         const eTime = convertDate(ymd, endTime);
         const startRealTime = (dayJobInfo.attendence == "결근")?sTime:convertDate(ymd, dayJobInfo.startTime);
-        const endRealTime = (dayJobInfo.attendence == "결근")?eTime:convertDate(ymd, dayJobInfo.startTime);
+        const endRealTime = (dayJobInfo.attendence == "결근")?eTime:convertDate(ymd, dayJobInfo.endTime);
         const jobNo = (dayJobInfo.attendence == "결근")?0:dayJobInfo.jobNo;
         const params = {curStat:dayJobInfo.reqStat, cstCo:dayJobInfo.cstCo, userId:userId, jobNo:jobNo, sTime:sTime, eTime:eTime, reason:reason, reqStat:"R", startTime:startRealTime, endTime:endRealTime};
-        console.log(params)
+        //console.log(params)
         reqCommuteChange(params);
     }
 
@@ -214,9 +222,9 @@ export default function CommuteCheckChangeScreen({navigation, route}) {
                                             </View>
                                         :
                                             <View style={[styles.row, styles.mainPill]}>
-                                                <Text style={fonts.main}>{dayJobInfo.startTime}</Text>
+                                                <Text style={fonts.main}>{(dayJobInfo.startTime=="-")?"00:00":dayJobInfo.startTime}</Text>
                                                 <Text style={fonts.main}> ~ </Text>
-                                                <Text style={fonts.main}>{dayJobInfo.endTime}</Text>
+                                                <Text style={fonts.main}>{(dayJobInfo.endTime=="-")?"00:00":dayJobInfo.endTime}</Text>
                                             </View>
                                 }
                                 

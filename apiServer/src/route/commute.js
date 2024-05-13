@@ -136,8 +136,14 @@ router.post("/reqCommuteChange", async (req,res,next)=>{
     try {
         const { cstCo, userId, jobNo, sTime, eTime, startTime, endTime, reason, reqStat } = req.body;
         const ymd = convertYmd(sTime);
-        const initRlt = await execSql(initCommuteChange, {cstCo, jobNo, userId});
+        const initRlt = await execSql(initCommuteChange, {cstCo, jobNo, userId, ymd});
         const result = await execSql(reqCommuteChange, { cstCo, jobNo, userId, sTime, eTime, startTime, endTime, reason, reqStat, ymd });
+        if(jobNo == "999999"){
+            const reqNo = result.recordset[0].REQNO;
+            await execSql(insertPLYADAYJOB, {userId, reqNo});
+            const rslt = await execSql(getJobNo, {userId, reqNo});
+            await execSql(updateJobReqAbsence, {reqStat, userId, reqNo, jobNo:rslt.recordset[0].JOBNO});
+        }
         if(result.rowsAffected[0] == 1){
             res.status(200).json({result:"다녀옴", resultCode:"00"});
         }else{

@@ -2,7 +2,7 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity, ActivityIndicator, ScrollView, Platform } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import { theme } from '../util/color';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import Notion from '../components/common/Notion';
 import { useDispatch, useSelector } from 'react-redux';
 import { YYYYMMDD2Obj, formatTime } from '../util/moment';
@@ -46,6 +46,7 @@ export default function CommuteCheckInfoScreen({navigation}) {
     
 //######################################################################################################3
 const Top = ({userId}) => {
+    const isFocused = useIsFocused();
     const dispatch = useDispatch();
     const sCstCo = useSelector((state)=>state.alba.sCstCo);
     const date = useSelector((state)=>state.alba.date);
@@ -67,7 +68,7 @@ const Top = ({userId}) => {
     useEffect(()=>{
         setLoadin(true);
         commuteCheckInfo();
-    }, [date, sCstCo])
+    }, [date, sCstCo, isFocused])
 
     const TopWeek = () =>{
         return(
@@ -159,6 +160,7 @@ const Top = ({userId}) => {
 }
 
 const BotContainer = ({userId}) => {
+    const isFocused = useIsFocused();
     const sCstCo = useSelector((state)=>state.alba.sCstCo);
     const date = useSelector((state)=>state.alba.date);
     const [loading, setLoadin] = useState(true);
@@ -179,7 +181,7 @@ const BotContainer = ({userId}) => {
     useEffect(()=>{
         setLoadin(true);
         dayJobSearch();
-    }, [date, sCstCo])
+    }, [date, sCstCo, isFocused])
 //////////////////////////////////////////////////////////////////////////////////////////////////
     return(
         (loading)?

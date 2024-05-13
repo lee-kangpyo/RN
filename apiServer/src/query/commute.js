@@ -10,6 +10,11 @@ const insertPLYADAYJOB=`
     FROM PLYADAYJOBREQ
     WHERE REQNO = @reqNo
 `
+const getReqNo = `
+    select REQNO
+    from PLYADAYJOBREQ
+    WHERE a.USERID = @userId and a.YMD = @ymd and b.USEYN = 'Y'
+`
 const getJobNo=`
     select b.JOBNO
     FROM PLYADAYJOBREQ a
@@ -22,6 +27,7 @@ const daySchedule = `
 `
 const reqCommuteChange = `
     INSERT INTO PLYADAYJOBREQ (CSTCO, USERID, JOBNO, STIME, ETIME, STARTTIME, ENDTIME, REASON, REQSTAT, YMD, PUSHYN, USEYN,  IUSERID, IYMDHMD)
+    OUTPUT INSERTED.REQNO
     VALUES(@cstCo, @userId, @jobNo, @sTime, @eTime, @startTime, @endTime, @reason, @reqStat,  @ymd, 'N', 'Y', @userId, getdate())
 `
 const initCommuteChange = `
@@ -29,6 +35,7 @@ const initCommuteChange = `
     from PLYADAYJOBREQ a 
     WHERE CSTCO = @cstCo 
     AND USERID = @userId
+    AND YMD = @ymd
     AND JOBNO = @jobNo
     AND USEYN = 'Y'
 `

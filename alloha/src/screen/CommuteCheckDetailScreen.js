@@ -10,13 +10,13 @@ export default function CommuteCheckDetailScreen({navigation, route}) {
     const { ymd } = route.params;
     const [YYYYMMDD, setYYYYMMDD] = useState(ymd);
     const userId = useSelector((state)=>state.login.userId);
-    const [dayJobInfo, setDayJobInfo] = useState({})
+    const [dayJobInfo, setDayJobInfo] = useState({});
     const [btnShow, setBtnShow] = useState(false);
     useEffect(()=>{
         if(Object.keys(dayJobInfo).length > 0){
-            setBtnShow(true)
+            setBtnShow(true);
         }
-    },[dayJobInfo])
+    },[dayJobInfo]);
 
     const onModifyBtnpressed = () => {
         const reqStat = dayJobInfo.reqStat;
@@ -32,7 +32,7 @@ export default function CommuteCheckDetailScreen({navigation, route}) {
     }
 
     const confirm = (title, msg, onConfirm) => {
-        Alert.alert( title, msg,
+        Alert.alert(title, msg,
             [
               {
                 text: '확인', // 버튼 텍스트
@@ -45,7 +45,6 @@ export default function CommuteCheckDetailScreen({navigation, route}) {
             ],
           );
     }
-
     return (
         <View style={styles.container}>
             <CommuteInfo day = {YYYYMMDD} dayJobInfo={dayJobInfo} setDayJobInfo={setDayJobInfo} />

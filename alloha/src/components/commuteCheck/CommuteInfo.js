@@ -19,7 +19,11 @@ export default function CommuteInfo({day, dayJobInfo, setDayJobInfo}) {
         //await HTTP("GET", "/api/v1/commute/commuteCheckInfo", {cls:"dayJobInfo", userId:'mega7438226_0075', cstCo:'1010', ymdFr:'20231203', ymdTo:'20231209'})
         await HTTP("GET", "/api/v1/commute/commuteCheckInfo", {cls:"dayJobInfo", userId:userId, cstCo:sCstCo, ymdFr:day, ymdTo:day})
         .then((res)=>{
-            if(res.data.result.length > 0) setDayJobInfo(res.data.result[0]);
+            if(res.data.result.length > 0) {
+                setDayJobInfo(res.data.result[0])
+            }else{
+                setDayJobInfo({})
+            };
             setLoadin(false);
         }).catch(function (error) {
             console.log(error);

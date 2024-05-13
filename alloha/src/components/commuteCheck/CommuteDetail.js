@@ -5,8 +5,10 @@ import { useSelector } from 'react-redux';
 import { HTTP } from '../../util/http';
 import { FontAwesome, Feather  } from '@expo/vector-icons';
 import { theme } from '../../util/color';
+import { useIsFocused } from '@react-navigation/native';
 
 export default function CommuteDetail({day}) {
+    const isFocused = useIsFocused();
     const userId = useSelector((state)=>state.login.userId);
     const sCstCo = useSelector((state)=>state.alba.sCstCo);
     const [loading, setLoadin] = useState(true);
@@ -15,6 +17,7 @@ export default function CommuteDetail({day}) {
     const dayJobSearch = async () => {
         await HTTP("GET", "/api/v1/commute/jobDetailInfo", {cls:"jobDetailInfo", userId:userId, cstCo:sCstCo, ymdFr:day, ymdTo:day})
         .then((res)=>{
+            console.log("####");
             console.log(res.data.result)
             setJobDetailInfo(res.data.result);
             setLoadin(false);
@@ -27,7 +30,7 @@ export default function CommuteDetail({day}) {
     useEffect(()=>{
         //setLoadin(true);
         dayJobSearch();
-    }, [])
+    }, [isFocused])
     return(
         <>
          {
