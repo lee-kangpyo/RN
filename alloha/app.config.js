@@ -20,6 +20,6 @@ export default ({ config }) => {
       },
       "runtimeVersion": {
         "policy": "appVersion"
-      }
+      },
     };
   };
