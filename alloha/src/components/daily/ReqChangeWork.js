@@ -1,13 +1,10 @@
 import { ActivityIndicator, Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, {useState, useEffect} from 'react';
-import { useCommuteChangeList } from '../../hooks/useReqCommuteList';
 import { useDispatch, useSelector } from 'react-redux';
-import { YYYYMMDD2Obj, YYYYMMDD_KOR_2Obj } from '../../util/moment';
+import { YYYYMMDD2Obj } from '../../util/moment';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { useIsFocused } from '@react-navigation/native';
 import { theme } from '../../util/color';
-import SearchBar from '../../components/SearchBar';
-import Checkbox from '../../components/common/CheckBox';
 import { HTTP } from '../../util/http';
 import { setIssueCnt } from '../../../redux/slices/dailyReport';
 
@@ -26,7 +23,7 @@ export default function ReqChangeWork({ymd, cstCo}) {
         setIsLoading(true);
         await HTTP("GET", "/api/v1/commute/getReqCommuteListForDay", {userId, ymd, cstCo})
         .then((res)=>{
-            console.log(res.data.dayReqList)
+            // /console.log(res.data.dayReqList)
             dispatch(setIssueCnt({cnt:res.data.dayReqList.filter(el => el.REQSTAT == "R").length}));
             setReqList(res.data.dayReqList);
             setIsLoading(false);
@@ -40,11 +37,6 @@ export default function ReqChangeWork({ymd, cstCo}) {
         getReqCommuteListForDay();
     }, [isFocused, ymd, cstCo]);
 
-    // useEffect(()=>{
-    //     const cstSet = new Set(reqList.map(el => el.CSTNA));
-    //     setCstList([...cstSet]);
-    // }, [reqList])
-
     const onAprovDeny = () => {
         getReqCommuteListForDay();
     }
@@ -57,46 +49,27 @@ export default function ReqChangeWork({ymd, cstCo}) {
                         <ActivityIndicator />
                     </View>
                 :(reqList.length == 0)?
-                <View style={styles.noData}>
-                    <Text>데이터가 없습니다.</Text>
-                </View>
-                :
-                <View style={styles.container}>
-                    <View style={{width:"100%", borderWidth:1, borderColor:theme.grey, backgroundColor:"white", flex:1}}>
-                        <ScrollView>
-                            <View>
-                                <View style={{paddingHorizontal:10, paddingBottom:15}}>
-                            {
-                                reqList.map(
-                                    (el, idx)=>{
-                                        return <ReqItem key={idx} data={el} refresh={()=>onAprovDeny()}/>
-                                    }
-                                )
-                                  
-                            // cstList.map((cstNa, idx) => {
-                            //     const filteredData = reqList.filter(item=>item.CSTNA == cstNa);
-                            //     filteredData.sort((a, b) => a.USERNA.localeCompare(b.USERNA));
-                            //     filteredData.sort((a, b) => {
-                            //         const timeComparison =  new Date(b.createDate) - new Date(a.createDate);
-                            //         return timeComparison === 0 ? a.USERNA.localeCompare(b.USERNA) : timeComparison;
-                            //     });
-                            //     return(
-                            //         <View key={idx}>
-                            //             <View style={styles.cstTitle}>
-                            //                 <Text style={{color:"white", fontSize:16, fontWeight:"bold"}}>{cstNa}</Text>
-                            //             </View>
-                            //             <View style={{paddingHorizontal:10, paddingBottom:15}}>
-                            //                 {filteredData.map((el, idx)=><ReqItem key={idx} data={el} refresh={()=>onAprovDeny()}/>)}
-                            //             </View>
-                            //         </View>
-                            //     )
-                            // })
-                            }
-                            </View>
-                            </View>
-                        </ScrollView>
+                    <View style={styles.noData}>
+                        <Text>데이터가 없습니다.</Text>
                     </View>
-                </View>
+                :
+                    <View style={styles.container}>
+                        <View style={{width:"100%", borderWidth:1, borderColor:theme.grey, backgroundColor:"white", flex:1}}>
+                            <ScrollView>
+                                <View>
+                                    <View style={{paddingHorizontal:10, paddingBottom:15}}>
+                                    {
+                                        reqList.map(
+                                            (el, idx)=>{
+                                                return <ReqItem key={idx} data={el} refresh={()=>onAprovDeny()}/>
+                                            }
+                                        )
+                                    }
+                                    </View>
+                                </View>
+                            </ScrollView>
+                        </View>
+                    </View>
             }
         </>
     );

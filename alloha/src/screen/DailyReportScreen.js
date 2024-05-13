@@ -21,13 +21,12 @@ export default function DailyReportScreen({navigation}) {
         const year = date.getFullYear();
         const month = (date.getMonth() + 1).toString().padStart(2, '0');
         const day = date.getDate().toString().padStart(2, '0');
-        return {date:date, ymdKo:`${year}년 ${month}월 ${day}일`, ymd:`${year}${month}${day}`}
+        return {date:date, ymdKo:`${year}년 ${month}월 ${day}일`, ymd:`${year}${month}${day}`};
     }
     const userId = useSelector((state)=>state.login.userId);
     const issueCnt = useSelector((state)=>state.dailyReport.issueCnt);
     const dispatch = useDispatch();
     const [datas, setDatas] = useState([]);
-    //const [issueCnt, setIssueCnt] = useState(0);
     const [isBtnDisabled, setIsBtnDisabled] = useState(false);
     const cstCo = useSelector((state)=>state.common.cstCo);
     const [ymd, setYmd] = useState(getYMD(new Date()));
@@ -46,8 +45,6 @@ export default function DailyReportScreen({navigation}) {
             const unApprovedList = result.filter(el => ["R", "P"].includes(el.APVYN));
             // 이슈 있는 항목
             const issuedList = result.filter(el => el.REQCNT > 0);
-            //console.log(unApprovedList.length);
-            //console.log(issuedList.length);
             setDatas(result);
             setIsBtnDisabled(unApprovedList.length == 0)
             dispatch(setIssueCnt({cnt:issuedList.length}));
@@ -58,7 +55,8 @@ export default function DailyReportScreen({navigation}) {
     }
     useEffect(()=>{
         DailyReport1();
-    }, [cstCo, ymd, selectedKey, isFocused])
+    }, [cstCo, ymd, selectedKey, isFocused]);
+
     const changeDay = (cls) =>{
         const date = new Date(ymd.date)
         if(cls == "prev"){
@@ -93,7 +91,6 @@ export default function DailyReportScreen({navigation}) {
     return (
         <>
         <View style={styles.container}>
-            <PushTest />
             <StoreSelectBoxWithTitle titleText={"일일 보고서"} titleflex={4} selectBoxFlex={8} />
             <View style={[styles.row, {marginTop:10}]}>
                 <TouchableOpacity onPress={()=>changeDay("prev")}>
@@ -112,17 +109,11 @@ export default function DailyReportScreen({navigation}) {
                         <Text style={{alignSelf:"center"}}>데이터가 없습니다.</Text>
                         :
                         (selectedKey == 0)?
-                            datas.map((el, idx)=><Item key={idx} data={el} ymd={ymd.ymd} navigator={navigation} />)
+                            datas.map((el, idx)=>{
+                                return <Item key={idx} data={el} ymd={ymd.ymd} navigator={navigation} />
+                            })
                         :
                             <ReqChangeWork ymd={ymd.ymd} cstCo={cstCo}/>
-                            //<ReqChangeWork issued = {datas.filter(el => el.REQCNT > 0)}/>
-                        // (
-                        //     (datas.filter(el => el.REQCNT > 0).length > 0) ? (
-                        //         datas.filter(el => el.REQCNT > 0).map((el, idx) => <Item key={idx} data={el} ymd={ymd.ymd} navigator={navigation}/>)
-                        //     ) : (
-                        //         <Text style={{alignSelf:"center"}}>이슈가 없습니다.</Text>
-                        //     )
-                        // )
                     }
                 </ScrollView>
             </View>
