@@ -35,6 +35,7 @@ export default function ScheduleScreenToAlba({navigation}) {
                 <View style={styles.container}>
                     <PushTest />
                     <MyStorePicker userId={userId} />
+                    <View style={{padding:8}} />
                     <ScheduleByAlba cstCo={sCstCo} userId={userId} ymdFr={thisSunday} ymdTo={thisSaturday}/>
                 </View>
     );
