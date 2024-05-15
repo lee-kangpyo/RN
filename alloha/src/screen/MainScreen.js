@@ -222,7 +222,7 @@ function CrewScreen(){
         {() => (
           <Stack.Navigator>
             <Stack.Screen name="WageList" component={WageScreen} options={{ title: '급여', headerTitleStyle:headerTitleStyle, headerTitleAlign:"center" }} initialParams={{userType:"crew"}}/>
-            <Stack.Screen  name="WageDetail" component={WageDetailScreen} options={{title:"급여 상세"}}/>
+            <Stack.Screen  name="WageDetail" component={WageDetailScreen} options={{title:""}}/>
           </Stack.Navigator>
         )}
       </Tab.Screen>

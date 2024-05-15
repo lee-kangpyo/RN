@@ -1,8 +1,8 @@
 
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Platform } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import { HTTP } from '../util/http';
-import { addComma } from './../util/utils';
+import { addComma, headerLeftComponent } from './../util/utils';
 import Loading from '../components/Loding';
 import CustomBtn from './../components/CustomBtn';
 
@@ -29,10 +29,6 @@ export default function WageDetailScreen({navigation, route}) {
                 setDetailInfo(res.data.salaryDetail);
                 setSalaryWeek(res.data.slalryWeek);
                 setTotal(res.data.salaryTotal);
-                //console.log(res.data.salaryDetail);
-                //console.log(res.data.slalryWeek);
-                
-                //console.log(res.data.salaryTotal);
             }).finally(()=>{
                 setisLoading(false);
             })
@@ -40,7 +36,7 @@ export default function WageDetailScreen({navigation, route}) {
     }
 
     useEffect(()=>{
-        navigation.setOptions({title:route.params.title})
+        navigation.setOptions({headerLeft:()=>headerLeftComponent(route.params.title), title:""})
     }, [navigation])
 
     useEffect(()=>{
@@ -60,30 +56,62 @@ export default function WageDetailScreen({navigation, route}) {
         return formattedDate
     }
 
-    const detailList = (item) => {
-        var time =  (item.dure == "-")?
-                <><Text>{convertYMD(item.ymd)}</Text><Text>0시간</Text></>
-            :
-                <><Text>{convertYMD(item.ymd)}</Text><Text>{item.dure}시간</Text></>;
+    const DetailList = ({item}) => {
+        console.log(item.apvYn)
+        const pillColor = ( ["승인", "자동승인"].includes(item.apvYn) )?"#3479EF":"#EEEEEE"
+        const pillTextColor = ( ["승인", "자동승인"].includes(item.apvYn) )?"#FFF":"#999"
         return(
-            <View style={styles.detailList}>
-                <View style={{width:135, flexDirection:"row", justifyContent:"space-between"}}>
-                    {time}
+            <>
+                <View style={styles.detailList}>
+                    <Text style={fonts.date}>{convertYMD(item.ymd)}</Text>
+                    <View style={{flex:1, flexDirection:"row", justifyContent:"space-between", marginHorizontal:32}}>
+                        <Text style={fonts.time}>{(item.dure == "-")?"0":item.dure}0시간</Text>
+                        <Text style={fonts.wage}>{addComma(item.salary)}원</Text>
+                    </View>
+                    <View style={{justifyContent:"flex-end", width:60}}>
+                        <View style={[styles.pill, {backgroundColor:pillColor}]}>
+                            <Text style={[fonts.pillText, {color:pillTextColor}]}>{item.apvYn}</Text>
+                        </View>
+                    </View>
                 </View>
-                <View style={{flexDirection:"row"}}>
-                    <Text>(급여 : {addComma(item.salary)}원)</Text>
-                    <Text> {item.apvYn}</Text>
-                </View>
-            </View>
+                <View style={styles.sepH}/>
+            </>
         )
     }
-    const endOfWeek = (item) => {
-        print(item.ymd)
+    const SumLine = ({items}) => {
+        console.log(items);
+        const sum = items.filter(el => ["승인", "자동승인"].includes(el.apvYn) ).reduce((result, next) => {
+            result.dure += Number(next.dure);
+            result.salary += Number(next.salary);
+            return result;
+        }, {dure:0, salary:0});
+        return(
+            <>
+            <View style={styles.detailList}>
+                <Text style={fonts.date}>합계</Text>
+                <View style={{flex:1, flexDirection:"row", justifyContent:"space-between", marginHorizontal:32}}>
+                    <Text style={fonts.time}>{sum.dure}시간</Text>
+                    <Text style={fonts.wage}>{sum.salary.toLocaleString()}원</Text>
+                </View>
+                <View style={{justifyContent:"flex-end", width:60}}>
+                    {/* <View style={[styles.pill, {backgroundColor:"red"}]}>
+                        <Text style={[fonts.pillText, {color:"white"}]}>asf</Text>
+                    </View> */}
+                </View>
+            </View>
+            <View style={styles.sepH}/>
+            </>
+        )
+    }
+    const EndOfWeek = ({item}) => {
         return(
             <>
                 <View style={styles.endOfWeek}>
-                    <Text style={{color:"red"}}>{convertYMD(item.YMDFR)} ~ {convertYMD(item.YMDTO)} - {item.WEEKDURE}시간</Text>
-                    <Text style={{color:"red"}}> 주휴수당 : {addComma(item.WEEKWAGE)}원</Text>
+                    <View style={{flexDirection:"row"}}>
+                        <Text style={fonts.endOfWeek_hours}>{item.WEEKDURE}시간</Text>
+                        <Text style={fonts.endOfWeek_hours}>|</Text>
+                        <Text style={fonts.endOfWeek_plus}> 주휴수당 : {addComma(item.WEEKWAGE)}원</Text>
+                    </View>
                 </View>
             </>
         )
@@ -103,11 +131,8 @@ export default function WageDetailScreen({navigation, route}) {
                 items: matchingAItems,
             };
         });
-
         return result;
-
     }
-
     return (
         <>
             {
@@ -120,33 +145,44 @@ export default function WageDetailScreen({navigation, route}) {
                     </View>
                 :
                 <>
-                    <ScrollView>
-                        
+                    <ScrollView contentContainerStyle={styles.scrollContentStyle} style={styles.scrollContainer}>
                         {
-                            //detailInfo.sort((a, b) => a.ymd.localeCompare(b.ymd)).map((el, idx)=>{
                             getDetailList().map((el, idx) => {
-                                const detail = el.items.map((item, idx) => {
-                                    return detailList(item);
-                                });
-                                const week = endOfWeek(el.week)
-                                //console.log(el.week);
-                                //const week = <Text>sadf</Text>
-                                
                                 return (
                                     <View style={styles.weekCard}>
-                                        {detail}
-                                        {week}
+                                        <View style={{paddingTop:24, paddingHorizontal:22}}>
+                                            <Text style={fonts.endOfWeek_date}>{convertYMD(el.week.YMDFR)} ~ {convertYMD(el.week.YMDTO)}</Text>
+                                        </View>
+                                        {
+                                            el.items.map((item, idx) => <DetailList key={idx} item={item}/> )
+                                        }
+                                        <SumLine items = {el.items} />
+                                        <EndOfWeek item={el.week}/>
                                     </View>
                                     );
                             })
                         }
-         
                     </ScrollView>
-                    
-                    <View style={styles.totalSalary}>
-                        <Text>근무시간 : {total.aDure} / {total.nDure} - {addComma(total.gSalary)}원</Text>
-                        <Text>특근시간 : {addComma(total.sSalary)}원</Text>
-                        <Text>총급여 : {addComma(total.salary)}원</Text>
+                    <View style={{backgroundColor:"#F6F6F8", paddingHorizontal:16, paddingBottom:14}}>
+                        <View style={styles.totalSalary}>
+                            <View style={[styles.rowLine, {marginBottom:8}]}>
+                                <View style={styles.row}>
+                                    <Text style={fonts.totalSalary}>근무시간</Text>
+                                    <View style={[styles.whitePill, {marginLeft:5}]}>
+                                        <Text style={fonts.totalSalary}>{total.aDure}/{total.nDure}시간</Text>
+                                    </View>
+                                </View>
+                                <Text style={fonts.totalSalary}>{addComma(total.gSalary)}원</Text>
+                            </View>
+                            <View style={[styles.rowLine, {marginBottom:18}]}>
+                                <Text style={fonts.totalSalary}>주휴시간</Text>
+                                <Text style={fonts.totalSalary}>{addComma(total.sSalary)}원</Text>
+                            </View>
+                            <View style={styles.rowLine}>
+                                <Text style={fonts.totalWage}>총급여</Text>
+                                <Text style={fonts.totalWage}>{addComma(total.salary)}원</Text>
+                            </View>
+                        </View>
                     </View>
                 </>
             }
@@ -156,9 +192,63 @@ export default function WageDetailScreen({navigation, route}) {
     
 }
 
+const fonts = StyleSheet.create({
+    date:{
+        width:80,
+        fontFamily: "SUIT-Medium",
+        fontSize: 13,
+        color: "#555555"
+    },
+    time:{
+        fontFamily: "SUIT-SemiBold",
+        fontSize: 13,
+        color: "#999999"
+    },
+    wage:{
+        fontFamily: "SUIT-ExtraBold",
+        fontSize: 13,
+        color: "#111111"
+    },
+    pillText:{
+        fontFamily: "SUIT-Medium",
+        fontSize: 12,
+        color: "#FFFFFF"
+    },
+    endOfWeek_date:{
+        fontFamily: "SUIT-Bold",
+        fontSize: 15,
+        color: "#555"
+    },
+    endOfWeek_hours:{
+        fontFamily: "SUIT-SemiBold",
+        fontSize: 13,
+        color: "#FF6A6A"
+    },
+    endOfWeek_plus:{
+        fontFamily: "SUIT-ExtraBold",
+        fontSize: 13,
+        color: "#FF6A6A"
+    },
+    totalSalary:{
+        fontFamily: "SUIT-Regular",
+        fontSize: 14,
+        color: "#FFFFFF"
+    },
+    totalWage:{
+        fontFamily: "SUIT-ExtraBold",
+        fontSize: 15,
+        color: "#FFFFFF"
+    }
+})
 
       
 const styles = StyleSheet.create({
+        
+    scrollContentStyle:{paddingHorizontal:16, paddingVertical:20, },
+    scrollContainer:{
+        flex:1,
+        backgroundColor:"#F6F6F8",
+    },
     container:{ 
         flex:1,
         justifyContent:"center",
@@ -166,29 +256,62 @@ const styles = StyleSheet.create({
         
     },
     weekCard:{
-        margin:10,
-        borderWidth:1,
-        borderRadius:5,
-        padding:16,
+        paddingHorizontal:16,
+        marginBottom:10,
+        borderRadius: 10,
+        backgroundColor: "#FFFFFF",
+        ...Platform.select({
+            ios:{
+                shadowColor: "rgba(0, 0, 0, 0.1)",
+                shadowOffset: {
+                    width: 0,
+                    height: 0
+                },
+                shadowRadius: 10,
+                shadowOpacity: 1,
+            },
+            android:{
+                elevation :2,
+            }
+        })
     },
     detailList:{
+        paddingVertical:16,
         flexDirection:'row',
         justifyContent:'space-between',
         paddingLeft:4,
         paddingRight:4,
-        marginBottom:8
     },
     endOfWeek:{
         flexDirection:'row',
-        justifyContent:"center",
-        marginBottzom:8,
-        padding:8,
+        justifyContent:"flex-end",
+        paddingVertical:16,
+        paddingHorizontal:22
     },
     totalSalary:{
-        padding:8,
-        borderStyle: 'solid',  
-        borderWidth: 1 ,
-        borderRadius:8,
-        margin:10,
-    }
+        borderRadius: 15,
+        backgroundColor: "#333333",
+        paddingVertical:20,
+        paddingHorizontal:16,
+    },
+    whitePill:{
+        paddingHorizontal:6,
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: "rgba(255, 255, 255, 1.0)"
+    },
+    pill:{
+        alignSelf:"flex-end",
+        paddingHorizontal:8,
+        paddingVertical:2,
+        borderRadius: 20,
+    },
+    sepH:{
+        
+        borderWidth:0.5,
+        borderColor: "rgba(238, 238, 238, 1.0)"
+    },
+    row:{flexDirection:"row"},
+    rowLine:{flexDirection:"row", justifyContent:"space-between"}
+
 });

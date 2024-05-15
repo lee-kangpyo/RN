@@ -5,7 +5,6 @@ const screen = Dimensions.get("screen")
 
 export const CustomBottomSheet2 = ({isOpen, onClose, content}) => {
     const backDrop = (isOpen)?sheet.backDrop:{};
-    console.log(screen);
     return (
         <>
         <View style={backDrop}/>
@@ -31,6 +30,9 @@ const sheet = StyleSheet.create({
         width:screen.width, 
     },
     container:{
+        zIndex:5,
+        position:"absolute",
+        bottom:0,
         padding:20,
         borderTopEndRadius:15,
         borderTopStartRadius:15,

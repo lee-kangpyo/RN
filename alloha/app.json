@@ -78,7 +78,7 @@
       [
         "expo-updates",
         {
-          "username":"akmz"
+          "username": "akmz"
         }
       ]
     ],
@@ -86,7 +86,7 @@
       "policy": "appVersion"
     },
     "ios": {
-      "buildNumber": "10",
+      "buildNumber": "12",
       "bundleIdentifier": "com.akmz.alloha",
       "supportsTablet": true,
       "infoPlist": {

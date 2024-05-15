@@ -5,23 +5,26 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "channel": "development"
     },
     "preview": {
-      "env":{
-        "URL":"https://aloha.aurumforge.com",
-        "TASK_URL":"http://13.124.217.193:5213",
-        "LOCATION_TASK":"alloha-location"
+      "channel": "preview",
+      "env": {
+        "URL": "https://aloha.aurumforge.com",
+        "TASK_URL": "http://13.124.217.193:5213",
+        "LOCATION_TASK": "alloha-location"
       },
       "android": {
-        "buildType": "apk",
+        "buildType": "apk"
       }
     },
     "production": {
-      "env":{
-        "URL":"https://aloha.aurumforge.com",
-	"TASK_URL":"http://13.124.217.193:5213",
-        "LOCATION_TASK":"alloha-location"
+      "channel": "production",
+      "env": {
+        "URL": "https://aloha.aurumforge.com",
+        "TASK_URL": "http://13.124.217.193:5213",
+        "LOCATION_TASK": "alloha-location"
       },
       "android": {
         "buildType": "app-bundle",
@@ -30,7 +33,7 @@
       "ios": {
         "autoIncrement": "buildNumber"
       }
-	}
+    }
   },
   "submit": {
     "production": {}

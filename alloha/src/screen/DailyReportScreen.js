@@ -42,7 +42,7 @@ export default function DailyReportScreen({navigation}) {
         .then((res)=>{
             const result = res.data.result;
             // 승인 안한 항목
-            const unApprovedList = result.filter(el => ["R", "P"].includes(el.APVYN));
+            const unApprovedList = result.filter(el => ["R"].includes(el.APVYN));
             // 이슈 있는 항목
             const issuedList = result.filter(el => el.REQCNT > 0);
             setDatas(result);

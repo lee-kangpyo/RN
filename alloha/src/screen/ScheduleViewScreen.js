@@ -10,7 +10,7 @@ import axios from 'axios';
 import { URL } from "@env";
 import { AntDesign } from '@expo/vector-icons'; 
 import { theme } from '../util/color';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { nextWeek, prevWeek } from '../../redux/slices/schedule';
 import HeaderControl from '../components/common/HeaderControl';
 import ScheduleByAlba from '../components/schedule/ScheduleByAlba';
@@ -18,6 +18,7 @@ import StoreSelectBoxWithTitle from '../components/common/StoreSelectBoxWithTitl
 
 
 export default function ScheduleViewScreen({navigation}) {
+    const isFocused = useIsFocused();
     const weekNumber = useSelector((state)=>state.schedule.weekNumber);
     const ref = useRef();
     const cstCo = useSelector((state)=>state.common.cstCo);
@@ -73,7 +74,7 @@ export default function ScheduleViewScreen({navigation}) {
     
     useEffect(()=>{
         getWeekSchedule2();
-    }, [weekNumber])
+    }, [weekNumber, isFocused, cstCo])
 
     const test = () => {
         // 이미지 저장 관련 로직을 수행하거나 다른 함수 호출
@@ -286,7 +287,7 @@ const styles = StyleSheet.create({
     },
     whiteBox:{
         marginVertical:20,
-        padding:15,
+        padding:10,
         borderRadius: 10,
         backgroundColor: "#FFFFFF",
         ...Platform.select({

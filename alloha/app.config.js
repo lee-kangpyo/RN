@@ -18,8 +18,5 @@ export default ({ config }) => {
       "updates": {
         "url": "https://u.expo.dev/0dd79bb6-37ee-41de-ab18-ae35b01e55a2"
       },
-      "runtimeVersion": {
-        "policy": "appVersion"
-      },
     };
   };

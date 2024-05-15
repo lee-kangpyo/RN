@@ -5,11 +5,11 @@ import { Ionicons } from '@expo/vector-icons';
 export default function HeaderControl({title, onLeftTap, onRightTap, }) {
   return (
     <View style={styles.container}>
-        <TouchableOpacity onPress={onLeftTap}>
+        <TouchableOpacity onPress={onLeftTap} style={{padding:4}}>
             <Ionicons name="caret-back-outline" size={28} color="#999999" />
         </TouchableOpacity>
         <Text style={fonts.title}>{title}</Text>
-        <TouchableOpacity onPress={onRightTap}>
+        <TouchableOpacity onPress={onRightTap} style={{padding:4}}>
             <Ionicons name="caret-forward-outline" size={28} color="#999999" />
         </TouchableOpacity>
     </View>
