@@ -114,14 +114,17 @@ export const getWeekList = (week) => {
 }
 
 export const getWeekNumber = (dateString) => {
-    // dateString을 moment 객체로 변환
     const inputDate = moment(dateString);
 
-    // 월과 주차를 추출
+    //한주의 시작일을 목요일로 설정 0:일요일 ...
+    inputDate.day(4);
+    
+    // 시작일을 기준으로 월을 추출
     const month = inputDate.format('MM');
-
+    
     // 해당 월의 첫째 주부터의 주차를 계산
     const startOfMonth = moment(inputDate).startOf('month');
+
     const weeksSinceStartOfMonth = inputDate.diff(startOfMonth, 'weeks') + 1;
     return {"month":month, "number":weeksSinceStartOfMonth};
 }
