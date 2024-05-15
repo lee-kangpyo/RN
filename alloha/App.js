@@ -1,5 +1,5 @@
 
-import { StyleSheet, Text, View, AppState, Alert, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, AppState, Alert, ActivityIndicator, TouchableOpacity, Platform } from 'react-native';
 //import React, {useEffect, useState} from 'react';
 
 import { NavigationContainer } from '@react-navigation/native';
@@ -31,6 +31,10 @@ import * as Notifications from 'expo-notifications';
 import { config } from './src/util/deepLink';
 import Agreement from './src/components/login/Agreement';
 import { headerTitleStyle } from './src/util/utils';
+import { HTTP } from './src/util/http';
+import Message, { CONFIRM_POSITION, Confirm, DayOfWeek, test11 } from './src/components/common/Message';
+import { theme } from './src/util/color';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 // 태스크 매니저
 TaskManager.defineTask(LOCATION_TASK,  async ({ data, error } ) => {
@@ -103,7 +107,7 @@ const linking = {
   },
 };
 
-function Index() {
+function Index({version}) {
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
 
@@ -201,7 +205,7 @@ function Index() {
             </>
           ) : (
             <>
-              <Stack.Screen name="Login" component={Login} options={{headerShown: false}}/>
+              <Stack.Screen name="Login" component={Login} options={{headerShown: false}} initialParams={{ version: version }}/>
               <Stack.Screen name="Agreement" component={Agreement} options={{title:"약관 동의", headerTitleAlign:"center", headerTitleStyle: headerTitleStyle,}}/>
               <Stack.Screen name="SignIn" component={SignInScreen} options={{title:"회원 가입", headerTitleAlign:"center", headerTitleStyle: headerTitleStyle,}}/>
               <Stack.Screen  name="TermsDetail" component={TermsDetailScreen} options={{title:"약관 상세", headerTitleAlign:"center", headerTitleStyle: headerTitleStyle,}}/>
@@ -216,6 +220,10 @@ function Index() {
 
 
 function App(){
+  const version = '1.0.3';
+  // loading -> 로딩중 P -> 버전 일치 , D -> 버전이 안맞음 링크로 안내
+  const [versionInfo, setVersionInfo] = useState("loading");
+  const [versionData, setVersionData] = useState({});
   const [isFont, setIsFont] = useState(false);
   const loadFonts = async () => {
     await Font.loadAsync({
@@ -228,18 +236,46 @@ function App(){
       });
       setIsFont(true);
   }
+  
+  
+  const versionCheck = async () => {
+    await HTTP("GET", "/api/v1/main/versionCheck", {platForm:Platform.OS})
+    .then((res)=>{
+        const datas = res.data.result;
+        const matchVersion = datas.find(el => el.VERSION == version) ?? ( datas.length > 0 ? datas[0] : {VERSION:"unKnown"} );
+        if(matchVersion.VERSION == version){
+          setVersionInfo("P");
+        }else{
+          setVersionData(matchVersion)
+          setVersionInfo("D");
+        }
+    }).catch(function (error) {
+        setVersionInfo("E");
+        console.log(error);
+    })
+
+  }
   useEffect(() => {
-      loadFonts();
+    versionCheck();
+    loadFonts();
   },[]);
-  //<GetLocationPermission Grant={Index}/>
-  //<LocationPermissionBack Grant ={Index}/>
-  //<PushPermission/>
+
+
   return (
       <Provider store={store}>
         <Notification >
         {
-        (isFont)?
-          <Index />
+          (isFont && !["D", "loading"].includes(versionInfo))?
+            <Index version={version} />
+        :
+          (isFont && versionInfo == "D")?
+            <VersionView version={version} versionData={versionData}/>
+        // :
+        //   (versionInfo == "E")?
+        //     <View style={{flex:1, justifyContent:"center", alignItems:"center"}}>
+        //       <Text>버전체크가 실패했습니다.</Text>
+        //       <Text>앱을 다시 시작해주세요.</Text>
+        //     </View>
         :
           <ActivityIndicator/>
         }
@@ -247,5 +283,99 @@ function App(){
       </Provider>
   );
 }
+
+const VersionView = ({version, versionData}) => {
+  const goInstallPage = () => {
+    const url = versionData.URL;
+    const manualUrl = versionData.MANUAL;
+    if(Platform.OS == 'ios'){
+      Linking.openURL(url);
+    }else if(Platform.OS == 'android'){
+      if(url){
+        Linking.openURL(url);
+      }else{
+        Confirm("메뉴얼 열기", "메뉴얼에서 해당 버전을 다운받을수 있습니다.\n메뉴얼을 여시겠습니까??", {confirmPosOrder:CONFIRM_POSITION.RIGHT, confirm:()=>{Linking.openURL(manualUrl)}})  
+      }
+    }
+  }
+  const openMenual = () => {
+    Linking.openURL(versionData.MANUAL);
+  }
+  return (
+    <>
+    <View style={{flex:1, justifyContent:"center", alignItems:"center",}}>
+      <View style={styles.titleArea}>
+        <Text style={styles.title}>ALOHA</Text>
+        <View style={{flexDirection:"row", alignItems:"center", marginVertical:20}}>
+          <Text style={styles.version}>Ver {version}</Text>
+          <MaterialCommunityIcons name="ray-start-arrow" size={24} color="#999999" />
+          <Text style={styles.version}>Ver {versionData.VERSION}</Text>
+        </View>
+        <Text style={styles.descrpition}>최신 버전이 아닙니다.</Text>
+        <Text style={styles.descrpition}>최신 버전을 설치해주세요</Text>
+        <View style={{flexDirection:"row"}}>
+          <TouchableOpacity onPress={openMenual} style={[styles.btn, styles.btn2, {marginRight:16}]}>
+            <Text style={[styles.btnText, styles.btnText2]}>메뉴얼 열기</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={goInstallPage} style={styles.btn}>
+            <Text style={styles.btnText}>설치하러 가기</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+    </>
+  )
+}
+
+const styles = StyleSheet.create({
+  titleArea:{
+    flex:1,
+    alignItems:"center",
+    justifyContent:"center",
+  },
+  title:{
+    fontFamily: "Tium",
+    fontSize: 40,
+    textAlign: "center",
+    color: theme.primary,
+    marginBottom:4
+  },
+  version:{
+    marginHorizontal:8,
+    fontFamily: "SUIT-Regular",
+    fontSize: 12,
+    fontWeight: "400",
+    textAlign: "center",
+    color: "#999999"
+  },
+  descrpition:{
+    fontFamily: "SUIT-Bold",
+    fontSize: 14,
+    color: "#777"
+  },
+  btn:{
+    alignItems:"center",
+    marginTop:20,
+    borderRadius: 10,
+    backgroundColor: "#3479EF",
+    paddingVertical:16,
+    width:150,
+  },
+  btnText:{
+    fontFamily: "SUIT-Bold",
+    fontSize: 15,
+    color: "#FFFFFF"
+  },
+  btn2:{
+    backgroundColor:"white",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "rgba(221, 221, 221, 1.0)"
+  },
+  btnText2:{
+    color: "#999999"
+  },
+
+})
 
 export default App;

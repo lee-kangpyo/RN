@@ -4,7 +4,7 @@ import { Alert } from 'react-native';
 
 
 
-export const HTTP = async (method, url, params, timeout=10000) => {
+export const HTTP = async (method, url, params={}, timeout=10000) => {
     const axiosConfig = {
         timeout: timeout, // 타임아웃 설정
     };

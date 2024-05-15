@@ -2,8 +2,21 @@ const express = require('express')
 var router = express.Router();
 const {execSql} = require("../utils/excuteSql");
 const dotenv = require('dotenv');
-const { main02, main01 } = require('../query/main');
+const { main02, main01, versionInfo } = require('../query/main');
 dotenv.config();
+
+// /api/v1/main/versionCheck
+router.get("/versionCheck", async (req, res, next) => {
+    console.log("GET main.versionCheck");
+    try {
+        const{platForm} = req.query;
+        const result = await execSql(versionInfo, {platForm});
+        res.status(200).json({result:result.recordset, resultCode:"00"});
+    } catch (error) {
+        console.log(error.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+})
 
 // /api/v1/main/crew
 router.get("/crew", async (req, res, next) => {

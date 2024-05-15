@@ -25,8 +25,7 @@ import { theme } from '../util/color';
 const windowWidth = Dimensions.get('window').width;
 
 
-export default function Login({ navigation }) {
-  
+export default function Login({ navigation, route }) {
   const sheetRef = useRef(null);
   const [isOpen, setIsOpen] = useState(true);
   const snapPoints = useMemo(() => ["48%"], []);
@@ -60,7 +59,7 @@ export default function Login({ navigation }) {
         <View style={styles.titleArea}>
             <PushTest />
             <Text style={font.title}>ALOHA</Text>
-            <Text style={font.version}>Ver 1.0.3</Text>
+            <Text style={font.version}>Ver {route.params.version}</Text>
         </View>
         <LoginForm navigation={navigation}/>
         
