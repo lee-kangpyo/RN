@@ -61,9 +61,9 @@ const DailyScheduleBox = ({alba}) => {
             {
                 alba.list.map((alba, idx)=>{
                     return(
-                        <View key={idx} style={styles.alba}>
+                        <View key={idx} style={[styles.alba, {marginBottom:8}]}>
                             <AntDesign name="checkcircle" size={16} color={color[alba.JOBCL]} style={[styles.circle, {marginRight:10}]}/>
-                            <View style={{flex:1, flexDirection:"row", justifyContent:"space-between"}}>
+                            <View style={{flex:1, flexDirection:"row", justifyContent:"space-between",}}>
                                 <Text style={[fonts.contents]} >{YYMMDD2YYDD(alba.YMD)} {day[getDayWeekNumber(alba.YMD)]}</Text>
                                 <Text style={fonts.contents2}>{alba.SCHTIME}</Text>
                                 <View style={styles.pill}>

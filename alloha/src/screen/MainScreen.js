@@ -210,7 +210,7 @@ function CrewScreen(){
       {/*<Tab.Screen name="Home" component={HomeCrewStack} options={{ headerShown:false, tabBarLabel: '홈'}}/>*/}
       <Tab.Screen name="CommuteCheckInfo" component={CommuteCheckStack} options={{ headerShown:false, tabBarLabel: '근무정보'}}/>
       <Tab.Screen name="CommuteCheck" component={CommuteCheckScreen} options={{headerTitleStyle:headerTitleStyle, headerTitleAlign:"center", tabBarLabel:"근무현황"}}/>
-      <Tab.Screen name="schedule" component={ScheduleScreenToAlba} options={{ tabBarLabel: '주간근무계획', headerTitleStyle:headerTitleStyle, headerTitleAlign:"center"}}/>
+      <Tab.Screen name="schedule" component={ScheduleScreenToAlba} options={{ tabBarLabel: '근무계획', headerTitleStyle:headerTitleStyle, headerTitleAlign:"center"}}/>
       
       {/* <Tab.Screen name="Home" options={{ tabBarLabel: '출퇴근(구버전)' }} >
         {() => (
