@@ -294,7 +294,7 @@ const VersionView = ({version, versionData}) => {
       if(url){
         Linking.openURL(url);
       }else{
-        Confirm("메뉴얼 열기", "메뉴얼에서 해당 버전을 다운받을수 있습니다.\n메뉴얼을 여시겠습니까??", {confirmPosOrder:CONFIRM_POSITION.RIGHT, confirm:()=>{Linking.openURL(manualUrl)}})  
+        Confirm("매뉴얼 열기", "메뉴얼에서 해당 버전을 다운받을수 있습니다.\n메뉴얼을 여시겠습니까??", {confirmPosOrder:CONFIRM_POSITION.RIGHT, confirm:()=>{Linking.openURL(manualUrl)}})  
       }
     }
   }
@@ -315,7 +315,7 @@ const VersionView = ({version, versionData}) => {
         <Text style={styles.descrpition}>최신 버전을 설치해주세요</Text>
         <View style={{flexDirection:"row"}}>
           <TouchableOpacity onPress={openMenual} style={[styles.btn, styles.btn2, {marginRight:16}]}>
-            <Text style={[styles.btnText, styles.btnText2]}>메뉴얼 열기</Text>
+            <Text style={[styles.btnText, styles.btnText2]}>매뉴얼 열기</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={goInstallPage} style={styles.btn}>
             <Text style={styles.btnText}>설치하러 가기</Text>
