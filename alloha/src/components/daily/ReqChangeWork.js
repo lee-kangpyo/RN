@@ -7,6 +7,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { theme } from '../../util/color';
 import { HTTP } from '../../util/http';
 import { setIssueCnt } from '../../../redux/slices/dailyReport';
+import { useCommuteChangeList } from '../../hooks/useReqCommuteList';
 
 export default function ReqChangeWork({ymd, cstCo}) {
     //const jobNos = issued.map(el => el.JOBNO);
@@ -77,6 +78,7 @@ export default function ReqChangeWork({ymd, cstCo}) {
 
 const ReqItem = ({data, refresh}) => {
     const userId = useSelector((state) => state.login.userId);
+    const getChageList = useCommuteChangeList(userId);
     const [isOpen, setIsOpen] = useState(false);
     const YMD = YYYYMMDD2Obj(data.YMD);
     const createDate = formatDateTimeList(data.createDate);
@@ -88,9 +90,11 @@ const ReqItem = ({data, refresh}) => {
     const cofirm = async (reqStat) => reqCofirm(reqStat, data);
 
     const reqCofirm = async (reqStat, data) => {
+
         const params = {reqStat:reqStat, userId:userId, reqNo:data.REQNO, jobNo:data.JOBNO};
         await HTTP("POST", "/api/v1/commute/albaWorkChangeProcess", params)
         .then((res)=>{
+            getChageList();
             refresh();
         }).catch(function (error) {
             console.log(error);
