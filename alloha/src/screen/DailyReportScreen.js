@@ -92,12 +92,12 @@ export default function DailyReportScreen({navigation}) {
         <>
         <View style={styles.container}>
             <StoreSelectBoxWithTitle titleText={"일일 보고서"} titleflex={4} selectBoxFlex={8} />
-            <View style={[styles.row, {marginTop:10}]}>
-                <TouchableOpacity onPress={()=>changeDay("prev")}>
+            <View style={[styles.row, {marginTop:10,}]}>
+                <TouchableOpacity onPress={()=>changeDay("prev")} style={{padding:8}}>
                     <Text style={{fontSize:16}}>◀</Text>
                 </TouchableOpacity>
-                <Text style={[styles.ymd, {marginHorizontal:5, fontSize:16}]}>{ymd.ymdKo}</Text>
-                <TouchableOpacity onPress={()=>changeDay("next")}>
+                <Text style={[styles.ymd, {marginHorizontal:5, fontSize:16, paddingVertical:8}]}>{ymd.ymdKo}</Text>
+                <TouchableOpacity onPress={()=>changeDay("next")}  style={{padding:8}}>
                     <Text style={{fontSize:16}}>▶</Text>
                 </TouchableOpacity>
             </View>
