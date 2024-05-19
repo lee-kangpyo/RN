@@ -63,12 +63,14 @@ export default function WageDetailScreen({navigation, route}) {
         return(
             <>
                 <View style={styles.detailList}>
-                    <Text style={fonts.date}>{convertYMD(item.ymd)}</Text>
-                    <View style={{flex:1, flexDirection:"row", justifyContent:"space-between", marginHorizontal:32}}>
+                    <View style={{flexDirection:"row", justifyContent:"space-around"}}>
+                        <Text style={fonts.date}>{convertYMD(item.ymd)}</Text>
                         <Text style={fonts.time}>{(item.dure == "-")?"0":item.dure}0시간</Text>
+                    </View>
+                    <View style={{flex:1, alignItems:"flex-end"}}>
                         <Text style={fonts.wage}>{addComma(item.salary)}원</Text>
                     </View>
-                    <View style={{justifyContent:"flex-end", width:60}}>
+                    <View style={{justifyContent:"flex-end", width:65, marginLeft:16 }}>
                         <View style={[styles.pill, {backgroundColor:pillColor}]}>
                             <Text style={[fonts.pillText, {color:pillTextColor}]}>{item.apvYn}</Text>
                         </View>
@@ -88,12 +90,14 @@ export default function WageDetailScreen({navigation, route}) {
         return(
             <>
             <View style={styles.detailList}>
-                <Text style={fonts.date}>합계</Text>
-                <View style={{flex:1, flexDirection:"row", justifyContent:"space-between", marginHorizontal:32}}>
+                <View style={{flexDirection:"row", justifyContent:"space-around",}}>
+                    <Text style={[fonts.date, {marginRight:16}]}>합계</Text>
                     <Text style={fonts.time}>{sum.dure}시간</Text>
+                </View>
+                <View style={{flex:1, alignItems:"flex-end"}}>
                     <Text style={fonts.wage}>{sum.salary.toLocaleString()}원</Text>
                 </View>
-                <View style={{justifyContent:"flex-end", width:60}}>
+                <View style={{justifyContent:"flex-end", width:65, marginLeft:16}}>
                     {/* <View style={[styles.pill, {backgroundColor:"red"}]}>
                         <Text style={[fonts.pillText, {color:"white"}]}>asf</Text>
                     </View> */}
