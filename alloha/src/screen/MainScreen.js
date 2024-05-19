@@ -44,6 +44,7 @@ import DailyReportDetilaScreen from './DailyReportDetilaScreen';
 import HomeCrewScreen from './HomeCrewScreen';
 import { headerLeftComponent, headerTitleStyle } from '../util/utils';
 import HomeOwnerScreen from './HomeOwnerScreen';
+import QuestionScreen from './QuestionScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -231,7 +232,8 @@ function CrewScreen(){
         {() => (
           <Stack.Navigator initialRouteName="etc2">
             <Stack.Screen name="etc2" component={EtcCrewScreen} options={{ tabBarLabel: '기타', headerTitleStyle:headerTitleStyle, headerTitleAlign:"center"}}/>
-            <Stack.Screen name="Comunity" component={ComunityScreen} options={{ tabBarLabel: '커뮤니티' }}/>
+            <Stack.Screen name="Comunity" component={ComunityScreen} options={{headerLeft:()=>headerLeftComponent("커뮤니티"), title:""}}/>
+            <Stack.Screen name="question" component={QuestionScreen} options={{headerLeft:()=>headerLeftComponent("문의하기"), title:""}}/>
           </Stack.Navigator>
         )}
       </Tab.Screen>

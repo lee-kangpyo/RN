@@ -1,7 +1,7 @@
 
-import { StyleSheet, Text, View, TouchableOpacity, Modal, Button, TextInput} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Modal, Button, TextInput, Linking} from 'react-native';
 import React, {useState, useEffect} from 'react';
-import { FontAwesome5, MaterialCommunityIcons, Ionicons, AntDesign   } from '@expo/vector-icons';
+import { FontAwesome5, MaterialCommunityIcons, Ionicons, AntDesign, Octicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserInfo } from '../../redux/slices/login';
 import * as SecureStore from 'expo-secure-store';
@@ -37,11 +37,23 @@ export default function EtcCrewScreen({navigation}) {
         <View style={{padding:15}}>
             <View style={[styles.container, {flexDirection:"row"}]}>
                 <GridBox
+                    text={"문의하기"}
+                    onPress={()=>navigation.push("question")}
+                    icon={{type:"Octicons", name:"paper-airplane", size:48, color:"black"}}
+                />
+                <GridBox
+                    text={"매뉴얼"}
+                    onPress={()=>Linking.openURL("https://www.notion.so/f3112ad5877e4d05a08cc441b90a3eb8")}
+                    icon={{type:"AntDesign", name:"book", size:48, color:"black"}}
+                />
+                <GridBox
                     color="red"
                     text={"로그아웃"}
                     onPress={logOut}
                     icon={{type:"MaterialCommunityIcons", name:"logout", size:48, color:"red"}}
                 />
+            </View>
+            <View style={[styles.container, {flexDirection:"row"}]}>
                 <GridBox
                     // text={"커뮤니티"}
                     // onPress={()=>navigation.push("Comunity")}
@@ -55,6 +67,12 @@ export default function EtcCrewScreen({navigation}) {
                     onPress={()=>null}
                     icon={{type:"AntDesign", name:"appstore-o", size:48, color:"black"}}
                 />
+                <GridBox
+                    text={"준비중"}
+                    onPress={()=>null}
+                    icon={{type:"AntDesign", name:"appstore-o", size:48, color:"black"}}
+                />
+
             </View>
         </View>
         <DelUser isVisible = {checkDelUserModalmodalVisible} setIsVisible = {setCheckDelUserModalVisible}/>
@@ -75,7 +93,10 @@ function GridBox({color = "black", text, onPress, icon}){
                         <Ionicons name={icon.name} size={icon.size} color={color}/>
                     :(icon.type == "AntDesign")?
                         <AntDesign name={icon.name} size={icon.size} color={color}/>
-                    :    null
+                    :(icon.type == "Octicons")?    
+                        <Octicons name={icon.name} size={icon.size} color={color} />
+                    :
+                        null
                 :
                     null
             }

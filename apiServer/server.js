@@ -5,6 +5,7 @@ const app = express();
 const apiRouter = require("./src/route/api")
 const pushRouter = require("./src/route/push");
 const webRouter = require("./src/route/web");
+const qnaRouter_V1 = require("./src/route/v1/qna");
 const { sendBadge } = require('./src/utils/pushFunc');
 
 const cors = require('cors');
@@ -34,7 +35,10 @@ app.get("/", async (req, res, next)=>{
   }
 })
 
+
+
 app.use('/api', apiRouter);
+app.use('/qna/v1', qnaRouter_V1);
 app.use('/v1/web', webRouter);
 app.use('/push', pushRouter);
 

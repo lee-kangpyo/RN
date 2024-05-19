@@ -1,5 +1,5 @@
 {
-  "expo": {
+  //"expo": {
     "name": "알로하",
     "scheme": "aloha",
     "slug": "alloha",
@@ -122,6 +122,6 @@
       }
     },
     "owner": "akmz"
-  },
-  "name": "aloha"
+  //},
+  //"name": "aloha"
 }
