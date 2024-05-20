@@ -1,9 +1,9 @@
 {
-  //"expo": {
+  "expo": {
     "name": "알로하",
     "scheme": "aloha",
     "slug": "alloha",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -108,10 +108,9 @@
         "ACCESS_COARSE_LOCATION",
         "ACCESS_FINE_LOCATION"
       ],
-      "useNextNotificationsApi": true,
       "googleServicesFile": "./google-services.json",
       "package": "com.akmz.alloha",
-      "versionCode": 10
+      "versionCode": 12
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -122,6 +121,6 @@
       }
     },
     "owner": "akmz"
-  //},
-  //"name": "aloha"
+  },
+  "name": "aloha"
 }
