@@ -503,10 +503,15 @@ router.get("/v1/getSalary", async (req, res, next) => {
 router.get("/v1/getSalaryDetail", async (req, res, next) => {
     const {ymdFr, ymdTo,  userId, cstCo} = req.query
     const result = await execSql(salary, {userId:userId, cls:"salaryDetail", ymdFr:ymdFr, ymdTo:ymdTo, cstCo:cstCo});
+    const salaryDetail = result.recordset.map(item => {
+        if(item.dure == "-") item.dure = "0";
+        if(item.sdure == "-") item.sdure = "0";
+        return item;
+    });
     const result3 = await execSql(salary, {userId:userId, cls:"salaryWeek", ymdFr:ymdFr, ymdTo:ymdTo, cstCo:cstCo});
     const result2 = await execSql(salary, {userId:userId, cls:"salaryTotal", ymdFr:ymdFr, ymdTo:ymdTo, cstCo:cstCo});
-
-    res.status(200).json({resultCode:"00", salaryDetail:result.recordset, slalryWeek:result3.recordset, salaryTotal:result2.recordset[0]});
+    console.log(salaryDetail);
+    res.status(200).json({resultCode:"00", salaryDetail:salaryDetail, slalryWeek:result3.recordset, salaryTotal:result2.recordset[0]});
 })
 
 router.post("/v1/easyAlbaMng", async (req, res, next) => {
