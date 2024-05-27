@@ -54,20 +54,26 @@ export default function Login({ navigation, route }) {
   );
 
   return (
-    <GestureHandlerRootView style={{flex:1}}>
-      <View style={styles.container}>
-        <View style={styles.titleArea}>
-            <PushTest />
-            <Text style={font.title}>ALOHA</Text>
-            <Text style={font.version}>Ver {route.params.version}</Text>
-        </View>
-        <LoginForm navigation={navigation}/>
-        
-        <TouchableOpacity  onPress={() => navigation.push("Agreement")} style={{flex:0.3}}>
-          <Text style={font.createAcc}>회원가입</Text>
-        </TouchableOpacity>
-      </View>
-    </GestureHandlerRootView>
+    <View style={styles.container}>
+      <GestureHandlerRootView style={{}}>
+          <View style={styles.titleArea}>
+              <PushTest />
+              <Text style={font.title}>ALOHA</Text>
+              <Text style={font.version}>Ver {route.params.version}</Text>
+          </View>
+          <LoginForm navigation={navigation}/>
+          <View style={{flex:0.5}}>
+            <TouchableOpacity  onPress={() => navigation.push("Agreement")} style={{}}>
+              <Text style={font.createAcc}>회원가입</Text>
+            </TouchableOpacity>
+            <View style={{margin:4}}/>
+            {/* <TouchableOpacity  onPress={() => navigation.push("FindIdPw")} style={{}}>
+              <Text style={font.createAcc}>아이디 / 비밀번호 찾기</Text>
+            </TouchableOpacity> */}
+          </View>  
+      </GestureHandlerRootView>
+      
+    </View>
   );
 }
 

@@ -35,6 +35,7 @@ import { HTTP } from './src/util/http';
 import Message, { CONFIRM_POSITION, Confirm, DayOfWeek, test11 } from './src/components/common/Message';
 import { theme } from './src/util/color';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import FindIdPwScreen from './src/screen/FindIdPwScreen';
 
 // 태스크 매니저
 TaskManager.defineTask(LOCATION_TASK,  async ({ data, error } ) => {
@@ -206,6 +207,7 @@ function Index({version}) {
           ) : (
             <>
               <Stack.Screen name="Login" component={Login} options={{headerShown: false}} initialParams={{ version: version }}/>
+              <Stack.Screen name="FindIdPw" component={FindIdPwScreen} options={{title:"아이디 비밀번호 찾기", headerTitleAlign:"center", headerTitleStyle: headerTitleStyle,}}/>
               <Stack.Screen name="Agreement" component={Agreement} options={{title:"약관 동의", headerTitleAlign:"center", headerTitleStyle: headerTitleStyle,}}/>
               <Stack.Screen name="SignIn" component={SignInScreen} options={{title:"회원 가입", headerTitleAlign:"center", headerTitleStyle: headerTitleStyle,}}/>
               <Stack.Screen  name="TermsDetail" component={TermsDetailScreen} options={{title:"약관 상세", headerTitleAlign:"center", headerTitleStyle: headerTitleStyle,}}/>
