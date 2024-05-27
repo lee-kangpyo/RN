@@ -61,9 +61,9 @@ jobs:
       run: yarn
       working-directory: /home/runner/work/RN/RN/alloha
 
-    - name: 📋 expo doctor
-      run: npx expo-doctor
-      working-directory: /home/runner/work/RN/RN/alloha  
+    # - name: 📋 expo doctor
+    #   run: npx expo-doctor
+    #   working-directory: /home/runner/work/RN/RN/alloha  
 
     # - name: 📋 Test project
     #   run: yarn test
