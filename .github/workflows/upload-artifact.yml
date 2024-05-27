@@ -1,0 +1,25 @@
+name: Upload Artifact
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build App
+      run: |
+        # 앱 빌드 명령어 실행
+        mkdir app-build
+        echo "App build completed." > app-build/app.zip
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: app-artifact
+        path: app-build
