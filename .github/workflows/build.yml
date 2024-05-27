@@ -71,8 +71,8 @@ jobs:
     - run: echo ${{ github.workspace }}
 
     - name: 👷 Build app
+      working-directory: ${{ github.workspace }}/alloha
       run: |
-        cd ${{ github.workspace }}/alloha &&
         eas build --local \
           --non-interactive \
           --output=./app-build \
