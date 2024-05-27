@@ -71,7 +71,7 @@ jobs:
 
     - name: 👷 Build app
       run: |
-        cd alloha
+        cd alloha && 
         eas build --local \
           --non-interactive \
           --output=./app-build \
