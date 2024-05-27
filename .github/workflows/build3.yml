@@ -28,8 +28,8 @@ jobs:
       - name: Download Artifact
         uses: actions/download-artifact@v2
         with:
-          name: expo-artifact
-          path: ${{ github.workspace }}/alloha/app-build/aloha-2024-05-27
+          name: aloha-2024-05-27
+          path: ${{ github.workspace }}/alloha/app-build
 
       - name: Submit to Expo
         run: npx expo submit --path ${{ github.workspace }}/alloha/app-build/aloha-2024-05-27
