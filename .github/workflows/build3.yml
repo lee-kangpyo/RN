@@ -25,6 +25,11 @@ jobs:
         run: yarn
         working-directory: ${{ github.workspace }}/alloha
 
+      - name: List files in the artifacts directory
+        run: |
+          echo "Listing files in the artifacts directory:"
+          ls -l ${{ github.workspace }}/alloha/app-build
+
       - name: Download Artifact
         uses: actions/download-artifact@v2
         with:
