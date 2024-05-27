@@ -30,7 +30,7 @@ jobs:
   build:
     runs-on: ${{ github.event.inputs.os }}
     env:
-          working-directory: ./alloha
+      working-directory: ./alloha
 
     strategy:
       matrix:
@@ -79,4 +79,4 @@ jobs:
 
     - name: 🚢 Submit
       if: ${{ github.event.inputs.should_submit }}
-      run: eas submit -p ${{ github.event.inputs.platform }} --profile ${{ github.event.inputs.profile }} --path app-build
+      run: eas submit -p ${{ github.event.inputs.platform }} --profile ${{ github.event.inputs.profile }} --path ${{ env.working-directory }}/app-build
