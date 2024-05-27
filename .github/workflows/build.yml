@@ -52,7 +52,7 @@ jobs:
 
     - name: 📦 Install dependencies
       run: yarn
-      working-directory: /home/runner/work/RN/RN/alloha
+      working-directory: ${{ github.workspace }}/alloha
       
 
     # - name: 📋 Test project
@@ -60,7 +60,7 @@ jobs:
     #   working-directory: ${{ github.workspace }}/alloha
 
     - name: 👷 Build app
-      working-directory: /home/runner/work/RN/RN/alloha
+      working-directory: ${{ github.workspace }}/alloha
       run: |
         eas build --local \
           --non-interactive \
