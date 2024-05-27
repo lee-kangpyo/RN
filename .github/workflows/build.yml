@@ -33,12 +33,11 @@ jobs:
     strategy:
       matrix:
         node: [18.x]
+
     steps:
     - name: 🏗 Setup repo
       uses: actions/checkout@v2
 
-    - run: cd alloha
-    
     - name: 🏗 Setup Node
       uses: actions/setup-node@v2
       with:
@@ -59,6 +58,8 @@ jobs:
     # - name: 📋 Test project
     #   run: yarn test
     #   working-directory: ${{ github.workspace }}/alloha/
+
+    - run: cd alloha
 
     - name: 👷 Build app
       run: |
