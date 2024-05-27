@@ -41,7 +41,7 @@ jobs:
       with:
         node-version: ${{ matrix.node }}
         cache: yarn
-      working-directory: alloha
+      working-directory: RN/alloha
 
     - name: 🏗 Setup Expo and EAS
       uses: expo/expo-github-action@v7
@@ -49,15 +49,15 @@ jobs:
         token: ${{ secrets.EXPO_TOKEN }}
         expo-version: latest
         eas-version: latest
-      working-directory: alloha
+      working-directory: RN/alloha
 
     - name: 📦 Install dependencies
       run: yarn
-      working-directory: alloha
+      working-directory: RN/alloha
 
     - name: 📋 Test project
       run: yarn test
-      working-directory: alloha
+      working-directory: RN/alloha
 
     - name: 👷 Build app
       run: |
@@ -66,13 +66,13 @@ jobs:
           --output=./app-build \
           --platform=${{ github.event.inputs.platform }} \
           --profile=${{ github.event.inputs.profile }}
-      working-directory: alloha
+      working-directory: RN/alloha
 
     - name: 📦 Upload Build Artifacts
       uses: actions/upload-artifact@v3
       with:
         name: app-build
-        path: alloha/app-build
+        path: RN/alloha/app-build
 
     - name: 🚢 Submit
       if: ${{ github.event.inputs.should_submit }}
