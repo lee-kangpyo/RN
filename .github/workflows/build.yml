@@ -34,13 +34,11 @@ jobs:
       matrix:
         node: [18.x]
     steps:
-    
-    - run: cd alloha
-    
-      
     - name: 🏗 Setup repo
       uses: actions/checkout@v2
 
+    - run: cd alloha
+    
     - name: 🏗 Setup Node
       uses: actions/setup-node@v2
       with:
