@@ -1,4 +1,4 @@
-name: Build App 2
+name: ios build
 on:
   workflow_dispatch:
     inputs:
@@ -81,10 +81,10 @@ jobs:
     - name: 📦 Upload Build Artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: aloha-${{ env.CURRENT_DATE }}
+        name: aloha-${{ env.CURRENT_DATE }}.ipa
         path: ${{ github.workspace }}/alloha/app-build
 
     - name: 🚢 Submit
       if: ${{ github.event.inputs.should_submit }}
       working-directory: ${{ github.workspace }}/alloha
-      run: eas submit -p ${{ github.event.inputs.platform }} --profile ${{ github.event.inputs.profile }} --path ${{ github.workspace }}/alloha/app-build
+      run: eas submit -p ${{ github.event.inputs.platform }} --profile ${{ github.event.inputs.profile }} --path ${{ github.workspace }}/alloha/app-build/aloha-${{ env.CURRENT_DATE }}.ipa
