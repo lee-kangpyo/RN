@@ -62,9 +62,9 @@ jobs:
       working-directory: /home/runner/work/RN/RN/alloha
       
 
-    # - name: 📋 Test project
-    #   run: yarn test
-    #   working-directory: ${{ github.workspace }}/alloha
+    - name: 📋 Test project
+      run: yarn test
+      working-directory: /home/runner/work/RN/RN/alloha
 
     - name: 👷 Build app
       working-directory: /home/runner/work/RN/RN/alloha
