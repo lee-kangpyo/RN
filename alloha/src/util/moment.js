@@ -129,6 +129,17 @@ export const getWeekNumber = (dateString) => {
     return {"month":month, "number":weeksSinceStartOfMonth};
 }
 
+export const getWeekRange = (dateString) => {
+    const date = moment(dateString, 'YYYYMMDD');
+    const startOfWeek = date.clone().startOf('week');  // 일요일을 주의 시작으로 설정
+    const endOfWeek = date.clone().endOf('week');      // 토요일을 주의 끝으로 설정
+  
+    return {
+      first: startOfWeek.format('YYYYMMDD'),
+      last: endOfWeek.format('YYYYMMDD')
+    };
+  }
+
 export const getDayWeekNumber = (dateStr) => {
    // const dateStr = "20231105"; // 분석할 날짜 문자열
     const date = moment(dateStr, 'YYYYMMDD'); // 날짜 문자열을 Moment 객체로 변환
