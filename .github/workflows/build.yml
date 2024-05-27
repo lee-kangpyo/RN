@@ -29,10 +29,20 @@ on:
 jobs:
   build:
     runs-on: ${{ github.event.inputs.os }}
+    env:
+      working-directory: ./alloha
+    defaults:
+      run:
+        working-directory: ./alloha
+
     strategy:
       matrix:
         node: [18.x]
     steps:
+    - name: Echo hello world in working directory
+      run: echo "Hello world"
+      working-directory: ${{ env.working-directory }}
+
     - name: 🏗 Setup repo
       uses: actions/checkout@v2
 
@@ -51,11 +61,9 @@ jobs:
 
     - name: 📦 Install dependencies
       run: yarn
-      working-directory: ${{ secrets.WORKING_DIRECTORY }}
 
     - name: 📋 Test project
       run: yarn test
-      working-directory: ${{ secrets.WORKING_DIRECTORY }}
 
     - name: 👷 Build app
       run: |
@@ -64,14 +72,13 @@ jobs:
           --output=./app-build \
           --platform=${{ github.event.inputs.platform }} \
           --profile=${{ github.event.inputs.profile }}
-      working-directory: ${{ secrets.WORKING_DIRECTORY }}
 
     - name: 📦 Upload Build Artifacts
       uses: actions/upload-artifact@v3
       with:
         name: app-build
-        path: ${{ secrets.WORKING_DIRECTORY }}/app-build
+        path: /app-build
 
     - name: 🚢 Submit
       if: ${{ github.event.inputs.should_submit }}
-      run: eas submit -p ${{ github.event.inputs.platform }} --profile ${{ github.event.inputs.profile }} --path ${{ secrets.WORKING_DIRECTORY }}/app-build
+      run: eas submit -p ${{ github.event.inputs.platform }} --profile ${{ github.event.inputs.profile }} --path /app-build
