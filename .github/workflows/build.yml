@@ -67,11 +67,11 @@ jobs:
     #   run: yarn test
     #   working-directory: ${{ github.workspace }}/alloha
     
-    - run: cd alloha
+    - run: echo pwd
+    - run: echo ${{ github.workspace }}
 
     - name: 👷 Build app
       run: |
-        cd alloha && 
         eas build --local \
           --non-interactive \
           --output=./app-build \
