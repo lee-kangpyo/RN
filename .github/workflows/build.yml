@@ -29,8 +29,6 @@ on:
 jobs:
   build:
     runs-on: ${{ github.event.inputs.os }}
-    env:
-      working-directory: ./alloha
     defaults:
       run:
         working-directory: ./alloha
@@ -39,9 +37,6 @@ jobs:
       matrix:
         node: [18.x]
     steps:
-    - name: Echo hello world in working directory
-      run: echo "Hello world"
-      working-directory: ${{ env.working-directory }}
 
     - name: 🏗 Setup repo
       uses: actions/checkout@v2
