@@ -30,9 +30,9 @@ jobs:
   build:
     runs-on: ${{ github.event.inputs.os }}
     
-    # defaults:
-    #  run:
-    #    working-directory: ${{ github.workspace }}/alloha
+    defaults:
+     run:
+       working-directory: /alloha
 
     strategy:
       matrix:
@@ -40,32 +40,30 @@ jobs:
     steps:
     - name: 🏗 Setup repo
       uses: actions/checkout@v2
-      with:
-        path: ${{ github.workspace }}/alloha
 
     - name: 🏗 Setup Node
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node }}
         cache: yarn      
-        cache-dependency-path: ${{ github.workspace }}/alloha
+        cache-dependency-path: /alloha
 
     - name: 🏗 Setup Expo and EAS
       uses: expo/expo-github-action@v7
       with:
-        path: ${{ github.workspace }}/alloha
+        path: /alloha
         token: ${{ secrets.EXPO_TOKEN }}
         expo-version: latest
         eas-version: latest
 
     - name: 📦 Install dependencies
       run: yarn
-      working-directory: ${{ github.workspace }}/alloha
+      working-directory: /alloha
       
 
     - name: 📋 Test project
       run: yarn test
-      working-directory: ${{ github.workspace }}/alloha
+      working-directory: /alloha
 
     - name: 👷 Build app
       run: |
@@ -74,7 +72,7 @@ jobs:
           --output=./app-build \
           --platform=${{ github.event.inputs.platform }} \
           --profile=${{ github.event.inputs.profile }}
-      working-directory: ${{ github.workspace }}/alloha
+      working-directory: /alloha
 
     - name: 📦 Upload Build Artifacts
       uses: actions/upload-artifact@v3
