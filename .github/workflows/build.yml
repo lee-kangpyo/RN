@@ -79,7 +79,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: app-build
-        path: /app-build
+        path: app-build
 
     - name: 🚢 Submit
       if: ${{ github.event.inputs.should_submit }}
