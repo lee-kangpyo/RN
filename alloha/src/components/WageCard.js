@@ -12,7 +12,7 @@ export default function WageCard({item, userType, onPress}) {
     const statNa = (rtCl == "N")?"재직중":(rtCl == "Y")?"퇴직중":(rtCl == "R")?"입사요청중":""
     return (
         <>
-            <TouchableOpacity onPress={()=>onPress({title:title, cstCo:item.cstCo, userId:item.userId})}>
+            <TouchableOpacity onPress={()=>onPress(item)}>
                 <View style={styles.card}>
                     <View style={[styles.row, {paddingHorizontal:15, paddingVertical:10}]}>
                         <View style={[styles.cardTitle_block, {marginRight:8}]}>

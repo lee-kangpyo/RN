@@ -10,17 +10,18 @@ import axios from 'axios';
 import { URL } from "@env";
 import { nextMonth, prevMonth, setWorkDetailResultList, setWorkResultList } from '../../redux/slices/result';
 import { PayDetailContainer, TotalContainer } from '../components/common/Container';
-import { getWeekByWeekNumber } from '../util/moment';
+import { getWeekByWeekNumber, getWeekRange } from '../util/moment';
 import HeaderControl from '../components/common/HeaderControl';
 
 export default function ResultDetailScreen({navigation, route}) {
-    const cstCo = useSelector((state)=>state.common.cstCo);
-    const date = useSelector((state) => state.result.month)
+    //const cstCo = useSelector((state)=>state.common.cstCo);
+    const date = useSelector((state) => state.result.month);
     const isFocused = useIsFocused();
     const dispatch = useDispatch()
     const { item } = route.params;
+    const cstCo = item.cstCo
     const items = useSelector((state) => state.result.workDetailResultList)
-    
+
     const total = items.reduce((result, next)=>{
         result.jobWage = result.jobWage + next.jobWage;
         result.jobDure = result.jobDure + next.jobDure;
@@ -32,9 +33,13 @@ export default function ResultDetailScreen({navigation, route}) {
     }, {jobWage:0, jobDure:0, spcDure:0, weekWage:0, incentive:0, salary:0})
 
     const monthAlbaSlySearch = async () => {
+        
         const param = {cls:"MonthAlbaSlySearch", ymdFr:date.start, ymdTo:date.end, cstCo:cstCo, cstNa:"", userId:item.userId, userNa:"", rtCl:"0"};
+        console.log(param);
         await axios.get(URL+`/api/v1/rlt/monthCstSlySearch`, {params:param})
         .then((res)=>{
+            console.log("$$$$");
+            console.log(res.data.result);
             const data = res.data.result.filter((el)=>el.userId == item.userId);
             dispatch(setWorkDetailResultList({data}))
         }).catch(function (error) {
@@ -49,6 +54,11 @@ export default function ResultDetailScreen({navigation, route}) {
         }
     }, [isFocused, cstCo, date]);
 
+    const firstColTap = async (item) => {
+        const ymd = item.YMDNA.split("~");
+        const ymdarr = getWeekRange(ymd[0]);
+        navigation.navigate("WageResultDetail", { title: `${item.userNa} (${item.week1}주차)`, cstCo:item.cstCo, userId:item.userId, ymdFr:ymdarr.first, ymdTo:ymdarr.last});
+    }
     
     const onDeataTap = async (info) => {
         const week = getWeekByWeekNumber(date.start, info.weekNumber);
@@ -61,14 +71,14 @@ export default function ResultDetailScreen({navigation, route}) {
             alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
         })
     }
-
     return (
         <View style={styles.container}>
             <View style={{flex:1, width:"100%"}}>
                 <View style={{paddingTop:10, paddingBottom:20}}>
                     <HeaderControl title={`${item.userNa}님 ${date.mm}월 급여표`} onLeftTap={()=> dispatch(prevMonth())} onRightTap={()=> dispatch(nextMonth())} />
+                    {/* <HeaderControl title={`님 ${date.mm}월 급여표`} onLeftTap={()=> dispatch(prevMonth())} onRightTap={()=> dispatch(nextMonth())} /> */}
                 </View>
-                <PayDetailContainer header={["주차", "시급", "주휴", "플러스", "합계"]} contents={items} ondeataTap={onDeataTap}/>
+                <PayDetailContainer header={["주차", "시급", "주휴", "플러스", "합계"]} contents={items} ondeataTap={onDeataTap} firstColTap={firstColTap}/>
             </View>
             <View style={{width:"100%"}}>
                 <TotalContainer contents={["합계", [total.jobWage.toLocaleString(), total.jobDure], total.weekWage.toLocaleString(), total.incentive.toLocaleString(), total.salary.toLocaleString()]}/>

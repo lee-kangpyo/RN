@@ -156,7 +156,7 @@ function ProfitBox({style={}, onTapToEdit, isSub, isOpen, setIsOpen, text, text2
     )
 }
 
-export function PayDetailContainer({header, contents, ondeataTap}){
+export function PayDetailContainer({header, contents, ondeataTap, firstColTap}){
     return(
         <View style={{borderWidth:1, borderColor:"#DDD", borderRadius:10, overflow:"hidden"}}>
             <View style={[styles.row, {marginTop:0, marginBottom:-0.1}]}>
@@ -172,7 +172,7 @@ export function PayDetailContainer({header, contents, ondeataTap}){
                 <View>
                     {
                         contents.map((el, idx)=>{
-                            return <PayDetailLine key={idx} item={el} onDeataTap={ondeataTap} underLine={contents.length > idx + 1}/>
+                            return <PayDetailLine key={idx} item={el} onDeataTap={ondeataTap} underLine={contents.length > idx + 1} firstColTap={firstColTap}/>
                         })
                     }
                 </View>
@@ -186,13 +186,13 @@ export function PayDetailContainer({header, contents, ondeataTap}){
 }
 
 
-const PayDetailLine = ({item, onDeataTap, underLine=false}) => {
+const PayDetailLine = ({item, onDeataTap, firstColTap, underLine=false}) => {
     const [isEdit, setEdit] = useState(false);
     const spcWage = (item.spcWage > 0)?item.spcWage.toLocaleString():"0";
     return(
         <>
         <View style={[styles.row, {justifyContent:"space-between", marginVertical:-0.3}]}>
-            <ContentBox text={item.week1+"주"} fontSize={14}/>
+            <ContentBox text={item.week1+"주"} fontSize={14} onTap={()=>{firstColTap(item)}}/>
             <Sep />
             <ContentBox text={item.jobWage.toLocaleString()} subText={item.jobDure} alignItems='flex-end'/>
             <Sep />
@@ -257,7 +257,6 @@ export function TotalContainer({contents}) {
             <View style={[styles.row, {borderRadius:5, overflow:"hidden"}]}>
                 {
                     contents.map((label, idx)=>{
-                        console.log(label)
                         const fontSize = 13;
                         if(Array.isArray(label)){
                             return <NameBox2 key={idx} list={label} alignItems={"flex-end"} fontSize={fontSize} backgroundColor='#333' paddingVertical={17} sep={<Sep style={{borderColor:"#555"}}/>}/>
@@ -307,7 +306,7 @@ const PayLine = ({item, onNameTap, onIncentiveTap, underLine=false}) => {
         <View style={[styles.row, {justifyContent:"space-between", height:40, marginTop:-0.3}]}>
             <ContentBox text={item.userNa} onTap={()=>onNameTap(item)}/>
             <Sep />
-            <ContentBox text={item.jobWage.toLocaleString()} alignItems='flex-end'/>
+            <ContentBox text={item.jobWage.toLocaleString()}  subText={item.jobDure} alignItems='flex-end'/>
             <Sep />
             <ContentBox text={item.weekWage.toLocaleString()} subText={item.weekWageNa}  alignItems='flex-end' />
             <Sep />

@@ -172,6 +172,7 @@ function ResultStack(){
     <Stack.Navigator>
       <Stack.Screen name="resultMain" component={ResultScreen} options={{headerTitleAlign: 'center', headerTitleStyle:headerTitleStyle, title:"결과 현황표"}}/>
       <Stack.Screen name="resultDetail" component={ResultDetailScreen} options={{headerLeft:()=>headerLeftComponent("결과 상세 보기"), title:""}} />
+      <Stack.Screen  name="WageResultDetail" component={WageDetailScreen} options={{title:""}}/>
     </Stack.Navigator>
   )
 }
@@ -182,6 +183,7 @@ function WorkStack(){
     <Stack.Screen name="workMain" component={WorkScreen} options={{headerTitleAlign: 'center', headerTitleStyle:headerTitleStyle, title:"근무결과",}}/>
     <Stack.Screen name="reqChangeWork" component={ReqChangeWorkScreen} />
     <Stack.Screen name="registerAlba" component={EasyRegisterAlbaScreen} />
+    
   </Stack.Navigator>
   )
 }
@@ -223,7 +225,8 @@ function CrewScreen(){
         {() => (
           <Stack.Navigator>
             <Stack.Screen name="WageList" component={WageScreen} options={{ title: '급여', headerTitleStyle:headerTitleStyle, headerTitleAlign:"center" }} initialParams={{userType:"crew"}}/>
-            <Stack.Screen  name="WageDetail" component={WageDetailScreen} options={{title:""}}/>
+            <Stack.Screen name="WageDetail" component={ResultDetailScreen} options={{title:""}} />
+            <Stack.Screen  name="WageResultDetail" component={WageDetailScreen} options={{title:""}}/>
           </Stack.Navigator>
         )}
       </Tab.Screen>
