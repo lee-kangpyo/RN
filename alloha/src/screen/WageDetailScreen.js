@@ -57,20 +57,19 @@ export default function WageDetailScreen({navigation, route}) {
     }
 
     const DetailList = ({item}) => {
-        console.log(item.apvYn)
         const pillColor = ( ["승인", "자동승인"].includes(item.apvYn) )?"#3479EF":"#EEEEEE"
         const pillTextColor = ( ["승인", "자동승인"].includes(item.apvYn) )?"#FFF":"#999"
         return(
             <>
                 <View style={styles.detailList}>
-                    <View style={{flexDirection:"row", justifyContent:"space-around"}}>
-                        <Text style={fonts.date}>{convertYMD(item.ymd)}</Text>
-                        <Text style={fonts.time}>{(item.dure == "-")?"0":item.dure}0시간</Text>
+                    <View style={{flexDirection:"row", justifyContent:"space-between"}}>
+                        <Text style={[fonts.date, {width:80}]}>{convertYMD(item.ymd)}</Text>
+                        <Text style={fonts.time}>{(item.dure == "-")?"0":item.dure}시간</Text>
                     </View>
                     <View style={{flex:1, alignItems:"flex-end"}}>
                         <Text style={fonts.wage}>{addComma(item.salary)}원</Text>
                     </View>
-                    <View style={{justifyContent:"flex-end", width:65, marginLeft:16 }}>
+                    <View style={{justifyContent:"flex-end", width:85}}>
                         <View style={[styles.pill, {backgroundColor:pillColor}]}>
                             <Text style={[fonts.pillText, {color:pillTextColor}]}>{item.apvYn}</Text>
                         </View>
@@ -81,7 +80,6 @@ export default function WageDetailScreen({navigation, route}) {
         )
     }
     const SumLine = ({items}) => {
-        console.log(items);
         const sum = items.filter(el => ["승인", "자동승인"].includes(el.apvYn) ).reduce((result, next) => {
             result.dure += Number(next.dure);
             result.salary += Number(next.salary);
@@ -90,14 +88,14 @@ export default function WageDetailScreen({navigation, route}) {
         return(
             <>
             <View style={styles.detailList}>
-                <View style={{flexDirection:"row", justifyContent:"space-around",}}>
-                    <Text style={[fonts.date, {marginRight:16}]}>합계</Text>
+                <View style={{flexDirection:"row", justifyContent:"space-between"}}>
+                    <Text style={[fonts.date, {width:80}]}>합계</Text>
                     <Text style={fonts.time}>{sum.dure}시간</Text>
                 </View>
                 <View style={{flex:1, alignItems:"flex-end"}}>
                     <Text style={fonts.wage}>{sum.salary.toLocaleString()}원</Text>
                 </View>
-                <View style={{justifyContent:"flex-end", width:65, marginLeft:16}}>
+                <View style={{justifyContent:"flex-end", width:85,}}>
                     {/* <View style={[styles.pill, {backgroundColor:"red"}]}>
                         <Text style={[fonts.pillText, {color:"white"}]}>asf</Text>
                     </View> */}
@@ -137,6 +135,7 @@ export default function WageDetailScreen({navigation, route}) {
         });
         return result;
     }
+    
     return (
         <>
             {
@@ -153,7 +152,7 @@ export default function WageDetailScreen({navigation, route}) {
                         {
                             getDetailList().map((el, idx) => {
                                 return (
-                                    <View style={styles.weekCard}>
+                                    <View key={idx} style={styles.weekCard}>
                                         <View style={{paddingTop:24, paddingHorizontal:22}}>
                                             <Text style={fonts.endOfWeek_date}>{convertYMD(el.week.YMDFR)} ~ {convertYMD(el.week.YMDTO)}</Text>
                                         </View>

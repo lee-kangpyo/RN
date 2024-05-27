@@ -19,9 +19,7 @@ function PermissionsButton () {
   const [back, setBack] = useState("아직 안받음");
 
   const test = async () => {
-    console.log("테스트")
     const result = await TaskManager.getRegisteredTasksAsync()
-    console.log(result);
   }
 
   const requestPermissions = async () => {

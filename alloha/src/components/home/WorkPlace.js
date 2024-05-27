@@ -23,7 +23,6 @@ export default function WorkPlace({data}) {
     }
 
     const CstItem = ({item}) => {
-        console.log(item);
         return (
             <View style={[styles.row, styles.spaceBetween, {paddingVertical:15}]}>
                 <View style={{alignItems:"flex-start"}}>

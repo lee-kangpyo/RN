@@ -38,7 +38,6 @@ export default function CommuteCheckScreen({navigation}) {
     const commuteCheckInfo = async () => {
         await HTTP("GET", "/api/v1/commute/commuteCheckInfo", {cls:"JobInfo", userId:userId, cstCo:sCstCo, ymdFr:today, ymdTo:today})
         .then((res)=>{
-            console.log(res.data.result)
             setJobInfo(res.data.result[0] ?? {})
         }).catch(function (error) {
             console.log(error);

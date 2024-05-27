@@ -91,7 +91,6 @@ const ChangeWorkTime = ({dayJobInfo, setIsOpen, onConfirm}) => {
         // @CL1 : 시작시간 'HH:MM'
         // @CL2 : 종료시간 'HH:MM'
         const param = {cls:"JumjoWorkSave", cstCo:_dayJobInfo.cstCo, useId:_dayJobInfo.userId, ymd:_dayJobInfo.ymd, sTime:convertTime2(sTime,  {format:'HH:mm'}), eTime:convertTime2(eTime,  {format:'HH:mm'})};
-        console.log(param);
         onConfirm(param);
         setIsOpen(false);
     }

@@ -43,7 +43,7 @@ export default function ScheduleByAlba({cstCo, userId, ymdFr, ymdTo}) {
                     :
                     <View style={{justifyContent:"center", alignItems:"center"}}>
                         <Text style={fonts.noData}>데이터가 없습니다.</Text>
-                        <Text style={fonts.noData}>근무 계획을 입력해주세요.</Text>
+                        {/* <Text style={fonts.noData}>근무 계획을 입력해주세요.</Text> */}
                     </View>
             }
         </ScrollView>

@@ -92,7 +92,6 @@ const QuestionList = ({userId, setQuestionNo}) => {
     const getQuestionList = async () => {
         await HTTP("GET", "/qna/v1/question", {userId})
         .then((res)=>{
-            console.log(res.data.questionList)
             setQuestionList(res.data.questionList);
             setIsLoading(false);
         }).catch(function (error) {
@@ -115,7 +114,6 @@ const QuestionList = ({userId, setQuestionNo}) => {
                     {
                         (questionList.length > 0)?
                             questionList.map(el => {
-                                console.log(el);
                                 const pillColor = (el.STAT == "Y")?"#3479EF":"#EEE";
                                 const fontColor = (el.STAT == "Y")?"#FFF":"#999";
                                 const text = (el.STAT == "Y")?"답변완료":"문의등록";
@@ -161,7 +159,6 @@ const QuestionDetail = ({userId, questionNo, setQuestionNo}) => {
     useEffect(()=>{
         getQuestionDetail();
     }, [])
-    console.log(question);
     return(
         (isLoading)?
             <View style={questionView.center}>

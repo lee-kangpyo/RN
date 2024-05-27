@@ -41,7 +41,6 @@ export default function WorkScreen({navigation}) {
         const param = {cls:"WeekWorkSearch", cstCo:cstCo, userId:userId, ymdFr:weekList[0].format("yyyyMMDD"), ymdTo:weekList[6].format("yyyyMMDD"), jobCl:"", jobDure:0};
         await axios.get(URL+`/api/v1/work/workChedule`, {params:param})
         .then((res)=>{
-            //console.log(res.data.result)
             dispatch(setAlba({data:res.data.result}))
             if(callback) callback();
         }).catch(function (error) {

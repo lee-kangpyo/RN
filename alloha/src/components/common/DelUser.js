@@ -25,7 +25,6 @@ export default function DelUser({isVisible, setIsVisible}) {
     const proceed = async () => {
         //삭제 요청
         const result = await HTTP("GET", "/api/v1/delUser", {userId, key, hpNo:phoneNum.replaceAll("-", "")});
-        console.log(result.data);
         if(result.data.resultCode == "-03"){
             alert(result.data.msg);
         }else if(result.data.resultCode == "00"){

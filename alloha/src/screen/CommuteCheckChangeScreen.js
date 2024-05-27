@@ -34,7 +34,6 @@ export default function CommuteCheckChangeScreen({navigation, route}) {
             .then((res)=>{
                 if(res.data.resultCode == "00"){
                     // 근무 변경 기록이 있을때
-                    console.log(res.data)
                     if(res.data.rows > 0){
                         const data = res.data.result[0];
                         setStartTime(data.STIME.split('T')[1].slice(0, 5));

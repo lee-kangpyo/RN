@@ -132,7 +132,6 @@ export default function ManageCrewScreen({navigation}) {
     const modifyName = async () => {
         await axios.post(URL+`/api/v1/changeCrewName`, {cstCo:modifyUser.cstCo, userId:modifyUser.userId, name:changedName})
         .then((res)=>{
-            console.log(res.data.resultCode)
             if(res.data.resultCode == "00"){
                 searchCrewList();
                 changedName = "";
@@ -148,7 +147,6 @@ export default function ManageCrewScreen({navigation}) {
         
     }
     const modifyCrew = (cstCo, userId, userNa) => {
-        console.log(cstCo, userId, userNa);
         setModifyUser({name:userNa, userId:userId, cstCo:cstCo});
         setIsShow(true);
     }

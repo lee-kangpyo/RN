@@ -172,7 +172,6 @@ const CommuteBox = ({num, text, textStyle, onTap}) => {
 }
 
 const User = ({userInfo, stackText}) => {
-    console.log(userInfo)
     const rate = userInfo.jobrate;
     const backColor = (stackText)?"rgba(0,0,0, 0.6)":null
     return (

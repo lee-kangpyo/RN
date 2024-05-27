@@ -54,7 +54,6 @@ export default function QnAScreen({navigation}) {
     const QnACall = async (method, params, callback) => {
         await HTTP(method, "/api/v1/board/QnA", params)
         .then((res)=>{
-            console.log("")
             if(res.data.resultCode == "00"){
                 callback(res.data)
             }

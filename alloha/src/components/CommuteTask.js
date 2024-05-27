@@ -76,7 +76,6 @@ export default function CommuteTask(){
     )
 
     const focusin = async () => {
-        console.log("포커스인");
         var isTaskRegistered = await TaskManager.isTaskRegisteredAsync(LOCATION_TASK);
         setTaskStart(isTaskRegistered)
         if(!isTaskStart){

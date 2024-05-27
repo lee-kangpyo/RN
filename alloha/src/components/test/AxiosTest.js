@@ -16,7 +16,6 @@ export default function AxiosTest() {
         .then( function  (response) {
             setData(response.data.result)
         }).catch(function (error) {
-            console.log("%%%%%%")
             setError(error.name + " " + error.message)
         });    
     

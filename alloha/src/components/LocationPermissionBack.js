@@ -24,7 +24,6 @@ export default function GetLocationPermission({Grant, Deny}){
 
         const {granted:forePerm} = await Location.getForegroundPermissionsAsync()
         const {granted:backPerm} = await Location.getBackgroundPermissionsAsync()
-        console.log(forePerm, backPerm)
         if(!forePerm || !backPerm || (forePerm && backPerm)){
             setLoading(false);
         }

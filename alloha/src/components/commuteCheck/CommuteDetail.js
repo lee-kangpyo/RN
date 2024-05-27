@@ -17,8 +17,6 @@ export default function CommuteDetail({day}) {
     const dayJobSearch = async () => {
         await HTTP("GET", "/api/v1/commute/jobDetailInfo", {cls:"jobDetailInfo", userId:userId, cstCo:sCstCo, ymdFr:day, ymdTo:day})
         .then((res)=>{
-            console.log("####");
-            console.log(res.data.result)
             setJobDetailInfo(res.data.result);
             setLoadin(false);
         }).catch(function (error) {
