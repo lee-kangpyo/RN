@@ -82,8 +82,8 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: app-build
-        path: app-build
-
+        path: /home/runner/work/RN/RN/alloha/app-build
+        
     - name: 🚢 Submit
       if: ${{ github.event.inputs.should_submit }}
       run: eas submit -p ${{ github.event.inputs.platform }} --profile ${{ github.event.inputs.profile }} --path /app-build
