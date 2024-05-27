@@ -68,6 +68,8 @@ jobs:
     # - name: 📋 Test project
     #   run: yarn test
     #   working-directory: /home/runner/work/RN/RN/alloha
+    - name: Set up the date environment variable
+      run: echo "CURRENT_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
 
     - name: 👷 Build app
       working-directory: /home/runner/work/RN/RN/alloha
@@ -81,9 +83,9 @@ jobs:
     - name: 📦 Upload Build Artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: app-build
+        name: aloha-${{ env.CURRENT_DATE }}
         path: /home/runner/work/RN/RN/alloha/app-build
-        
+
     - name: 🚢 Submit
       if: ${{ github.event.inputs.should_submit }}
-      run: eas submit -p ${{ github.event.inputs.platform }} --profile ${{ github.event.inputs.profile }} --path /app-build
+      run: eas submit -p ${{ github.event.inputs.platform }} --profile ${{ github.event.inputs.profile }} --path /home/runner/work/RN/RN/alloha/app-build
