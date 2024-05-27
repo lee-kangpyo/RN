@@ -20,8 +20,9 @@ export default function EtcScreen({navigation}) {
 
     const logOut = async () => {
         await HTTP("POST", "/api/v1/logOut", {userId:userId});
-        dispatch(setUserInfo({isLogin:false, userId:""}));
-        dispatch(setOwnerCstco({cstCo:""}));
+        dispatch({ type: 'LOGOUT' });
+        //dispatch(setUserInfo({isLogin:false, userId:""}));
+        //dispatch(setOwnerCstco({cstCo:""}));
         await SecureStore.setItemAsync("uuid", "");
         TaskManager.unregisterAllTasksAsync();
     }

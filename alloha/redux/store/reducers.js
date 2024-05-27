@@ -11,7 +11,7 @@ import albaSlice from '../slices/alba';
 import ownerSlice from '../slices/owner';
 import dailyReportSlice from '../slices/dailyReport';
 
-const rootReducer = combineReducers({
+const appReducer = combineReducers({
   user: userSlice.reducer,
   login: loginSlice.reducer,
   push: pushSlice.reducer,
@@ -24,5 +24,12 @@ const rootReducer = combineReducers({
   owner:ownerSlice.reducer,
   dailyReport:dailyReportSlice.reducer,
 });
+
+const rootReducer = (state, action) => {
+  if (action.type === 'LOGOUT') {
+    state = undefined;
+  }
+  return appReducer(state, action);
+};
 
 export default rootReducer;
