@@ -6,8 +6,8 @@ on:
         type: choice
         description: OS to build on. Ubuntu is faster, MacOS supports iOS builds
         options:
-          - macos-latest
           - ubuntu-latest
+          - macos-latest
       platform:
         type: choice
         description: Platform to build for
@@ -18,8 +18,8 @@ on:
         type: choice
         description: Build profile to use
         options:
-          - development
           - preview
+          - development
           - production
       should_submit:
         type: boolean
@@ -29,9 +29,6 @@ on:
 jobs:
   build:
     runs-on: ${{ github.event.inputs.os }}
-    env:
-      working-directory: ./alloha
-
     strategy:
       matrix:
         node: [18.x]
@@ -54,11 +51,11 @@ jobs:
 
     - name: 📦 Install dependencies
       run: yarn
-      working-directory: ${{ env.working-directory }}
+      working-directory: ${{ secrets.WORKING_DIRECTORY }}
 
     - name: 📋 Test project
       run: yarn test
-      working-directory: ${{ env.working-directory }}
+      working-directory: ${{ secrets.WORKING_DIRECTORY }}
 
     - name: 👷 Build app
       run: |
@@ -67,14 +64,14 @@ jobs:
           --output=./app-build \
           --platform=${{ github.event.inputs.platform }} \
           --profile=${{ github.event.inputs.profile }}
-      working-directory: ${{ env.working-directory }}
+      working-directory: ${{ secrets.WORKING_DIRECTORY }}
 
     - name: 📦 Upload Build Artifacts
       uses: actions/upload-artifact@v3
       with:
         name: app-build
-        path: ${{ env.working-directory }}/app-build
+        path: ${{ secrets.WORKING_DIRECTORY }}/app-build
 
     - name: 🚢 Submit
       if: ${{ github.event.inputs.should_submit }}
-      run: eas submit -p ${{ github.event.inputs.platform }} --profile ${{ github.event.inputs.profile }} --path ${{ env.working-directory }}/app-build
+      run: eas submit -p ${{ github.event.inputs.platform }} --profile ${{ github.event.inputs.profile }} --path ${{ secrets.WORKING_DIRECTORY }}/app-build
