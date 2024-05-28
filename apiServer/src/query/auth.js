@@ -10,7 +10,7 @@ const logOut = `
 `
 
 const autoLogin = `
-    SELECT	a.ownrYn, a.mnrgYn, a.crewYn, a.userNa
+    SELECT	a.ownrYn, a.mnrgYn, a.crewYn, a.userNa, a.TOKEN
     FROM	PLYMUSER a
     WHERE	a.USERID = @userId
     AND     a.UUID = @uuid

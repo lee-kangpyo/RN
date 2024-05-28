@@ -65,14 +65,14 @@ router.post("/v1/loginUser", async(req, res, next)=>{
 })
 
 router.post("/v1/autoLogin", async(req, res, next)=>{
-    const{userId, uuid, flag} = req.body;
+    const{userId, uuid, flag, pushToken} = req.body;
     console.log("autoLogin : "+flag);
     const result = await execSql(autoLogin, {userId:userId, uuid:uuid});
     let info = {};
     if(result.recordset[0]){
         console.log("해당 기기는 자동 로그인")
-        const {pwCheck, crewYn, ownrYn, mnrgYn, userNa} = result.recordset[0];
-        if (pwCheck === 1 ){ await execSql(insertUuid, {userId:id, uuid:uuid}); }
+        const {crewYn, ownrYn, mnrgYn, userNa, TOKEN} = result.recordset[0];
+        if ( pushToken && TOKEN != pushToken ){ await execSql(insert_Uuid_Token, {userId:id, uuid:uuid, token:pushToken}); }
         info = {ownrYn:ownrYn, crewYn:crewYn, mnrgYn:mnrgYn, userNa:userNa}
         res.status(200).json({info:info, resultCode:"00"});
     }else{
