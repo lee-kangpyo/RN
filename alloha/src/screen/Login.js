@@ -14,7 +14,7 @@ import axios from 'axios';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { URL } from "@env";
+import { URL, MODE } from "@env";
 
 import uuid from 'react-native-uuid';
 import * as SecureStore from 'expo-secure-store';
@@ -63,13 +63,14 @@ export default function Login({ navigation, route }) {
           </View>
           <LoginForm navigation={navigation}/>
           <View style={{flex:0.5}}>
+            <View style={{margin:8}}/>
             <TouchableOpacity  onPress={() => navigation.push("Agreement")} style={{}}>
               <Text style={font.createAcc}>회원가입</Text>
             </TouchableOpacity>
             <View style={{margin:4}}/>
-            {/* <TouchableOpacity  onPress={() => navigation.push("FindIdPw")} style={{}}>
+            <TouchableOpacity  onPress={() => navigation.push("FindIdPw")} style={{}}>
               <Text style={font.createAcc}>아이디 / 비밀번호 찾기</Text>
-            </TouchableOpacity> */}
+            </TouchableOpacity>
           </View>  
       </GestureHandlerRootView>
       
@@ -103,11 +104,13 @@ const LoginForm = ({navigation}) => {
   }
   const loginAction = async () => {
     //밸리데이션 -> 지금은 아이디 패스워드 공백 체크만 함
+    console.log("loginaction");
     if(loginInfo.id && loginInfo.password){
+      console.log(loginInfo);
       dispatch(setOwnerCstco({cstCo:""}));
       setLoginButtonDisabled(true);
       const uid = uuid.v4();
-      const param = {...loginInfo, uuid:uid, pushToken:pushToken};
+      const param = {...loginInfo, uuid:uid, pushToken:pushToken, mode:MODE};
       await axios.post(URL+'/api/v1/loginUser', param, {timeout:5000})
       .then( function  (response) {
         if(response.data.result === 1){

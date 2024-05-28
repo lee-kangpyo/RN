@@ -9,6 +9,7 @@ import * as TaskManager from 'expo-task-manager';
 import { color } from 'react-native-reanimated';
 import { initAlbaSlice } from '../../redux/slices/alba';
 import { HTTP } from '../util/http';
+import { MODE } from "@env";
 import DelUser from './../components/common/DelUser';
 
 export default function EtcCrewScreen({navigation}) {
@@ -19,12 +20,18 @@ export default function EtcCrewScreen({navigation}) {
     }, [navigation])
 
     const logOut = async () => {
-        await HTTP("POST", "/api/v1/logOut", {userId:userId});
-        dispatch({ type: 'LOGOUT' });
-        //dispatch(initAlbaSlice());
-        //dispatch(setUserInfo({isLogin:false, userId:""}));
-        await SecureStore.setItemAsync("uuid", "");
-        TaskManager.unregisterAllTasksAsync();
+        if(MODE == "DEV"){
+            dispatch({ type: 'LOGOUT' });
+            await SecureStore.setItemAsync("uuid", "");
+            TaskManager.unregisterAllTasksAsync();
+        }else{
+            await HTTP("POST", "/api/v1/logOut", {userId:userId});
+            dispatch({ type: 'LOGOUT' });
+            //dispatch(initAlbaSlice());
+            //dispatch(setUserInfo({isLogin:false, userId:""}));
+            await SecureStore.setItemAsync("uuid", "");
+            TaskManager.unregisterAllTasksAsync();
+        }
     }
 
     const [checkDelUserModalmodalVisible, setCheckDelUserModalVisible] = useState(false);

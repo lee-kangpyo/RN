@@ -15,7 +15,7 @@ import SignInScreen from '../alloha/src/screen/SignInScreen';
 import SearchAddress from '../alloha/src/components/SearchAddress';
 import * as Font from "expo-font";
 
-import { URL, TASK_URL, LOCATION_TASK } from "@env";
+import { URL, TASK_URL, LOCATION_TASK, MODE } from "@env";
 import { useDispatch } from 'react-redux';
 import { setUserInfo } from './redux/slices/login';
 import axios from "axios"
@@ -130,38 +130,50 @@ function Index({version}) {
 
   const autoLogin = async (flag)=>{
     try {
-      const isAvailable = await SecureStore.isAvailableAsync()
-      const uid = await SecureStore.getItemAsync("uuid");
-      const userId = await AsyncStorage.getItem("id");
       
-      if(uid && userId){
-        await axios.post(URL+'/api/v1/autoLogin', {uuid:uid, userId:userId, pushToken:pushToken, flag:flag},  { timeout: 3000 })
-        .then(async function (response) {
-          if(response.data.resultCode === "00"){
-            if(flag == "start") await TaskManager.unregisterAllTasksAsync();
-            dispatch(setUserInfo({isLogin:true, userId:userId}));
-          }else{
-            TaskManager.unregisterAllTasksAsync();
-            dispatch(setUserInfo({isLogin:false, userId:""}));
-          }
-        }).catch(function (error) {
-            console.error(error.message)
-            if(axios.isAxiosError(error) && error.message.includes('timeout')){
-              Alert.alert("타임아웃", "서버와 연결이 원할하지 않습니다.")
+        const isAvailable = await SecureStore.isAvailableAsync()
+        const uid = await SecureStore.getItemAsync("uuid");
+        const userId = await AsyncStorage.getItem("id");
+        
+        if(uid && userId){
+          await axios.post(URL+'/api/v1/autoLogin', {uuid:uid, userId:userId, pushToken:pushToken, flag:flag},  { timeout: 3000 })
+          .then(async function (response) {
+            if(response.data.resultCode === "00"){
+              if(flag == "start") await TaskManager.unregisterAllTasksAsync();
+              dispatch(setUserInfo({isLogin:true, userId:userId}));
+            }else{
+              TaskManager.unregisterAllTasksAsync();
+              dispatch(setUserInfo({isLogin:false, userId:""}));
             }
-        }).finally(() => {
+          }).catch(function (error) {
+              console.error(error.message)
+              if(axios.isAxiosError(error) && error.message.includes('timeout')){
+                Alert.alert("타임아웃", "서버와 연결이 원할하지 않습니다.")
+              }
+          }).finally(() => {
+            setReg(false);
+          });
+        }else{
           setReg(false);
-        });
-      }else{
-        setReg(false);
-      }  
+        }  
+      
     } catch (error) {
       setReg(false);
     }
   }
 
+  const checkDev = async () => {
+    const userId = await AsyncStorage.getItem("id");
+    if(MODE == "DEV"){
+      dispatch(setUserInfo({isLogin:true, userId:userId}));
+      setReg(false);
+    }else{
+      autoLogin("start");
+    }
+  }
+
   useEffect(() => {
-    autoLogin("start");
+    checkDev()
   }, []);
 
   useEffect(() => {

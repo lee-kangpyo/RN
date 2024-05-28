@@ -8,7 +8,7 @@ import * as SecureStore from 'expo-secure-store';
 import * as TaskManager from 'expo-task-manager';
 import { color } from 'react-native-reanimated';
 import { HTTP } from '../util/http';
-import { setOwnerCstco } from '../../redux/slices/common';
+import { MODE } from "@env";
 import DelUser from '../components/common/DelUser';
 
 export default function EtcScreen({navigation}) {
@@ -19,12 +19,20 @@ export default function EtcScreen({navigation}) {
     }, [navigation])
 
     const logOut = async () => {
-        await HTTP("POST", "/api/v1/logOut", {userId:userId});
-        dispatch({ type: 'LOGOUT' });
-        //dispatch(setUserInfo({isLogin:false, userId:""}));
-        //dispatch(setOwnerCstco({cstCo:""}));
-        await SecureStore.setItemAsync("uuid", "");
-        TaskManager.unregisterAllTasksAsync();
+        if(MODE == "DEV"){
+            dispatch({ type: 'LOGOUT' });
+            //dispatch(setUserInfo({isLogin:false, userId:""}));
+            //dispatch(setOwnerCstco({cstCo:""}));
+            await SecureStore.setItemAsync("uuid", "");
+            TaskManager.unregisterAllTasksAsync();
+        }else{
+            await HTTP("POST", "/api/v1/logOut", {userId:userId});
+            dispatch({ type: 'LOGOUT' });
+            //dispatch(setUserInfo({isLogin:false, userId:""}));
+            //dispatch(setOwnerCstco({cstCo:""}));
+            await SecureStore.setItemAsync("uuid", "");
+            TaskManager.unregisterAllTasksAsync();
+        }
     }
 
     const [checkDelUserModalmodalVisible, setCheckDelUserModalVisible] = useState(false);
