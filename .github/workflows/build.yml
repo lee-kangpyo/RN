@@ -49,7 +49,7 @@ jobs:
       with:
         node-version: ${{ matrix.node }}
         cache: yarn      
-        cache-dependency-path: /home/runner/work/RN/RN/alloha
+        cache-dependency-path: ${{ github.workspace }}/alloha
 
     - name: 🏗 Setup Expo and EAS
       uses: expo/expo-github-action@v7
@@ -59,17 +59,17 @@ jobs:
         eas-version: latest
 
     - name: Create google-services.json
-      working-directory: /home/runner/work/RN/RN/alloha
+      working-directory: ${{ github.workspace }}/alloha
       run: |
-        echo ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }} | base64 --decode > ./google-services.json
+        echo ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }} | base64 --decode > ${{ github.workspace }}/google-services.json
 
     - name: 📦 Install dependencies
       run: yarn
-      working-directory: /home/runner/work/RN/RN/alloha
+      working-directory: ${{ github.workspace }}/alloha
 
     # - name: 📋 Test project
     #   run: yarn test
-    #   working-directory: /home/runner/work/RN/RN/alloha
+    #   working-directory: ${{ github.workspace }}/alloha
     
     - name: Set up the date environment variable
       run: echo "CURRENT_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
@@ -77,7 +77,7 @@ jobs:
     - name: 👷 Build app
       env:
         GOOGLE_SERVICES_JSON: ${{ vars.GOOGLE_SERVICES_JSON }}
-      working-directory: /home/runner/work/RN/RN/alloha
+      working-directory: ${{ github.workspace }}/alloha
       run: |
         eas build --local \
           --non-interactive \
@@ -89,8 +89,8 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: aloha-${{ env.CURRENT_DATE }}
-        path: /home/runner/work/RN/RN/alloha/app-build
+        path: ${{ github.workspace }}/alloha/app-build
 
     # - name: 🚢 Submit
     #   if: ${{ github.event.inputs.should_submit }}
-    #   run: eas submit -p ${{ github.event.inputs.platform }} --profile ${{ github.event.inputs.profile }} --path /home/runner/work/RN/RN/alloha/app-build
+    #   run: eas submit -p ${{ github.event.inputs.platform }} --profile ${{ github.event.inputs.profile }} --path ${{ github.workspace }}/alloha/app-build
