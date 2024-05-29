@@ -109,7 +109,8 @@ const linking = {
 };
 
 function Index({version}) {
-  const pushToken = useSelector((state) => state.push.token);
+  
+  //const pushToken = useSelector((state) => state.push.token);
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
 
@@ -130,11 +131,10 @@ function Index({version}) {
 
   const autoLogin = async (flag)=>{
     try {
-      
-        const isAvailable = await SecureStore.isAvailableAsync()
+        const isAvailable = await SecureStore.isAvailableAsync();
+        const pushToken = await SecureStore.getItemAsync("pushToken");
         const uid = await SecureStore.getItemAsync("uuid");
         const userId = await AsyncStorage.getItem("id");
-        
         if(uid && userId){
           await axios.post(URL+'/api/v1/autoLogin', {uuid:uid, userId:userId, pushToken:pushToken, flag:flag},  { timeout: 3000 })
           .then(async function (response) {

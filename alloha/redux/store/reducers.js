@@ -27,7 +27,8 @@ const appReducer = combineReducers({
 
 const rootReducer = (state, action) => {
   if (action.type === 'LOGOUT') {
-    state = undefined;
+    const { push } = state;  // 현재 push 상태를 저장
+    state = { push };  // 나머지 상태를 undefined로 설정하여 초기화
   }
   return appReducer(state, action);
 };

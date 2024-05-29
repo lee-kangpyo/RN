@@ -22,6 +22,7 @@ import { setOwnerCstco } from '../../redux/slices/common';
 import PushTest from '../components/test/PushTest';
 import { theme } from '../util/color';
 
+
 const windowWidth = Dimensions.get('window').width;
 
 
@@ -86,7 +87,8 @@ const LoginForm = ({navigation}) => {
   const [loginInfo, setLoginInfo] = useState({id:"", password:""})
   const [isLoginButtonDisabled, setLoginButtonDisabled] = useState(false);
 
-  const pushToken = useSelector((state) => state.push.token);
+  //const pushToken = useSelector((state) => state.push.token);
+  
   
   const saveUserInfo = async ({ownrYn, crewYn, mnrgYn, userNa, uuid}) => {
     try {
@@ -110,6 +112,7 @@ const LoginForm = ({navigation}) => {
       dispatch(setOwnerCstco({cstCo:""}));
       setLoginButtonDisabled(true);
       const uid = uuid.v4();
+      const pushToken = await SecureStore.getItemAsync("pushToken");
       const param = {...loginInfo, uuid:uid, pushToken:pushToken, mode:MODE};
       await axios.post(URL+'/api/v1/loginUser', param, {timeout:5000})
       .then( function  (response) {

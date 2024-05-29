@@ -5,9 +5,9 @@ import * as Notifications from 'expo-notifications';
 import Loading from './Loding';
 import Constants from 'expo-constants';
 import { setToken } from '../../redux/slices/push';
-import { useCommuteChangeList } from '../hooks/useReqCommuteList';
 import { useDispatch, useSelector } from 'react-redux';
-import { testLog } from './../util/testLog';
+import { getToken } from '../util/token';
+import * as SecureStore from 'expo-secure-store';
 
 Notifications.setNotificationHandler({
   handleNotification: async ({ request }) => {
@@ -30,15 +30,16 @@ Notifications.setNotificationHandler({
 
 export default function Notification({ children }) {
   const [isShowChildComponent, setShowChildComponent] = useState(false);
+  const pushToken = useSelector((state) => state.push.token);
   const dispatch = useDispatch();
 
-  
 
 
 
   useEffect(() => {
     //registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
-    registerForPushNotificationsAsync().then( token => {
+    registerForPushNotificationsAsync().then( async token => {
+      await SecureStore.setItemAsync("pushToken", token);
       dispatch(setToken(token));
     });
     
@@ -100,11 +101,8 @@ export default function Notification({ children }) {
       token = (await Notifications.getExpoPushTokenAsync({
         projectId: Constants.expoConfig.extra.eas.projectId,
       })).data;
-      testLog("##################");testLog("##################");testLog("##################");
-      testLog(Constants.expoConfig.extra.eas.projectId);
-      testLog(token);
 
-      token = tokenCompression(token); 
+      token = await getToken(token); 
 
     } else {
       alert('Must use physical device for Push Notifications');
@@ -114,15 +112,7 @@ export default function Notification({ children }) {
     return token;
   }
 
-  const tokenCompression = (token) => {
-    const match = token.match(/\[(.*?)\]/);
-    if (match) {
-      const randomString = match[1]; // 22개의 무작위 문자열
-      return randomString
-    } else {
-      console.log("토큰 형식이 아닙니다.");
-    }
-  };
+  
 
   return (
     <>
