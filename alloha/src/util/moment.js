@@ -19,7 +19,7 @@ export const getCurMonth = () => {
     const currentDate = moment();
     const start = currentDate.startOf('month').clone();
     const end = currentDate.endOf('month').clone();
-    return ({start : start.format("YYYYMMDD"), end : end.format("YYYYMMDD"), mm:currentDate.format("MM")});
+    return ({start : start.format("YYYYMMDD"), end : end.format("YYYYMMDD"), mm:currentDate.format("MM"), yyyy:currentDate.format("YYYY")});
 }
 
 export const getPrevMM = () => {
@@ -113,6 +113,10 @@ export const getWeekList = (week) => {
     return weekDates;
 }
 
+// 날짜 문자열을 전달하면 월의 첫날과 마지막날을 반환
+
+
+// 주차계산
 export const getWeekNumber = (dateString) => {
     const inputDate = moment(dateString);
 
@@ -128,18 +132,46 @@ export const getWeekNumber = (dateString) => {
     const weeksSinceStartOfMonth = inputDate.diff(startOfMonth, 'weeks') + 1;
     return {"month":month, "number":weeksSinceStartOfMonth};
 }
-
+// 주차의 시작과 끝을 반환
 export const getWeekRange = (dateString) => {
     const date = moment(dateString, 'YYYYMMDD');
     const startOfWeek = date.clone().startOf('week');  // 일요일을 주의 시작으로 설정
     const endOfWeek = date.clone().endOf('week');      // 토요일을 주의 끝으로 설정
-  
+
     return {
-      first: startOfWeek.format('YYYYMMDD'),
-      last: endOfWeek.format('YYYYMMDD')
+        first: startOfWeek.format('YYYYMMDD'),
+        last: endOfWeek.format('YYYYMMDD')
+    };
+}
+
+export const getFirstAndLastDayOfWeek = (year, month, week) => {
+    // 해당 연도와 월의 첫째 날을 기준으로 Moment 객체 생성
+    const date = moment(`${year}-${month}`, 'YYYY-MM').startOf('month');
+    
+    // 주차 계산: 해당 월의 첫째 날을 기준으로 주차를 계산하기 위해 offset 적용
+    const firstDayOfMonth = date.clone().startOf('month');
+    const startOfWeek = firstDayOfMonth.clone().add(week - 1, 'weeks').startOf('week');
+    const endOfWeek = startOfWeek.clone().endOf('week');
+    
+    return {
+      firstDay: startOfWeek.format('YYYYMMDD'),
+      lastDay: endOfWeek.format('YYYYMMDD')
     };
   }
 
+// 달의 처음과 마지막을 반환
+export function getFirstAndLastDay(yyyymmdd) {
+    // 입력 받은 문자열을 moment 객체로 변환
+    const date = moment(yyyymmdd, 'YYYYMMDD');
+    
+    // 해당 월의 첫째 날과 마지막 날 계산
+    const firstDay = date.startOf('month').format('YYYY-MM-DD');
+    const lastDay = date.endOf('month').format('YYYY-MM-DD');
+    
+    return { firstDay, lastDay };
+  }
+
+  // 요일 반환(숫자로)
 export const getDayWeekNumber = (dateStr) => {
    // const dateStr = "20231105"; // 분석할 날짜 문자열
     const date = moment(dateStr, 'YYYYMMDD'); // 날짜 문자열을 Moment 객체로 변환

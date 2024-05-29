@@ -162,7 +162,7 @@ function OwnrScreen({}){
 function DailyStack(){
   return(
     <Stack.Navigator>
-      <Stack.Screen name="DailyReport" component={DailyReportScreen} />
+      <Stack.Screen name="DailyReport" component={DailyReportScreen} options={{headerTitleAlign: 'center', headerTitleStyle:headerTitleStyle, title:"근무계획"}} />
       <Stack.Screen name="DailyReportDetail" component={DailyReportDetilaScreen} />
     </Stack.Navigator>
   )

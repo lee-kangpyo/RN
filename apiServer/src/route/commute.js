@@ -5,7 +5,7 @@ const {execSql} = require("../utils/excuteSql");
 const dotenv = require('dotenv');
 const { jobChk, jobChk2 } = require('../query/auth');
 const { monthCstSlySearch } = require('../query/workResult');
-const { insertManualJobChk, daySchedule, reqCommuteChange, initCommuteChange, getReqCommuteList, updateJobReq, updateDayJob, getDAYJOBREQ, getReqCommuteListForDay, insertPLYADAYJOB, updateJobReqAbsence, getJobNo, updatePLYADAYJOB } = require('../query/commute');
+const { insertManualJobChk, daySchedule, reqCommuteChange, initCommuteChange, getReqCommuteList, updateJobReq, updateDayJob, getDAYJOBREQ, getReqCommuteListForDay, insertPLYADAYJOB, updateJobReqAbsence, getJobNo, updatePLYADAYJOB, getReqCommuteListForMonth } = require('../query/commute');
 const { reverseGeocode } = require('../utils/kakao');
 const { sendPush_GoToWork, sendPush_GetOffWork } = require('../utils/templatePush');
 const { sendMsg_Z0110_11, useN_DayJob } = require('../query/dailyReport');
@@ -181,6 +181,18 @@ router.get("/getReqCommuteList", async (req,res,next)=>{
     }
 })
 
+router.get("/getReqCommuteListForMonth", async (req, res, next) => {
+    console.log("GET commute.getReqCommuteListForMonth - 점주가 일일 보고서에서 이슈 보기 탭 클릭");
+    try {
+        const { ymdFr, ymdTo, cstCo, userId } = req.query;
+        const result = await execSql(getReqCommuteListForMonth, {ymdFr, ymdTo, cstCo, userId});
+        const data = {dayReqList:result.recordset, resultCode:"00"};
+        res.status(200).json(data);
+    } catch (error) {
+        console.log(error.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+});
 router.get("/getReqCommuteListForDay", async(req, res, next) => {
     console.log("GET commute.getReqCommuteListForDay - 점주가 일일 보고서에서 이슈 보기 탭 클릭");
     try {

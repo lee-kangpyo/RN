@@ -9,14 +9,17 @@ import { theme } from '../../util/color';
 export default function CustomTap({data, selectedKey, setSelectedKey}) {
     const Tap = ({item, selectedKey, onPressed, }) => {
         const cnt = (item.cnt > 99)?"99+":item.cnt;
+        //const cnt = "99+";
         const isSelected = selectedKey == item.key;
         return(
             <TouchableOpacity style={[styles.tapBtn, styles.row, (isSelected)?styles.tapActive:null]} onPress={()=>onPressed(item.key)}>
-                <Text style={[styles.tapText, (isSelected)?styles.tapActiveText:null]}>{item.name}</Text>
+                <View style={styles.textContainer}>
+                    <Text style={[(isSelected)?fonts.activeText:fonts.deActiveText]}>{item.name}</Text>
+                </View>
                 {
                     (cnt)?
                         <View style={styles.pill}>
-                            <Text style={[styles.tapText, {fontSize:10, fontWeight:"bold"}]}>{cnt}</Text>
+                            <Text style={[fonts.badgeText]}>{cnt}</Text>
                         </View>
                     :
                         null
@@ -34,13 +37,31 @@ export default function CustomTap({data, selectedKey, setSelectedKey}) {
     );
 }
 
+const fonts = StyleSheet.create({
+    deActiveText:{
+        fontFamily: "SUIT-Medium",
+        fontSize: 15,
+        color: "#999999"
+    },
+    activeText:{
+        fontFamily: "SUIT-ExtraBold",
+        fontSize: 15,
+        color: "#3479EF"
+    },
+    badgeText:{
+        fontFamily: "SUIT-Bold",
+        fontSize: 11,
+        color: "#FFFFFF"
+    }
+})
 
 const styles = StyleSheet.create({
-    tapBox:{backgroundColor:"#4D4D4D", width:"100%", flexDirection:"row", padding:10, paddingBottom:0, overflow:"hidden", borderTopEndRadius:15, borderTopStartRadius:10,},
-    tapBtn:{paddingVertical:10, paddingHorizontal:20, marginRight:5, borderTopEndRadius:15, borderTopStartRadius:15, backgroundColor:"#7C7C7C"},
-    tapActive:{backgroundColor:theme.backGround},
-    tapText:{color:theme.backGround, fontWeight:"bold"},
+    tapBox:{ flexDirection:"row", backgroundColor:"white", width:"100%", justifyContent:"center"},
+    tapBtn:{padding:10, flex:1, justifyContent:"center"},
+    tapActive:{borderBottomColor:"#3479EF", borderBottomWidth:1},
+    tapText:{fontWeight:"bold"},
     tapActiveText:{color:"#4D4D4D"},
     row:{flexDirection:"row"},
-    pill:{ width:22, height:22, backgroundColor:"red", padding:0, borderRadius:20, justifyContent:"center", alignItems:"center", marginLeft:10},
+    textContainer:{height:24, justifyContent:"center"},
+    pill:{ width:24, height:24, backgroundColor:"#3479EF", padding:0, borderRadius:20, justifyContent:"center", alignItems:"center", marginLeft:10},
 });

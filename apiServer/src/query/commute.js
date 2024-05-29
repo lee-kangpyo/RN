@@ -77,6 +77,23 @@ const getReqCommuteListForDay=`
     AND a.YMD = @ymd
     AND a.CSTCO = @cstCo
 `
+const getReqCommuteListForMonth = `
+    SELECT isnull(b.APVYN, '0') apvYn, a.REQNO, u.USERID, c.CSTCO, d.CSTNA, alba.USERNA, a.JOBNO, a.STIME reqStime, a.ETIME reqEtime, a.YMD, a.STARTTIME sTime, a.ENDTIME eTime, a.REASON, a.REQSTAT, a.IYMDHMD createDate
+    FROM PLYADAYJOBREQ a
+    left join PLYADAYJOB b ON a.JOBNO = b.JOBNO
+    inner join PLYMCSTUSER c ON a.CSTCO = c.CSTCO 
+    inner join PLYMCST d On c.CSTCO = d.CSTCO
+    inner join PLYMUSER u On c.USERID = u.USERID
+    inner join PLYMUSER alba On a.USERID = alba.USERID
+    WHERE a.USEYN = 'Y'
+    and b.USEYN = 'Y'
+    --and b.APVYN != 'D'
+    and d.USEYN = 'Y'
+    AND c.ROLECL = 'ownr'
+    AND u.USERID = @userId
+    AND a.YMD between @ymdTo and @ymdFr
+    AND a.CSTCO = @cstCo
+`
 
 //점주 알바 수정 요청 승인 쿼리 - 결근 외
 const updateJobReq = `
@@ -104,4 +121,4 @@ const getDAYJOBREQ = `
 `
 
 
-module.exports = {insertManualJobChk, insertPLYADAYJOB, daySchedule, reqCommuteChange, initCommuteChange, getReqCommuteList, getReqCommuteListForDay, updateJobReq, updateJobReqAbsence, updateDayJob, getDAYJOBREQ, getJobNo, updatePLYADAYJOB}
+module.exports = {insertManualJobChk, insertPLYADAYJOB, daySchedule, reqCommuteChange, initCommuteChange, getReqCommuteList, getReqCommuteListForDay, getReqCommuteListForMonth, updateJobReq, updateJobReqAbsence, updateDayJob, getDAYJOBREQ, getJobNo, updatePLYADAYJOB}

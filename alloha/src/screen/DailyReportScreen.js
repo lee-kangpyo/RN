@@ -1,5 +1,5 @@
 
-import { StyleSheet, Text, View, ScrollView, SafeAreaView, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, SafeAreaView, TouchableOpacity, Platform } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,6 +14,8 @@ import ReqChangeWork from '../components/daily/ReqChangeWork';
 import { setIssueCnt } from '../../redux/slices/dailyReport';
 import PushTest from '../components/test/PushTest';
 import { useIsFocused } from '@react-navigation/native';
+import { getFirstAndLastDay } from '../util/moment';
+import HeaderControl from '../components/common/HeaderControl';
 
 export default function DailyReportScreen({navigation}) {
     const isFocused = useIsFocused();
@@ -21,7 +23,7 @@ export default function DailyReportScreen({navigation}) {
         const year = date.getFullYear();
         const month = (date.getMonth() + 1).toString().padStart(2, '0');
         const day = date.getDate().toString().padStart(2, '0');
-        return {date:date, ymdKo:`${year}년 ${month}월 ${day}일`, ymd:`${year}${month}${day}`};
+        return {date:date, ymdKo:`${year}년 ${month}월 ${day}일`, ymKo:`${year}년 ${month}월`, ymd:`${year}${month}${day}`, firstLastDay: getFirstAndLastDay(`${year}${month}${day}`)};
     }
     const userId = useSelector((state)=>state.login.userId);
     const issueCnt = useSelector((state)=>state.dailyReport.issueCnt);
@@ -35,6 +37,7 @@ export default function DailyReportScreen({navigation}) {
         navigation.setOptions({title:"일일보고서"});
     }, [navigation])
 
+    
     const DailyReport1 = async () => {
         // exec PR_PLYB02_WRKMNG  'DailyReport1', 1010, '', '20231228', '', ''
         //await HTTP("GET", "/api/v1/daily/DailyReport1", {cstCo:"1010", ymd:'20231228'})
@@ -91,33 +94,41 @@ export default function DailyReportScreen({navigation}) {
     return (
         <>
         <View style={styles.container}>
-            <StoreSelectBoxWithTitle titleText={"일일 보고서"} titleflex={4} selectBoxFlex={8} />
-            <View style={[styles.row, {marginTop:10,}]}>
-                <TouchableOpacity onPress={()=>changeDay("prev")} style={{padding:8}}>
-                    <Text style={{fontSize:16}}>◀</Text>
-                </TouchableOpacity>
-                <Text style={[styles.ymd, {marginHorizontal:5, fontSize:16, paddingVertical:8}]}>{ymd.ymdKo}</Text>
-                <TouchableOpacity onPress={()=>changeDay("next")}  style={{padding:8}}>
-                    <Text style={{fontSize:16}}>▶</Text>
-                </TouchableOpacity>
+            <View style={styles.topContainer}>
+                {
+                    (selectedKey == 0)?
+                        <HeaderControl title={ymd.ymdKo} onLeftTap={()=>changeDay("prev")} onRightTap={()=>changeDay("next")} />    
+                    :
+                        <Text style={{alignSelf:"center", marginVertical:8, fontFamily: "SUIT-Bold",fontSize: 14,fontWeight: "700",fontStyle: "normal",color: "#111111"}}>{ymd.ymKo}</Text>
+                
+                }
+                
             </View>
-            <CustomTap data={[{key:0, name:"전체보기"}, {key:1, name:"이슈보기", cnt:issueCnt}]} selectedKey={selectedKey} setSelectedKey={setSelectedKey}/>
+            <CustomTap data={[{key:0, name:"결과보기"}, {key:1, name:"요청보기", cnt:issueCnt}]} selectedKey={selectedKey} setSelectedKey={setSelectedKey}/>
             <View style={styles.albaList}>
-                <ScrollView contentContainerStyle={{padding:15}} >
+                <View>
+                    <StoreSelectBoxWithTitle titleText={""} titleflex={0} selectBoxFlex={6} />
+                </View>
                     {
                         (datas.length == 0)?
-                        <Text style={{alignSelf:"center"}}>데이터가 없습니다.</Text>
+                        <View style={{flex:1, justifyContent:"center"}}>
+                            <Text style={{alignSelf:"center"}}>데이터가 없습니다.</Text>
+                        </View>
                         :
                         (selectedKey == 0)?
-                            datas.map((el, idx)=>{
-                                return <Item key={idx} data={el} ymd={ymd.ymd} navigator={navigation} />
-                            })
+                            <ScrollView contentContainerStyle={{paddingTop:20}}>
+                            {
+                                datas.map((el, idx)=>{
+                                    return <Item key={idx} data={el} ymd={ymd.ymd} navigator={navigation} />
+                                })
+                            }
+                            </ScrollView>
                         :
-                            <ReqChangeWork ymd={ymd.ymd} cstCo={cstCo}/>
+                            <ReqChangeWork ymd={ymd.firstLastDay} cstCo={cstCo}/>
                     }
-                </ScrollView>
+                <View style={{height:16}} />
+                <CustomButton text={"확정"} onClick={confirm} fontStyle={styles.btnText} style={styles.btn} disabled={isBtnDisabled}/>
             </View>
-            <CustomButton text={"확정"} onClick={confirm} style={{alignSelf:"flex-end"}} disabled={isBtnDisabled}/>
         </View>
         </>
     );
@@ -125,6 +136,7 @@ export default function DailyReportScreen({navigation}) {
 
 const Item = ({data, ymd, navigator}) => {
     const cstCo = useSelector((state)=>state.common.cstCo);
+
     const CalTime = ({txt, dure, sTime, eTime, isCurrectDure = true}) => {
         const modifyDure = (dure) => {
             let hours = Math.floor(dure); // 정수 부분을 시간으로 변환
@@ -138,17 +150,20 @@ const Item = ({data, ymd, navigator}) => {
             return `${hours}:${minutes}`;
         }
         return(
-            <View style={{alignItems:"center", padding:10, borderWidth:1, borderColor:theme.grey2, flex:1, margin:5}}>
-                <Text style={{fontSize:12, marginRight:5}}>{txt}</Text>
-                <Text style={{color:(isCurrectDure)?"black":"red"}}>{(dure == 0)?"0시간":modifyDure(dure)}</Text>
+            <View style={item.box}>
+                <Text style={item.boxTitle}>{txt}</Text>
+                <View style={[item.pill, (txt=="계획 시간")?{backgroundColor: "#333333"}:(isCurrectDure)?{backgroundColor: "#3479EF"}:{backgroundColor: "#FF3333"}]}>
+                    <Text style={{color:"white"}}>{(dure == 0)?"0시간":modifyDure(dure)}</Text>
+                </View>
+                
                 {
                     (dure == 0)?
-                    <Text style={{color:theme.grey, fontSize:12, alignSelf:"center"}}>-</Text>
+                    <Text style={item.timelenth}>-</Text>
                     :
                     <View style={styles.row}>
-                        <Text style={{color:theme.grey, fontSize:12, alignSelf:"center"}}>{modifyTime(sTime)}</Text>
-                        <Text style={{color:theme.grey, fontSize:12, alignSelf:"center"}}>~</Text>
-                        <Text style={{color:theme.grey, fontSize:12, alignSelf:"center"}}>{modifyTime(eTime)}</Text>
+                        <Text style={item.timelenth}>{modifyTime(sTime)}</Text>
+                        <Text style={item.timelenth}>~</Text>
+                        <Text style={item.timelenth}>{modifyTime(eTime)}</Text>
                     </View>
                 }
                 
@@ -157,44 +172,105 @@ const Item = ({data, ymd, navigator}) => {
     }
     const goToDetailScreen = () => navigator.push("DailyReportDetail", {ymd:ymd, userId:data.USERID, sCstCo:cstCo});
     
-    const attendanceColor = (data.ATTENDANCE != "정상")?"red":theme.grey
+    const attendanceColor = (["정상", "대타", "조퇴"].includes(data.ATTENDANCE))?"#999999":"#FF3333";
     return(
         <>
-        <View style={styles.row}>
+        {/* <View style={styles.row}>
             <Text style={{color:"grey", fontSize:10}}>히든값 : </Text>
             <Text style={{color:"grey", fontSize:10, marginRight:5}}>AVPYN:{data.APVYN}</Text>
             <Text style={{color:"grey", fontSize:10, marginRight:5}}>JOBNO:{data.JOBNO}</Text>
             <Text style={{color:"grey", fontSize:10, marginRight:5}}>REQNO:{data.REQNO}</Text>
             <Text style={{color:"grey", fontSize:10, marginRight:5}}>REQCNT:{data.REQCNT}</Text>
-        </View>
-        <View style={styles.Item}>
-            <View style={[styles.ItemMain, styles.row, {alignItems:"center"}]}>
-                <View style={{flex:2}}>
-                    <Text numberOfLines={1} ellipsizeMode="tail" style={{marginRight:5}}>{data.USERNA}</Text>
-                    <Text style={{color:attendanceColor}}>{data.ATTENDANCE}</Text>
+        </View> */}
+        <View style={item.card}>
+            <View style={[styles.row, {marginBottom:11, justifyContent:"space-between",}]}>
+                <View style={styles.row}>
+                    <Text numberOfLines={1} ellipsizeMode="tail" style={item.name}>{data.USERNA}</Text>
+                    <Text style={[item.statNa, {color:attendanceColor}]}>{data.ATTENDANCE}</Text>
                 </View>
-                <View style={[styles.row, {flex:7, justifyContent:"space-between"}]}>
-                    <CalTime txt={"계획 시간"} sTime={data.SCHSTART} eTime={data.SCHEND} dure={data.SCHDURE} />
-                    <CalTime txt={"결과 시간"} sTime={data.STARTTIME} eTime={data.ENDTIME} dure={data.JOBDURE} isCurrectDure={data.SCHDURE == data.JOBDURE} />
+                <TouchableOpacity style={{}} onPress={goToDetailScreen}>
+                    <AntDesign name="right" size={16} color="#333" />
+                </TouchableOpacity>
+            </View>
+            <View style={styles.row}>
+                <View style={[styles.ItemMain, styles.row, {alignItems:"center", }]}>
+                    <View style={[styles.row, {justifyContent:"space-between"}]}>
+                        <CalTime txt={"계획 시간"} sTime={data.SCHSTART} eTime={data.SCHEND} dure={data.SCHDURE} />
+                        <View style={{width:7}} />
+                        <CalTime txt={"결과 시간"} sTime={data.STARTTIME} eTime={data.ENDTIME} dure={data.JOBDURE} isCurrectDure={data.SCHDURE <= data.JOBDURE} />
+                    </View>
                 </View>
             </View>
-            <TouchableOpacity style={styles.ItemRightBtn} onPress={goToDetailScreen}>
-                <AntDesign name="right" size={24} color="white" />
-            </TouchableOpacity>
-            
         </View>
         </>
     )
 }
 
+const item = StyleSheet.create({
+    card:{ 
+        borderRadius:10,  
+        marginBottom:8,  
+        backgroundColor:theme.white, 
+        padding:20,
+        ...Platform.select({
+            ios:{
+                shadowColor: "rgba(0, 0, 0, 0.1)",
+                shadowOffset: {
+                    width: 0,
+                    height: 0
+                },
+                shadowRadius: 10,
+                shadowOpacity: 1,
+            },
+            android:{
+                elevation :2,
+            }
+        })
+    },
+    box:{alignItems:"center", padding:10, flex:1, backgroundColor:"#F7F7F7", borderRadius:10},
+    pill:{
+        marginVertical:10,
+        paddingVertical:4,
+        paddingHorizontal:8,
+        borderRadius:16
+    },
+    //font
+    name:{
+        marginRight:5,
+        fontFamily: "SUIT-Regular",
+        fontSize: 15,
+        color: "#111111"
+    },
+    statNa:{
+        fontFamily: "SUIT-ExtraBold",
+        fontSize: 15,
+    },
+    boxTitle:{
+        fontFamily: "SUIT-Regular",
+        fontSize: 13,
+        color: "#111111"
+    },
+    timelenth:{
+        fontFamily: "SUIT-SemiBold",
+        fontSize: 13,
+        color: "#999999"
+    }
+})
 
 
 const styles = StyleSheet.create({
-    container:{ flex: 1, justifyContent: 'center', alignItems: 'center', padding:5},
+    container:{ flex: 1, justifyContent: 'center', alignItems: 'center',},
+    topContainer:{backgroundColor:"#fff", width:"100%", paddingVertical:15},
     row:{flexDirection:"row"},
     ymd:{alignSelf:"flex-start", marginBottom:15},
-    albaList:{ flex:1, width:"100%", borderBottomWidth:2, marginBottom:15},
-    Item:{ borderColor:theme.grey2, borderWidth:1, borderRadius:5,  marginBottom:5, flexDirection:"row"},
-    ItemMain:{flex:1, padding:10,},
+    albaList:{ flex:1, width:"100%", paddingHorizontal:16, paddingVertical:20, backgroundColor:"#F6F6F8"},
+    
+    ItemMain:{flex:1,},
     ItemRightBtn:{backgroundColor:theme.link, justifyContent:"center", padding:5},
+    btn:{width:"100%", alignItems:"center", backgroundColor:"#3479EF"},
+    btnText:{
+        fontFamily: "SUIT-Bold",
+        fontSize: 15,
+        color: "#FFFFFF"
+    }
 });
