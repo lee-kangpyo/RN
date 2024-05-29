@@ -8,6 +8,7 @@ import CustomButton from '../components/common/CustomButton';
 import { HTTP } from '../util/http';
 import { useSelector } from 'react-redux';
 import { useIsFocused } from '@react-navigation/native';
+import { MaterialIcons } from '@expo/vector-icons';
 
 export default function CommuteCheckChangeScreen({navigation, route}) {
     const [isBtnActive, setIsBtnActive] = useState(true);
@@ -176,34 +177,39 @@ export default function CommuteCheckChangeScreen({navigation, route}) {
             {
             (type == 0)?
                 <>
-                <View style={[styles.row, {marginTop:14, marginBottom:22, justifyContent:"space-between"}]}>
-                    <View style={styles.row}>
-                        <Text style={fonts.title}>{date.ymd} </Text> 
-                        <Text style={[{color:date.color}, fonts.title]}>({date.day}) </Text>
-                    </View>
-                </View>
-                
                 {
                     (isKeyboardShow)?
                     <>
-                        <View style={styles.row}>
-                            <View style={{marginRight:15, justifyContent:"center"}}>
-                                <Text style={[styles.title]}>변경 시간</Text>
+                        <View style={[styles.row, {width:"100%", justifyContent:"space-between", alignItems:"center",}]}>
+                            <View style={[styles.row,]}>
+                                <View style={{marginRight:15, justifyContent:"center"}}>
+                                    <Text style={[fonts.reason, {marginBottom:4}]}>변경 시간</Text>
+                                </View>
+                                {
+                                    (isExistReq != null)?
+                                        <View style={[styles.row]}>
+                                            <Text style={fonts.topText}>{startTime}</Text>
+                                            <Text style={fonts.topText}> ~ </Text>
+                                            <Text style={fonts.topText}>{endTime}</Text>
+                                        </View>
+                                    :null
+                                }
+                                
                             </View>
-                            {
-                                (isExistReq != null)?
-                                    <View style={[styles.row]}>
-                                        <Text style={fonts.main}>{startTime}</Text>
-                                        <Text style={fonts.main}> ~ </Text>
-                                        <Text style={fonts.main}>{endTime}</Text>
-                                    </View>
-                                :null
-                            }
-                            
+                            <TouchableOpacity style={{position:'absolute', right:0, alignItems:"center"}} onPress={()=>{Keyboard.dismiss(); setIsKeyboardShow(false);}}>
+                                <Text style={{color:"#3479EF", fontSize:8, marginBottom:-5}}>닫기</Text>
+                                <MaterialIcons name="keyboard-hide" size={32} color="#3479EF" />
+                            </TouchableOpacity>
                         </View>
                     </>
                     :
                     <>
+                        <View style={[styles.row, {marginTop:14, marginBottom:22, justifyContent:"space-between"}]}>
+                            <View style={styles.row}>
+                                <Text style={fonts.title}>{date.ymd} </Text> 
+                                <Text style={[{color:date.color}, fonts.title]}>({date.day}) </Text>
+                            </View>
+                        </View>
                         <View style={styles.cardContainer}>
                             <View style={[styles.row, styles.topBar]}>
                                 <Text style={[fonts.topText, {fontWeight:"bold"}]}>계획 시간</Text>
@@ -271,7 +277,7 @@ export default function CommuteCheckChangeScreen({navigation, route}) {
             }
             {
                 (type == 0)?
-                    <View style={{flex:1, width:"100%", justifyContent:"flex-end"}}>
+                    <View style={{width:"100%", justifyContent:"flex-end"}}>
                     {
                         (isBtnActive)?
                             <CustomButton onClick={onConfirm} text={"점주승인요청"} style={[styles.btn, ]} fontStyle={fonts.btnText}/>
