@@ -91,6 +91,6 @@ jobs:
         name: aloha-${{ env.CURRENT_DATE }}
         path: /home/runner/work/RN/RN/alloha/app-build
 
-    - name: 🚢 Submit
-      if: ${{ github.event.inputs.should_submit }}
-      run: eas submit -p ${{ github.event.inputs.platform }} --profile ${{ github.event.inputs.profile }} --path /home/runner/work/RN/RN/alloha/app-build
+    # - name: 🚢 Submit
+    #   if: ${{ github.event.inputs.should_submit }}
+    #   run: eas submit -p ${{ github.event.inputs.platform }} --profile ${{ github.event.inputs.profile }} --path /home/runner/work/RN/RN/alloha/app-build
