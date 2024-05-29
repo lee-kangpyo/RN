@@ -58,6 +58,11 @@ jobs:
         expo-version: latest
         eas-version: latest
 
+    - name: Create google-services.json
+      working-directory: /home/runner/work/RN/RN/alloha
+      run: |
+        echo ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }} | base64 --decode > ./google-services.json
+
     - name: 📦 Install dependencies
       run: yarn
       working-directory: /home/runner/work/RN/RN/alloha
@@ -70,6 +75,8 @@ jobs:
       run: echo "CURRENT_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
 
     - name: 👷 Build app
+      env:
+        GOOGLE_SERVICES_JSON: ${{ vars.GOOGLE_SERVICES_JSON }}
       working-directory: /home/runner/work/RN/RN/alloha
       run: |
         eas build --local \
