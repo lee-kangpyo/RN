@@ -7,6 +7,7 @@ import Constants from 'expo-constants';
 import { setToken } from '../../redux/slices/push';
 import { useCommuteChangeList } from '../hooks/useReqCommuteList';
 import { useDispatch, useSelector } from 'react-redux';
+import { testLog } from './../util/testLog';
 
 Notifications.setNotificationHandler({
   handleNotification: async ({ request }) => {
@@ -99,6 +100,9 @@ export default function Notification({ children }) {
       token = (await Notifications.getExpoPushTokenAsync({
         projectId: Constants.expoConfig.extra.eas.projectId,
       })).data;
+      testLog("##################");testLog("##################");testLog("##################");
+      testLog(Constants.expoConfig.extra.eas.projectId);
+      testLog(token);
 
       token = tokenCompression(token); 
 
