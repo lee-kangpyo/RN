@@ -76,7 +76,7 @@ jobs:
 
     - name: 👷 Build app
       env:
-        GOOGLE_SERVICES_JSON: ${{ vars.GOOGLE_SERVICES_JSON }}
+        GOOGLE_SERVICES_JSON: ${{ github.workspace }}/alloha/google-services.json
       working-directory: ${{ github.workspace }}/alloha
       run: |
         eas build --local \
