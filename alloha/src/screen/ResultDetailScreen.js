@@ -10,7 +10,7 @@ import axios from 'axios';
 import { URL } from "@env";
 import { nextMonth, prevMonth, setWorkDetailResultList, setWorkResultList } from '../../redux/slices/result';
 import { PayDetailContainer, TotalContainer } from '../components/common/Container';
-import { getWeekByWeekNumber, getWeekRange } from '../util/moment';
+import { getFirstAndLastDayOfWeek, getWeekByWeekNumber, getWeekRange } from '../util/moment';
 import HeaderControl from '../components/common/HeaderControl';
 
 export default function ResultDetailScreen({navigation, route}) {
@@ -38,8 +38,6 @@ export default function ResultDetailScreen({navigation, route}) {
         console.log(param);
         await axios.get(URL+`/api/v1/rlt/monthCstSlySearch`, {params:param})
         .then((res)=>{
-            console.log("$$$$");
-            console.log(res.data.result);
             const data = res.data.result.filter((el)=>el.userId == item.userId);
             dispatch(setWorkDetailResultList({data}))
         }).catch(function (error) {
@@ -55,9 +53,10 @@ export default function ResultDetailScreen({navigation, route}) {
     }, [isFocused, cstCo, date]);
 
     const firstColTap = async (item) => {
-        const ymd = item.YMDNA.split("~");
-        const ymdarr = getWeekRange(ymd[0]);
-        navigation.navigate("WageResultDetail", { title: `${item.userNa} (${item.week1}주차)`, cstCo:item.cstCo, userId:item.userId, ymdFr:ymdarr.first, ymdTo:ymdarr.last});
+        const ymdarr = getFirstAndLastDayOfWeek(date.yyyy, date.mm, item.week1);
+        //const ymd = item.YMDNA.split("~");
+        //const ymdarr = getWeekRange(ymd[0]);
+        navigation.navigate("WageResultDetail", { title: `${item.userNa} (${item.week1}주차)`, cstCo:item.cstCo, userId:item.userId, ymdFr:ymdarr.firstDay, ymdTo:ymdarr.lastDay});
     }
     
     const onDeataTap = async (info) => {
