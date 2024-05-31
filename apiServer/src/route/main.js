@@ -2,7 +2,7 @@ const express = require('express')
 var router = express.Router();
 const {execSql} = require("../utils/excuteSql");
 const dotenv = require('dotenv');
-const { main02, main01, versionInfo } = require('../query/main');
+const { main02, main01, versionInfo, findId, changePwByIdHpNo } = require('../query/main');
 dotenv.config();
 
 // /api/v1/main/versionCheck
@@ -56,5 +56,52 @@ router.get("/owner", async (req, res, next) => {
         res.status(200).json({ resultCode:"-1"});
     }
 })
+
+router.get("/findId", async (req, res, next) => {
+    console.log("GET main.findId - 아이디 찾기 시작");
+    try {
+        const{userNa, hpNo} = req.query;
+        const result = await execSql(findId, { userNa, hpNo });
+
+        console.log(userNa, hpNo);
+        if(result.recordset.length > 0){
+            console.log(result.recordset[0])
+            res.status(200).json({result:result.recordset[0], resultCode:"00"});        
+        }else{
+            console.log("해당하는 사용자 없음")
+            res.status(200).json({resultMsg:"입력한 정보에 해당되는 사용자가 없습니다.", resultCode:"-2"});    
+        }
+    } catch (error) {
+        console.log(error.message)
+        res.status(200).json({ resultMsg:"해당되는 사용자가 없습니다.", resultCode:"-1"});
+    }
+});
+
+router.post("/changePw", async(req, res, next) => {
+    console.log("GET main.findId - 비밀번호 변경 시작");
+    try {
+        const{userId, hpNo, changePw} = req.body;
+        console.log(userId, hpNo, changePw);
+        
+        const result = await execSql(changePwByIdHpNo, { userId, hpNo, passWord:changePw });
+        console.log("영향받은 행의 수 - ", result.rowsAffected);
+        if(result.rowsAffected > 0){
+            res.status(200).json({resultCode:"00"});
+        }
+        
+
+        //console.log(userNa, hpNo);
+        // if(result.recordset.length > 0){
+        //     console.log(result.recordset[0])
+        //     res.status(200).json({result:result.recordset[0], resultCode:"00"});        
+        // }else{
+        //     console.log("해당하는 사용자 없음")
+        //     res.status(200).json({resultMsg:"입력한 정보에 해당되는 사용자가 없습니다.", resultCode:"-2"});    
+        // }
+    } catch (error) {
+        console.log(error.message)
+        res.status(200).json({ resultMsg:"해당되는 사용자가 없습니다.", resultCode:"-1"});
+    }    
+});
 
 module.exports = router;
