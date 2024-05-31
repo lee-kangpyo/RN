@@ -1,16 +1,13 @@
 
 
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, } from 'react-native';
 import React, {useState, useEffect, useRef} from 'react';
 import CustomTap from '../components/common/CustomTap';
 import CustomInput from '../components/common/CustomInput';
-import CustomButton from '../components/common/CustomButton';
-import CustomBtn from '../components/CustomBtn';
 import CustomStandardBtn from '../components/common/CustomStandardBtn';
 import Loading from '../components/Loding';
 import { HTTP } from '../util/http';
 import { useAlert } from '../util/AlertProvider';
-import Message from '../components/common/Message';
 import { useNavigation } from '@react-navigation/native';
 import { generateSecureRandomPassword } from '../util/PassWord';
 

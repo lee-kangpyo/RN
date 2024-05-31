@@ -1,7 +1,7 @@
 
 import { StyleSheet, Text, View, TouchableOpacity, Modal, Button, TextInput, Linking} from 'react-native';
 import React, {useState, useEffect} from 'react';
-import { FontAwesome5, MaterialCommunityIcons, Ionicons, AntDesign, Octicons } from '@expo/vector-icons';
+import { FontAwesome5, MaterialCommunityIcons, Ionicons, AntDesign, Octicons, MaterialIcons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserInfo } from '../../redux/slices/login';
 import * as SecureStore from 'expo-secure-store';
@@ -63,6 +63,11 @@ export default function EtcCrewScreen({navigation}) {
             </View>
             <View style={[styles.container, {flexDirection:"row"}]}>
                 <GridBox
+                    text={"비밀번호"}
+                    onPress={()=>navigation.push("changePassword")}
+                    icon={{type:"MaterialIcons", name:"password", size:48, color:"black"}}
+                />
+                <GridBox
                     // text={"커뮤니티"}
                     // onPress={()=>navigation.push("Comunity")}
                     // icon={{type:"Ionicons", name:"people-sharp", size:48, color:"black"}}
@@ -70,11 +75,7 @@ export default function EtcCrewScreen({navigation}) {
                     onPress={checkDelUser}
                     icon={{type:"FontAwesome5", name:"user-slash", size:48, color:"red"}}
                 />
-                <GridBox
-                    text={"준비중"}
-                    onPress={()=>null}
-                    icon={{type:"AntDesign", name:"appstore-o", size:48, color:"black"}}
-                />
+                
                 <GridBox
                     text={"준비중"}
                     onPress={()=>null}
@@ -103,6 +104,8 @@ function GridBox({color = "black", text, onPress, icon}){
                         <AntDesign name={icon.name} size={icon.size} color={color}/>
                     :(icon.type == "Octicons")?    
                         <Octicons name={icon.name} size={icon.size} color={color} />
+                    :(icon.type == "MaterialIcons")?    
+                        <MaterialIcons name={icon.name} size={icon.size} color={color} />
                     :
                         null
                 :

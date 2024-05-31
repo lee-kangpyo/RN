@@ -64,7 +64,7 @@ export default function CustomInput ({placeholderText = "", iconComponent, value
 const fonts = StyleSheet.create({
     inputLabel:{
         fontFamily: "SUIT-Regular",
-        fontSize: 15,
+        fontSize: 13,
         color: "#999999"
     },
 })

@@ -36,6 +36,7 @@ import Message, { CONFIRM_POSITION, Confirm, DayOfWeek, test11 } from './src/com
 import { theme } from './src/util/color';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import FindIdPwScreen from './src/screen/FindIdPwScreen';
+import { AlertProvider } from './src/util/AlertProvider';
 
 // 태스크 매니저
 TaskManager.defineTask(LOCATION_TASK,  async ({ data, error } ) => {
@@ -218,7 +219,7 @@ function Index({version}) {
           ) : (
             <>
               <Stack.Screen name="Login" component={Login} options={{headerShown: false}} initialParams={{ version: version }}/>
-              <Stack.Screen name="FindIdPw" component={FindIdPwScreen} options={{title:"아이디 비밀번호 찾기", headerTitleAlign:"center", headerTitleStyle: headerTitleStyle,}}/>
+              <Stack.Screen name="FindIdPw" component={FindIdPwScreen} options={{title:"아이디 비밀번호 찾기", headerTitleAlign:"center", headerTitleStyle: headerTitleStyle,headerShadowVisible: false, }}/>
               <Stack.Screen name="Agreement" component={Agreement} options={{title:"약관 동의", headerTitleAlign:"center", headerTitleStyle: headerTitleStyle,}}/>
               <Stack.Screen name="SignIn" component={SignInScreen} options={{title:"회원 가입", headerTitleAlign:"center", headerTitleStyle: headerTitleStyle,}}/>
               <Stack.Screen  name="TermsDetail" component={TermsDetailScreen} options={{title:"약관 상세", headerTitleAlign:"center", headerTitleStyle: headerTitleStyle,}}/>
@@ -277,21 +278,23 @@ function App(){
   return (
       <Provider store={store}>
         <Notification >
-        {
-          (isFont && !["D", "loading"].includes(versionInfo))?
-            <Index version={version} />
-        :
-          (isFont && versionInfo == "D")?
-            <VersionView version={version} versionData={versionData}/>
-        // :
-        //   (versionInfo == "E")?
-        //     <View style={{flex:1, justifyContent:"center", alignItems:"center"}}>
-        //       <Text>버전체크가 실패했습니다.</Text>
-        //       <Text>앱을 다시 시작해주세요.</Text>
-        //     </View>
-        :
-          <ActivityIndicator/>
-        }
+          <AlertProvider>
+            {
+              (isFont && !["D", "loading"].includes(versionInfo))?
+                <Index version={version} />
+            :
+              (isFont && versionInfo == "D")?
+                <VersionView version={version} versionData={versionData}/>
+            // :
+            //   (versionInfo == "E")?
+            //     <View style={{flex:1, justifyContent:"center", alignItems:"center"}}>
+            //       <Text>버전체크가 실패했습니다.</Text>
+            //       <Text>앱을 다시 시작해주세요.</Text>
+            //     </View>
+            :
+              <ActivityIndicator/>
+            }
+          </AlertProvider>
         </Notification>
       </Provider>
   );

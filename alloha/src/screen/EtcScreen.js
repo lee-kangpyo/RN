@@ -1,7 +1,7 @@
 
 import { StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import React, {useState, useEffect} from 'react';
-import { FontAwesome5, MaterialCommunityIcons, Ionicons, AntDesign   } from '@expo/vector-icons';
+import { FontAwesome5, MaterialCommunityIcons, Ionicons, AntDesign, MaterialIcons  } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserInfo } from '../../redux/slices/login';
 import * as SecureStore from 'expo-secure-store';
@@ -62,24 +62,20 @@ export default function EtcScreen({navigation}) {
                 />
             </View>
             <View style={[styles.container, {flexDirection:"row"}]}>
-                
                 <GridBox
                     text={"질문"}
                     onPress={()=>navigation.push("qna")}
                     icon={{type:"MaterialCommunityIcons", name:"chat-question", size:48, color:"black"}}
                 />
                 <GridBox
+                    text={"비밀번호"}
+                    onPress={()=>navigation.push("changePassword")}
+                    icon={{type:"MaterialIcons", name:"password", size:48, color:"black"}}
+                />
+                <GridBox
                     text={"회원탈퇴"}
                     onPress={checkDelUser}
                     icon={{type:"FontAwesome5", name:"user-slash", size:48, color:"red"}}
-                />
-                <GridBox
-                    text={"준비중"}
-                    onPress={()=>null}
-                    icon={{type:"AntDesign", name:"appstore-o", size:48, color:"black"}}
-                    // text={"커뮤니티"}
-                    // onPress={()=>navigation.push("community")}
-                    // icon={{type:"Ionicons", name:"people-sharp", size:48, color:"black"}}
                 />
             </View>
         </View>
@@ -101,7 +97,10 @@ function GridBox({color = "black", text, onPress, icon}){
                         <Ionicons name={icon.name} size={icon.size} color={color}/>
                     :(icon.type == "AntDesign")?
                         <AntDesign name={icon.name} size={icon.size} color={color}/>
-                    :    null
+                    :(icon.type == "MaterialIcons")?    
+                        <MaterialIcons name={icon.name} size={icon.size} color={color} />
+                    :
+                        null
                 :
                     null
             }

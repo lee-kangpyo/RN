@@ -16,6 +16,14 @@ const changePwByIdHpNo = `
     UPDATE a SET a.PASSWORD = @passWord, a.CRPYPW = PWDENCRYPT(@passWord), a.MUSERID = @userId, a.MYMDHMD = GETDATE()
     FROM PLYMUSER a WHERE a.USERID = @userId and a.HPNO = @hpNo
 `
+const changePwById = `
+    UPDATE a SET a.PASSWORD = @passWord, a.CRPYPW = PWDENCRYPT(@passWord), a.MUSERID = @userId, a.MYMDHMD = GETDATE()
+    FROM PLYMUSER a WHERE a.USERID = @userId
+`
 
-module.exports = { main02, main01, versionInfo, findId, changePwByIdHpNo }
+const checkPw = `
+    SELECT PWDCOMPARE(@passWord, CRPYPW) result FROM PLYMUSER WHERE USERID = @userId
+`
+
+module.exports = { main02, main01, versionInfo, findId, changePwByIdHpNo, changePwById, checkPw }
 

@@ -45,6 +45,7 @@ import HomeCrewScreen from './HomeCrewScreen';
 import { headerLeftComponent, headerTitleStyle } from '../util/utils';
 import HomeOwnerScreen from './HomeOwnerScreen';
 import QuestionScreen from './QuestionScreen';
+import ChangePasswordScreen from './ChangePasswordScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -146,6 +147,7 @@ function OwnrScreen({}){
             <Stack.Screen  name="community" component={ComunityScreen} options={{title:"커뮤니티"}}/>
             <Stack.Screen  name="customerService" component={CustomerServiceScreen} options={{title:"채팅테스트"}}/>
             <Stack.Screen  name="qna" component={QnAScreen} options={{title:"채팅테스트"}}/>
+            <Stack.Screen name="changePassword" component={ChangePasswordScreen} options={{headerLeft:()=>headerLeftComponent("비밀번호 변경"), title:""}}/>
             {() => ( // 안쓰는 급여 페이지
               <Stack.Navigator>
                 <Stack.Screen name="WageList" component={WageScreen} options={{ title: '급여' }} initialParams={{userType:"owner"}} />
@@ -237,6 +239,7 @@ function CrewScreen(){
             <Stack.Screen name="etc2" component={EtcCrewScreen} options={{ tabBarLabel: '기타', headerTitleStyle:headerTitleStyle, headerTitleAlign:"center"}}/>
             <Stack.Screen name="Comunity" component={ComunityScreen} options={{headerLeft:()=>headerLeftComponent("커뮤니티"), title:""}}/>
             <Stack.Screen name="question" component={QuestionScreen} options={{headerLeft:()=>headerLeftComponent("문의하기"), title:""}}/>
+            <Stack.Screen name="changePassword" component={ChangePasswordScreen} options={{headerLeft:()=>headerLeftComponent("비밀번호 변경"), title:""}}/>
           </Stack.Navigator>
         )}
       </Tab.Screen>
