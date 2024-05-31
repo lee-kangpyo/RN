@@ -14,7 +14,7 @@ import { Animated, Image, StyleSheet, Text, TextInput, TouchableOpacity } from '
  * <CustomInput placeholderText={"휴대전화 번호 입력"} setInputValue={setHpno} iconComponent={<Image source={require('../../assets/icons/Lock.png')} style={{width:30, height:30}} />}/>
  */
 
-export default function CustomInput ({placeholderText = "", iconComponent, value, setInputValue, keyboardType='default'}){
+export default function CustomInput ({placeholderText = "", iconComponent, value, setInputValue, keyboardType='default', secure=false}){
     const inputRef = useRef(null);
     const [text, setText] = useState(value);
     const [isFocused, setIsFocused] = useState(false);
@@ -45,6 +45,7 @@ export default function CustomInput ({placeholderText = "", iconComponent, value
     return(
         <TouchableOpacity onPress={()=>inputRef.current.focus()} style={styles.inputContainer} activeOpacity={1}>
             <TextInput
+                secureTextEntry={secure}
                 ref={inputRef}
                 style={[styles.input, fonts.inputLabel]}
                 onChangeText={(value) => onChangeText(value)}

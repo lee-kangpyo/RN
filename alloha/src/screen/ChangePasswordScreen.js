@@ -92,8 +92,8 @@ const NewPassword = ({setStep}) => {
             <Text style={fonts.main}>변경할 비밀번호를</Text>
             <Text style={fonts.main}>입력하세요</Text>
             <View style={{height:30}} />
-            <CustomInput placeholderText={"비밀번호"} value={password} setInputValue={setPassword}/>
-            <CustomInput placeholderText={"비밀번호 확인"} value={password2} setInputValue={setPassword2}/>
+            <CustomInput placeholderText={"비밀번호"} value={password} setInputValue={setPassword} secure={true}/>
+            <CustomInput placeholderText={"비밀번호 확인"} value={password2} setInputValue={setPassword2} secure={true}/>
             <View style={{height:30}} />
             <View style={{width:"100%"}}>
                 <CustomStandardBtn text={"비밀번호 변경"} onPress={()=>changePw()}/>
@@ -132,7 +132,7 @@ const CurPasswordCheck = ({setStep}) => {
             <Text style={fonts.main}>현재 비밀번호를</Text>
             <Text style={fonts.main}>입력하세요</Text>
             <View style={{height:30}} />
-            <CustomInput placeholderText={"비밀번호"} value={password} setInputValue={setPassword}/>
+            <CustomInput placeholderText={"비밀번호"} value={password} setInputValue={setPassword} secure={true}/>
             <View style={{height:30}} />
             <View style={{width:"100%"}}>
                 <CustomStandardBtn text={"다음"} onPress={()=>checkPw()}/>
