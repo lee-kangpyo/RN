@@ -72,6 +72,10 @@ export default function Login({ navigation, route }) {
             <TouchableOpacity  onPress={() => navigation.push("FindIdPw")} style={{}}>
               <Text style={font.createAcc}>아이디 / 비밀번호 찾기</Text>
             </TouchableOpacity>
+            <View style={{margin:6}}/>
+            {/* <TouchableOpacity  onPress={() => navigation.push("test")} style={{}}>
+              <Text style={font.createAcc}>달력테스트</Text>
+            </TouchableOpacity> */}
           </View>  
       </GestureHandlerRootView>
       

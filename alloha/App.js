@@ -37,6 +37,7 @@ import { theme } from './src/util/color';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import FindIdPwScreen from './src/screen/FindIdPwScreen';
 import { AlertProvider } from './src/util/AlertProvider';
+import TestScreen from './src/screen/TestScreen';
 
 // 태스크 매니저
 TaskManager.defineTask(LOCATION_TASK,  async ({ data, error } ) => {
@@ -219,6 +220,7 @@ function Index({version}) {
           ) : (
             <>
               <Stack.Screen name="Login" component={Login} options={{headerShown: false}} initialParams={{ version: version }}/>
+              <Stack.Screen name="test" component={TestScreen} options={{headerShown: false}}/>
               <Stack.Screen name="FindIdPw" component={FindIdPwScreen} options={{title:"아이디 비밀번호 찾기", headerTitleAlign:"center", headerTitleStyle: headerTitleStyle,headerShadowVisible: false, }}/>
               <Stack.Screen name="Agreement" component={Agreement} options={{title:"약관 동의", headerTitleAlign:"center", headerTitleStyle: headerTitleStyle,}}/>
               <Stack.Screen name="SignIn" component={SignInScreen} options={{title:"회원 가입", headerTitleAlign:"center", headerTitleStyle: headerTitleStyle,}}/>

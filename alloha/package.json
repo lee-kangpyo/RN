@@ -45,6 +45,7 @@
     "moment": "^2.29.4",
     "react": "18.2.0",
     "react-native": "0.74.1",
+    "react-native-calendars": "^1.1305.0",
     "react-native-circular-progress-indicator": "^4.4.2",
     "react-native-date-picker": "^5.0.2",
     "react-native-dotenv": "^3.4.9",

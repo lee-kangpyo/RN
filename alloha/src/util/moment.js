@@ -19,7 +19,7 @@ export const getCurMonth = () => {
     const currentDate = moment();
     const start = currentDate.startOf('month').clone();
     const end = currentDate.endOf('month').clone();
-    return ({start : start.format("YYYYMMDD"), end : end.format("YYYYMMDD"), mm:currentDate.format("MM"), yyyy:currentDate.format("YYYY")});
+    return ({start : start.format("YYYYMMDD"), end : end.format("YYYYMMDD"), mm:currentDate.format("MM"), yyyy:currentDate.format("YYYY"), YYYYMM:currentDate.format("YYYYMM")});
 }
 
 export const getPrevMM = () => {
@@ -39,14 +39,14 @@ export const movePrevMonth = (date) => {
     const prevWeekStart = dateObject.clone().subtract(1, 'month');
     const start = prevWeekStart.startOf('month').clone();
     const end = prevWeekStart.endOf('month').clone();
-    return ({start : start.format("YYYYMMDD"), end : end.format("YYYYMMDD"), mm:prevWeekStart.format("MM")});
+    return ({start : start.format("YYYYMMDD"), end : end.format("YYYYMMDD"), mm:prevWeekStart.format("MM"), yyyy:prevWeekStart.format("YYYY"), YYYYMM:prevWeekStart.format("YYYYMM")});
 }
 export const moveNextMonth = (date) => {
     const dateObject = moment(date.start);
     const nextWeekStart = dateObject.clone().add(1, 'month');
     const start = nextWeekStart.startOf('month').clone();
     const end = nextWeekStart.endOf('month').clone();
-    return ({start : start.format("YYYYMMDD"), end : end.format("YYYYMMDD"), mm:nextWeekStart.format("MM"), YYYYMM:nextWeekStart.format("YYYYMM")});
+    return ({start : start.format("YYYYMMDD"), end : end.format("YYYYMMDD"), mm:nextWeekStart.format("MM"), yyyy:nextWeekStart.format("YYYY"), YYYYMM:nextWeekStart.format("YYYYMM")});
 }
 
 export const getNextWeek = () => {
