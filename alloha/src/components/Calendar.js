@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { CalendarList, Calendar, LocaleConfig } from 'react-native-calendars';
+import { lightenColor } from '../util/color';
 
 // Locale 설정
 LocaleConfig.locales['kr'] = {
@@ -23,26 +24,83 @@ LocaleConfig.locales['kr'] = {
   LocaleConfig.defaultLocale = 'kr';
 
 const events = {
-  '2024-06-01': [{ text: 'Meetingat10AM' }, { text: 'Meetingat10AM' },{ text: 'Meetingat10AM' },{ text: 'Meetingat10AM' },{ text: 'Meetingat10AM' },{ text: 'Meetingat10AM' },{ text: 'Meetingat10AM' },{ text: 'Meetingat10AM' }],
-  '2024-06-02': [{ text: 'Birthday Party' }],
-  '2024-06-03': [{ text: 'Conference' }],
+  '2024-06-01': [{ text: '8.5시간', subText:"100,000원", color:"#94FFD8"}, { text: '8.5시간', color:"#94FFD8" },{ text: '8.5시간', color:"#94FFD8" },{ text: '8.5시간', color:"#94FFD8" },{ text: '8.5시간', color:"#94FFD8" },{ text: '8.5시간', color:"#94FFD8" },{ text: '8.5시간', color:"#94FFD8" }],
+  '2024-06-02': [{ text: '8.5시간', subText:"999,999원", color:"#94FFD8" }],
+  '2024-06-03': [{ text: '8.5시간', subText:"100,000원", color:"#94FFD8" },{ text: '8.5시간', subText:"100,000원", color:"#94FFD8" }],
+  '2024-06-04': [{ text: '8.5시간', subText:"100,000원", color:"#94FFD8" },{ text: '8.5시간', subText:"100,000원", color:"#94FFD8" },{ text: '8.5시간', subText:"100,000원" }],
+  '2024-06-05': [{ text: '8.5시간', subText:"100,000원", color:"#94FFD8" },{ text: '8.5시간', subText:"100,000원", color:"#94FFD8" },{ text: '8.5시간', subText:"100,000원" },{ text: '8.5시간', subText:"100,000원", color:"#94FFD8" }],
+  '2024-06-06': [{ text: '8.5시간', subText:"100,000원", color:"#94FFD8" },{ text: '8.5시간', subText:"100,000원", color:"#94FFD8" },{ text: '8.5시간', subText:"100,000원" },{ text: '8.5시간', subText:"100,000원", color:"#94FFD8" },{ text: '8.5시간', subText:"100,000원", color:"#94FFD8" }],
+  '2024-06-07': [{ text: '8.5시간', subText:"100,000원", color:"#94FFD8" },{ text: '8.5시간', subText:"100,000원", color:"#94FFD8" },{ text: '8.5시간', subText:"100,000원" },{ text: '8.5시간', subText:"100,000원", color:"#94FFD8" },{ text: '8.5시간', subText:"100,000원", color:"#94FFD8" },{ text: '8.5시간', subText:"100,000원", color:"#94FFD8" }],
   // 추가 이벤트 데이터...
 };
 
-const renderCustomDay = (day) => {
+const renderCustomDay = (day, state) => {
+    const viewCnt = 4;
     const dayEvents = events[day.dateString];
-    const isSunday = new Date(day.dateString).getDay() === 0;
-    const isSaturday = new Date(day.dateString).getDay() === 6;
+    // const isSunday = new Date(day.dateString).getDay() === 0;
+    // const isSaturday = new Date(day.dateString).getDay() === 6;
+    const dayOfWeek = new Date(day.dateString).getDay();
+    const isSunday = dayOfWeek === 0;
+    const isSaturday = dayOfWeek === 6;
+    const isWeekday = dayOfWeek > 0 && dayOfWeek < 6;
+    const isCurrentMonth = state != 'disabled';
+
   return (
     <View style={styles.dayContainer}>
-      <Text style={[styles.dayText, isSunday && styles.sundayText, isSaturday && styles.saturdayText]}>{day.day}</Text>
+      <View style={styles.dayBox}>
+        <Text style={[
+          isSunday && styles.sundayText,
+          isSaturday && styles.saturdayText,
+          isWeekday && styles.weekdayText,
+          !isCurrentMonth && styles.outsideMonthText,
+        ]}>
+          {day.day}
+        </Text>
+        {
+          (dayEvents && dayEvents.length - viewCnt > 0)?
+            <View style={styles.badge}>
+              <Text style={[styles.dayText, {color:"white"}]}>+{dayEvents.length - viewCnt}</Text>
+            </View>
+          :
+            null
+        }
+        
+      </View>
       <View style={styles.dayContent}>
         {
-            dayEvents && dayEvents.map((event, index) => (
-                    <Text numberOfLines={1} key={index} style={styles.eventText}>
-                        {event.text}
-                    </Text>
-            ))
+            dayEvents && dayEvents.map((event, index) => {
+              const color = (event.color)?event.color:"#888888";
+              //backgroundColor:"#94FFD8",
+              if(index >= viewCnt) return;
+              return (
+                <View key={index} style={[styles.row, {width:"100%"}]}>
+                  <View style={{
+                    backgroundColor:color, 
+                    width:4,
+                    paddingHorizontal:2,
+                    paddingVertical:6,
+                    marginBottom:4,
+                  }} />
+                  {
+                    (dayEvents.length <= 2)?
+                      <View style={[styles.item_2line, {backgroundColor:lightenColor(color, 30)}]}>
+                        <Text numberOfLines={1} style={styles.eventText}>
+                          {event.text}
+                        </Text>
+                        <Text numberOfLines={1} style={styles.eventText}>
+                          {event.subText}
+                        </Text>
+                      </View>
+                    :
+                      <View style={[styles.item_1line, {backgroundColor:lightenColor(color, 30)}]}>
+                        <Text numberOfLines={1} style={styles.eventText}>
+                            {event.text}
+                        </Text>
+                      </View>
+                  }
+                </View>
+              )
+            })
         }
       </View>
     </View>
@@ -64,7 +122,7 @@ const MyCalendar = () => {
         }}
         markingType={'custom'}
         dayComponent={({ date, state }) => {
-            return renderCustomDay(date);
+            return renderCustomDay(date, state);
         }}
 
         theme={{
@@ -93,6 +151,7 @@ const MyCalendar = () => {
   );
 };
 
+
 const styles = StyleSheet.create({
     dayContainer: {
         borderTopWidth:0.5,
@@ -100,15 +159,15 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-start',
         width:"100%"
-        // height: 60,
-        // borderWidth: 1,       // Border width
-        // borderColor: 'gray',  // Border color
-        // borderRadius: 4,      // Optional: Border radius for rounded corners
+      },
+      dayBox:{
+        padding:2,
+        width:"100%",
+        flexDirection:"row",
+        justifyContent:"space-between",
       },
       dayText: {
-        marginBottom:4,
         fontSize: 10,
-        alignSelf:"flex-start"
       },
       sundayText: {
         color: 'red',
@@ -116,15 +175,37 @@ const styles = StyleSheet.create({
       saturdayText: {
         color: 'blue',
       },
+      outsideMonthText: {
+        color: '#ddd',
+      },
       dayContent:{
         padding:1,
         height:60,
         width:"100%"
       },
       eventText: {
+        fontFamily:"SUIT-ExtraBold",
         fontSize: 8,
-        color: 'blue',
+        color: '#111',
       },
+      item_1line:{
+        flex:1,
+        paddingHorizontal:2,
+        paddingVertical:2,
+        marginBottom:4,
+        borderRadius:2
+      },
+      item_2line:{
+        flex:1,
+        paddingHorizontal:2,
+        paddingVertical:6,
+        
+        marginBottom:4,
+        borderRadius:2
+      },
+      badge:{backgroundColor:"#FF76CE", paddingHorizontal:4, borderRadius:3, justifyContent:"center", },
+      row:{flexDirection:"row"}
 });
+
 
 export default MyCalendar;
