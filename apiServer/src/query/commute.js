@@ -91,7 +91,8 @@ const getReqCommuteListForMonth = `
     and d.USEYN = 'Y'
     AND c.ROLECL = 'ownr'
     AND u.USERID = @userId
-    AND a.YMD between @ymdTo and @ymdFr
+    AND a.YMD between replace(@ymdTo, '-', '') and replace(@ymdFr, '-', '')
+    --AND a.YMD between @ymdTo and @ymdFr
     AND a.CSTCO = @cstCo
 `
 
