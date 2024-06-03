@@ -57,22 +57,17 @@ export default function DailyReportScreen({navigation}) {
             alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
         })
     }
-
     
     const getReqCommuteListForDay = async () => {
-        await HTTP("GET", "/api/v1/commute/getReqCommuteListForMonth", {userId, ymdTo:ymd.firstLastDay.lastDay, ymdFr:ymd.firstLastDay.firstDay, cstCo})
+        await HTTP("GET", "/api/v1/commute/getReqCommuteCntForMonth", {userId, ymdTo:ymd.firstLastDay.lastDay, ymdFr:ymd.firstLastDay.firstDay, cstCo})
         .then((res)=>{
-            
-            const result = res.data.dayReqList.filter(el => el.REQSTAT == "R").length
-            console.log();
-            console.log(result)
-            dispatch(setIssueCnt({cnt:result}));
+            console.log(res.data)
+            dispatch(setIssueCnt({cnt:res.data.dayCnt}));
         }).catch(function (error) {
             console.log(error);
             alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
         })
     }
-
 
     useEffect(()=>{
         DailyReport1();

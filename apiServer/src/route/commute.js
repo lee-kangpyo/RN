@@ -181,6 +181,20 @@ router.get("/getReqCommuteList", async (req,res,next)=>{
     }
 })
 
+
+router.get("/getReqCommuteCntForMonth", async (req, res, next) => {
+    console.log("GET commute.getReqCommuteCntForMonth - 일일보고서 열었을때 요청보기 탭에 뱃지 숫자");
+    try {
+        const { ymdFr, ymdTo, cstCo, userId } = req.query;
+        const result = await execSql(getReqCommuteListForMonth, {ymdFr, ymdTo, cstCo, userId});
+        const data = {dayCnt:result.recordset.filter(el => el.REQSTAT == "R").length, resultCode:"00"};
+        res.status(200).json(data);
+    } catch (error) {
+        console.log(error.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+});
+
 router.get("/getReqCommuteListForMonth", async (req, res, next) => {
     console.log("GET commute.getReqCommuteListForMonth - 점주가 일일 보고서에서 이슈 보기 탭 클릭");
     try {
