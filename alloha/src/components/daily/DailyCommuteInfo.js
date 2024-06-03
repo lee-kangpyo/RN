@@ -46,7 +46,7 @@ export default function DailyCommuteInfo({day, userId, sCstCo, dayJobInfo, setDa
             </View>
         :
         <>
-            <ConvertDayStr dayStr={day} style={styles.dayStr} fontSize={16} style={styles.dayStr} textStyle={fonts.dayStr}/>
+            <ConvertDayStr dayStr={day} style={styles.dayStr} fontSize={16} textStyle={fonts.dayStr}/>
             <View style={styles.card}>
                 <View style={styles.grid}>
                     <View style={styles.gridItem}>
