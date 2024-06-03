@@ -16,6 +16,7 @@ import PushTest from '../components/test/PushTest';
 import { useIsFocused } from '@react-navigation/native';
 import { getFirstAndLastDay } from '../util/moment';
 import HeaderControl from '../components/common/HeaderControl';
+import moment from 'moment';
 
 export default function DailyReportScreen({navigation}) {
     const isFocused = useIsFocused();
@@ -47,17 +48,35 @@ export default function DailyReportScreen({navigation}) {
             // 승인 안한 항목
             const unApprovedList = result.filter(el => ["R"].includes(el.APVYN));
             // 이슈 있는 항목
-            const issuedList = result.filter(el => el.REQCNT > 0);
+            //const issuedList = result.filter(el => el.REQCNT > 0);
             setDatas(result);
             setIsBtnDisabled(unApprovedList.length == 0)
-            dispatch(setIssueCnt({cnt:issuedList.length}));
+            //dispatch(setIssueCnt({cnt:issuedList.length}));
         }).catch(function (error) {
             console.log(error);
             alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
         })
     }
+
+    
+    const getReqCommuteListForDay = async () => {
+        await HTTP("GET", "/api/v1/commute/getReqCommuteListForMonth", {userId, ymdTo:ymd.firstLastDay.lastDay, ymdFr:ymd.firstLastDay.firstDay, cstCo})
+        .then((res)=>{
+            
+            const result = res.data.dayReqList.filter(el => el.REQSTAT == "R").length
+            console.log();
+            console.log(result)
+            dispatch(setIssueCnt({cnt:result}));
+        }).catch(function (error) {
+            console.log(error);
+            alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
+        })
+    }
+
+
     useEffect(()=>{
         DailyReport1();
+        getReqCommuteListForDay();
     }, [cstCo, ymd, selectedKey, isFocused]);
 
     const changeDay = (cls) =>{
@@ -67,8 +86,19 @@ export default function DailyReportScreen({navigation}) {
         }else if(cls == "next"){
             date.setDate(date.getDate() + 1);
         }
+        console.log(date);
         setYmd(getYMD(date));
     }
+    const changeMonth = (cls) => {
+        let date = moment(ymd.date);
+        if (cls == "prev") {
+            date = date.subtract(1, 'months');
+        } else if (cls == "next") {
+            date = date.add(1, 'months');
+        }
+        setYmd(getYMD(new Date(date)));
+    }
+
     const confirm = async () => {
         const filterd = datas.filter(el => el.REQCNT > 0);
         if(filterd.length > 0){
@@ -99,7 +129,8 @@ export default function DailyReportScreen({navigation}) {
                     (selectedKey == 0)?
                         <HeaderControl title={ymd.ymdKo} onLeftTap={()=>changeDay("prev")} onRightTap={()=>changeDay("next")} />    
                     :
-                        <Text style={{alignSelf:"center", marginVertical:8, fontFamily: "SUIT-Bold",fontSize: 14,fontWeight: "700",fontStyle: "normal",color: "#111111"}}>{ymd.ymKo}</Text>
+                        <HeaderControl title={ymd.ymKo} onLeftTap={()=>changeMonth("prev")} onRightTap={()=>changeMonth("next")} />    
+                        // <Text style={{alignSelf:"center", marginVertical:8, fontFamily: "SUIT-Bold",fontSize: 14,fontWeight: "700",fontStyle: "normal",color: "#111111"}}>{ymd.ymKo}</Text>
                 
                 }
                 

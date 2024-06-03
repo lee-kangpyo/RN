@@ -19,7 +19,7 @@ export default function ReqChangeWork({ymd, cstCo}) {
 
     const getReqCommuteListForDay = async () => {
         setIsLoading(true);
-        await HTTP("GET", "/api/v1/commute/getReqCommuteListForMonth", {userId, ymdTo:ymd.firstDay, ymdFr:ymd.lastDay, cstCo})
+        await HTTP("GET", "/api/v1/commute/getReqCommuteListForMonth", {userId, ymdTo:ymd.lastDay, ymdFr:ymd.firstDay, cstCo})
         .then((res)=>{
             const result = res.data.dayReqList;
             dispatch(setIssueCnt({cnt:res.data.dayReqList.filter(el => el.REQSTAT == "R").length}));
