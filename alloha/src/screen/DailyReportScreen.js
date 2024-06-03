@@ -125,16 +125,22 @@ export default function DailyReportScreen({navigation}) {
                         <HeaderControl title={ymd.ymdKo} onLeftTap={()=>changeDay("prev")} onRightTap={()=>changeDay("next")} />    
                     :
                         <HeaderControl title={ymd.ymKo} onLeftTap={()=>changeMonth("prev")} onRightTap={()=>changeMonth("next")} />    
-                        // <Text style={{alignSelf:"center", marginVertical:8, fontFamily: "SUIT-Bold",fontSize: 14,fontWeight: "700",fontStyle: "normal",color: "#111111"}}>{ymd.ymKo}</Text>
                 
                 }
                 
             </View>
             <CustomTap data={[{key:0, name:"결과보기"}, {key:1, name:"요청보기", cnt:issueCnt}]} selectedKey={selectedKey} setSelectedKey={setSelectedKey}/>
             <View style={styles.albaList}>
-                <View>
-                    <StoreSelectBoxWithTitle titleText={""} titleflex={0} selectBoxFlex={6} />
-                </View>
+                {
+                    (selectedKey == 0)?
+                        <View>
+                            <StoreSelectBoxWithTitle titleText={""} titleflex={0} selectBoxFlex={6} />
+                        </View>
+                    :
+                        null
+                
+                }
+                
                     {
                         (datas.length == 0)?
                         <View style={{flex:1, justifyContent:"center"}}>
@@ -152,8 +158,18 @@ export default function DailyReportScreen({navigation}) {
                         :
                             <ReqChangeWork ymd={ymd.firstLastDay} cstCo={cstCo}/>
                     }
-                <View style={{height:16}} />
-                <CustomButton text={"확정"} onClick={confirm} fontStyle={styles.btnText} style={styles.btn} disabled={isBtnDisabled}/>
+                
+                {
+                    (selectedKey == 0)?
+                        <>
+                            <View style={{height:16}} />
+                            <CustomButton text={"확정"} onClick={confirm} fontStyle={styles.btnText} style={styles.btn} disabled={isBtnDisabled}/>
+                        </>
+                    :
+                        null
+                
+                }
+                
             </View>
         </View>
         </>

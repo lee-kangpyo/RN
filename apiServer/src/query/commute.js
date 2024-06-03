@@ -87,12 +87,11 @@ const getReqCommuteListForMonth = `
     inner join PLYMUSER alba On a.USERID = alba.USERID
     WHERE a.USEYN = 'Y'
     and b.USEYN = 'Y'
-    --and b.APVYN != 'D'
     and d.USEYN = 'Y'
     AND c.ROLECL = 'ownr'
     AND u.USERID = @userId
     AND a.YMD between replace(@ymdFr, '-', '') and replace(@ymdTo, '-', '')
-    AND a.CSTCO = @cstCo
+    order by a.YMD desc
 `
 
 //점주 알바 수정 요청 승인 쿼리 - 결근 외

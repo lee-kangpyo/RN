@@ -22,7 +22,7 @@ export default function ReqChangeWork({ymd, cstCo}) {
         await HTTP("GET", "/api/v1/commute/getReqCommuteListForMonth", {userId, ymdTo:ymd.lastDay, ymdFr:ymd.firstDay, cstCo})
         .then((res)=>{
             const result = res.data.dayReqList;
-            dispatch(setIssueCnt({cnt:res.data.dayReqList.filter(el => el.REQSTAT == "R").length}));
+            dispatch(setIssueCnt({cnt:result.filter(el => el.REQSTAT == "R").length}));
             setReqList(result);
             setIsLoading(false);
         }).catch(function (error) {
@@ -67,16 +67,35 @@ export default function ReqChangeWork({ymd, cstCo}) {
                                 <View>
                                     <View style={{paddingBottom:15}}>
                                     {
-                                        reqList.map(
+                                        // 리스트를 오브젝트로 변환 {메가커피1:[], 메가커피2:[]}
+                                        Object.keys(reqList.reduce((result, next)=>{
+                                            if(!result[next.CSTNA]){
+                                                result[next.CSTNA] = [];
+                                            }
+                                            result[next.CSTNA] = [...result[next.CSTNA], next];
+                                            return result;
+                                        }, {})).map(
                                             (el, idx)=>{
-                                                if(showReq){
-                                                    if(el.REQSTAT == "R"){
-                                                        return <ReqItem key={idx} data={el} refresh={()=>onAprovDeny()}/>    
+                                                const items = (showReq) ? reqList.filter(item => item.CSTNA == el && item.REQSTAT == "R")
+                                                                        : reqList.filter(item => item.CSTNA == el);
+                                                return (
+                                                    <>
+                                                    {
+                                                        (items.length > 0)?
+                                                            <View style={[styles.filterBtn, {paddingVertical:16}]}>
+                                                                <Text key={idx} style={fonts.subBoxHour}>{el}</Text>
+                                                            </View>
+                                                        :   null
                                                     }
-                                                }else{
-                                                    return <ReqItem key={idx} data={el} refresh={()=>onAprovDeny()}/>
-                                                }
-                                                
+                                                    {
+                                                        items.map(
+                                                            (el, idx)=>{
+                                                               return <ReqItem key={idx} data={el} refresh={()=>onAprovDeny()}/>
+                                                            }
+                                                        )
+                                                    }
+                                                    </>
+                                                )
                                             }
                                         )
                                     }
