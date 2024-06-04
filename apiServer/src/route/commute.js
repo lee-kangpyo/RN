@@ -44,7 +44,7 @@ router.get("/jobDetailInfo", (req, res, next) => {
 const jobChk2Handler = async (req, res, next, isReverseGeoCode) => {
     try {
         const {cls, userId, cstCo, ymdFr, ymdTo} = req.query;
-        const result = await execSql(jobChk2, {cls, userId, cstCo, ymdFr, ymdTo});
+        const result = await execSql(jobChk2, {cls, userId, cstCo, ymdFr, ymdTo, cl1:"", cl2:"", jobCl:""});
         if(isReverseGeoCode){
             const rst = result.recordset
             for (idx in rst){
