@@ -108,8 +108,61 @@ router.get("/daySchedule", async (req,res,next)=>{
     }
 })
 
+// 알바 점주에게 수정 요청 v1
+// router.post("/reqCommuteChange_old", async (req,res,next)=>{
+//     console.log("POST commute.reqCommuteChange")
+//     const convertYmd = (dateString) => {
+//         // 주어진 날짜 문자열
+//         //var dateString = "2024-02-15 13:30";
 
+//         // 날짜 객체 생성
+//         var dateObject = new Date(dateString);
+
+//         // 년, 월, 일 가져오기
+//         var year = dateObject.getFullYear();
+//         var month = dateObject.getMonth() + 1; // 월은 0부터 시작하므로 1을 더합니다.
+//         var day = dateObject.getDate();
+
+//         // 월과 일이 한 자리 수인 경우 앞에 0을 추가해줍니다.
+//         if (month < 10) {
+//             month = "0" + month;
+//         }
+//         if (day < 10) {
+//             day = "0" + day;
+//         }
+
+//         // 변환된 날짜 문자열
+//         return "" + year + month + day;
+//     }
+    
+//     try {
+//         const { cstCo, userId, jobNo, sTime, eTime, startTime, endTime, reason, reqStat, issueCount } = req.body;
+//         console.log(cstCo, userId, jobNo, sTime, eTime, startTime, endTime, reason, reqStat, issueCount);
+//         const ymd = convertYmd(sTime);
+//         const initRlt = await execSql(initCommuteChange, {cstCo, jobNo, userId, ymd});
+//         const result = await execSql(reqCommuteChange, { cstCo, jobNo, userId, sTime, eTime, startTime, endTime, reason, reqStat, ymd });
+//         const reqNo = result.recordset[0].REQNO;
+//         if(jobNo == "999999"){
+//             await execSql(insertPLYADAYJOB, {userId, reqNo});
+//             const rslt = await execSql(getJobNo, {userId, reqNo});
+//             await execSql(updateJobReqAbsence, {reqStat, userId, reqNo, jobNo:rslt.recordset[0].JOBNO});
+//         }else if (issueCount > 0){
+//             await execSql(updatePLYADAYJOB, {userId, sTime, eTime, jobNo});
+//         }
+//         if(result.rowsAffected[0] == 1){
+//             res.status(200).json({result:"다녀옴", resultCode:"00"});
+//         }else{
+//             res.status(200).json({result:"요청 중 알수 없는 오류가 발생했습니다.", resultCode:"-1"});
+//         }
+//     } catch (error) {
+//         console.log(error.message)
+//         res.status(200).json({ resultCode:"-1"});
+//     }
+// })
+
+// 알바 점주에게 수정요청 v2 - 승인 없는 버전
 router.post("/reqCommuteChange", async (req,res,next)=>{
+    console.log("POST commute.reqCommuteChange v2")
     const convertYmd = (dateString) => {
         // 주어진 날짜 문자열
         //var dateString = "2024-02-15 13:30";
@@ -133,26 +186,17 @@ router.post("/reqCommuteChange", async (req,res,next)=>{
         // 변환된 날짜 문자열
         return "" + year + month + day;
     }
-    console.log("POST commute.reqCommuteChange")
+    
     try {
         const { cstCo, userId, jobNo, sTime, eTime, startTime, endTime, reason, reqStat, issueCount } = req.body;
         console.log(cstCo, userId, jobNo, sTime, eTime, startTime, endTime, reason, reqStat, issueCount);
+        console.log(sTime.split(" ")[1], eTime.split(" ")[1]);
         const ymd = convertYmd(sTime);
-        const initRlt = await execSql(initCommuteChange, {cstCo, jobNo, userId, ymd});
-        const result = await execSql(reqCommuteChange, { cstCo, jobNo, userId, sTime, eTime, startTime, endTime, reason, reqStat, ymd });
-        const reqNo = result.recordset[0].REQNO;
-        if(jobNo == "999999"){
-            await execSql(insertPLYADAYJOB, {userId, reqNo});
-            const rslt = await execSql(getJobNo, {userId, reqNo});
-            await execSql(updateJobReqAbsence, {reqStat, userId, reqNo, jobNo:rslt.recordset[0].JOBNO});
-        }else if (issueCount > 0){
-            await execSql(updatePLYADAYJOB, {userId, sTime, eTime, jobNo});
-        }
-        if(result.rowsAffected[0] == 1){
-            res.status(200).json({result:"다녀옴", resultCode:"00"});
-        }else{
-            res.status(200).json({result:"요청 중 알수 없는 오류가 발생했습니다.", resultCode:"-1"});
-        }
+        //exec PR_PLYC02_JOBCHECK 'AlbaWorkSave', '20240604', '', 1014, 'mangdee22', '08:00', '18:30', 'S'
+        //exec PR_PLYC02_JOBCHECK @cls, @ymdFr, @ymdTo, @cstCo, @userId, @cl1, @cl2, @jobCl
+        const result = await execSql(jobChk2, {cls:"AlbaWorkSave", ymdFr:ymd, ymdTo:"", cstCo, userId, cl1:sTime.split(" ")[1], cl2:eTime.split(" ")[1], jobCl:"G"});
+        res.status(200).json({result:"다녀옴", resultCode:"00"});
+        
     } catch (error) {
         console.log(error.message)
         res.status(200).json({ resultCode:"-1"});
