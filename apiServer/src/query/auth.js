@@ -103,7 +103,7 @@ const searchCrewList = `
     SELECT   a.CSTCO
             , b.CSTNA
             , a.USERID
-            , c.USERNA
+            , c.USERNA + CASE WHEN dbo.FN_GET_Split_Index(a.USERID , '_', 1) = 'Qpqpqpqp' THEN ' (점주생성)' ELSE ' (직접생성)' END USERNA
             , ISNULL(c.NICKNA,'') as NICKNA
             , a.JOBTYPE
             , a.WAGE
