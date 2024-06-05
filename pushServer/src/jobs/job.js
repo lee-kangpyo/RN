@@ -8,7 +8,7 @@ const parseJSON = require('../utils/json');
 const { PR_PLYG01_MSGSEND, PR_JOB_CLOSE } = require('../query/jobQuery');
 
 async function job () {
-  const job = schedule.scheduleJob('* 23 * * *', async () => {
+  const job = schedule.scheduleJob('50 23 * * *', async () => {
     try {
         console.log("dailyJob 실행")
         const date = new Date();
