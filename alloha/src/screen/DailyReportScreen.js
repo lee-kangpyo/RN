@@ -1,5 +1,5 @@
 
-import { StyleSheet, Text, View, ScrollView, SafeAreaView, TouchableOpacity, Platform } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, SafeAreaView, TouchableOpacity, Platform, FlatList, ActivityIndicator } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { useDispatch, useSelector } from 'react-redux';
@@ -38,10 +38,13 @@ export default function DailyReportScreen({navigation}) {
         navigation.setOptions({title:"일일보고서"});
     }, [navigation])
 
+
+    const [step, setStep] = useState(2);
+
+    
+
     
     const DailyReport1 = async () => {
-        // exec PR_PLYB02_WRKMNG  'DailyReport1', 1010, '', '20231228', '', ''
-        //await HTTP("GET", "/api/v1/daily/DailyReport1", {cstCo:"1010", ymd:'20231228'})
         await HTTP("GET", "/api/v1/daily/DailyReport1", {cstCo:cstCo, ymd:ymd.ymd})
         .then((res)=>{
             const result = res.data.result;
@@ -49,6 +52,7 @@ export default function DailyReportScreen({navigation}) {
             const unApprovedList = result.filter(el => ["R"].includes(el.APVYN));
             // 이슈 있는 항목
             //const issuedList = result.filter(el => el.REQCNT > 0);
+            console.log(result);
             setDatas(result);
             setIsBtnDisabled(unApprovedList.length == 0)
             //dispatch(setIssueCnt({cnt:issuedList.length}));
@@ -61,7 +65,6 @@ export default function DailyReportScreen({navigation}) {
     const getReqCommuteListForDay = async () => {
         await HTTP("GET", "/api/v1/commute/getReqCommuteCntForMonth", {userId, ymdTo:ymd.firstLastDay.lastDay, ymdFr:ymd.firstLastDay.firstDay, cstCo})
         .then((res)=>{
-            console.log(res.data)
             dispatch(setIssueCnt({cnt:res.data.dayCnt}));
         }).catch(function (error) {
             console.log(error);
@@ -81,7 +84,6 @@ export default function DailyReportScreen({navigation}) {
         }else if(cls == "next"){
             date.setDate(date.getDate() + 1);
         }
-        console.log(date);
         setYmd(getYMD(date));
     }
     const changeMonth = (cls) => {
@@ -131,23 +133,29 @@ export default function DailyReportScreen({navigation}) {
             </View>
             <CustomTap data={[{key:0, name:"결과보기"}, {key:1, name:"요청보기", cnt:issueCnt}]} selectedKey={selectedKey} setSelectedKey={setSelectedKey}/>
             <View style={styles.albaList}>
-                {
-                    (selectedKey == 0)?
+                {   
+                    (datas.length == 0)?
+                        <>
                         <View>
                             <StoreSelectBoxWithTitle titleText={""} titleflex={0} selectBoxFlex={6} />
                         </View>
-                    :
-                        null
-                
-                }
-                
-                    {
-                        (datas.length == 0)?
                         <View style={{flex:1, justifyContent:"center"}}>
                             <Text style={{alignSelf:"center"}}>데이터가 없습니다.</Text>
                         </View>
-                        :
-                        (selectedKey == 0)?
+                        </>
+                    :null
+                }
+                {
+                    (selectedKey == 0 && step == 1)?
+                        <MonThlyView setStep={setStep} ymdFr={ymd.firstLastDay.firstDay} ymdTo={ymd.firstLastDay.lastDay}/>
+                    :null
+                }
+                {
+                    (datas.length > 0 && selectedKey == 0 && step == 2)?
+                        <>
+                            <View>
+                                <StoreSelectBoxWithTitle titleText={""} titleflex={0} selectBoxFlex={6} />
+                            </View>
                             <ScrollView contentContainerStyle={{paddingTop:20}}>
                             {
                                 datas.map((el, idx)=>{
@@ -155,26 +163,141 @@ export default function DailyReportScreen({navigation}) {
                                 })
                             }
                             </ScrollView>
-                        :
-                            <ReqChangeWork ymd={ymd.firstLastDay} cstCo={cstCo}/>
-                    }
-                
-                {
-                    (selectedKey == 0)?
-                        <>
-                            <View style={{height:16}} />
-                            <CustomButton text={"확정"} onClick={confirm} fontStyle={styles.btnText} style={styles.btn} disabled={isBtnDisabled}/>
+
+                            {
+                                (true)?
+                                    null
+                                :
+                                    <>
+                                        <View style={{height:16}} />
+                                        <CustomButton text={"확정"} onClick={confirm} fontStyle={styles.btnText} style={styles.btn} disabled={isBtnDisabled}/>
+                                    </>
+                            }
+                            
                         </>
-                    :
-                        null
-                
+                    :null
                 }
-                
+                {
+                    (datas.length > 0 && selectedKey == 1)?
+                        <ReqChangeWork ymd={ymd.firstLastDay} cstCo={cstCo}/>
+                    :null
+                }
             </View>
         </View>
         </>
     );
 }
+
+const MonThlyView = ({ymdTo, ymdFr, setStep}) => {
+    lastDay = ymdTo.split("-")[2];
+    const numbers = Array.from({ length: lastDay }, (_, i) => i + 1);
+    const chunkArray = (array, chunkSize) => {
+        const result = [];
+        for (let i = 0; i < array.length; i += chunkSize) {
+            result.push(array.slice(i, i + chunkSize));
+        }
+        return result;
+    };
+    
+    const storeList = useSelector((state)=>state.common.storeList);
+    const userId = useSelector((state)=>state.login.userId);
+    const isFocused = useIsFocused();
+    const [reqMonthList, setReqMonthList] = useState({});
+    const getReqMonthList = async () => {
+        await HTTP("GET", "/api/v1/daily/getReqMonthList", {userId, ymdTo:ymdTo, ymdFr:ymdFr})
+        .then((res)=>{
+            setReqMonthList(res.data.result);
+        }).catch(function (error) {
+            console.log(error);
+            alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
+        })
+    }
+    const getStoreList = async () => {
+        await axios.get(URL+`/api/v1/getStoreList`, {params:{userId:userId,}})
+        .then((res)=>{
+            dispatch(setOwnerStoreList({storeList:res.data.result}));
+            
+        }).catch(function (error) {
+            console.log(error);
+            alert("점포를 조회하는중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
+        })
+    }
+
+    useEffect(()=>{
+        getStoreList();
+        getReqMonthList();
+    }, [isFocused]);
+    return(
+        <View style={{paddingHorizontal: 0}}>
+            {
+                (storeList.length == 0 || Object.keys(reqMonthList).length == 0)?
+                    <ActivityIndicator />
+                :
+                storeList.map((item, idx) =>{
+                    const store = reqMonthList[item.CSTCO];
+                    return (
+                        <View key={idx}>
+                            <Text>{item.CSTNA}</Text>
+                            {
+                                chunkArray(numbers, 10).map((numbers, idx) => {
+                                    return (
+                                        <View key={idx} style={{flexDirection:"row", justifyContent:"space-between", paddingBottom:3}}>
+                                        {
+                                            numbers.map((number, idx) => {
+                                                const store2 = store ?? [];
+                                                const filter = store2.filter((el)=>moment(el.YMD, 'YYYYMMDD').date() == number && el.CSTCO == item.CSTCO) ?? [];
+                                                const selBox = (filter.length > 0)?box.selBox:null;
+                                                const selBoxText = (filter.length > 0)?box.selBoxText:null;
+                                                return (
+                                                    <TouchableOpacity key={idx} style={[box.box, selBox]} onPress={()=>setStep(2)}>
+                                                        <Text style={[box.boxText, selBoxText]}>{number}</Text>
+                                                    </TouchableOpacity>
+                                                )
+                                            })
+                                        }
+                                        </View>
+                                    )}
+                                )
+                            }
+                        </View>
+                        
+                        // <View>
+                        // {
+                        //     reqMonthList[cstNa].map(item => <Text>asdf</Text>)
+                        // }
+                        // </View>
+                    )
+                })
+            }
+        </View>
+    )
+}
+
+const box = StyleSheet.create({
+    monBox:{
+        margin:4,
+        width:30,
+        height:30,
+        borderRadius:10
+    },
+    box:{
+        backgroundColor:"#29DA56",
+        width:35,
+        height:35,
+        borderRadius:10,
+        justifyContent:"center",
+        alignItems:"center"
+    },
+    selBox:{
+        backgroundColor:"#EBEBEB",
+    },
+    selBoxText:{
+        color:"#A3A6C5"
+    },
+    boxText:{
+        color:"#fff"
+    }
+})
 
 const Item = ({data, ymd, navigator}) => {
     const cstCo = useSelector((state)=>state.common.cstCo);

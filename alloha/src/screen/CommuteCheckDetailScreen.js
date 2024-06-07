@@ -5,8 +5,13 @@ import { useSelector } from 'react-redux';
 import CommuteDetail from '../components/commuteCheck/CommuteDetail';
 import CommuteInfo from '../components/commuteCheck/CommuteInfo';
 import CustomButton from '../components/common/CustomButton';
+import { CustomBottomSheet2 } from '../components/common/CustomBottomSheet2';
+import ChangeWorkTime from '../components/bottomSheetContents/ChangeWorkTime';
+import { HTTP } from '../util/http';
+import { useAlert } from '../util/AlertProvider';
 
 export default function CommuteCheckDetailScreen({navigation, route}) {
+    const { showAlert } = useAlert();
     const { ymd } = route.params;
     const [YYYYMMDD, setYYYYMMDD] = useState(ymd);
     const userId = useSelector((state)=>state.login.userId);
@@ -18,46 +23,68 @@ export default function CommuteCheckDetailScreen({navigation, route}) {
         }
     },[dayJobInfo]);
 
+    const [isOpen, setIsOpen] = useState(false); 
+
     const onModifyBtnpressed = () => {
-        const reqStat = dayJobInfo.reqStat;
-        if(reqStat == "D"){
-            confirm("거절됨", "이미 거절된 건입니다. 다시 요청 하시겠습니까?", ()=>{navigation.push("CommuteCheckChange", { dayJobInfo: dayJobInfo})})
-        }else if(reqStat == "A"){
-            confirm("승인됨", "이미 근무 기록이 변경 승인된 건입니다. 다시 변경 요청 하시겠습니까?", ()=>{navigation.push("CommuteCheckChange", { dayJobInfo: dayJobInfo})})
-        }else if(reqStat == "R"){
-            confirm("요청중", "이미 요청중인 건입니다. 다시 변경 요청 하시겠습니까?", ()=>{navigation.push("CommuteCheckChange", { dayJobInfo: dayJobInfo})})
-        }else if(reqStat == "N"){
-            navigation.push("CommuteCheckChange", { dayJobInfo: dayJobInfo});
-        }
+        // const reqStat = dayJobInfo.reqStat;
+        // if(reqStat == "D"){
+        //     confirm("거절됨", "이미 거절된 건입니다. 다시 요청 하시겠습니까?", ()=>{navigation.push("CommuteCheckChange", { dayJobInfo: dayJobInfo})})
+        // }else if(reqStat == "A"){
+        //     confirm("승인됨", "이미 근무 기록이 변경 승인된 건입니다. 다시 변경 요청 하시겠습니까?", ()=>{navigation.push("CommuteCheckChange", { dayJobInfo: dayJobInfo})})
+        // }else if(reqStat == "R"){
+        //     confirm("요청중", "이미 요청중인 건입니다. 다시 변경 요청 하시겠습니까?", ()=>{navigation.push("CommuteCheckChange", { dayJobInfo: dayJobInfo})})
+        // }else if(reqStat == "N"){
+        //     navigation.push("CommuteCheckChange", { dayJobInfo: dayJobInfo});
+        // }
+        setIsOpen(true);
     }
 
-    const confirm = (title, msg, onConfirm) => {
-        Alert.alert(title, msg,
-            [
-              {
-                text: '확인', // 버튼 텍스트
-                onPress: onConfirm,
-              },
-              {
-                text: '취소', // 버튼 텍스트
-                onPress: () => console.log("취소"),
-              },
-            ],
-          );
+    
+    const onConfirm = async (params) => {
+        console.log(params);
+        await HTTP("POST", "/api/v2/commute/AlbaJobSave", params)
+        //exec PR_PLYC03_JOBCHECK 'AlbaJobSave', '20240605', '', 1015, 'Chaewonp3306', '09:00', '14:30', 'G', 0.5
+        // await HTTP("POST", "/api/v2/daily/JumjoWorkSave", params)
+        .then((res)=>{
+            console.log(res.data);            
+            if(res.data.resultCode == "00"){
+                showAlert("근무 기록", '입력 되었습니다.');
+            }
+        }).catch(function (error) {
+            console.log(error);
+            alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
+        })
     }
+
     return (
         <View style={styles.container}>
-            <CommuteInfo day = {YYYYMMDD} dayJobInfo={dayJobInfo} setDayJobInfo={setDayJobInfo} />
-            <CommuteDetail day = {YYYYMMDD}/>
             {
-                (btnShow)?
-                    <CustomButton onClick={onModifyBtnpressed} text={"근무 기록 입력하기"} style={styles.btn} fontStyle={fonts.btn}/>
-                :
-                    null
+                (isOpen)?null:
+                <>
+                    <CommuteInfo day = {YYYYMMDD} dayJobInfo={dayJobInfo} setDayJobInfo={setDayJobInfo} />
+                    <View style={{width:"100%", flex:1}}>
+                        <CommuteDetail day = {YYYYMMDD}/>
+                    </View>
+                    {
+                        (btnShow)?
+                            <CustomButton onClick={onModifyBtnpressed} text={"근무 기록 입력하기"} style={styles.btn} fontStyle={fonts.btn}/>
+                        :
+                            null
+                    }
+                </>
+
             }
+            <CustomBottomSheet2 
+                isOpen={isOpen} 
+                onClose={()=>setIsOpen(false)}
+                content={<ChangeWorkTime dayJobInfo={dayJobInfo} setIsOpen={setIsOpen} onConfirm={onConfirm}/>}
+            />
         </View>
     );
 }
+
+
+
 const fonts = StyleSheet.create({
     btn:{
         fontFamily: "SUIT-Bold",

@@ -57,7 +57,7 @@ const BottomItem = ({data, isLast}) => {
     return(
         <View style={[styles.bItemContainer, styles.row, {alignItems:"flex-start"}]}>
             <View>
-                <View style={{alignItems:"center", justifyContent:"center", zIndex:5}}>
+                <View style={{alignItems:"center", justifyContent:"center", zIndex:5,}}>
                     <FontAwesome name="circle" size={30} color={theme.primary} style={{ zIndex:5}}/>
                     <Feather name="check" size={16} color="white" style={{position:"absolute",  zIndex:10,}} />
                 </View>

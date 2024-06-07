@@ -9,6 +9,7 @@ const { insertManualJobChk, daySchedule, reqCommuteChange, initCommuteChange, ge
 const { reverseGeocode } = require('../../utils/kakao');
 const { sendPush_GoToWork, sendPush_GetOffWork } = require('../../utils/templatePush');
 const { sendMsg_Z0110_11, useN_DayJob } = require('../../query/dailyReport');
+const { AlbaJobSave } = require('../../query/v2/commute');
 dotenv.config();
 
 
@@ -60,6 +61,21 @@ router.post("/reqCommuteChange", async (req,res,next)=>{
         // }else{
         //     res.status(200).json({result:"요청 중 알수 없는 오류가 발생했습니다.", resultCode:"-1"});
         // }
+    } catch (error) {
+        console.log(error.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+})
+
+
+router.post("/AlbaJobSave", async (req,res,next)=>{
+    console.log("POST v2.commute.AlbaJobSave ")
+    try {
+        const { ymd, cstCo, userId, sTime, eTime, jobCl, brkDure } = req.body;
+        console.log(ymd, cstCo, userId, sTime, eTime, jobCl, brkDure);
+        const result = await execSql(AlbaJobSave, {ymd, cstCo, userId, sTime, eTime, jobCl, brkDure});
+        console.log(result);
+        res.status(200).json({resultCode:"00"});
     } catch (error) {
         console.log(error.message)
         res.status(200).json({ resultCode:"-1"});

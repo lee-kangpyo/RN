@@ -9,6 +9,7 @@ import { CustomBottomSheet2 } from '../components/common/CustomBottomSheet2';
 import { convertTime2, strToDate } from '../util/moment';
 import { theme } from '../util/color';
 import { HTTP } from '../util/http';
+import ChangeWorkTime from '../components/bottomSheetContents/ChangeWorkTime';
 
 export default function DailyReportDetilaScreen({navigation, route}) {
     const { ymd, userId, sCstCo } = route.params;
@@ -44,6 +45,7 @@ export default function DailyReportDetilaScreen({navigation, route}) {
     }
 
     const onConfirm = async (params) => {
+        params.cls = 'JumjoWorkSave';
         await HTTP("POST", "/api/v1/daily/JumjoWorkSave", params)
         .then((res)=>{
             const msg = (res.data.resultCode == "00")?"요청한 근무 기록이 변경 되었습니다.":"변경 중 오류가 발생했습니다.잠시후 다시 시도해 주세요.";
@@ -75,59 +77,59 @@ export default function DailyReportDetilaScreen({navigation, route}) {
     );
 }
 
-const ChangeWorkTime = ({dayJobInfo, setIsOpen, onConfirm}) => {
-    const[_dayJobInfo, setDayJobInfo] = useState(dayJobInfo)
-    const[sTime, setSTime] = useState(strToDate(_dayJobInfo.ymd +' '+ _dayJobInfo.startTime))
-    const[eTime, setETime] = useState(strToDate(_dayJobInfo.ymd +' '+ _dayJobInfo.endTime))
-    const [isSelectStime, setSelectStime] = useState(true);
-    const sColor = (isSelectStime)?theme.primary:"#999";
-    const eColor = (!isSelectStime)?theme.primary:"#999";
-    const onPressConfirm = () => {
-        // exec PR_PLYB02_WRKMNG 'JumjoWorkSave', 1014, 'mangdee22', '20240509', '07:00', '16:00'
-        // @CLS 구분 : JumjoWorkSave
-        // @CSTCO : 점포코드
-        // @USERID : 알바ID
-        // @YMD : 일자 'YYYYMMDD'
-        // @CL1 : 시작시간 'HH:MM'
-        // @CL2 : 종료시간 'HH:MM'
-        const param = {cls:"JumjoWorkSave", cstCo:_dayJobInfo.cstCo, useId:_dayJobInfo.userId, ymd:_dayJobInfo.ymd, sTime:convertTime2(sTime,  {format:'HH:mm'}), eTime:convertTime2(eTime,  {format:'HH:mm'})};
-        onConfirm(param);
-        setIsOpen(false);
-    }
-    return(
-        <>
-            <Text style={fonts.sheetTitle}>근무 시간 수정</Text>
-            <View style={styles.timePicker}>
-                <View style={{marginLeft:16}}>
-                    <TouchableOpacity onPress={()=>setSelectStime(true)} style={[styles.row, styles.miniBtn, {borderColor:sColor}]}>
-                        <Text style={[fonts.sheetcontent, {color:sColor}]}>출근시간 : </Text>
-                        <Text style={[fonts.sheetcontent, {color:sColor}]}>{convertTime2(sTime,  {format:'HH:mm'})}</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={()=>setSelectStime(false)} style={[styles.row, styles.miniBtn, {borderColor:eColor}]}>
-                        <Text style={[fonts.sheetcontent, {color:eColor}]}>퇴근시간 : </Text>
-                        <Text style={[fonts.sheetcontent, {color:eColor}]}>{convertTime2(eTime,  {format:'HH:mm'})}</Text>
-                    </TouchableOpacity>
-                </View>
-                <View>
-                    {
-                        (isSelectStime)?
-                            <InlineTimePicker date={sTime} setDate={setSTime}/>
-                        :
-                            <InlineTimePicker date={eTime} setDate={setETime}/>
-                    }
-                </View>
-            </View>
-            <View style={styles.row}>
-                <TouchableOpacity onPress={()=>setIsOpen(false)} style={styles.cancel}>
-                    <Text style={fonts.cancel}>취소</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={onPressConfirm} style={styles.confirm}>
-                    <Text style={fonts.confirm}>확인</Text>
-                </TouchableOpacity>
-            </View>
-        </>
-    )
-}
+// const ChangeWorkTime = ({dayJobInfo, setIsOpen, onConfirm}) => {
+//     const[_dayJobInfo, setDayJobInfo] = useState(dayJobInfo)
+//     const[sTime, setSTime] = useState(strToDate(_dayJobInfo.ymd +' '+ _dayJobInfo.startTime))
+//     const[eTime, setETime] = useState(strToDate(_dayJobInfo.ymd +' '+ _dayJobInfo.endTime))
+//     const [isSelectStime, setSelectStime] = useState(true);
+//     const sColor = (isSelectStime)?theme.primary:"#999";
+//     const eColor = (!isSelectStime)?theme.primary:"#999";
+//     const onPressConfirm = () => {
+//         // exec PR_PLYB02_WRKMNG 'JumjoWorkSave', 1014, 'mangdee22', '20240509', '07:00', '16:00'
+//         // @CLS 구분 : JumjoWorkSave
+//         // @CSTCO : 점포코드
+//         // @USERID : 알바ID
+//         // @YMD : 일자 'YYYYMMDD'
+//         // @CL1 : 시작시간 'HH:MM'
+//         // @CL2 : 종료시간 'HH:MM'
+//         const param = {cls:"JumjoWorkSave", cstCo:_dayJobInfo.cstCo, useId:_dayJobInfo.userId, ymd:_dayJobInfo.ymd, sTime:convertTime2(sTime,  {format:'HH:mm'}), eTime:convertTime2(eTime,  {format:'HH:mm'})};
+//         onConfirm(param);
+//         setIsOpen(false);
+//     }
+//     return(
+//         <>
+//             <Text style={fonts.sheetTitle}>근무 시간 변경</Text>
+//             <View style={styles.timePicker}>
+//                 <View style={{marginLeft:16}}>
+//                     <TouchableOpacity onPress={()=>setSelectStime(true)} style={[styles.row, styles.miniBtn, {borderColor:sColor}]}>
+//                         <Text style={[fonts.sheetcontent, {color:sColor}]}>출근시간 : </Text>
+//                         <Text style={[fonts.sheetcontent, {color:sColor}]}>{convertTime2(sTime,  {format:'HH:mm'})}</Text>
+//                     </TouchableOpacity>
+//                     <TouchableOpacity onPress={()=>setSelectStime(false)} style={[styles.row, styles.miniBtn, {borderColor:eColor}]}>
+//                         <Text style={[fonts.sheetcontent, {color:eColor}]}>퇴근시간 : </Text>
+//                         <Text style={[fonts.sheetcontent, {color:eColor}]}>{convertTime2(eTime,  {format:'HH:mm'})}</Text>
+//                     </TouchableOpacity>
+//                 </View>
+//                 <View>
+//                     {
+//                         (isSelectStime)?
+//                             <InlineTimePicker date={sTime} setDate={setSTime}/>
+//                         :
+//                             <InlineTimePicker date={eTime} setDate={setETime}/>
+//                     }
+//                 </View>
+//             </View>
+//             <View style={styles.row}>
+//                 <TouchableOpacity onPress={()=>setIsOpen(false)} style={styles.cancel}>
+//                     <Text style={fonts.cancel}>취소</Text>
+//                 </TouchableOpacity>
+//                 <TouchableOpacity onPress={onPressConfirm} style={styles.confirm}>
+//                     <Text style={fonts.confirm}>확인</Text>
+//                 </TouchableOpacity>
+//             </View>
+//         </>
+//     )
+// }
 
 
 const fonts = StyleSheet.create({

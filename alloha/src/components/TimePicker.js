@@ -5,7 +5,7 @@ import DatePicker from 'react-native-date-picker'
 
 export const InlineTimePicker = ({date, setDate, style = {}}) => {
     //const [date, setDate] = useState(new Date())
-  return <DatePicker date={date} mode='time' theme={"light"} dividerColor={"#F7F7F7"} onDateChange={setDate} minuteInterval={30} />
+  return <DatePicker date={date} onDateChange={setDate} mode='time' theme={"light"} dividerColor={"#F7F7F7"} minuteInterval={30} style={style} />
 }
 
 export const InlineDatePicker = ({date, setDate, maxDate=null, minDate=null,}) => {

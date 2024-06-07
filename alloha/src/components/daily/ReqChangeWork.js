@@ -79,22 +79,22 @@ export default function ReqChangeWork({ymd, cstCo}) {
                                                 const items = (showReq) ? reqList.filter(item => item.CSTNA == el && item.REQSTAT == "R")
                                                                         : reqList.filter(item => item.CSTNA == el);
                                                 return (
-                                                    <>
+                                                    <View key={idx}>
                                                     {
                                                         (items.length > 0)?
                                                             <View style={[styles.filterBtn, {paddingVertical:16}]}>
-                                                                <Text key={idx} style={fonts.subBoxHour}>{el}</Text>
+                                                                <Text style={fonts.subBoxHour}>{el}</Text>
                                                             </View>
                                                         :   null
                                                     }
                                                     {
                                                         items.map(
                                                             (el, idx)=>{
-                                                               return <ReqItem key={idx} data={el} refresh={()=>onAprovDeny()}/>
+                                                               return <ReqItem data={el} refresh={()=>onAprovDeny()}/>
                                                             }
                                                         )
                                                     }
-                                                    </>
+                                                    </View>
                                                 )
                                             }
                                         )

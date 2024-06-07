@@ -23,6 +23,7 @@ export const CustomBottomSheet2 = ({isOpen, onClose, content}) => {
 const sheet = StyleSheet.create({
     backDrop:{
         position:"absolute", 
+        zIndex:30,
         left:0,
         top:0,
         backgroundColor:"rgba(0,0,0,0.5)", 
@@ -30,8 +31,8 @@ const sheet = StyleSheet.create({
         width:screen.width, 
     },
     container:{
-        zIndex:5,
         position:"absolute",
+        zIndex:30,
         bottom:0,
         padding:20,
         borderTopEndRadius:15,

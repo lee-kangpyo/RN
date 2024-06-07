@@ -522,7 +522,6 @@ const CommuteBar = ({data, isCommonJob, onPressed}) => {
                         null
                 }
             </View>
-
             {
             (false)?
             <TouchableOpacity onPress={onPressed} style={[styles.box, styles.row]}>
