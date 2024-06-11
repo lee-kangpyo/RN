@@ -1,0 +1,92 @@
+name: android PreView
+on:
+  workflow_dispatch:
+    inputs:
+      os:
+        type: choice
+        description: OS to build on. Ubuntu is faster, MacOS supports iOS builds
+        options:
+          - ubuntu-latest
+      platform:
+        type: choice
+        description: Platform to build for
+        options:
+          - android
+      profile:
+        type: choice
+        description: Build profile to use
+        options:
+          - preview
+      should_submit:
+        type: boolean
+        description: Whether to perform the submit step
+        required: true
+        default: false
+jobs:
+  build:
+    runs-on: ${{ github.event.inputs.os }}
+
+    strategy:
+      matrix:
+        node: [18.x]
+    steps:
+
+    - name: 🏗 Setup repo
+      uses: actions/checkout@v2
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v2
+      with:
+        java-version: '17'
+        distribution: 'adopt'
+
+    - name: 🏗 Setup Node
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node }}
+        cache: yarn      
+        cache-dependency-path: ${{ github.workspace }}/alloha
+
+    - name: 🏗 Setup Expo and EAS
+      uses: expo/expo-github-action@v7
+      with:
+        token: ${{ secrets.EXPO_TOKEN }}
+        expo-version: latest
+        eas-version: latest
+
+    - name: Create google-services.json
+      working-directory: ${{ github.workspace }}/alloha
+      run: |
+        echo ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }} | base64 --decode > ${{ github.workspace }}/alloha/google-services.json
+
+    - name: 📦 Install dependencies
+      run: yarn
+      working-directory: ${{ github.workspace }}/alloha
+
+    # - name: 📋 Test project
+    #   run: yarn test
+    #   working-directory: ${{ github.workspace }}/alloha
+    
+    - name: Set up the date environment variable
+      run: echo "CURRENT_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+
+    - name: 👷 Build app
+      env:
+        GOOGLE_SERVICES_JSON: ${{ github.workspace }}/alloha/google-services.json
+      working-directory: ${{ github.workspace }}/alloha
+      run: |
+        eas build --local \
+          --non-interactive \
+          --output=./app-build \
+          --platform=${{ github.event.inputs.platform }} \
+          --profile=${{ github.event.inputs.profile }}
+
+    - name: 📦 Upload Build Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: aloha-${{ env.CURRENT_DATE }}
+        path: ${{ github.workspace }}/alloha/app-build
+
+    # - name: 🚢 Submit
+    #   if: ${{ github.event.inputs.should_submit }}
+    #   run: eas submit -p ${{ github.event.inputs.platform }} --profile ${{ github.event.inputs.profile }} --path ${{ github.workspace }}/alloha/app-build
