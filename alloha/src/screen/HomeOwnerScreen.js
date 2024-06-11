@@ -1,11 +1,10 @@
 
-import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View} from 'react-native';
 import React, {useState, useEffect, useCallback} from 'react';
 
 import { StatusBar, setStatusBarStyle } from 'expo-status-bar';
 import { theme } from '../util/color';
 
-import { LinearGradient } from 'expo-linear-gradient';
 import { useDispatch, useSelector } from 'react-redux';
 import { HTTP } from '../util/http';
 import HomeHeader from '../components/home/HomeHeader';

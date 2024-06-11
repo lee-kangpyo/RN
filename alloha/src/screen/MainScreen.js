@@ -212,7 +212,7 @@ function CrewScreen(){
         tabBarInactiveTintColor: 'gray',
       })}
     >
-      {/*<Tab.Screen name="Home" component={HomeCrewStack} options={{ headerShown:false, tabBarLabel: '홈'}}/>*/}
+      <Tab.Screen name="Home" component={HomeCrewStack} options={{ headerShown:false, tabBarLabel: '홈'}}/>
       <Tab.Screen name="CommuteCheckInfo" component={CommuteCheckStack} options={{ headerShown:false, tabBarLabel: '근무정보'}}/>
       <Tab.Screen name="CommuteCheck" component={CommuteCheckScreen} options={{headerTitleStyle:headerTitleStyle, headerTitleAlign:"center", tabBarLabel:"근무현황"}}/>
       <Tab.Screen name="schedule" component={ScheduleScreenToAlba} options={{ tabBarLabel: '근무계획', headerTitleStyle:headerTitleStyle, headerTitleAlign:"center"}}/>
@@ -250,13 +250,13 @@ function HomeCrewStack(){
   return (
     <Stack.Navigator>
       <Stack.Screen name="HomeScreen" component={HomeCrewScreen} options={{headerShown:false}}/>
+      <Stack.Screen name="CommuteCheckDetail" component={CommuteCheckDetailScreen} options={{headerLeft:()=>headerLeftComponent("근무내역"), title:""}}/>
     </Stack.Navigator>
   )
 }
 //<Tab.Screen name="community" component={BoardScreen} options={{ tabBarLabel: '커뮤니티' }}/>
 function CommuteCheckStack(){
   const navigation = useNavigation();
-
   const headerLeft = (props) => {
     return(
       <TouchableOpacity                

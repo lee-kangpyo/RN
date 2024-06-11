@@ -39,9 +39,7 @@ export default function CommuteCheckDetailScreen({navigation, route}) {
         setIsOpen(true);
     }
 
-    
     const onConfirm = async (params) => {
-        console.log(params);
         await HTTP("POST", "/api/v2/commute/AlbaJobSave", params)
         //exec PR_PLYC03_JOBCHECK 'AlbaJobSave', '20240605', '', 1015, 'Chaewonp3306', '09:00', '14:30', 'G', 0.5
         // await HTTP("POST", "/api/v2/daily/JumjoWorkSave", params)
@@ -55,7 +53,6 @@ export default function CommuteCheckDetailScreen({navigation, route}) {
             alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
         })
     }
-
     return (
         <View style={styles.container}>
             {

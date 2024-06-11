@@ -393,3 +393,34 @@ export function strToDate(dateString){
     const dateStr = moment(dateString, 'YYYYMMDD HH:mm');
     return dateStr.toDate();
 }
+
+// '20240611' -> '2024-06-11'
+export function convertDateStr(dateStr){
+    // YYYY-MM-DD 형식인지 확인하는 정규식
+    const regex = /^\d{4}-\d{2}-\d{2}$/;
+    
+    if (regex.test(dateStr)) {
+        // 이미 YYYY-MM-DD 형식인 경우 그대로 반환
+        return dateStr;
+    } else if (dateStr.length === 8) {
+        // YYYYMMDD 형식인 경우 변환
+        return `${dateStr.slice(0, 4)}-${dateStr.slice(4, 6)}-${dateStr.slice(6)}`;
+    } else {
+        // 유효하지 않은 형식인 경우 오늘 날짜 반환
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 +1 필요
+        const day = String(today.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+}
+
+// 2024-06-10 -> {"prev":"20240510", "current":20240610, "next":20240710}
+export function convertDayObj (ymd) {
+    const cur = moment(ymd);
+    const nnext = cur.clone().add(2, 'month');
+    const next = cur.clone().add(1, 'month');
+    const prev = cur.clone().subtract(1, 'month');
+    const pprev = cur.clone().subtract(2, 'month');
+    return {pprev:pprev.format("YYYYMMDD") ,prev:prev.format("YYYYMMDD"), cur:cur.format("YYYYMMDD"), next:next.format("YYYYMMDD"), nnext:nnext.format("YYYYMMDD")};
+}

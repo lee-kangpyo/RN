@@ -12,8 +12,6 @@ import { adjustTime, calculateDifference, calculateTimeDifferenceStr, formatTime
 
 
 export default function  ChangeWorkTime ({dayJobInfo, setIsOpen, onConfirm}) {
-
-
     const { showAlert } = useAlert();
     // 근무 정보
     const _dayJobInfo = dayJobInfo;
@@ -62,7 +60,6 @@ export default function  ChangeWorkTime ({dayJobInfo, setIsOpen, onConfirm}) {
             // , @P_CL2	nvarchar(20)
             // , @P_JOBCL	nvarchar(20)
             // , @P_BRKDURE
-
             const param = {cstCo:_dayJobInfo.cstCo, userId:_dayJobInfo.userId, useId:_dayJobInfo.userId, ymd:_dayJobInfo.ymd, sTime:sTime, eTime:eTime, jobCl:type, brkDure:restTime};
             onConfirm(param);
             setIsOpen(false);
@@ -121,7 +118,7 @@ export default function  ChangeWorkTime ({dayJobInfo, setIsOpen, onConfirm}) {
     return(
         <>
             <View style={[{padding:8}]}>
-                <Text style={fonts.sheetTitle}>근무 시간 입력</Text>
+                <Text style={fonts.sheetTitle}>{(_dayJobInfo.cstNa)?_dayJobInfo.cstNa+" ":""}근무 시간 입력</Text>
                 <View style={{height:20}} />
                 {/*일반, 대타*/}
                 <TypeContainer type={type} setType={setType}/>

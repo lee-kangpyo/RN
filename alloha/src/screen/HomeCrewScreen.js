@@ -11,6 +11,8 @@ import WorkPlace from '../components/home/WorkPlace';
 import WeeklyStatus from '../components/home/WeeklyStatus';
 import { useSelector } from 'react-redux';
 import { HTTP } from '../util/http';
+import HomeHeader from '../components/home/HomeHeader';
+import CalendarScreen from './CalendarScreen';
 
 
 export default function HomeCrewScreen({navigation}) {
@@ -34,19 +36,24 @@ export default function HomeCrewScreen({navigation}) {
     }
     return (
         (Object.keys(datas).length == 0)?
-        //(true)?
-        <View style={{flex:1, justifyContent:"center"}}>
-            <ActivityIndicator color={"black"}/>
-        </View>
+            <View style={{flex:1, justifyContent:"center"}}>
+                <ActivityIndicator color={"black"}/>
+            </View>
         :
-        <View style={styles.container}>
-            <StatusBar style='light'/>
-            <HomeHeader data={datas.top} />
-            <ScrollView contentContainerStyle={styles.body}>
-                <TotalSalary data={datas.TotalSalary}/>
-                <WorkPlace data={datas.salaryByCst}/>
-            </ScrollView>
-        </View>
+            <View style={styles.container}>
+                <StatusBar style='light'/>
+                <HomeHeader data={datas.top} />
+                <CalendarScreen />    
+            </View>
+        
+        // <View style={styles.container}>
+        //     <StatusBar style='light'/>
+        //     <HomeHeader data={datas.top} />
+        //     <ScrollView contentContainerStyle={styles.body}>
+        //         <TotalSalary data={datas.TotalSalary}/>
+        //         <WorkPlace data={datas.salaryByCst}/>
+        //     </ScrollView>
+        // </View>
     )
 }
 
