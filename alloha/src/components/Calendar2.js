@@ -50,7 +50,9 @@ const MyCalendar = ({data, cstList, initialDate, selectDay, onDayTap, onChangeMo
               },
               dayHeader:{
                 // 월화수목금
-                color:"#111"
+                fontFamily:"SUIT-Bold",
+                color:"#111",
+                fontSize:16
               },
               dayTextAtIndex0: {
                 //일
@@ -117,7 +119,7 @@ const RenderCustomDay = memo(({day, state, items, onTap, isSelected}) => {
       <View style={styles.dayBox}>
           <View style={[isSelected && styles.isSelected, isToday && styles.today]}>
             <Text style={[
-              styles.regular,
+              styles.regular, styles.dayText,
               isSunday && styles.sundayText,
               isSaturday && styles.saturdayText,
               isWeekday && styles.weekdayText,
@@ -128,6 +130,7 @@ const RenderCustomDay = memo(({day, state, items, onTap, isSelected}) => {
             </Text>
           </View>
       </View>
+      <View style={{height:4}} />
       <View style={{flexDirection:"row"}}>
         <Markers items = {items} />
       </View>
@@ -153,7 +156,7 @@ const styles = StyleSheet.create({
     },
     dayBox:{width:21, height:21, justifyContent:"center", alignItems:"center",},
     dayText: {
-      fontSize: 10,
+      fontSize: 16,
     },
     sundayText: {
       color: 'red',
@@ -185,7 +188,6 @@ const styles = StyleSheet.create({
       flex:1,
       paddingHorizontal:2,
       paddingVertical:6,
-      
       marginBottom:4,
       borderRadius:2
     },
