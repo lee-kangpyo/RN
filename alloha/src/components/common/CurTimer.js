@@ -41,7 +41,7 @@ export default function CurTimer() {
 const styles = StyleSheet.create({
     timer: {
         fontFamily: "SUIT-ExtraBold",
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: "800",
         fontStyle: "normal",
         color: "#111111",
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     },
     date:{
         fontFamily: "SUIT-Medium",
-        fontSize: 13,
+        fontSize: 16,
         fontWeight: "500",
         fontStyle: "normal",
         color: "#555555"
