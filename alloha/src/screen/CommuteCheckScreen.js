@@ -1,5 +1,5 @@
 
-import { StyleSheet, Text, View, TouchableOpacity, Linking, Alert, ScrollView, Image, Platform } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Linking, Alert, ScrollView, Image, Platform, ActivityIndicator } from 'react-native';
 import React, {useState, useEffect, useCallback} from 'react';
 import MyStorePicker from '../components/alba/MyStorePicker';
 import { useSelector } from 'react-redux';
@@ -11,11 +11,13 @@ import CurTimer from '../components/common/CurTimer';
 import { getLocation } from '../util/location';
 import { MaterialIcons } from '@expo/vector-icons'; 
 import { theme } from '../util/color';
+import Loading from '../components/Loding';
+import MyStore from '../components/alba/MyStore';
 
 export default function CommuteCheckScreen({navigation}) {
-    const userId = useSelector((state)=>state.login.userId)
-    const sCstCo = useSelector((state)=>state.alba.sCstCo)
-    const myStores = useSelector((state)=>state.alba.myStores)
+    const userId = useSelector((state)=>state.login.userId);
+    const sCstCo = useSelector((state)=>state.alba.sCstCo);
+    const myStores = useSelector((state)=>state.alba.myStores);
     const { thisSunday, thisSaturday, today } = getStartAndEndOfWeek();
     const [jobChk, setJobChk] = useState([]);
     const [daySchedule, setDaySchedule] = useState([]);
@@ -24,10 +26,12 @@ export default function CommuteCheckScreen({navigation}) {
     const store = myStores.find(el => el.CSTCO == sCstCo);
     const [checkLocation, setCheckLocation] = useState(false);
     const [jobInfo, setJobInfo] = useState({});
+    const [isLoading, setIsLoading] = useState(true);
 
     const jobchksearch = async (cstCo) => {
         await HTTP("GET", "/api/v1/commute/jobchksearch", {userId:userId, cstCo:cstCo})
         .then((res)=>{
+            
             setJobChk(res.data.result);
         }).catch(function (error) {
             console.log(error);
@@ -129,6 +133,7 @@ export default function CommuteCheckScreen({navigation}) {
             getDaySchedule(sCstCo);
             commuteCheckInfo();             // Bottom2 컴포넌트 사용하기 위한 위젯
             //MonthAlbaSlySearch();         // Bottom 컴포넌트 사용하기 위한 위젯
+            setIsLoading(false)
             return () => { 
                 //console.log("unFocused");
             };
@@ -141,7 +146,12 @@ export default function CommuteCheckScreen({navigation}) {
         //navigation.setOptions({headerShown:false})
     }, [navigation])
     return (
-        (sCstCo > 0)?
+        (isLoading)?
+            <View style={{flex:1, justifyContent:"center"}}>
+                <MyStore userId={userId} />
+                <Loading />
+            </View>
+        :(sCstCo > 0)?
             <>
             <ScrollView style={styles.container}>
                 <MyStorePicker userId={userId} />    
@@ -160,8 +170,8 @@ export default function CommuteCheckScreen({navigation}) {
                                             <View style={styles.pillGray}>
                                                 <Text style={font.pillText}>{el.JOBDURE}시간</Text>
                                             </View>
-                                            <View style={styles.sep} />
-                                            <Text style={font.planCardContent2}>{(isCommonJob)?"일반근무":"대타근무"}</Text>
+                                            {/* <View style={styles.sep} /> */}
+                                            {/* <Text style={font.planCardContent2}>{(isCommonJob)?"일반근무":"대타근무"}</Text> */}
                                         </View>
                                     )
                                 })
@@ -195,7 +205,7 @@ export default function CommuteCheckScreen({navigation}) {
             </>
         :   
             <View style={{flex:1, justifyContent:"center", alignItems:"center"}}>
-                <MyStorePicker userId={userId} />
+                
                 <Text>등록된 점포가 없습니다. 점포검색을 이용해 주세요</Text>
             </View>
     );
@@ -615,14 +625,14 @@ const font = StyleSheet.create({
     },
     CommuteBarText:{
         fontFamily: "SUIT-Medium",
-        fontSize: 13,
+        fontSize: 16,
         fontWeight: "500",
         textAlign: "center",
         color: "#555555"
     },
     CommuteBarText2:{
         fontFamily: "SUIT-ExtraBold",
-        fontSize: 13,
+        fontSize: 16,
         fontWeight: "800",
         textAlign: "center",
         color: "#111111"
