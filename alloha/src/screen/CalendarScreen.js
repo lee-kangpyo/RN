@@ -137,7 +137,6 @@ export default function CalendarScreen() {
                             cstListColor.map((el, idx) => (
                                 <View key={idx} style={{flexDirection:"row", paddingHorizontal:8, alignItems:"center"}}>
                                     <FontAwesome name="circle" size={16} color={el.color} />
-                                    
                                     <View style={{width:6}} />
                                     <Text style={[styles.title, {color:"#111"}]}>{el.CSTNA}</Text>
                                 </View>
@@ -152,7 +151,7 @@ export default function CalendarScreen() {
                 </View>
                 <MyCalendar data={data} cstList={cstListColor} initialDate={initDay} selectDay={selectDay} onDayTap={onDayTap} onChangeMonth={onChangeMonth}/>
             </View>
-            <ScrollView contentContainerStyle={{padding:15}}>
+            <ScrollView contentContainerStyle={{padding:0}}>
                 {
                     (!bottomData)?
                         null
@@ -290,10 +289,10 @@ const BottomCards = ({data, openBottomSheet, openSelectJumpo}) => {
                                                     <View style={{width:6}} />
                                                     <View>
                                                         {
-                                                            (el.SCHDURE > 0) && <Text style={styles.content}>근무계획 - {convertTime(el.SCHSTART, {format:'HH:mm'})} ~ {convertTime(el.SCHEND, {format:'HH:mm'})}</Text> 
+                                                            (el.SCHDURE > 0) && <Text style={styles.content}>계획 - {convertTime(el.SCHSTART, {format:'HH:mm'})} ~ {convertTime(el.SCHEND, {format:'HH:mm'})}</Text> 
                                                         }
                                                         {
-                                                            (el.JOBDURE > 0) && <Text style={styles.content}>근무시간 - {convertTime(el.STARTTIME, {format:'HH:mm'})} ~ {convertTime(el.ENDTIME, {format:'HH:mm'})}</Text>
+                                                            (el.JOBDURE > 0) && <Text style={styles.content}>근무 - {convertTime(el.STARTTIME, {format:'HH:mm'})} ~ {convertTime(el.ENDTIME, {format:'HH:mm'})}</Text>
                                                         }
                                                     </View>
                                                 </View>
@@ -384,9 +383,10 @@ const styles = StyleSheet.create({
     },
     btn:{
         marginTop:8,
-        padding:2,
+        padding:10,
         borderWidth:1,
         borderRadius:5,
+        borderColor:"#888",
         alignItems:"center",
     },
     row:{flexDirection:"row"},
