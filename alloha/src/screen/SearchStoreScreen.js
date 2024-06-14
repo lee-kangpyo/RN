@@ -22,10 +22,6 @@ export default function SearchStoreScreen({type, refresh, setRefresh}) {
     const navigation = useNavigation();
     const [searchWrd, setsearchWrd] = useState("");
 
-    useEffect(()=>{
-        navigation.setOptions({title:"점포검색"})
-    }, [navigation])
-
     
     const getStoreList = async () => {
         await axios.get(URL+`/api/v1/getStoreListCrew`, {params:{cstNa:searchWrd, userId:userId}})

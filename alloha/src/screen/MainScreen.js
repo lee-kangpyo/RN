@@ -46,6 +46,7 @@ import { headerLeftComponent, headerTitleStyle } from '../util/utils';
 import HomeOwnerScreen from './HomeOwnerScreen';
 import QuestionScreen from './QuestionScreen';
 import ChangePasswordScreen from './ChangePasswordScreen';
+import { theme } from '../util/color';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -121,7 +122,7 @@ function OwnrScreen({}){
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => setTabBarIcon(focused, color, size, route.name),
-        tabBarActiveTintColor: 'tomato',
+        tabBarActiveTintColor: theme.primary,
         tabBarInactiveTintColor: 'gray',
       })}
     >
@@ -206,16 +207,17 @@ function ScheduleStack() {
 function CrewScreen(){
   return(
     <Tab.Navigator
+      initialRouteName='Home'
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => setTabBarIcon(focused, color, size, route.name),
-        tabBarActiveTintColor: 'tomato',
+        tabBarActiveTintColor: theme.primary,
         tabBarInactiveTintColor: 'gray',
       })}
     >
+      <Tab.Screen name="schedule" component={ScheduleScreenToAlba} options={{ tabBarLabel: '계획', headerTitleStyle:headerTitleStyle, headerTitleAlign:"center"}}/>
+      <Tab.Screen name="CommuteCheck" component={CommuteCheckScreen} options={{headerTitleStyle:headerTitleStyle, headerTitleAlign:"center", tabBarLabel:"출퇴"}}/>
       <Tab.Screen name="Home" component={HomeCrewStack} options={{ headerShown:false, tabBarLabel: '홈'}}/>
-      <Tab.Screen name="CommuteCheckInfo" component={CommuteCheckStack} options={{ headerShown:false, tabBarLabel: '근무정보'}}/>
-      <Tab.Screen name="CommuteCheck" component={CommuteCheckScreen} options={{headerTitleStyle:headerTitleStyle, headerTitleAlign:"center", tabBarLabel:"근무현황"}}/>
-      <Tab.Screen name="schedule" component={ScheduleScreenToAlba} options={{ tabBarLabel: '근무계획', headerTitleStyle:headerTitleStyle, headerTitleAlign:"center"}}/>
+      {/* <Tab.Screen name="CommuteCheckInfo" component={CommuteCheckStack} options={{ headerShown:false, tabBarLabel: '근무정보'}}/> */}
       
       {/* <Tab.Screen name="Home" options={{ tabBarLabel: '출퇴근(구버전)' }} >
         {() => (
@@ -232,7 +234,7 @@ function CrewScreen(){
           </Stack.Navigator>
         )}
       </Tab.Screen>
-      <Tab.Screen name="manageStore" component={SearchStoreScreen} backBehavior={"none"} options={{ tabBarLabel: '점포검색', headerTitleStyle:headerTitleStyle, headerTitleAlign:"center"}} />
+      {/* <Tab.Screen name="manageStore" component={SearchStoreScreen} backBehavior={"none"} options={{ tabBarLabel: '점포검색', headerTitleStyle:headerTitleStyle, headerTitleAlign:"center"}} /> */}
       <Tab.Screen name="etc" options={{ headerShown: false, }}>
         {() => (
           <Stack.Navigator initialRouteName="etc2">
@@ -240,6 +242,7 @@ function CrewScreen(){
             <Stack.Screen name="Comunity" component={ComunityScreen} options={{headerLeft:()=>headerLeftComponent("커뮤니티"), title:""}}/>
             <Stack.Screen name="question" component={QuestionScreen} options={{headerLeft:()=>headerLeftComponent("문의하기"), title:""}}/>
             <Stack.Screen name="changePassword" component={ChangePasswordScreen} options={{headerLeft:()=>headerLeftComponent("비밀번호 변경"), title:""}}/>
+            <Stack.Screen name="manageStore" component={SearchStoreScreen} options={{headerLeft:()=>headerLeftComponent("점포검색"), title:""}}/>
           </Stack.Navigator>
         )}
       </Tab.Screen>
@@ -279,9 +282,12 @@ function CommuteCheckStack(){
 const setTabBarIcon = (focused, color, size, name) =>{
   let iconName;
   let icon;
-  if (name === 'Home' || name === 'CommuteCheck') {
-    iconName = focused ? 'coffee' : 'coffee-outline';
-    icon = "MaterialCommunityIcons"
+  if (name === 'Home') {
+    iconName = 'calendar-alt';
+    icon = "FontAwesome5"
+  }else if (name === 'CommuteCheck'){
+    iconName = 'touch-app';
+    icon = "MaterialIcons"
   }else if (name === 'ManageCrew'){
     iconName = 'user-cog';
     icon = "FontAwesome5"
