@@ -3,7 +3,7 @@ var router = express.Router();
 const {execSql} = require("../../utils/excuteSql");
 
 const dotenv = require('dotenv');
-const { jobChk, jobChk2 } = require('../../query/auth');
+const { jobChk, jobChk2, albaSchedulemanager2 } = require('../../query/auth');
 const { monthCstSlySearch } = require('../../query/workResult');
 const { insertManualJobChk, daySchedule, reqCommuteChange, initCommuteChange, getReqCommuteList, updateJobReq, updateDayJob, getDAYJOBREQ, getReqCommuteListForDay, insertPLYADAYJOB, updateJobReqAbsence, getJobNo, updatePLYADAYJOB, getReqCommuteListForMonth } = require('../../query/commute');
 const { reverseGeocode } = require('../../utils/kakao');
@@ -75,6 +75,22 @@ router.post("/AlbaJobSave", async (req,res,next)=>{
         console.log(ymd, cstCo, userId, sTime, eTime, jobCl, brkDure);
         const result = await execSql(AlbaJobSave, {ymd, cstCo, userId, sTime, eTime, jobCl, brkDure});
         console.log(result);
+        res.status(200).json({resultCode:"00"});
+    } catch (error) {
+        console.log(error.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+})
+
+
+router.post("/AlbaSchSave", async (req,res,next)=>{
+    console.log("POST v2.commute.AlbaSchSave - 알바 근무 계획입력")
+    try {
+        // exec PR_PLYA02_ALBASCHMNG @cls, @cstCo, @userId, @ymdFr, @ymdTo, @jobCl, @sTime, @eTime
+        // exec PR_PLYA02_ALBASCHMNG ‘WeekAlbaScheduleSave’, ‘1021’, ‘Sksksksk’, ‘20240617’, ‘’, ‘2’, ‘07:00’, ‘12:00’
+        const { ymdFr, ymdTo, cstCo, userId, sTime, eTime, jobCl } = req.body;
+        console.log(ymdFr, ymdTo, cstCo, userId, sTime, eTime, jobCl);
+        const result = await execSql(albaSchedulemanager2, {cls:"WeekAlbaScheduleSave", ymdFr, ymdTo, cstCo, userId, sTime, eTime, jobCl});
         res.status(200).json({resultCode:"00"});
     } catch (error) {
         console.log(error.message)

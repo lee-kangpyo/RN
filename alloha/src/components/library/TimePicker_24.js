@@ -25,7 +25,6 @@ const TimePicker = ({ onTimeChange, itemHeight, initValue, refresh }) => {
   const [mRefresh, setMRefresh] = useState(0)
 
   const handleIndexChange = (category, item) => {
-    console.log(category, item)
     switch (category) {
       case 'hour':
         selectedHour.current = item;
@@ -51,7 +50,7 @@ const TimePicker = ({ onTimeChange, itemHeight, initValue, refresh }) => {
 
 
   useEffect(()=>{
-    console.log("refresh 변경됨", refresh);
+    //console.log("refresh 변경됨", refresh);
     const minidx = (initValue.minute == "00")?0:1;
     setHourIndex(Number(initValue.hour));
     setMinIdx(minidx);

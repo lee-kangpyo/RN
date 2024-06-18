@@ -18,7 +18,7 @@ export default function  ChangeWorkTime ({dayJobInfo, setIsOpen, onConfirm}) {
     // 대타 / 일반
     const [type, setType] = useState("G");
     // 휴게시간
-    const [restTime, setRestTime] = useState(0);
+    const [restTime, setRestTime] = useState(_dayJobInfo.brkDure ?? 0);
     // 출근시간
     const[sTime, setSTime] = useState((_dayJobInfo.startTime == "-")?"09:00":_dayJobInfo.startTime);
     //const[sTime, setSTime] = useState(_dayJobInfo.startTime);
@@ -30,12 +30,18 @@ export default function  ChangeWorkTime ({dayJobInfo, setIsOpen, onConfirm}) {
     //const [workHour, setWorkHOur] = useState(6);
     // 모두 닫기:-1 근무시간 활성화:0 출근시간 활성화:1, 퇴근시간 활성화:2, 
     const [isSelectStime, setSelectStime] = useState(-1);
-    
     // 색상 정보
     const sColor = (isSelectStime == 1)?theme.primary:"#999";
     const eColor = (isSelectStime == 2)?theme.primary:"#999";
     const rColor = (isSelectStime == 3)?theme.primary:"#999";
 
+    useEffect(()=>{
+        setWorkHOur((_dayJobInfo.startTime == "-")?"":calculateDifference(_dayJobInfo.startTime, _dayJobInfo.endTime));
+        setSTime((_dayJobInfo.startTime == "-")?"09:00":_dayJobInfo.startTime);
+        setETime((_dayJobInfo.endTime == "-")?"16:00":_dayJobInfo.endTime);
+        setRestTime(_dayJobInfo.brkDure ?? 0);
+        setSelectStime(-1);
+    }, [dayJobInfo]);
     
     // 확인 버튼 클릭 이벤트
     const onPressConfirm = () => {
@@ -79,10 +85,15 @@ export default function  ChangeWorkTime ({dayJobInfo, setIsOpen, onConfirm}) {
             console.log('sTime has changed:', prev.sTime, '->', sTime);
             const time = adjustTime(sTime, workHour);
             if(calculateTimeDifferenceStr(sTime, time.createTime) < 0){
-                const time = adjustTime("24:00", workHour * -1)
+                let time;
+                if(sTime == "23:00"){
+                    time = adjustTime("23:00", workHour * -1)
+                }else {
+                    time = adjustTime("23:30", workHour * -1)
+                }
                 setSTime(time.createTime);
                 setETime(time.baseTime);
-                setSRefresh(!sRefresh)
+                setSRefresh(!sRefresh);
             }else{
                 if(eTime != time.createTime){
                     setETime(time.createTime);
@@ -90,12 +101,12 @@ export default function  ChangeWorkTime ({dayJobInfo, setIsOpen, onConfirm}) {
             }
         }else if (prev.eTime != eTime) {
             console.log('eTime has changed:', prev.eTime, '->', eTime);
-            const time = adjustTime(eTime, workHour * -1);
+            const time = adjustTime(eTime, workHour);
             if(calculateTimeDifferenceStr(time.createTime, eTime) < 0){
-                const time = adjustTime("00:00", workHour)
+                const time = adjustTime("00:00", workHour);
                 setSTime(time.baseTime);
                 setETime(time.createTime);
-                setERefresh(!eRefresh)
+                setERefresh(!eRefresh);
             }else{
                 if(sTime != time.createTime){
                     setSTime(time.createTime);
@@ -109,9 +120,9 @@ export default function  ChangeWorkTime ({dayJobInfo, setIsOpen, onConfirm}) {
     
     const tapTouch = (num) => {
         if(isSelectStime == num){
-            setSelectStime(-1)
+            setSelectStime(-1);
         }else{
-            setSelectStime(num)
+            setSelectStime(num);
         }
     }
     
@@ -146,8 +157,6 @@ export default function  ChangeWorkTime ({dayJobInfo, setIsOpen, onConfirm}) {
                                 }}
                             />
                         </View>
-                        //<InlineTimeSelection date={sTime} setDate={setSTime} />
-                        // <TimeSelection date={sTime} setDate={setSTime}/>
                     :
                         null
                 }
@@ -235,22 +244,26 @@ const TypeContainer = ({type, setType}) => {
                     <Text style={[fonts.typeText, {color:sTextColor}]}>대타</Text>
                 </TouchableOpacity>
             </View>
+            <View style={{height:8}} />
+            <View style={{backgroundColor:"#f1f1f1", padding:5, borderRadius:5, alignItems:"center"}}>
+                <Text style={fonts.hint}>대타는 주휴수당에 포함되지 않습니다.</Text>
+            </View>
         </View>
     )
 }
 // 근무시간
 const WorkTime = ({workTime, setWorkTime, isSelectStime, tapTouch}) => {
     const works = workTime.toString().split(".");
-    const [hour, setHour] = useState(works[0] ?? 0)
-    const [min, setMin] = useState(works[1] ?? 0)
+    const [hour, setHour] = useState(works[0] ?? 0);
+    const [min, setMin] = useState(works[1] ?? 0);
     
     useEffect(()=>{
-        setWorkTime(hour+"."+min)
+        setWorkTime(hour+"."+min);
     }, [hour, min])
 
     const hColor = (isSelectStime == 0)?theme.primary:"#999";
     
-    const items = []
+    const items = [];
 
     for (let i = 0; i <= 23; i += 1) {
         items.push(i);
@@ -258,7 +271,7 @@ const WorkTime = ({workTime, setWorkTime, isSelectStime, tapTouch}) => {
     
     return (
         <View style={{justifyContent:"space-between", width:"100%",}}>
-            <View style={{ marginVertical:16}} />
+            <View style={{ marginVertical:8}} />
             <TouchableOpacity onPress={()=>tapTouch(0)} style={[styles.miniBtn, styles.row, {borderColor:hColor, flex:1, justifyContent:"space-between", paddingVertical:15}]}>
                 <Text style={[fonts.sheetcontent]}>근무시간</Text>
                 <View style={[styles.row, {alignItems:"center",}]}>
@@ -345,7 +358,6 @@ const TimeSelection = ({date, setDate}) => {
                 startHour += 1;
             }
         }
-
         return timeList;
     }
 
@@ -458,11 +470,11 @@ const fonts = StyleSheet.create({
         fontSize: 15,
         color: "#333333",
     },
-
-
-    
-
-
+    hint:{
+        fontFamily: "SUIT-Regular",
+        fontSize: 13,
+        color: "#999"
+    },
     cancel:{
         fontFamily: "SUIT-Bold",
         fontSize: 15,

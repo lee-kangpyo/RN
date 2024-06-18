@@ -207,19 +207,15 @@ export default function WorkScreen({navigation}) {
                                 </View>
                             </TouchableOpacity>
                         </View>
-                        
                         {
                             (false)?
                                 <TouchableOpacity onPress={()=>dispatch(setAlba(alba))}>
                                     <Text>지난 시간표 가져오기</Text>
                                 </TouchableOpacity>
-
                             :
                                 null
                         }
-                        
                     </View>
-                    
                     </>
                     : null}
                     <Animated.View style={{width:widthValue, paddingTop:20, marginBottom:5}}>

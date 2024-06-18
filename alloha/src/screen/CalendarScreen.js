@@ -2,9 +2,9 @@
 import { Text, ScrollView, View, StyleSheet, Image, TouchableOpacity } from "react-native";
 import React, {useCallback, useEffect, useState} from 'react';
 import MyCalendar from "../components/Calendar2";
-import { FontAwesome, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { FontAwesome, MaterialIcons, MaterialCommunityIcons, AntDesign } from '@expo/vector-icons';
 import { HTTP } from '../util/http';
-import { YYYYMMDD2Obj, convertDateStr, convertTime, convertTime2 } from "../util/moment";
+import { YYYYMMDD2Obj, convertDateStr, convertTime, convertTime2, isFutureDate } from "../util/moment";
 import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
 import { theme } from "../util/color";
@@ -13,6 +13,7 @@ import { setSelectedStore } from "../../redux/slices/alba";
 import { CustomBottomSheet2 } from "../components/common/CustomBottomSheet2";
 import ChangeWorkTime from "../components/bottomSheetContents/ChangeWorkTime";
 import { useAlert } from "../util/AlertProvider";
+import ChangeSchTime from "../components/bottomSheetContents/ChangeSchTime";
 
 
 export default function CalendarScreen() {
@@ -20,16 +21,20 @@ export default function CalendarScreen() {
     const userId = useSelector((state)=>state.login.userId);
     const today = convertTime2(moment(), {format : 'YYYY-MM-DD'});
     const isFocused = useIsFocused();
-    // 바텀시트 열기
+    // 결과 바텀시트 열기
     const [isOpen, setIsOpen] = useState(false);
-    // 점포 선택 열기
+    // 점포 선택 바텀시트 열기
     const [isOpenJumpo, setIsOpenJumpo] = useState(false);
+    // 계획 바텀시트 열기
+    const [isOpenSch, setIsOpenSch] = useState(false);
     // 달력 데이터
     const [data, setData] = useState({});
     //하단 카드 데이터
     const [bottomData, setBottomData] = useState(null);
-    // 바텀 시트 데이터 - 일정 입력
+    // 바텀 시트 데이터 - 근무 시간일정 입력
     const [sheetData, setSheetData] = useState({})
+    //하단 카드 데이터 - 근무 계획 입력
+    const [sheetSchData, setSheetSchData] = useState({});
     // [{"CSTCO": 1014, "CSTNA": "글로리맘", "color": "#C80000"}, ] 점포 정보
     const [cstListColor, setCstListColor] = useState([]);
     //선택한 날짜
@@ -38,7 +43,7 @@ export default function CalendarScreen() {
     const [initDay, setInitDay] = useState(selectDay)
     // main0205에서 호출할때 사용하는 state
     const [first, setFirst] = useState(true);
-    
+
     
     const main0205 = async (ymd, isBottom) => {
         await HTTP("GET", "/v1/home/MAIN0205", {userId:userId, ymd:ymd.replaceAll("-", "")})
@@ -81,6 +86,7 @@ export default function CalendarScreen() {
         main0205(month.dateString);
     }, []);
 
+    //근무 결과 입력
     const onConfirm = async (params) => {
         //console.log(param);
         //exec PR_PLYC03_JOBCHECK 'AlbaJobSave', '20240605', '', 1015, 'Chaewonp3306', '09:00', '14:30', 'G', 0.5
@@ -97,36 +103,75 @@ export default function CalendarScreen() {
             alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
         })
     }
+    
+    //근무 계획 입력
+    const onConfirmSch = async (params) => {
+        // exec PR_PLYA02_ALBASCHMNG @cls, @cstCo, @userId, @ymdFr, @ymdTo, @jobCl, @sTime, @eTime
+        // exec PR_PLYA02_ALBASCHMNG ‘WeekAlbaScheduleSave’, ‘1021’, ‘Sksksksk’, ‘20240617’, ‘’, ‘2’, ‘07:00’, ‘12:00’
+        const p = {...sheetSchData, ...params};
+        await HTTP("POST", "/api/v2/commute/AlbaSchSave", p)
+        .then((res)=>{
+            const dateObject = getDateObject(p.ymdFr);
+            main0205(dateObject.dateString);
+            if(res.data.resultCode == "00"){
+                showAlert("근무 계획", '입력 되었습니다.',);
+            }
+        }).catch(function (error) {
+            console.log(error);
+            alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
+        })
+    }
 
     
     const openBottomSheet = (item) => {
+        console.log("openBottomSheet");
         const jobDure = item.JOBDURE;
         const schDure = item.SCHDURE;
+        const brkDure = item.BRKDURE ?? 0;
+        
         if(jobDure > 0){
-            setSheetData({startTime:convertTime(item.STARTTIME, {format:"HH:mm"}), endTime:convertTime(item.ENDTIME, {format:"HH:mm"}), cstCo:item.CSTCO, userId:item.USERID, ymd:item.YMD, cstNa:item.CSTNA})
+            const param = {startTime:convertTime(item.STARTTIME, {format:"HH:mm"}), endTime:convertTime(item.ENDTIME, {format:"HH:mm"}), cstCo:item.CSTCO, userId:item.USERID, ymd:item.YMD, cstNa:item.CSTNA, brkDure:brkDure};
+            setSheetData(param);
             setIsOpen(true);
         }else if(schDure > 0 ){
-            setSheetData({startTime:convertTime(item.SCHSTART, {format:"HH:mm"}), endTime:convertTime(item.SCHEND, {format:"HH:mm"}), cstCo:item.CSTCO, userId:item.USERID, ymd:item.YMD, cstNa:item.CSTNA})
+            setSheetData({startTime:convertTime(item.SCHSTART, {format:"HH:mm"}), endTime:convertTime(item.SCHEND, {format:"HH:mm"}), cstCo:item.CSTCO, userId:item.USERID, ymd:item.YMD, cstNa:item.CSTNA, brkDure:brkDure})
             setIsOpen(true);
         }else{
-            setSheetData({startTime:"09:00", endTime:"16:00", cstCo:item.CSTCO, userId:item.USERID, ymd:item.YMD, cstNa:item.CSTNA})
+            setSheetData({startTime:"09:00", endTime:"16:00", cstCo:item.CSTCO, userId:item.USERID, ymd:item.YMD, cstNa:item.CSTNA, brkDure:brkDure})
             setIsOpen(true);
         }
     }
 
+    const [selectYmd, setSelectYmd] = useState("");
     // 점포 선택 화면 열기
     const openSelectJumpo = (ymd) => {
-        setSheetData({startTime:"09:00", endTime:"16:00", userId:userId, ymd:ymd.replaceAll("-", "")})
+        console.log(ymd);
+        console.log(data[ymd]);
+        setSelectYmd(ymd.replaceAll("-", ""));
+        setSheetData({startTime:"09:00", endTime:"16:00", userId:userId, ymd:ymd.replaceAll("-", "")});
         setIsOpen(false);
         setIsOpenJumpo(true);
     }
     // 점포 선택 화면 닫기
     const closeSelectJumpo = () => setIsOpenJumpo(false);
-    const nextStep = (cstCo) => {
+    // 점포 선택후 다음으로 넘기기
+    const nextStep = (cstCo, type) => {
         const cst = cstListColor.find(el => el.CSTCO == cstCo);
         setIsOpenJumpo(false);
-        setSheetData({...sheetData, cstCo:cst.CSTCO, cstNa:cst.CSTNA})
-        setIsOpen(true);
+        if(type == "계획"){
+            const param = {cstCo:cst.CSTCO, userId:sheetData.userId, ymdFr:sheetData.ymd, ymdTo:"", jobCl:1, sTime:sheetData.startTime, eTime:sheetData.endTime}    
+            setSheetSchData(param);
+            setIsOpenSch(true);
+        }else if(type == "근무"){
+            setSheetData({...sheetData, cstCo:cst.CSTCO, cstNa:cst.CSTNA})
+            setIsOpen(true);
+        }
+    }
+    //계획 열기
+    const openSch = (item) => {
+        const param = {cstCo:item.CSTCO, userId:item.USERID, ymdFr:item.YMD, ymdTo:"", jobCl:1, sTime:convertTime(item.SCHSTART, {format:"HH:mm"}), eTime:convertTime(item.SCHEND, {format:"HH:mm"})}
+        setSheetSchData(param);
+        setIsOpenSch(true);
     }
     return(
         <>
@@ -156,7 +201,7 @@ export default function CalendarScreen() {
                     (!bottomData)?
                         null
                     :
-                        <BottomCards data={bottomData} openBottomSheet={openBottomSheet} openSelectJumpo={openSelectJumpo}/>
+                        <BottomCards data={bottomData} openBottomSheet={openBottomSheet} openSelectJumpo={openSelectJumpo} openSch={openSch}/>
                 }
             </ScrollView>
             {
@@ -173,48 +218,111 @@ export default function CalendarScreen() {
                 isOpen={isOpenJumpo}
                 onClose={()=>setIsOpenJumpo(false)}
                 content={
-                    <SelJumPoList cstListColor={cstListColor} closeSelectJumpo={closeSelectJumpo} next={nextStep}/>
+                    <SelJumPoList ymd={selectYmd} item={data[convertDateStr(selectYmd)]??[]} cstListColor={cstListColor} closeSelectJumpo={closeSelectJumpo} next={nextStep}/>
                 }
             />
-            
+            {
+                (Object.keys(sheetSchData).length > 0)?
+                    <CustomBottomSheet2
+                        isOpen={isOpenSch}
+                        onClose={()=>setIsOpenSch(false)}
+                        content={<ChangeSchTime item={sheetSchData} setIsOpen={setIsOpenSch} onConfirm={onConfirmSch}/>}
+                    />
+                :
+                    null
+            }
         </>
     );
 }
 
-const SelJumPoList = ({cstListColor, closeSelectJumpo, next}) => {
+const SelJumPoList = ({ymd, item, cstListColor, closeSelectJumpo, next}) => {
+    const data = cstListColor.reduce((rslt, next)=>{
+        const itm = item.find(el => el.CSTCO == next.CSTCO);
+        if(itm){
+            rslt.push({...next, disabled:true});
+        }else{
+            rslt.push({...next, disabled:false});
+        }
+        return rslt
+    }, []);
+    
+    const isFuture = isFutureDate(ymd);
+    const [type, setType] = useState((isFuture)?"계획":"근무");
     const {showAlert} = useAlert();
     const [cstCo, setCstCo] = useState(0);
     const confirm = () => {
         if(cstCo > 0) {
-            next(cstCo);
+            next(cstCo, type);
         }else{
-            showAlert("점포 선택", "일정을 입력할 점포를 선택해 주세요.");
+            showAlert("점포 선택", "계획을 입력할 점포를 선택해 주세요.");
         }
+    }
+    useEffect(()=>{
+        setType((isFuture)?"계획":"근무");
+        setCstCo(0);
+    }, [ymd, item])
+
+    const cancel = () => {
+        setCstCo(0);
+        closeSelectJumpo();
     }
     return(
         <View>
-            <ScrollView contentContainerStyle={{padding:10}} style={{maxHeight:300}}>
+            <View style={{alignItems:"center"}}>
+                <Text style={fonts.workTime}>입력할 점포를 선택해주세요.</Text>
+            </View>
+            <View style={{height:8}}/>
+            <ScrollView contentContainerStyle={{paddingHorizontal:10}} style={{maxHeight:300}}>
             {
-                cstListColor.map((el, idx) => {
-                    console.log(el)
+                data.map((el, idx) => {
                     return (
-                        <TouchableOpacity onPress={()=>setCstCo(el.CSTCO)} key={idx} style={styles.jumpoBox}>
+                        <TouchableOpacity disabled={el.disabled} onPress={()=>setCstCo(el.CSTCO)} key={idx} style={[styles.jumpoBox, {borderColor:(el.disabled)?"#ddd":(cstCo == el.CSTCO)?theme.primary:"#555"}, ]}>
                             {
-                                (cstCo == el.CSTCO)?
+                                (el.disabled)?
+                                    <AntDesign name="closecircle" size={16} color={el.color} />
+                                :(cstCo == el.CSTCO)?
                                 <MaterialCommunityIcons name="checkbox-marked-circle" size={16} color={el.color} />
                                 :
                                 <FontAwesome name="circle" size={16} color={el.color} />
                             }
                             <View style={{width:6}} />
-                            <Text style={fonts.sheetcontent}>{el.CSTNA}</Text>
+                            <Text style={[fonts.sheetcontent, {color:(el.disabled)?"#ddd":"#111"}]}>{el.CSTNA}</Text>
                         </TouchableOpacity>
                     )
                 })
             }
             </ScrollView>
+            <View style={{padding:10}}>
+                <View style={{alignItems:"center"}}>
+                    <Text style={fonts.workTime}>유형을 선택해주세요.</Text>
+                </View>
+                <BtnSet isFuture={isFuture} fncLeft={()=>setType("계획")} fncRight={()=>setType("근무")} selected={type}/>
+                <View style={{height:8}}/>
+                <View style={{backgroundColor:"#f1f1f1", padding:5, borderRadius:5}}>
+                    <View style={{flexDirection:"row", paddingBottom:4, alignItems:"center"}}>
+                        {
+                            (type == "근무")?
+                                <>
+                                    <Text style={[fonts.hint, {fontWeight:"bold"}]}>근무</Text>
+                                    <Text style={fonts.hint}>: 실제로 일한 시간</Text>
+                                </>
+                            :(type == "계획")?
+                                <>
+                                    <Text style={[fonts.hint, {fontWeight:"bold"}]}>계획</Text>
+                                    <Text style={fonts.hint}>: 계획된 시간</Text>
+                                </>
+                            :null
+                        }
+                    </View>
+                    {
+                        (type=="계획")?<Text style={fonts.hint}>계획을 미리 입력하면 자동으로 근무가 기록됩니다.</Text>:null
+                    }
+                    
+                </View>
+            </View>
             {/*하단버튼*/}
             <View style={styles.row}>
-                <TouchableOpacity onPress={closeSelectJumpo} style={styles.cancel}>
+                <TouchableOpacity onPress={cancel} style={styles.cancel}>
                     <Text style={fonts.cancel}>취소</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={confirm} style={styles.confirm}>
@@ -236,35 +344,45 @@ function getDateObject(dateString) {
     };
 }
 
-const BottomCards = ({data, openBottomSheet, openSelectJumpo}) => {
+const BottomCards = ({data, openBottomSheet, openSelectJumpo, openSch}) => {
     const navigation = useNavigation();
     const dispatch = useDispatch()
     const day = data.day;
     const items = data.items;
     const ymdObj = YYYYMMDD2Obj(day.dateString.replaceAll("-", ""));
     const ymd = ymdObj.ymd.split(".");
+
+    const isFuture = isFutureDate(day.dateString);
     return (
         <>
         {
             (items.length == 0)?
                 <View style={{padding:16}}>
                     <View style={{backgroundColor:"white", padding:16, borderRadius:10}}>
-                        <Text style={styles.day}>{ymd[1]}월 {ymd[2]}일 ({ymdObj.day})</Text>
+                        <View style={[styles.row, {justifyContent:"space-between", alignItems:"center"}]}>
+                            <Text style={styles.day}>{ymd[1]}월 {ymd[2]}일 ({ymdObj.day})</Text>
+                            <TouchableOpacity onPress={()=>openSelectJumpo(day.dateString)}>
+                                <AntDesign name="plussquare" size={24} color={theme.link} />
+                            </TouchableOpacity>
+                        </View>
                         <View style={{height:10}} />
                         <View style={{flexDirection:"row",}}>
                             <Image source={require('../../assets/icons/clock.png')} style={{width:16, height:16, resizeMode:'contain'}} />
                             <View style={{width:8}} />
                             <Text style={styles.title}>데이터가 없습니다.</Text>
                         </View>
-                        <TouchableOpacity onPress={()=>openSelectJumpo(day.dateString)} style={styles.btn}>
-                            <Text style={[styles.content, {color:"#333"}]}>일정 입력 하기</Text>
-                        </TouchableOpacity>
+                        {/* <BtnSet isFuture={isFuture} fncLeft={goSchPage} fncRight={()=>openSelectJumpo(day.dateString)} />  */}
                     </View>
                 </View>
             :(items.length > 0)?
                 <ScrollView style={{padding:16}}>
                     <View style={{backgroundColor:"white", padding:16, borderRadius:10}}>
-                        <Text style={styles.day}>{ymd[1]}월 {ymd[2]}일 ({ymdObj.day})</Text>
+                        <View style={[styles.row, {justifyContent:"space-between", alignItems:"center"}]}>
+                            <Text style={styles.day}>{ymd[1]}월 {ymd[2]}일 ({ymdObj.day})</Text>
+                            <TouchableOpacity onPress={()=>openSelectJumpo(day.dateString)}>
+                                <AntDesign name="plussquare" size={24} color={theme.link} />
+                            </TouchableOpacity>
+                        </View>
                         {
                             items.map((el, idx) => (
                                 <View key={idx} style={{marginBottom:8, paddingTop:18}} >
@@ -292,7 +410,11 @@ const BottomCards = ({data, openBottomSheet, openSelectJumpo}) => {
                                                             (el.SCHDURE > 0) && <Text style={styles.content}>계획 - {convertTime(el.SCHSTART, {format:'HH:mm'})} ~ {convertTime(el.SCHEND, {format:'HH:mm'})}</Text> 
                                                         }
                                                         {
-                                                            (el.JOBDURE > 0) && <Text style={styles.content}>근무 - {convertTime(el.STARTTIME, {format:'HH:mm'})} ~ {convertTime(el.ENDTIME, {format:'HH:mm'})}</Text>
+                                                            <View style={{flexDirection:"row"}}>
+                                                                {(el.JOBDURE > 0) && <Text style={styles.content}>근무 - {convertTime(el.STARTTIME, {format:'HH:mm'})} ~ {convertTime(el.ENDTIME, {format:'HH:mm'})}</Text>}
+                                                                {(el.BRKDURE > 0) && <Text  style={styles.content}>, 휴게:{el.BRKDURE}</Text>}
+                                                            </View>
+                                                            
                                                         }
                                                     </View>
                                                 </View>
@@ -302,9 +424,7 @@ const BottomCards = ({data, openBottomSheet, openSelectJumpo}) => {
                                             </View>
                                         </View> 
                                     </TouchableOpacity>
-                                    <TouchableOpacity onPress={()=>openBottomSheet(el)} style={styles.btn}>
-                                        <Text style={[styles.content, {color:"#333"}]}>근무시간 입력하기</Text>
-                                    </TouchableOpacity>
+                                    <BtnSet isFuture={isFuture} fncLeft={()=>openSch(el)} fncRight={()=>{openBottomSheet(el)}} /> 
                                 </View>
                             ))
                         }
@@ -316,6 +436,34 @@ const BottomCards = ({data, openBottomSheet, openSelectJumpo}) => {
         </>
     );
 }
+
+const BtnSet = ({isFuture, fncLeft, fncRight, selected}) => {
+
+    return (
+        <>
+        {
+        (isFuture)?
+            <View style={{flexDirection:"row"}}>
+                <TouchableOpacity onPress={fncLeft} style={[styles.btn, {borderColor:(selected == "계획")?theme.primary:"#888"}]}>
+                    <Text style={[styles.content, {color:"#333"}]}>계획</Text>
+                </TouchableOpacity>
+            </View>
+        :
+            <View style={{flexDirection:"row"}}>
+                <TouchableOpacity onPress={fncLeft} style={[styles.btn, {borderColor:(selected == "계획")?theme.primary:"#888"}]}>
+                    <Text style={[styles.content, {color:"#333"}]}>계획</Text>
+                </TouchableOpacity>
+                <View style={{width:16}} />
+                <TouchableOpacity onPress={()=>fncRight()} style={[styles.btn, {borderColor:(selected == "근무")?theme.primary:"#888"}]}>
+                    <Text style={[styles.content, {color:"#333"}]}>근무</Text>
+                </TouchableOpacity>
+            </View>
+        }
+        </>
+    )
+}
+
+
 
 const fonts = StyleSheet.create({
     btn:{
@@ -357,6 +505,11 @@ const fonts = StyleSheet.create({
     typeText:{
         fontFamily: "SUIT-Bold",
         fontSize: 14,
+    },
+    hint:{
+        fontFamily: "SUIT-Regular",
+        fontSize: 13,
+        color: "#999"
     }
 })
 
@@ -388,6 +541,7 @@ const styles = StyleSheet.create({
         borderRadius:5,
         borderColor:"#888",
         alignItems:"center",
+        flex:1,
     },
     row:{flexDirection:"row"},
     jumpoBox:{flexDirection:"row", alignItems:"center", borderRadius:10, borderColor:"#555", borderWidth:1, padding:17, marginBottom:8},
