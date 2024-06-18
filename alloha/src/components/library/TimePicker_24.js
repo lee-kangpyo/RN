@@ -6,7 +6,7 @@ import WheelPicker2 from './WheelPicker2';
 // TimePicker 컴포넌트 정의
 const TimePicker = ({ onTimeChange, itemHeight, initValue, refresh }) => {
   
-  const hourItems = Array.from({ length: 25 }, (_, i) =>
+  const hourItems = Array.from({ length: 24 }, (_, i) =>
     i.toString().padStart(2, '0')
   );
 
