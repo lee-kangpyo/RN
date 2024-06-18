@@ -3,6 +3,7 @@ import { getCurrentWeek, getWeekList } from '../../util/moment';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import React from 'react';
+import { theme } from '../../util/color';
 
 export default function WeekAlba({alba, onTap, onDel, week}) {
     const cstCo = useSelector((state)=>state.common.cstCo);
@@ -64,7 +65,7 @@ const ContentBox = React.memo(({item, userId, userNa, ymd, num, onTap, blank=fal
                         }
                         {
                             (s > 0)?
-                                <Text style={[fonts.content, {fontSize:boxWidth*0.3, color:"red"}]}>{s.toFixed(1)}</Text>
+                                <Text style={[fonts.content, {fontSize:boxWidth*0.3, color:theme.primary}]}>{s.toFixed(1)}</Text>
                             :
                                 null
                         }
@@ -105,7 +106,7 @@ function TotalBox({sum, sumSub}){
                 (sumSub == "")?
                     null
                 :
-                <Text style={[fonts.content, {fontSize:boxWidth*0.3, color:"red"}]}>{sumSub.toFixed(1)}</Text>
+                <Text style={[fonts.content, {fontSize:boxWidth*0.3, color:theme.primary}]}>{sumSub.toFixed(1)}</Text>
             }
             
         </View>
