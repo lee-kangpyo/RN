@@ -424,3 +424,14 @@ export function convertDayObj (ymd) {
     const pprev = cur.clone().subtract(2, 'month');
     return {pprev:pprev.format("YYYYMMDD") ,prev:prev.format("YYYYMMDD"), cur:cur.format("YYYYMMDD"), next:next.format("YYYYMMDD"), nnext:nnext.format("YYYYMMDD")};
 }
+
+// today:2024-06-16, 
+// dateStr:2024-06-15 -> false, dateStr:2024-06-16 -> false, dateStr:2024-06-17 -> true, 
+export function isFutureDate (dateStr) {
+    // 오늘 날짜를 가져옵니다
+    const today = moment();
+    // 주어진 날짜를 moment 객체로 변환합니다
+    const date = moment(dateStr);
+    // 주어진 날짜가 오늘보다 이후인지 확인합니다
+    return date.isAfter(today, 'day')
+}
