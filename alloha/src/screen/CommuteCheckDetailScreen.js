@@ -62,20 +62,20 @@ export default function CommuteCheckDetailScreen({navigation, route}) {
                     <View style={{width:"100%", flex:1}}>
                         <CommuteDetail day = {YYYYMMDD}/>
                     </View>
-                    {
+                    {/* {
                         (btnShow)?
                             <CustomButton onClick={onModifyBtnpressed} text={"근무 기록 입력하기"} style={styles.btn} fontStyle={fonts.btn}/>
                         :
                             null
-                    }
+                    } */}
                 </>
 
             }
-            <CustomBottomSheet2 
+            {/* <CustomBottomSheet2 
                 isOpen={isOpen} 
                 onClose={()=>setIsOpen(false)}
                 content={<ChangeWorkTime dayJobInfo={dayJobInfo} setIsOpen={setIsOpen} onConfirm={onConfirm}/>}
-            />
+            /> */}
         </View>
     );
 }
