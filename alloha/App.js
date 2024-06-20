@@ -199,13 +199,7 @@ function Index({version}) {
   }, [setAppStateVisible]);
   
   const isLoggedIn = useSelector((state) => state.login.isLogin);
-  // const headerTitleStyle = {
-  //   fontFamily: "SUIT-Bold",
-  //   fontSize: 16,
-  //   fontWeight: "700",
-  //   lineHeight: 16,
-  //   color: "#111111"
-  // }
+
   return (
     <NavigationContainer linking={linking} >
       <Stack.Navigator>

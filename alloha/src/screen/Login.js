@@ -57,12 +57,14 @@ export default function Login({ navigation, route }) {
   return (
     <View style={styles.container}>
       <GestureHandlerRootView style={{}}>
-          <View style={styles.titleArea}>
-              <PushTest />
-              <Text style={font.title}>ALOHA</Text>
-              <Text style={font.version}>Ver {route.params.version}</Text>
+          <View style={{flex:3}}>
+            <View style={styles.titleArea}>
+                <PushTest />
+                <Text style={font.title}>ALOHA</Text>
+                <Text style={font.version}>Ver {route.params.version}</Text>
+            </View>
+            <LoginForm navigation={navigation}/>
           </View>
-          <LoginForm navigation={navigation}/>
           <View style={{flex:0.5}}>
             <View style={{margin:8}}/>
             <TouchableOpacity  onPress={() => navigation.push("Agreement")} style={{}}>
