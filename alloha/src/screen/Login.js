@@ -62,6 +62,7 @@ export default function Login({ navigation, route }) {
                 <PushTest />
                 <Text style={font.title}>ALOHA</Text>
                 <Text style={font.version}>Ver {route.params.version}</Text>
+                <Text style={font.version}>테스트 버전 A</Text>
             </View>
             <LoginForm navigation={navigation}/>
           </View>
