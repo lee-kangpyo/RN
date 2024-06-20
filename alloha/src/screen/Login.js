@@ -54,34 +54,45 @@ export default function Login({ navigation, route }) {
     []
   );
 
+  const [showBot, setShowBot] = useState(true);
+  const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', ()=>{
+    setShowBot(false);
+  });
+  const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide',  ()=>{
+    setShowBot(true);
+  });
+
   return (
     <View style={styles.container}>
       <GestureHandlerRootView style={{}}>
-          <View style={{flex:3}}>
+          <View style={{flex:5}}>
             <View style={styles.titleArea}>
                 <PushTest />
                 <Text style={font.title}>ALOHA</Text>
                 <Text style={font.version}>Ver {route.params.version}</Text>
-                <Text style={font.version}>테스트 버전 A</Text>
             </View>
             <LoginForm navigation={navigation}/>
           </View>
-          <View style={{flex:0.5}}>
-            <View style={{margin:8}}/>
-            <TouchableOpacity  onPress={() => navigation.push("Agreement")} style={{}}>
-              <Text style={font.createAcc}>회원가입</Text>
-            </TouchableOpacity>
-            <View style={{margin:6}}/>
-            <TouchableOpacity  onPress={() => navigation.push("FindIdPw")} style={{}}>
-              <Text style={font.createAcc}>아이디 / 비밀번호 찾기</Text>
-            </TouchableOpacity>
-            <View style={{margin:6}}/>
-            {/* 
-              <TouchableOpacity  onPress={() => navigation.push("test")} style={{}}>
-                <Text style={font.createAcc}>달력테스트</Text>
-              </TouchableOpacity> 
-            */}
-          </View>  
+          {
+            (showBot)?
+              <View style={{flex:1}}>
+                <TouchableOpacity  onPress={() => navigation.push("Agreement")} style={{}}>
+                  <Text style={font.createAcc}>회원가입</Text>
+                </TouchableOpacity>
+                <View style={{margin:6}}/>
+                <TouchableOpacity  onPress={() => navigation.push("FindIdPw")} style={{}}>
+                  <Text style={font.createAcc}>아이디 / 비밀번호 찾기</Text>
+                </TouchableOpacity>
+                <View style={{margin:6}}/>
+                {/* 
+                  <TouchableOpacity  onPress={() => navigation.push("test")} style={{}}>
+                    <Text style={font.createAcc}>달력테스트</Text>
+                  </TouchableOpacity> 
+                */}
+              </View>  
+            :null
+          }
+          
       </GestureHandlerRootView>
       
     </View>
