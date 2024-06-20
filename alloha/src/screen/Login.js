@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Alert, Dimensions, TouchableOpacity, TextInput, Image, Keyboard } from 'react-native';
+import { StyleSheet, Text, View, Alert, Dimensions, TouchableOpacity, TextInput, Image, Keyboard, Platform } from 'react-native';
 import CustomBtn from '../components/CustomBtn';
 
 import React, {useCallback, useRef, useState, useMemo} from 'react';
@@ -54,48 +54,44 @@ export default function Login({ navigation, route }) {
     []
   );
 
-  const [showBot, setShowBot] = useState(true);
+  const [keyboardShow, setkeyboardShow] = useState(false);
   const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', ()=>{
-    setShowBot(false);
+    setkeyboardShow(true);
   });
   const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide',  ()=>{
-    setShowBot(true);
+    setkeyboardShow(false);
   });
 
   return (
-    <View style={styles.container}>
-      <GestureHandlerRootView style={{}}>
-          <View style={{flex:5}}>
-            <View style={styles.titleArea}>
-                <PushTest />
-                <Text style={font.title}>ALOHA</Text>
-                <Text style={font.version}>Ver {route.params.version}</Text>
-            </View>
-            <LoginForm navigation={navigation}/>
+      <GestureHandlerRootView style={[styles.container, {flex:1,}]}>
+          <View style={[styles.titleArea, {flex:1, paddingTop:(keyboardShow)?10:48}]}>
+              <PushTest />
+              <Text style={font.title}>ALOHA</Text>
+              <Text style={font.version}>Ver {route.params.version}</Text>
           </View>
-          {
-            (showBot)?
-              <View style={{flex:1}}>
-                <TouchableOpacity  onPress={() => navigation.push("Agreement")} style={{}}>
-                  <Text style={font.createAcc}>회원가입</Text>
-                </TouchableOpacity>
-                <View style={{margin:6}}/>
-                <TouchableOpacity  onPress={() => navigation.push("FindIdPw")} style={{}}>
-                  <Text style={font.createAcc}>아이디 / 비밀번호 찾기</Text>
-                </TouchableOpacity>
-                <View style={{margin:6}}/>
-                {/* 
-                  <TouchableOpacity  onPress={() => navigation.push("test")} style={{}}>
-                    <Text style={font.createAcc}>달력테스트</Text>
-                  </TouchableOpacity> 
-                */}
-              </View>  
-            :null
-          }
-          
+          <View style={{flex:2, justifyContent:"center"}}>
+            <LoginForm navigation={navigation} />
+          </View>
+          <View style={{flex:1, justifyContent:"center"}}>
+            <TouchableOpacity  onPress={() => navigation.push("Agreement")} style={{}}>
+              <Text style={font.createAcc}>회원가입</Text>
+            </TouchableOpacity>
+            <View style={{margin:6}}/>
+            <TouchableOpacity  onPress={() => navigation.push("FindIdPw")} style={{}}>
+              <Text style={font.createAcc}>아이디 / 비밀번호 찾기</Text>
+            </TouchableOpacity>
+            <View style={{margin:6}}/>
+            {/* 
+              <TouchableOpacity  onPress={() => navigation.push("test")} style={{}}>
+                <Text style={font.createAcc}>달력테스트</Text>
+              </TouchableOpacity> 
+            */}
+          </View> 
+            {
+              (Platform.OS == "ios" && keyboardShow)?
+                <View style={{flex:2.5}}/>:null
+            }
       </GestureHandlerRootView>
-      
-    </View>
   );
 }
 
@@ -263,7 +259,6 @@ const styles = StyleSheet.create({
   btnGrp:{
     paddingHorizontal:37,
     width:windowWidth,
-    flex:1,
   },
   btn:{
     height: 52,
