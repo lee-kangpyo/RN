@@ -145,8 +145,6 @@ export default function CalendarScreen() {
     const [selectYmd, setSelectYmd] = useState("");
     // 점포 선택 화면 열기
     const openSelectJumpo = (ymd) => {
-        console.log(ymd);
-        console.log(data[ymd]);
         setSelectYmd(ymd.replaceAll("-", ""));
         setSheetData({startTime:"09:00", endTime:"16:00", userId:userId, ymd:ymd.replaceAll("-", "")});
         setIsOpen(false);

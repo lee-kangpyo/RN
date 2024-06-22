@@ -91,6 +91,7 @@ export default function  ChangeWorkTime ({dayJobInfo, setIsOpen, onConfirm}) {
                 }else {
                     time = adjustTime("23:30", workHour * -1)
                 }
+                //const time = adjustTime("23:00", workHour * -1);
                 setSTime(time.createTime);
                 setETime(time.baseTime);
                 setSRefresh(!sRefresh);
@@ -101,9 +102,18 @@ export default function  ChangeWorkTime ({dayJobInfo, setIsOpen, onConfirm}) {
             }
         }else if (prev.eTime != eTime) {
             console.log('eTime has changed:', prev.eTime, '->', eTime);
-            const time = adjustTime(eTime, workHour);
+            const time = adjustTime(eTime, workHour * -1);
+            console.log(time);
+            console.log(calculateTimeDifferenceStr(time.createTime, eTime));
             if(calculateTimeDifferenceStr(time.createTime, eTime) < 0){
-                const time = adjustTime("00:00", workHour);
+                console.log(sTime, eTime);
+                let time;
+                if(eTime == "00:00"){
+                    time = adjustTime("00:00", workHour)
+                }else {
+                    time = adjustTime("00:30", workHour)
+                }
+                //const time = adjustTime("00:00", workHour);
                 setSTime(time.baseTime);
                 setETime(time.createTime);
                 setERefresh(!eRefresh);
