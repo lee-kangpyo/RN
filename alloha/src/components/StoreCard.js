@@ -6,6 +6,7 @@ import { useState } from 'react';
 
 export default function StoreCard({store, btntxt, onButtonPressed}) {
     const [mode, setMode] = useState(true);
+    console.log(store.STAT);
     return (
     
     <View style={[styles.card, styles.row, {justifyContent:"space-between"}]}>
@@ -15,12 +16,9 @@ export default function StoreCard({store, btntxt, onButtonPressed}) {
                 <View style={styles.img}>
                     <FontAwesome5 name="coffee" size={16} color="black" />
                 </View>
-                <TouchableOpacity onPress={()=> setMode(!mode)} style={{alignItems:"flex-start", flex:1,}}>
+                <TouchableOpacity onPress={()=> setMode(!mode)} style={{alignItems:"flex-start", flex:1}}>
                     <Text numberOfLines={1} ellipsizeMode='tail' style={[fonts.card_title, {marginBottom:4}]}>{store.CSTNA}</Text>
                     <Text numberOfLines={1} ellipsizeMode='tail' style={fonts.card_txt}>{store.ZIPADDR} {store.ADDR}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.btn,]} onPress={()=>onButtonPressed(store.CSTCO)}>
-                    <Text style={fonts.btn_text}>지원</Text>
                 </TouchableOpacity>
             </>
         :
@@ -29,11 +27,20 @@ export default function StoreCard({store, btntxt, onButtonPressed}) {
                 <Text style={[fonts.card_title, {marginBottom:4}]}>{store.CSTNA}</Text>
                 <Text style={fonts.card_txt}>{store.ZIPADDR} {store.ADDR}</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.btn,]} onPress={()=>onButtonPressed(store.CSTCO)}>
-                <Text style={fonts.btn_text}>지원</Text>
-            </TouchableOpacity>
             </>
         }
+        <View style={{width:4}}/>
+        {
+            (store.STAT == "지원하기")?
+                <TouchableOpacity style={[styles.btn]} onPress={()=>onButtonPressed(store.CSTCO)}>
+                    <Text style={fonts.btn_text}>지원</Text>
+                </TouchableOpacity>
+            :
+                <View style={[styles.btn, {backgroundColor:theme.purple,}]}>
+                    <Text style={fonts.btn_text}>{store.STAT}</Text>
+                </View>
+        }
+        
     </View>
     
 
@@ -99,14 +106,12 @@ const styles = StyleSheet.create({
     },
    
     btn:{
+        width:80,
+        alignItems:"center",
         borderRadius: 8,
         backgroundColor: "#3479EF",
         paddingVertical:7,
         paddingHorizontal:17.5,
-        // alignSelf:"flex-end",
-        // backgroundColor:"white",
-        // width:120,
-        // height:40
     }
   });
   
