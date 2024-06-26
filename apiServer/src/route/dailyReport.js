@@ -40,8 +40,8 @@ router.post("/approve", async (req, res, next)=>{
 router.post("/JumjoWorkSave", async (req, res, next)=>{
     console.log("POST dailyReport.JumjoWorkSave");
     try {
-        const {cls, cstCo, useId, ymd, sTime, eTime} = req.body
-        const result = await execSql(JumjoWorkSave, {cls, cstCo, useId, ymd, sTime, eTime})
+        const {cls, cstCo, useId, ymd, sTime, eTime, jobCl} = req.body
+        const result = await execSql(JumjoWorkSave, {cls, cstCo, useId, ymd, sTime, eTime, jobCl})
         console.log(result);
         res.status(200).json({resultCode:"00"});
     } catch (error) {
