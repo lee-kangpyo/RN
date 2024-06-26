@@ -44,10 +44,15 @@ export default function EtcCrewScreen({navigation}) {
         <>
         <View style={{padding:15}}>
             <View style={[styles.container, {flexDirection:"row"}]}>
-                <GridBox
+                {/* <GridBox
                     text={"문의하기"}
                     onPress={()=>navigation.push("question")}
                     icon={{type:"Octicons", name:"paper-airplane", size:48, color:"black"}}
+                /> */}
+                <GridBox
+                    text={"카카오톡문의하기"}
+                    onPress={()=>Linking.openURL("http://pf.kakao.com/_mxmjLG/chat")}
+                    icon={{type:"MaterialCommunityIcons", name:"chat-question", size:48, color:"black"}}
                 />
                 <GridBox
                     text={"매뉴얼"}
@@ -62,7 +67,7 @@ export default function EtcCrewScreen({navigation}) {
             </View>
             <View style={[styles.container, {flexDirection:"row"}]}>
                 <GridBox
-                    text={"비밀번호"}
+                    text={"비밀번호변경하기"}
                     onPress={()=>navigation.push("changePassword")}
                     icon={{type:"MaterialIcons", name:"password", size:48, color:"black"}}
                 />
@@ -123,7 +128,8 @@ const styles = StyleSheet.create({
         borderWidth:1,
         borderColor:"grey",
         borderRadius:5,
-        alignItems:"center"
+        alignItems:"center",
+        height:130,
     },
     gridTxt:{
         marginTop:10,

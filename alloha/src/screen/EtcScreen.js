@@ -1,5 +1,5 @@
 
-import { StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Linking} from 'react-native';
 import React, {useState, useEffect} from 'react';
 import { FontAwesome5, MaterialCommunityIcons, Ionicons, AntDesign, MaterialIcons  } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -63,12 +63,12 @@ export default function EtcScreen({navigation}) {
             </View>
             <View style={[styles.container, {flexDirection:"row"}]}>
                 <GridBox
-                    text={"질문"}
-                    onPress={()=>navigation.push("qna")}
+                    text={"카카오톡문의하기"}
+                    onPress={()=>Linking.openURL("http://pf.kakao.com/_mxmjLG/chat")}
                     icon={{type:"MaterialCommunityIcons", name:"chat-question", size:48, color:"black"}}
                 />
                 <GridBox
-                    text={"비밀번호"}
+                    text={"비밀번호변경하기"}
                     onPress={()=>navigation.push("changePassword")}
                     icon={{type:"MaterialIcons", name:"password", size:48, color:"black"}}
                 />
@@ -118,7 +118,8 @@ const styles = StyleSheet.create({
         borderWidth:1,
         borderColor:"grey",
         borderRadius:5,
-        alignItems:"center"
+        alignItems:"center",
+        height:130,
     },
     gridTxt:{
         marginTop:10,
