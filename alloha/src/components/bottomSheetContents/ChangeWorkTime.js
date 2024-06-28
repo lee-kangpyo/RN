@@ -47,13 +47,14 @@ export default function  ChangeWorkTime ({dayJobInfo, setIsOpen, onConfirm}) {
     const onPressConfirm = () => {
         if(eTime > sTime){
             // 점주 호출
-            // exec PR_PLYB02_WRKMNG 'JumjoWorkSave', 1014, 'mangdee22', '20240509', '07:00', '16:00'
+            // exec PR_PLYB02_WRKMNG1 'JumjoWorkSave', 1014, 'mangdee22', '20240509', '07:00', '16:00', @jobCl
             // @CLS 구분 : JumjoWorkSave
             // @CSTCO : 점포코드
             // @USERID : 알바ID
             // @YMD : 일자 'YYYYMMDD'
             // @CL1 : 시작시간 'HH:MM'
             // @CL2 : 종료시간 'HH:MM'
+            // @P_JOBCL	nvarchar(20)
 
             // 알바 호출
             // exec PR_PLYC03_JOBCHECK 'AlbaJobSave', @ymd, '', @cstCo, @userId, @sTime, @eTime, @jobCl, @brkDure

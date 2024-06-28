@@ -1,9 +1,10 @@
 
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { theme } from '../../util/color';
 
-export default function CustomStandardBtn ({text, onPress}) {
+export default function CustomStandardBtn ({text, onPress, disabled = false}) {
     return (
-        <TouchableOpacity onPress={()=> onPress()} style={styles.sendBtn}>
+        <TouchableOpacity onPress={()=> onPress()} style={[styles.sendBtn, (disabled)?{backgroundColor:"#e1e1e1"}:{}]} disabled={disabled}>
             <Text style={fonts.sendBtnText}>{text}</Text>
         </TouchableOpacity>
     )

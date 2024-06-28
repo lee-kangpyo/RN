@@ -88,9 +88,6 @@ export default function CalendarScreen() {
 
     //근무 결과 입력
     const onConfirm = async (params) => {
-        //console.log(param);
-        //exec PR_PLYC03_JOBCHECK 'AlbaJobSave', '20240605', '', 1015, 'Chaewonp3306', '09:00', '14:30', 'G', 0.5
-        // await HTTP("POST", "/api/v2/daily/JumjoWorkSave", params) -- 점주가 저장할때.
         await HTTP("POST", "/api/v2/commute/AlbaJobSave", params)
         .then((res)=>{
             const dateObject = getDateObject(params.ymd);
@@ -405,11 +402,11 @@ const BottomCards = ({data, openBottomSheet, openSelectJumpo, openSch}) => {
                                                     <View style={{width:6}} />
                                                     <View>
                                                         {
-                                                            (el.SCHDURE > 0) && <Text style={styles.content}>계획 - {convertTime(el.SCHSTART, {format:'HH:mm'})} ~ {convertTime(el.SCHEND, {format:'HH:mm'})}</Text> 
+                                                            (el.SCHDURE > 0) && <Text style={styles.content}>계획 - {convertTime(el.SCHSTART, {format:'HH:mm'})} ~ {convertTime(el.SCHEND, {format:'HH:mm'})} ({el.SCHDURE}시간)</Text> 
                                                         }
                                                         {
                                                             <View style={{flexDirection:"row"}}>
-                                                                {(el.JOBDURE > 0) && <Text style={styles.content}>근무 - {convertTime(el.STARTTIME, {format:'HH:mm'})} ~ {convertTime(el.ENDTIME, {format:'HH:mm'})}</Text>}
+                                                                {(el.JOBDURE > 0) && <Text style={styles.content}>근무 - {convertTime(el.STARTTIME, {format:'HH:mm'})} ~ {convertTime(el.ENDTIME, {format:'HH:mm'})} ({el.JOBDURE}시간)</Text>}
                                                                 {(el.BRKDURE > 0) && <Text  style={styles.content}>, 휴게:{el.BRKDURE}</Text>}
                                                             </View>
                                                             
