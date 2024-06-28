@@ -128,13 +128,13 @@ function OwnrScreen({}){
       })}
     >
       <Tab.Screen name="home" component={HomeOwnerScreen} options={{ headerShown:false, tabBarLabel: '홈'}}/>
-      <Tab.Screen name="daylyReport" component={DailyStack} options={{ headerShown:false, tabBarLabel: '일일보고서', tabBarBadge: owrBadge,}}/>
+      {/* <Tab.Screen name="daylyReport" component={DailyStack} options={{ headerShown:false, tabBarLabel: '일일보고서', tabBarBadge: owrBadge,}}/> */}
       <Tab.Screen name="schedule" component={ScheduleStack} options={{ headerShown:false, tabBarLabel: '근무계획'}}/>
       <Tab.Screen name="work" component={WorkStack} options={{ headerShown:false, tabBarLabel: '근무결과' }}/>
       <Tab.Screen name="result" component={ResultStack} options={{ headerShown:false, tabBarLabel: '결과현황표'}}/>
-      <Tab.Screen name="profitAndLoss" component={ProfitAndLossScreen} options={{ tabBarLabel: '매출현황' }}/>
+      {/* <Tab.Screen name="profitAndLoss" component={ProfitAndLossScreen} options={{ tabBarLabel: '매출현황' }}/> */}
       
-      <Tab.Screen name="etc" options={{ headerShown: false, }}>
+      <Tab.Screen name="etc" options={{ headerShown: false, tabBarLabel: '기타'}}>
         {() => (
           <Stack.Navigator initialRouteName="etcScreen">
             <Stack.Screen name="etcScreen" component={EtcScreen} options={{ tabBarLabel: '기타' }}/>
@@ -156,6 +156,9 @@ function OwnrScreen({}){
                 <Stack.Screen  name="WageDetail" component={WageDetailScreen} options={{title:"급여 상세"}}/>
               </Stack.Navigator>
             )}
+            <Stack.Screen name="DailyReport" component={DailyReportScreen} options={{headerLeft:()=>headerLeftComponent("일일보고서"), title:""}} />
+            <Stack.Screen name="DailyReportDetail" component={DailyReportDetilaScreen} />
+            <Stack.Screen name="profitAndLoss" component={ProfitAndLossScreen} />
           </Stack.Navigator>
         )}
       </Tab.Screen>
@@ -236,7 +239,7 @@ function CrewScreen(){
         )}
       </Tab.Screen>
       {/* <Tab.Screen name="manageStore" component={SearchStoreScreen} backBehavior={"none"} options={{ tabBarLabel: '점포검색', headerTitleStyle:headerTitleStyle, headerTitleAlign:"center"}} /> */}
-      <Tab.Screen name="etc" options={{ headerShown: false, }}>
+      <Tab.Screen name="etc" options={{ headerShown: false, tabBarLabel: '기타'}}>
         {() => (
           <Stack.Navigator initialRouteName="etc2">
             <Stack.Screen name="etc2" component={EtcCrewScreen} options={{ tabBarLabel: '기타', headerTitleStyle:headerTitleStyle, headerTitleAlign:"center"}}/>

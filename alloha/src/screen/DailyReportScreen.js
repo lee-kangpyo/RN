@@ -34,9 +34,6 @@ export default function DailyReportScreen({navigation}) {
     const cstCo = useSelector((state)=>state.common.cstCo);
     const [ymd, setYmd] = useState(getYMD(new Date()));
     const [selectedKey, setSelectedKey] = useState(0);
-    useEffect(()=>{
-        navigation.setOptions({title:"일일보고서"});
-    }, [navigation])
 
 
     const [step, setStep] = useState(2);
