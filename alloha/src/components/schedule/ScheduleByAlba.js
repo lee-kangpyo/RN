@@ -76,6 +76,7 @@ const DailyScheduleBox = ({alba}) => {
 
                     return(
                         <View key={idx}>
+                            {(idx > 0 && underLine)?<View style={{width:"100%", borderTopColor:"#777", borderTopWidth:1, marginVertical:8}}/>:null}
                             <View style={[styles.alba,]}>
                                 <AntDesign name="checkcircle" size={16} color={color[el.JOBCL]} style={[styles.circle, {marginRight:10}]}/>
                                 <View style={{flex:1, flexDirection:"row", justifyContent:"space-between",}}>
@@ -86,7 +87,6 @@ const DailyScheduleBox = ({alba}) => {
                                     </View>
                                 </View>
                             </View>
-                            {(alba.list.length > idx + 1 && underLine)?<View style={{width:"100%", borderTopColor:"#777", borderTopWidth:1, marginVertical:8}}/>:null}
                         </View>
                         
                     );
