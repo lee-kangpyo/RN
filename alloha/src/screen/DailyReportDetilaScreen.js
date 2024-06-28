@@ -68,11 +68,16 @@ export default function DailyReportDetilaScreen({navigation, route}) {
                     null
             }
         </View>
-        <CustomBottomSheet2 
-            isOpen={isOpen} 
-            onClose={()=>setIsOpen(false)}
-            content={<ChangeWorkTime dayJobInfo={dayJobInfo} setIsOpen={setIsOpen} onConfirm={onConfirm}/>}
-        />
+        {
+            (Object.keys(dayJobInfo).length > 0 )?
+            <CustomBottomSheet2 
+                isOpen={isOpen} 
+                onClose={()=>setIsOpen(false)}
+                content={<ChangeWorkTime dayJobInfo={dayJobInfo} setIsOpen={setIsOpen} onConfirm={onConfirm}/>}
+            />
+            :null
+        }
+        {/*  */}
         </>
     );
 }
