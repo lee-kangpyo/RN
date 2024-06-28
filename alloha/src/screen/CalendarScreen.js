@@ -287,7 +287,8 @@ const SelJumPoList = ({ymd, item, cstListColor, closeSelectJumpo, next}) => {
                 })
             }
             </ScrollView>
-            <View style={{padding:10}}>
+            {/* [계획 입력 제거]로 주석처리 
+                <View style={{padding:10}}>
                 <View style={{alignItems:"center"}}>
                     <Text style={fonts.workTime}>유형을 선택해주세요.</Text>
                 </View>
@@ -312,9 +313,8 @@ const SelJumPoList = ({ymd, item, cstListColor, closeSelectJumpo, next}) => {
                     {
                         (type=="계획")?<Text style={fonts.hint}>계획을 미리 입력하면 자동으로 근무가 기록됩니다.</Text>:null
                     }
-                    
                 </View>
-            </View>
+            </View> */}
             {/*하단버튼*/}
             <View style={styles.row}>
                 <TouchableOpacity onPress={cancel} style={styles.cancel}>
@@ -356,9 +356,13 @@ const BottomCards = ({data, openBottomSheet, openSelectJumpo, openSch}) => {
                     <View style={{backgroundColor:"white", padding:16, borderRadius:10}}>
                         <View style={[styles.row, {justifyContent:"space-between", alignItems:"center"}]}>
                             <Text style={styles.day}>{ymd[1]}월 {ymd[2]}일 ({ymdObj.day})</Text>
-                            <TouchableOpacity onPress={()=>openSelectJumpo(day.dateString)}>
-                                <AntDesign name="plussquare" size={24} color={theme.link} />
-                            </TouchableOpacity>
+                            {/*[계획 입력 제거]로 미래는 입력 막기 */
+                                (isFuture)?null:
+                                <TouchableOpacity onPress={()=>openSelectJumpo(day.dateString)}>
+                                    <AntDesign name="plussquare" size={24} color={theme.link} />
+                                </TouchableOpacity>
+                            }
+                            
                         </View>
                         <View style={{height:10}} />
                         <View style={{flexDirection:"row",}}>
@@ -438,6 +442,16 @@ const BtnSet = ({isFuture, fncLeft, fncRight, selected}) => {
         <>
         {
         (isFuture)?
+            null
+        :
+            <View style={{flexDirection:"row"}}>
+                <TouchableOpacity onPress={()=>fncRight()} style={[styles.btn, {borderColor:(selected == "근무")?theme.primary:"#888"}]}>
+                    <Text style={[styles.content, {color:"#333"}]}>근무</Text>
+                </TouchableOpacity>
+            </View>
+        }
+        {/* [계획 입력 제거]로 주석처리
+        (isFuture)?
             <View style={{flexDirection:"row"}}>
                 <TouchableOpacity onPress={fncLeft} style={[styles.btn, {borderColor:(selected == "계획")?theme.primary:"#888"}]}>
                     <Text style={[styles.content, {color:"#333"}]}>계획</Text>
@@ -453,7 +467,7 @@ const BtnSet = ({isFuture, fncLeft, fncRight, selected}) => {
                     <Text style={[styles.content, {color:"#333"}]}>근무</Text>
                 </TouchableOpacity>
             </View>
-        }
+        */}
         </>
     )
 }
