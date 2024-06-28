@@ -98,6 +98,24 @@ router.post("/AlbaSchSave", async (req,res,next)=>{
     }
 })
 
+router.post("/AlbaSchsSave", async (req,res,next)=>{
+    console.log("POST v2.commute.AlbaSchsSave - 알바 근무 계획 여러개 입력")
+    try {
+        const { ymds, cstCo, userId, sTime, eTime, jobCl } = req.body;
+        console.log(ymds, cstCo, userId, sTime, eTime, jobCl);
+
+        ymds.forEach(async (ymd) => {
+            console.log(ymd)
+            await execSql(albaSchedulemanager2, {cls:"WeekAlbaScheduleSave", ymdFr:ymd, ymdTo:"", cstCo, userId, sTime, eTime, jobCl});
+        })
+
+        res.status(200).json({resultCode:"00"});
+    } catch (error) {
+        console.log(error.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+})
+
 
 
 module.exports = router;

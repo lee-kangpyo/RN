@@ -47,6 +47,7 @@ import HomeOwnerScreen from './HomeOwnerScreen';
 import QuestionScreen from './QuestionScreen';
 import ChangePasswordScreen from './ChangePasswordScreen';
 import { theme } from '../util/color';
+import ScheduleCreateScreen from './ScheduleCreateScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -214,7 +215,7 @@ function CrewScreen(){
         tabBarInactiveTintColor: 'gray',
       })}
     >
-      <Tab.Screen name="schedule" component={ScheduleScreenToAlba} options={{ tabBarLabel: '계획', headerTitleStyle:headerTitleStyle, headerTitleAlign:"center"}}/>
+      <Tab.Screen name="schedule" component={ScheduleCrewStack} options={{ tabBarLabel: '계획', headerShown: false,}}/>
       <Tab.Screen name="CommuteCheck" component={CommuteCheckScreen} options={{headerTitleStyle:headerTitleStyle, headerTitleAlign:"center", tabBarLabel:"출퇴"}}/>
       <Tab.Screen name="Home" component={HomeCrewStack} options={{ headerShown:false, tabBarLabel: '홈'}}/>
       {/* <Tab.Screen name="CommuteCheckInfo" component={CommuteCheckStack} options={{ headerShown:false, tabBarLabel: '근무정보'}}/> */}
@@ -247,6 +248,15 @@ function CrewScreen(){
         )}
       </Tab.Screen>
     </Tab.Navigator>
+  )
+}
+function ScheduleCrewStack(){
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="ScheduleScreenToAlba" component={ScheduleScreenToAlba} options={{ title: '계획', headerTitleStyle:headerTitleStyle, headerTitleAlign:"center" }}/>
+      <Stack.Screen name="ScheduleCreateScreen" component={ScheduleCreateScreen} options={{headerLeft:()=>headerLeftComponent("계획입력하기"), title:""}}/>
+    </Stack.Navigator>
+    
   )
 }
 function HomeCrewStack(){

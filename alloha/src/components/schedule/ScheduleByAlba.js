@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, ScrollView, ActivityIndicator, Platform } from 'react-native';
+import { View, StyleSheet, Text, ScrollView, ActivityIndicator, Platform, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import { URL } from "@env";
-import { getDayWeekNumber, YYMMDD2YYDD } from '../../util/moment';
+import { getDayWeekNumber, getWeekNumber, YYMMDD2YYDD } from '../../util/moment';
 import { AntDesign } from '@expo/vector-icons'; 
 import { theme } from '../../util/color';
+import { useIsFocused } from '@react-navigation/native';
+import { isEqual } from 'lodash';
 
 export default function ScheduleByAlba({cstCo, userId, ymdFr, ymdTo}) {
+    const isFocuesed = useIsFocused();
     const [data, setData] = useState({});
     const [isLoading ,setIsLoading] = useState(true);
     const getData = async (cstCo, userId, ymdFr, ymdTo) => {
@@ -25,7 +28,7 @@ export default function ScheduleByAlba({cstCo, userId, ymdFr, ymdTo}) {
     useEffect(()=>{
         setIsLoading(true);
         getData(cstCo, userId, ymdFr, ymdTo);
-    }, [cstCo, userId, ymdFr, ymdTo])
+    }, [cstCo, userId, ymdFr, ymdTo, isFocuesed])
     return (
         <ScrollView contentContainerStyle={styles.container}>
             {
@@ -53,24 +56,39 @@ export default function ScheduleByAlba({cstCo, userId, ymdFr, ymdTo}) {
 const DailyScheduleBox = ({alba}) => {
     const day={ 0:"일", 1:"월", 2:"화", 3:"수", 4:"목", 5:"금", 6:"토" };
     const color={2:theme.open,5:theme.middle,9:theme.close,1:theme.etc,};
+    let weekNumber;
     return(
         <View style={styles.albaList}>
             <View style={styles.userNa}>
                 <Text style={fonts.userNa} numberOfLines={1} ellipsizeMode='tail'>{alba.userNa}</Text>
             </View>
+
             {
-                alba.list.map((alba, idx)=>{
+                alba.list.map((el, idx)=>{
+                    let underLine = false;
+                    const weekNumber2 = getWeekNumber(el.YMD);
+                    const bool = isEqual(weekNumber, weekNumber2);
+                    
+                    if(!bool){
+                        underLine = true;
+                        weekNumber = weekNumber2;
+                    }
+
                     return(
-                        <View key={idx} style={[styles.alba, {marginBottom:8}]}>
-                            <AntDesign name="checkcircle" size={16} color={color[alba.JOBCL]} style={[styles.circle, {marginRight:10}]}/>
-                            <View style={{flex:1, flexDirection:"row", justifyContent:"space-between",}}>
-                                <Text style={[fonts.contents]} >{YYMMDD2YYDD(alba.YMD)} {day[getDayWeekNumber(alba.YMD)]}</Text>
-                                <Text style={fonts.contents2}>{alba.SCHTIME}</Text>
-                                <View style={styles.pill}>
-                                    <Text style={fonts.pillText}>{alba.JOBDURE.toFixed(1)}</Text>
+                        <View key={idx}>
+                            <View style={[styles.alba,]}>
+                                <AntDesign name="checkcircle" size={16} color={color[el.JOBCL]} style={[styles.circle, {marginRight:10}]}/>
+                                <View style={{flex:1, flexDirection:"row", justifyContent:"space-between",}}>
+                                    <Text style={[fonts.contents]} >{YYMMDD2YYDD(el.YMD)} {day[getDayWeekNumber(el.YMD)]}</Text>
+                                    <Text style={fonts.contents2}>{el.SCHTIME}</Text>
+                                    <View style={styles.pill}>
+                                        <Text style={fonts.pillText}>{el.JOBDURE.toFixed(1)}</Text>
+                                    </View>
                                 </View>
                             </View>
+                            {(alba.list.length > idx + 1 && underLine)?<View style={{width:"100%", borderTopColor:"#777", borderTopWidth:1, marginVertical:8}}/>:null}
                         </View>
+                        
                     );
                 })
             }

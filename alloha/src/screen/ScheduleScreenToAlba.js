@@ -1,4 +1,4 @@
-import { ActivityIndicator, StyleSheet, Text, View} from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useState, useEffect} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import ScheduleByAlba from '../components/schedule/ScheduleByAlba';
@@ -15,9 +15,6 @@ export default function ScheduleScreenToAlba({navigation}) {
     const date = useSelector((state) => state.result.month);
     //const { thisSunday, thisSaturday } = getStartAndEndOfWeek();
     const [loading, SetLoading] = useState(true);
-    useEffect(()=>{
-        navigation.setOptions({title:"근무계획"})
-    }, [navigation]);
 
     return (
         (loading)?
@@ -35,6 +32,9 @@ export default function ScheduleScreenToAlba({navigation}) {
             :
                 <View style={styles.container}>
                     <MyStorePicker userId={userId} />
+                    <TouchableOpacity style={styles.btn} onPress={()=>navigation.navigate("ScheduleCreateScreen", {cstCo:sCstCo})}>
+                        <Text>계획 입력하기</Text>
+                    </TouchableOpacity>
                     <View style={{marginVertical:20}}>
                         <HeaderControl title={`${date.mm}월`} onLeftTap={()=> dispatch(prevMonth())} onRightTap={()=> dispatch(nextMonth())} />
                     </View>
@@ -47,4 +47,14 @@ export default function ScheduleScreenToAlba({navigation}) {
 
 const styles = StyleSheet.create({
     container:{flex:1, padding:15},
+    btn:{
+        marginTop:4,
+        backgroundColor:"white",
+        padding:8,
+        justifyContent:"center",
+        alignItems:"center",
+        borderWidth:1,
+        borderColor:"#ddd",
+        borderRadius:8
+    }
 });
