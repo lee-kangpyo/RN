@@ -55,6 +55,7 @@ const Stack = createNativeStackNavigator();
 export default function MainScreen() {
   const navigation = useNavigation();
   const [userInfo, setUserInfo] = useState({});
+  const dispatch = useDispatch();
 
   const loadData = async () => {
     if(!userInfo.id){
@@ -63,7 +64,10 @@ export default function MainScreen() {
       const crewYn = await AsyncStorage.getItem('crewYn');
       if(!(id && ownrYn && crewYn)){
         //여기선 얼럿 후 로그인 창으로 이동
-        console.log("잘못된 접근")
+        console.log("잘못된 접근!!")
+        dispatch({ type: 'LOGOUT' });
+        await SecureStore.setItemAsync("uuid", "");
+        TaskManager.unregisterAllTasksAsync();
       }
       setUserInfo({id:id, ownrYn:ownrYn, crewYn:crewYn})
     }
