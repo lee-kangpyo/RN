@@ -1,6 +1,6 @@
 
 const DailyReport1 = `
-    exec PR_PLYB02_WRKMNG 'DailyReport1', @cstCo, '', @ymd, '', '', '', ''
+    exec PR_PLYB02_WRKMNG 'DailyReport1', @cstCo, '', @ymd, '', '', '', 0
 `
 
 const approve = `
