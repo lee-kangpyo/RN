@@ -64,6 +64,11 @@ export default function WageDetailScreen({navigation, route}) {
                 <View style={styles.detailList}>
                     <View style={{flexDirection:"row", justifyContent:"space-between"}}>
                         <Text style={[fonts.date, {width:80}]}>{convertYMD(item.ymd)}</Text>
+                        {
+                            (item.schDure == "-")?<Text style={fonts.time}>없음</Text>:
+                            <Text style={fonts.time}>{item.schDure}</Text>
+                        }
+                        <Text style={fonts.time}>|</Text>
                         <Text style={fonts.time}>{(item.dure == "-")?"0":item.dure}시간</Text>
                     </View>
                     <View style={{flex:1, alignItems:"flex-end"}}>
