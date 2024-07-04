@@ -2,7 +2,7 @@ const express = require('express')
 var router = express.Router();
 const {execSql, execTranSql} = require("../../utils/excuteSql");
 const { question, questionList, questionDetail, answerList } = require('../../query/v1/qna');
-const { MAIN0205, getCstListColor } = require('../../query/v1/home');
+const { MAIN0205, getCstListColor, MAIN0206 } = require('../../query/v1/home');
 
 function formatDate(dateString) {
     // 날짜 문자열의 길이가 8인지 확인
@@ -47,6 +47,24 @@ router.get("/MAIN0205", async (req, res, next) => {
             res.status(200).json({data:result, cstList:cstList.recordset, resultCode:"00"});
         }
         
+    } catch (err) {
+        console.log(err.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+})
+
+// /v1/home/MAIN0206
+router.get("/MAIN0206", async (req, res, next) => {
+    console.log("POST v1.home.MAIN0206 - 알바 달력에서 날짜 클릭 바텀 카드 데이터 호출");
+    try {
+        const {userId, ymd} = req.query;
+        console.log(userId, ymd);
+        // console.log("각 점포별 색상 맵핑 정보 할당하기");
+        // const cstList = await execSql(getCstListColor, {userId});
+        console.log("월별 알바가 일한 내역 가져오기");
+        const rslt = await execSql(MAIN0206, {userId, ymd:ymd});
+        const dayResult = rslt.recordset??[];
+        res.status(200).json({data:dayResult, resultCode:"00"});
     } catch (err) {
         console.log(err.message)
         res.status(200).json({ resultCode:"-1"});

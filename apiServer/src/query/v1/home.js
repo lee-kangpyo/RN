@@ -2,6 +2,11 @@
 const MAIN0205 = `
     exec PR_PLYA00_MAIN02 'MAIN0205', 0, @userId, @ymd, '', ''
 `
+
+const MAIN0206= `
+    exec PR_PLYA00_MAIN02 'MAIN0206', 0, @userId, @ymd, '', ''
+`
+
 const getCstListColor = `
     WITH _PLY AS (
         SELECT a.CSTCO , a.CSTNA, ROW_NUMBER() OVER (ORDER BY a.CSTCO) AS RowNum
@@ -23,4 +28,4 @@ const getCstListColor = `
         _PLY;
 `
 
-module.exports = { MAIN0205, getCstListColor }
+module.exports = { MAIN0205, MAIN0206, getCstListColor }

@@ -31,6 +31,9 @@ export default function CalendarScreen() {
     const [data, setData] = useState({});
     //하단 카드 데이터
     const [bottomData, setBottomData] = useState(null);
+    // 달력 터치했을때 가져올 데이터.
+    const [bottomData2, setBottomData2] = useState(null);
+    
     // 바텀 시트 데이터 - 근무 시간일정 입력
     const [sheetData, setSheetData] = useState({})
     //하단 카드 데이터 - 근무 계획 입력
@@ -62,8 +65,19 @@ export default function CalendarScreen() {
         })
     }
     
+    //exec PR_PLYA00_MAIN02 'MAIN0206', 0, 'Sksksksk', '20240625', '', ''
+    const main0206 = async (ymd) => {
+        await HTTP("GET", "/v1/home/MAIN0206", {userId:userId, ymd:ymd.replaceAll("-", "")})
+        .then((res)=>{
+            setBottomData2(res.data.data);
+        }).catch(function (error) {
+            console.log(error);
+        })
+    }
+    
     useEffect(()=>{
         main0205(initDay);
+        main0206(initDay)
     }, [isFocused])
 
     const moveToday = useCallback(() => {
@@ -71,8 +85,10 @@ export default function CalendarScreen() {
         onDayTap(getDateObject(today), data[today]??[]);
     }, [data, today]);
 
-    const onDayTap = useCallback((day, items) => {
+    const onDayTap = useCallback( async (day, items) => {
         const d = day.dateString;
+        main0206(d);
+        
         setSelectDay(d);
         setBottomData({day:day, items:items});
         
@@ -121,7 +137,6 @@ export default function CalendarScreen() {
 
     
     const openBottomSheet = (item) => {
-        console.log("openBottomSheet");
         const jobDure = item.JOBDURE;
         const schDure = item.SCHDURE;
         const brkDure = item.BRKDURE ?? 0;
@@ -193,10 +208,10 @@ export default function CalendarScreen() {
             </View>
             <ScrollView contentContainerStyle={{padding:0}}>
                 {
-                    (!bottomData)?
+                    (!bottomData || !bottomData2)?
                         null
                     :
-                        <BottomCards data={bottomData} openBottomSheet={openBottomSheet} openSelectJumpo={openSelectJumpo} openSch={openSch}/>
+                        <BottomCards data={bottomData} data2={bottomData2} openBottomSheet={openBottomSheet} openSelectJumpo={openSelectJumpo} openSch={openSch}/>
                 }
             </ScrollView>
             {
@@ -339,14 +354,13 @@ function getDateObject(dateString) {
     };
 }
 
-const BottomCards = ({data, openBottomSheet, openSelectJumpo, openSch}) => {
+const BottomCards = ({data, data2, openBottomSheet, openSelectJumpo, openSch}) => {
     const navigation = useNavigation();
     const dispatch = useDispatch()
     const day = data.day;
     const items = data.items;
     const ymdObj = YYYYMMDD2Obj(day.dateString.replaceAll("-", ""));
     const ymd = ymdObj.ymd.split(".");
-
     const isFuture = isFutureDate(day.dateString);
     return (
         <>
@@ -362,7 +376,6 @@ const BottomCards = ({data, openBottomSheet, openSelectJumpo, openSch}) => {
                                     <AntDesign name="plussquare" size={24} color={theme.link} />
                                 </TouchableOpacity>
                             }
-                            
                         </View>
                         <View style={{height:10}} />
                         <View style={{flexDirection:"row",}}>
@@ -373,7 +386,7 @@ const BottomCards = ({data, openBottomSheet, openSelectJumpo, openSch}) => {
                         {/* <BtnSet isFuture={isFuture} fncLeft={goSchPage} fncRight={()=>openSelectJumpo(day.dateString)} />  */}
                     </View>
                 </View>
-            :(items.length > 0)?
+            :(items.length > 0 && data2.length > 0)?
                 <ScrollView style={{padding:16}}>
                     <View style={{backgroundColor:"white", padding:16, borderRadius:10}}>
                         <View style={[styles.row, {justifyContent:"space-between", alignItems:"center"}]}>
@@ -383,49 +396,42 @@ const BottomCards = ({data, openBottomSheet, openSelectJumpo, openSch}) => {
                             </TouchableOpacity>
                         </View>
                         {
-                            items.map((el, idx) => (
-                                <View key={idx} style={{marginBottom:8, paddingTop:18}} >
-                                    <TouchableOpacity onPress={()=>{dispatch(setSelectedStore({data:el}));navigation.push("CommuteCheckDetail", {"ymd":el.YMD});}} activeOpacity={1}>
-                                        <View style={{flexDirection:"row"}}>
-                                            <View style={{flex:10}}>
-                                                <View style={{flexDirection:"row", justifyContent:"space-between", alignItems:"center"}}>
-                                                    <View style={{flexDirection:"row", alignItems:"center"}}>
-                                                        <FontAwesome name="circle" size={18} color={el.color} />
-                                                        
-                                                        <View style={{width:6}} />
-                                                        <Text style={styles.title}>{el.CSTNA}</Text>
+                            items.map((el, idx) => {
+                                const it = data2.filter(dt2 => dt2.CSTCO == el.CSTCO);
+                                return (
+                                    <View key={idx} style={{marginBottom:8, paddingTop:18}} >
+                                        <TouchableOpacity onPress={()=>{dispatch(setSelectedStore({data:el}));navigation.push("CommuteCheckDetail", {"ymd":el.YMD});}} activeOpacity={1}>
+                                            <View style={{flexDirection:"row"}}>
+                                                <View style={{flex:10}}>
+                                                    <View style={{flexDirection:"row", justifyContent:"space-between", alignItems:"center"}}>
+                                                        <View style={{flexDirection:"row", alignItems:"center"}}>
+                                                            <FontAwesome name="circle" size={18} color={el.color} />
+                                                            <View style={{width:6}} />
+                                                            <Text style={styles.title}>{el.CSTNA}</Text>
+                                                        </View>
+                                                        <View style={{borderRadius:20, backgroundColor:"#3479EF", paddingHorizontal:8, paddingVertical:2}}>
+                                                            <Text style={styles.pillText}>{el.ATTENDANCE}</Text>
+                                                        </View>
                                                     </View>
-                                                    <View style={{borderRadius:20, backgroundColor:"#3479EF", paddingHorizontal:8, paddingVertical:2}}>
-                                                        <Text style={styles.pillText}>{el.ATTENDANCE}</Text>
-                                                    </View>
-                                                </View>
-                                                <View style={{height:8}} />
-                                                <View style={{flexDirection:"row"}}>
-                                                    <FontAwesome name="circle" size={18} color={"white"} />
+                                                    <View style={{height:8}} />
                                                     
-                                                    <View style={{width:6}} />
-                                                    <View>
-                                                        {
-                                                            (el.SCHDURE > 0) && <Text style={styles.content}>계획 - {convertTime(el.SCHSTART, {format:'HH:mm'})} ~ {convertTime(el.SCHEND, {format:'HH:mm'})} ({el.SCHDURE}시간)</Text> 
-                                                        }
-                                                        {
-                                                            <View style={{flexDirection:"row"}}>
-                                                                {(el.JOBDURE > 0) && <Text style={styles.content}>근무 - {convertTime(el.STARTTIME, {format:'HH:mm'})} ~ {convertTime(el.ENDTIME, {format:'HH:mm'})} ({el.JOBDURE}시간)</Text>}
-                                                                {(el.BRKDURE > 0) && <Text  style={styles.content}>, 휴게:{el.BRKDURE}</Text>}
-                                                            </View>
-                                                            
-                                                        }
+                                                    <View style={{flexDirection:"row"}}>
+                                                        <FontAwesome name="circle" size={18} color={"white"} />
+                                                        <View style={{width:6}} />
+                                                        <View>
+                                                            <BottomCardContent data={it} />
+                                                        </View>
                                                     </View>
                                                 </View>
-                                            </View>
-                                            <View style={{ flex:1, justifyContent:"center", alignItems:"flex-end"}}>
-                                                <MaterialIcons name="arrow-forward-ios" size={18} color="black" />
-                                            </View>
-                                        </View> 
-                                    </TouchableOpacity>
-                                    <BtnSet isFuture={isFuture} fncLeft={()=>openSch(el)} fncRight={()=>{openBottomSheet(el)}} /> 
-                                </View>
-                            ))
+                                                <View style={{ flex:1, justifyContent:"center", alignItems:"flex-end"}}>
+                                                    <MaterialIcons name="arrow-forward-ios" size={18} color="black" />
+                                                </View>
+                                            </View> 
+                                        </TouchableOpacity>
+                                        <BtnSet isFuture={isFuture} fncLeft={()=>openSch(el)} fncRight={()=>{openBottomSheet(el)}} /> 
+                                    </View>
+                                )
+                            })
                         }
                     </View>
                 </ScrollView>
@@ -434,6 +440,27 @@ const BottomCards = ({data, openBottomSheet, openSelectJumpo, openSch}) => {
         }
         </>
     );
+}
+
+const BottomCardContent = ({data}) =>{
+    return(
+        <>
+        {
+            (data.length > 0)?
+                data.map(el => {
+                    return (
+                        <View style={{flexDirection:"row"}}>
+                            <Text style={styles.content}>{(el.cl == "JOB")?"근무":"계획"} - </Text>
+                            <Text style={styles.content}>{convertTime(el.STARTTIME, {format:'HH:mm'})} ~ {convertTime(el.ENDTIME, {format:'HH:mm'})} ({(el.JOBDURE - el.BRKDURE) / 60}시간)</Text>
+                            <Text style={styles.content}>{(el.cl == "JOB" && el.JOBCL == "G")?"(일반)":(el.cl == "JOB" && el.JOBCL == "S")?"(대타)":null}</Text>
+                            {(el.BRKDURE > 0) && <Text  style={styles.content}>, 휴게:{el.BRKDURE / 60}</Text>}
+                        </View>
+                    )
+                })
+            :null
+        }
+        </>
+    )
 }
 
 const BtnSet = ({isFuture, fncLeft, fncRight, selected}) => {
