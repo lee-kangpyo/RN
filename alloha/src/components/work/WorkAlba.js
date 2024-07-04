@@ -10,7 +10,6 @@ export default function WeekAlba({alba, onTap, onDel, week}) {
     const weekList = getWeekList(week);
     const navigator = useNavigation();
     const workInfo = useSelector((state)=>state.work.workAlbaInfo);
-    //console.log(alba)
   return (
         <View style={styles.container}>
             <NameBox name={alba.userNa} onDel={onDel}/>
@@ -47,8 +46,12 @@ const ContentBox = React.memo(({item, userId, userNa, ymd, num, onTap, blank=fal
         gg = item.filter((el)=>el && el.JOBCL == "G");
         ss = item.filter((el)=>el && el.JOBCL == "S");
     }
-    const g = gg.reduce((total, item) => total + (item.JOBDURE || 0), 0);
-    const s = ss.reduce((total, item) => total + (item.JOBDURE || 0), 0);
+    // 근무 결과 휴게시간제외
+    const g = gg.reduce((total, item) => total + (item.JOBDURE - item.BRKDURE || 0), 0);
+    const s = ss.reduce((total, item) => total + (item.JOBDURE - item.BRKDURE || 0), 0);
+    // 근무 결과 휴게시간 고려안한버전
+    // const g = gg.reduce((total, item) => total + (item.JOBDURE || 0), 0);
+    // const s = ss.reduce((total, item) => total + (item.JOBDURE || 0), 0);
     return (
         <>
         <TouchableOpacity onPress={()=>onTap({userNa, userId, ymd, num}, item)} style={{...styles.box, width:boxWidth, borderRadius:5, borderColor:"red", borderWidth:(selected)?1:0}}>

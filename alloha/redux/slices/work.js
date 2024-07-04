@@ -27,13 +27,12 @@ const workSlice = createSlice({
           const { USERID, USERNA, ...remains } = item; // USERNA를 제외한 데이터
           const id = item.USERID;
           const name = item.USERNA;
-          var sumG = 0;  
-          var sumS = 0;    
-      
+          var sumG = 0;
+          var sumS = 0;
           if( remains.JOBCL == "G" ){
-            sumG = remains.JOBDURE;
+            sumG = remains.JOBDURE - remains.BRKDURE;
           }else if( remains.JOBCL == "S" ){
-            sumS = remains.JOBDURE;
+            sumS = remains.JOBDURE - remains.BRKDURE;
           }    
         
           const existingGroup = result.find((group) => group.userId === USERID);

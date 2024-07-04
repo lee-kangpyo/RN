@@ -10,7 +10,7 @@ import TimePicker_24 from '../library/TimePicker_24';
 import { MaterialIcons } from '@expo/vector-icons';
 import { adjustTime, calculateDifference, calculateTimeDifferenceStr, formatTimeObject, parseTimeString } from '../../util/timeParser';
 
-
+//{"brkDure": 1, "cstCo": 1014, "cstNa": "글로리맘", "endTime": "16:00", "startTime": "09:00", "userId": "Sksksksk", "ymd": "20240701"}
 export default function  ChangeWorkTime ({dayJobInfo, setIsOpen, onConfirm}) {
     const { showAlert } = useAlert();
     // 근무 정보

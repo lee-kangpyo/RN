@@ -123,24 +123,21 @@ export default function WorkScreen({navigation}) {
 
     //###############################################################
     //const windowHeight = Dimensions.get('window').height;
-    // // // 바텀 시트 몇번째인지
-    // const [bottomSheetIndex, setBottomSeetIndex] = useState(-1)
-    // // //바텀시트ref
-    // const sheetRef = useRef(null);
-    // // // 바터시트 움직이는거
-    // const handleSnapPress = useCallback((index) => {
-    //   sheetRef.current.snapToIndex(index);
-    //   Keyboard.dismiss();
-    // }, []);
-    const [isOpen, setIsOpen] = useState(false);
+    // // 바텀 시트 몇번째인지
+    const [bottomSheetIndex, setBottomSeetIndex] = useState(-1)
+    // //바텀시트ref
+    const sheetRef = useRef(null);
+    // // 바터시트 움직이는거
+    const handleSnapPress = useCallback((index) => {
+      sheetRef.current.snapToIndex(index);
+      Keyboard.dismiss();
+    }, []);
+  
     const [selectedAlba, setSelectedAlba] = useState([]);
     const onAlbaTap = (info, item) => {
-        console.log(item)
-        //setSelectedAlba((item)?item:[]);
-        setSelectedAlba({"brkDure": 1, "cstCo": 1014, "cstNa": "글로리맘", "endTime": "16:00", "startTime": "09:00", "userId": "Sksksksk", "ymd": "20240701"});
+        setSelectedAlba((item)?item:[]);
         dispatch(setWorkAlbaInfo({data:info}));
-        //handleSnapPress(0)
-        setIsOpen(true);
+        handleSnapPress(0)
     }
 
     const addAlba = () => {
@@ -155,7 +152,7 @@ export default function WorkScreen({navigation}) {
         }).catch(function (error) {
             console.log(error);
         })
-        setModalVisible(false);
+        setModalVisible(false)
     }
 
     const axiosPost = async (cls, userID)=>{
@@ -186,6 +183,7 @@ export default function WorkScreen({navigation}) {
         var params = {cls:"AlbaSave", ymdFr:weekList[0].format("yyyyMMDD"), ymdTo:weekList[6].format("yyyyMMDD"), jobCl:"", jobDure:0}
         return {screen:"work", url:"/api/v1/work/workChedule", params:params};
     }
+    console.log(selectedAlba)
     //###############################################################
     return (
         <SafeAreaView style={styles.container}>
@@ -222,7 +220,7 @@ export default function WorkScreen({navigation}) {
                     <Animated.View style={{width:widthValue, paddingTop:20, marginBottom:5}}>
                         <WeekDate sBlank={1.3} eBlank={1} week={week}/>
                     </Animated.View>
-                    <ScrollView contentContainerStyle={{paddingBottom:0, }}>
+                    <ScrollView contentContainerStyle={{paddingBottom:(bottomSheetIndex == -1)?0:Dimensions.get('window').height * 0.3, }}>
                         {
                             (albas.length == 0)?
                                 <View style={{alignItems:"center", padding:5}}>
@@ -259,19 +257,8 @@ export default function WorkScreen({navigation}) {
                     selectAlba={selectAlba} 
                 />
 
-                {
-                    (Object.keys(selectedAlba).length > 0)?
-                        <CustomBottomSheet2
-                            isOpen={isOpen} 
-                            onClose={()=>setIsOpen(false)}
-                            content={<ChangeWorkTime dayJobInfo={selectedAlba} setIsOpen={setIsOpen} onConfirm={()=>console.log("onConfirm")}/>}
-                        />
-                    :
-                        null
-                }
-
                 {/* 숫자패드 바텀시트 */}
-                {/* <NumberBottomSheet 
+                <NumberBottomSheet 
                     style={botsheet.topContainer}
                     sheetRef = {sheetRef}
                     onBottomSheetChanged = {(idx)=>setBottomSeetIndex(idx)}
@@ -284,7 +271,7 @@ export default function WorkScreen({navigation}) {
                             }
                         }/>
                     }
-                /> */}
+                />
                
                 <ModifyTimeModal isShow={modifyTimeShow} onClose={()=>setModifyTimeShow(false)} onConfirm={(val)=>{onConfrimModifyTime(val)}} onShow={()=>console.log("onShow")} />
             </GestureHandlerRootView>
