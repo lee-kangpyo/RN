@@ -11,9 +11,9 @@ import { theme } from "../util/color";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { setSelectedStore } from "../../redux/slices/alba";
 import { CustomBottomSheet2 } from "../components/common/CustomBottomSheet2";
-import ChangeWorkTime from "../components/bottomSheetContents/ChangeWorkTime";
 import { useAlert } from "../util/AlertProvider";
 import ChangeSchTime from "../components/bottomSheetContents/ChangeSchTime";
+import ChangeWorkTime2 from "../components/bottomSheetContents/ChangeWorkTime2";
 
 
 export default function CalendarScreen() {
@@ -86,6 +86,7 @@ export default function CalendarScreen() {
     }, [data, today]);
 
     const onDayTap = useCallback( async (day, items) => {
+        console.log("onDayTap");
         const d = day.dateString;
         main0206(d);
         
@@ -98,8 +99,9 @@ export default function CalendarScreen() {
     }, []);
 
     const onChangeMonth = useCallback((month) => {
-        setInitDay(month.dateString)
+        setInitDay(month.dateString);
         main0205(month.dateString);
+        main0206(month.dateString);
     }, []);
 
     //근무 결과 입력
@@ -108,6 +110,7 @@ export default function CalendarScreen() {
         .then((res)=>{
             const dateObject = getDateObject(params.ymd);
             main0205(dateObject.dateString);
+            main0206(dateObject.dateString);
             if(res.data.resultCode == "00"){
                 showAlert("근무 기록", '입력 되었습니다.',);
             }
@@ -126,6 +129,7 @@ export default function CalendarScreen() {
         .then((res)=>{
             const dateObject = getDateObject(p.ymdFr);
             main0205(dateObject.dateString);
+            main0206(dateObject.dateString);
             if(res.data.resultCode == "00"){
                 showAlert("근무 계획", '입력 되었습니다.',);
             }
@@ -137,28 +141,44 @@ export default function CalendarScreen() {
 
     
     const openBottomSheet = (item) => {
-        const jobDure = item.JOBDURE;
-        const schDure = item.SCHDURE;
-        const brkDure = item.BRKDURE ?? 0;
+        console.log("openBottomSheet");
+        console.log(bottomData2);
+        const data = bottomData2.reduce((result, el)=>{
+            if(el.CSTCO == item.CSTCO && el.cl == "JOB"){
+                return [...result, {startTime:convertTime(el.STARTTIME, {format:"HH:mm"}), endTime:convertTime(el.ENDTIME, {format:"HH:mm"}), brkDure:el.BRKDURE / 60, jobCl:el.JOBCL, cstCo:item.CSTCO, userId:item.USERID, ymd:item.YMD, cstNa:item.CSTNA}];
+            }
+            return result;
+        }, [])
+
+        const g = data.find(el => el.jobCl == "G") ?? {startTime:"09:00", endTime:"16:00", brkDure:0, jobCl:"G", cstCo:item.CSTCO, userId:item.USERID, ymd:item.YMD, cstNa:item.CSTNA};
+        const s = data.find(el => el.jobCl == "S") ?? {startTime:"09:00", endTime:"16:00", brkDure:0, jobCl:"S", cstCo:item.CSTCO, userId:item.USERID, ymd:item.YMD, cstNa:item.CSTNA};
+        setSheetData([g, s]);
+        setIsOpen(true);
+        //const data = bottomData2.filter(el => el.CSTCO == item.CSTCO && el.cl == "JOB")
+
+        // const jobDure = item.JOBDURE;
+        // const schDure = item.SCHDURE;
+        // const brkDure = item.BRKDURE ?? 0;
         
-        if(jobDure > 0){
-            const param = {startTime:convertTime(item.STARTTIME, {format:"HH:mm"}), endTime:convertTime(item.ENDTIME, {format:"HH:mm"}), cstCo:item.CSTCO, userId:item.USERID, ymd:item.YMD, cstNa:item.CSTNA, brkDure:brkDure};
-            setSheetData(param);
-            setIsOpen(true);
-        }else if(schDure > 0 ){
-            setSheetData({startTime:convertTime(item.SCHSTART, {format:"HH:mm"}), endTime:convertTime(item.SCHEND, {format:"HH:mm"}), cstCo:item.CSTCO, userId:item.USERID, ymd:item.YMD, cstNa:item.CSTNA, brkDure:brkDure})
-            setIsOpen(true);
-        }else{
-            setSheetData({startTime:"09:00", endTime:"16:00", cstCo:item.CSTCO, userId:item.USERID, ymd:item.YMD, cstNa:item.CSTNA, brkDure:brkDure})
-            setIsOpen(true);
-        }
+        // if(jobDure > 0){
+        //     const param = {startTime:convertTime(item.STARTTIME, {format:"HH:mm"}), endTime:convertTime(item.ENDTIME, {format:"HH:mm"}), cstCo:item.CSTCO, userId:item.USERID, ymd:item.YMD, cstNa:item.CSTNA, brkDure:brkDure};
+        //     setSheetData(param);
+        //     setIsOpen(true);
+        // }else if(schDure > 0 ){
+        //     setSheetData({startTime:convertTime(item.SCHSTART, {format:"HH:mm"}), endTime:convertTime(item.SCHEND, {format:"HH:mm"}), cstCo:item.CSTCO, userId:item.USERID, ymd:item.YMD, cstNa:item.CSTNA, brkDure:brkDure})
+        //     setIsOpen(true);
+        // }else{
+        //     setSheetData({startTime:"09:00", endTime:"16:00", cstCo:item.CSTCO, userId:item.USERID, ymd:item.YMD, cstNa:item.CSTNA, brkDure:brkDure})
+        //     setIsOpen(true);
+        // }
     }
 
     const [selectYmd, setSelectYmd] = useState("");
     // 점포 선택 화면 열기
     const openSelectJumpo = (ymd) => {
         setSelectYmd(ymd.replaceAll("-", ""));
-        setSheetData({startTime:"09:00", endTime:"16:00", userId:userId, ymd:ymd.replaceAll("-", "")});
+        // {startTime:"09:00", endTime:"16:00", brkDure:0, jobCl:"S", cstCo:item.CSTCO, userId:item.USERID, ymd:item.YMD, cstNa:item.CSTNA}
+        setSheetData({startTime:"09:00", endTime:"16:00", brkDure:0, jobCl:"S", userId:userId, ymd:ymd.replaceAll("-", "")});
         setIsOpen(false);
         setIsOpenJumpo(true);
     }
@@ -219,7 +239,7 @@ export default function CalendarScreen() {
                     <CustomBottomSheet2
                         isOpen={isOpen} 
                         onClose={()=>setIsOpen(false)}
-                        content={<ChangeWorkTime dayJobInfo={sheetData} setIsOpen={setIsOpen} onConfirm={onConfirm}/>}
+                        content={<ChangeWorkTime2 dayJobInfo={sheetData} setIsOpen={setIsOpen} onConfirm={onConfirm}/>}
                     />
                 :
                     null
@@ -447,9 +467,9 @@ const BottomCardContent = ({data}) =>{
         <>
         {
             (data.length > 0)?
-                data.map(el => {
+                data.map((el, idx) => {
                     return (
-                        <View style={{flexDirection:"row"}}>
+                        <View key={idx} style={{flexDirection:"row"}}>
                             <Text style={styles.content}>{(el.cl == "JOB")?"근무":"계획"} - </Text>
                             <Text style={styles.content}>{convertTime(el.STARTTIME, {format:'HH:mm'})} ~ {convertTime(el.ENDTIME, {format:'HH:mm'})} ({(el.JOBDURE - el.BRKDURE) / 60}시간)</Text>
                             <Text style={styles.content}>{(el.cl == "JOB" && el.JOBCL == "G")?"(일반)":(el.cl == "JOB" && el.JOBCL == "S")?"(대타)":null}</Text>
