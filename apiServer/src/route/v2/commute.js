@@ -9,7 +9,7 @@ const { insertManualJobChk, daySchedule, reqCommuteChange, initCommuteChange, ge
 const { reverseGeocode } = require('../../utils/kakao');
 const { sendPush_GoToWork, sendPush_GetOffWork } = require('../../utils/templatePush');
 const { sendMsg_Z0110_11, useN_DayJob } = require('../../query/dailyReport');
-const { AlbaJobSave } = require('../../query/v2/commute');
+const { AlbaJobSave, JumjuJobSave } = require('../../query/v2/commute');
 dotenv.config();
 
 
@@ -74,6 +74,21 @@ router.post("/AlbaJobSave", async (req,res,next)=>{
         const { ymd, cstCo, userId, sTime, eTime, jobCl, brkDure } = req.body;
         console.log(ymd, cstCo, userId, sTime, eTime, jobCl, brkDure);
         const result = await execSql(AlbaJobSave, {ymd, cstCo, userId, sTime, eTime, jobCl, brkDure});
+        console.log(result);
+        res.status(200).json({resultCode:"00"});
+    } catch (error) {
+        console.log(error.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+})
+
+
+router.post("/JumjuJobSave", async (req,res,next)=>{
+    console.log("POST v2.commute.JumjuJobSave ")
+    try {
+        const { ymd, cstCo, userId, sTime, eTime, jobCl, brkDure } = req.body;
+        console.log(ymd, cstCo, userId, sTime, eTime, jobCl, brkDure);
+        const result = await execSql(JumjuJobSave, {ymd, cstCo, userId, sTime, eTime, jobCl, brkDure});
         console.log(result);
         res.status(200).json({resultCode:"00"});
     } catch (error) {

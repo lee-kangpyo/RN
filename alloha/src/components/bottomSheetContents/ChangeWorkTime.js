@@ -13,7 +13,6 @@ import { adjustTime, calculateDifference, calculateTimeDifferenceStr, formatTime
 // 점주 일일보고서에서 사용
 //{"brkDure": 1, "cstCo": 1014, "cstNa": "글로리맘", "endTime": "16:00", "startTime": "09:00", "userId": "Sksksksk", "ymd": "20240701"}
 export default function  ChangeWorkTime ({dayJobInfo, setIsOpen, onConfirm}) {
-    console.log(t)
     const { showAlert } = useAlert();
     // 근무 정보
     const _dayJobInfo = dayJobInfo;

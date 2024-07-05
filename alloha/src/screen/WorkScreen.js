@@ -7,7 +7,7 @@ import { setAlbaList } from '../../redux/slices/schedule';
 import axios from 'axios';
 import { URL } from "@env";
 import { useIsFocused } from '@react-navigation/native';
-import { getWeekList } from '../util/moment';
+import { convertTime, getWeekList } from '../util/moment';
 import { setAlba, nextWeek, prevWeek, setWorkAlbaInfo, moveWeek, disabledEditing, moveWeekDown, } from '../../redux/slices/work';
 import WorkAlba from './../components/work/WorkAlba';
 
@@ -18,7 +18,8 @@ import StoreSelectBoxWithTitle from '../components/common/StoreSelectBoxWithTitl
 import CustomBottomSheet, { NumberBottomSheet } from '../components/common/CustomBottomSheet';
 import { theme } from '../util/color';
 import { CustomBottomSheet2 } from '../components/common/CustomBottomSheet2';
-import ChangeWorkTime from '../components/bottomSheetContents/ChangeWorkTime';
+import ChangeWorkTime2 from '../components/bottomSheetContents/ChangeWorkTime2';
+import { HTTP } from '../util/http';
 
 export default function WorkScreen({navigation}) {
     //TODO 여기서 알바가 요청하는 근무 수정 페이지 이동
@@ -135,11 +136,31 @@ export default function WorkScreen({navigation}) {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedAlba, setSelectedAlba] = useState([]);
     const onAlbaTap = (info, item) => {
-        console.log(item)
-        //setSelectedAlba((item)?item:[]);
-        setSelectedAlba({"brkDure": 1, "cstCo": 1014, "cstNa": "글로리맘", "endTime": "16:00", "startTime": "09:00", "userId": "Sksksksk", "ymd": "20240701"});
+        const it = item ?? [];
+        const it2 = it.reduce((result, el) => {
+            const rlt = [...result, {startTime:convertTime(el.STARTTIME, {format:"HH:mm"}), endTime:convertTime(el.ENDTIME, {format:"HH:mm"}), "brkDure": el.BRKDURE, "cstCo": cstCo, "cstNa": "",  "jobCl": el.JOBCL, "userId": info.userId, "ymd": info.ymd}];
+            return rlt;
+        }, []);
+
+        // 타입이 G와 S인지 확인하는 변수 초기화
+        let hasG = false;
+        let hasS = false;        
+
+        // 리스트를 순회하면서 타입 확인
+        for (let obj of it2) {
+            if (obj.jobCl === "G") {
+                hasG = true;
+            } else if (obj.jobCl === "S") {
+                hasS = true;
+            }
+        }
+        // G 타입이 없으면 추가
+        if (!hasG) it2.push({startTime:"09:00", endTime:"16:00", "brkDure": 0, "cstCo": cstCo, "cstNa": "",  "jobCl": "G", "userId": info.userId, "ymd": info.ymd});
+        // S 타입이 없으면 추가
+        if (!hasS) it2.push({startTime:"09:00", endTime:"16:00", "brkDure": 0, "cstCo": cstCo, "cstNa": "",  "jobCl": "S", "userId": info.userId, "ymd": info.ymd});
+
+        setSelectedAlba(it2);
         dispatch(setWorkAlbaInfo({data:info}));
-        //handleSnapPress(0)
         setIsOpen(true);
     }
 
@@ -185,6 +206,18 @@ export default function WorkScreen({navigation}) {
     const getTmpAlbaInfo = () => {
         var params = {cls:"AlbaSave", ymdFr:weekList[0].format("yyyyMMDD"), ymdTo:weekList[6].format("yyyyMMDD"), jobCl:"", jobDure:0}
         return {screen:"work", url:"/api/v1/work/workChedule", params:params};
+    }
+
+    //근무 결과 입력
+    const onConfirm = async (params) => {
+        console.log(params);
+        await HTTP("POST", "/api/v2/commute/JumjuJobSave", params)
+        .then((res)=>{
+            getWeekSchedule();
+        }).catch(function (error) {
+            console.log(error);
+            alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
+        })
     }
     //###############################################################
     return (
@@ -259,16 +292,7 @@ export default function WorkScreen({navigation}) {
                     selectAlba={selectAlba} 
                 />
 
-                {
-                    (Object.keys(selectedAlba).length > 0)?
-                        <CustomBottomSheet2
-                            isOpen={isOpen} 
-                            onClose={()=>setIsOpen(false)}
-                            content={<ChangeWorkTime dayJobInfo={selectedAlba} setIsOpen={setIsOpen} onConfirm={()=>console.log("onConfirm")}/>}
-                        />
-                    :
-                        null
-                }
+
 
                 {/* 숫자패드 바텀시트 */}
                 {/* <NumberBottomSheet 
@@ -288,6 +312,16 @@ export default function WorkScreen({navigation}) {
                
                 <ModifyTimeModal isShow={modifyTimeShow} onClose={()=>setModifyTimeShow(false)} onConfirm={(val)=>{onConfrimModifyTime(val)}} onShow={()=>console.log("onShow")} />
             </GestureHandlerRootView>
+            {
+                (Object.keys(selectedAlba).length > 0)?
+                    <CustomBottomSheet2
+                        isOpen={isOpen} 
+                        onClose={()=>setIsOpen(false)}
+                        content={<ChangeWorkTime2 dayJobInfo={selectedAlba} setIsOpen={setIsOpen} onConfirm={onConfirm}/>}
+                    />
+                :
+                    null
+            }
         </SafeAreaView>
         
 

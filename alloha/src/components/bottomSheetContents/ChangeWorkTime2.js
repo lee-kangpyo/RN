@@ -29,7 +29,7 @@ export default function  ChangeWorkTime2 ({dayJobInfo, setIsOpen, onConfirm}) {
     const[eTime, setETime] = useState((_dayJobInfo.endTime == "-")?"16:00":_dayJobInfo.endTime);
     //const[eTime, setETime] = useState(_dayJobInfo.endTime);
     // 근무 시간
-    const [workHour, setWorkHOur] = useState((sTime == "-")?"":calculateDifference(sTime, eTime));
+    const [workHour, setWorkHOur] = useState((sTime == "-")?"7":calculateDifference(sTime, eTime));
     //const [workHour, setWorkHOur] = useState(6);
     // 모두 닫기:-1 근무시간 활성화:0 출근시간 활성화:1, 퇴근시간 활성화:2, 
     const [isSelectStime, setSelectStime] = useState(-1);
@@ -42,7 +42,7 @@ export default function  ChangeWorkTime2 ({dayJobInfo, setIsOpen, onConfirm}) {
         jobInfo = dayJobInfo.find(el => el.jobCl == type);
         setDayJobInfo(jobInfo);
         setType(type);
-        setWorkHOur((jobInfo.startTime == "-")?"":calculateDifference(jobInfo.startTime, jobInfo.endTime));
+        setWorkHOur((jobInfo.startTime == "-")?"7":calculateDifference(jobInfo.startTime, jobInfo.endTime));
         setSTime((jobInfo.startTime == "-")?"09:00":jobInfo.startTime);
         setETime((jobInfo.endTime == "-")?"16:00":jobInfo.endTime);
         setRestTime(jobInfo.brkDure ?? 0);
@@ -134,7 +134,7 @@ export default function  ChangeWorkTime2 ({dayJobInfo, setIsOpen, onConfirm}) {
         jobInfo = dayJobInfo.find(el => el.jobCl == type);
         setDayJobInfo(jobInfo);
         setType(type);
-        setWorkHOur((jobInfo.startTime == "-")?"":calculateDifference(jobInfo.startTime, jobInfo.endTime));
+        setWorkHOur((jobInfo.startTime == "-")?"7":calculateDifference(jobInfo.startTime, jobInfo.endTime));
         setSTime((jobInfo.startTime == "-")?"09:00":jobInfo.startTime);
         setETime((jobInfo.endTime == "-")?"16:00":jobInfo.endTime);
         setRestTime(jobInfo.brkDure ?? 0);
@@ -271,18 +271,18 @@ const WorkTime = ({workTime, setWorkTime, isSelectStime, tapTouch}) => {
     const works = workTime.toString().split(".");
     const [hour, setHour] = useState(works[0] ?? 0);
     const [min, setMin] = useState(works[1] ?? 0);
-    
     useEffect(()=>{
         setWorkTime(hour+"."+min);
     }, [hour, min])
 
-    const hColor = (isSelectStime == 0)?theme.primary:"#999";
-    
-    const items = [];
+    useEffect(()=>{
+        setHour(works[0] ?? 0);
+        setMin(works[1] ?? 0);
+    }, [workTime])
 
-    for (let i = 0; i <= 23; i += 1) {
-        items.push(i);
-    }
+    const hColor = (isSelectStime == 0)?theme.primary:"#999";
+    const items = [];
+    for (let i = 0; i <= 23; i += 1) { items.push(i); }
     
     return (
         <View style={{justifyContent:"space-between", width:"100%",}}>

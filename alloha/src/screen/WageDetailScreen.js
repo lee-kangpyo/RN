@@ -4,15 +4,12 @@ import React, {useState, useEffect} from 'react';
 import { HTTP } from '../util/http';
 import { addComma, headerLeftComponent } from './../util/utils';
 import Loading from '../components/Loding';
-import CustomBtn from './../components/CustomBtn';
 
 export default function WageDetailScreen({navigation, route}) {
     const [loading, setisLoading] = useState(true)
     const [detailInfo, setDetailInfo] = useState([])
     const [salaryWeek, setSalaryWeek] = useState([])
     const [total, setTotal] = useState({})
-    
-    
     
 
     const getSalaryDetail = async () => {
