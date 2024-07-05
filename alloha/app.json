@@ -110,7 +110,7 @@
       ],
       "googleServicesFile": "./google-services.json",
       "package": "com.akmz.alloha",
-      "versionCode": 22
+      "versionCode": 23
     },
     "web": {
       "favicon": "./assets/favicon.png"
