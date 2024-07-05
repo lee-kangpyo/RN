@@ -10,13 +10,14 @@ import TimePicker_24 from '../library/TimePicker_24';
 import { MaterialIcons } from '@expo/vector-icons';
 import { adjustTime, calculateDifference, calculateTimeDifferenceStr, formatTimeObject, parseTimeString } from '../../util/timeParser';
 
-// 점주 일일보고서에서 사용
-//{"brkDure": 1, "cstCo": 1014, "cstNa": "글로리맘", "endTime": "16:00", "startTime": "09:00", "userId": "Sksksksk", "ymd": "20240701"}
-export default function  ChangeWorkTime ({dayJobInfo, setIsOpen, onConfirm}) {
-    console.log(t)
+// 알바 홈화면, 점주 결과화면에서 사용
+//[{"brkDure": 1, "cstCo": 1014, "cstNa": "글로리맘", "endTime": "16:00", "jobCl": "G", "startTime": "09:00", "userId": "Sksksksk", "ymd": "20240701"}, 
+// {"brkDure": 0, "cstCo": 1014, "cstNa": "글로리맘", "endTime": "16:00", "jobCl": "S", "startTime": "09:00", "userId": "Sksksksk", "ymd": "20240701"}]
+export default function  ChangeWorkTime2 ({dayJobInfo, setIsOpen, onConfirm}) {
     const { showAlert } = useAlert();
     // 근무 정보
-    const _dayJobInfo = dayJobInfo;
+    
+    const [_dayJobInfo, setDayJobInfo] = useState(dayJobInfo.find(el => el.jobCl == "G"))
     // 대타 / 일반
     const [type, setType] = useState("G");
     // 휴게시간
@@ -38,25 +39,30 @@ export default function  ChangeWorkTime ({dayJobInfo, setIsOpen, onConfirm}) {
     const rColor = (isSelectStime == 3)?theme.primary:"#999";
 
     useEffect(()=>{
-        setWorkHOur((_dayJobInfo.startTime == "-")?"":calculateDifference(_dayJobInfo.startTime, _dayJobInfo.endTime));
-        setSTime((_dayJobInfo.startTime == "-")?"09:00":_dayJobInfo.startTime);
-        setETime((_dayJobInfo.endTime == "-")?"16:00":_dayJobInfo.endTime);
-        setRestTime(_dayJobInfo.brkDure ?? 0);
+        jobInfo = dayJobInfo.find(el => el.jobCl == type);
+        setDayJobInfo(jobInfo);
+        setType(type);
+        setWorkHOur((jobInfo.startTime == "-")?"":calculateDifference(jobInfo.startTime, jobInfo.endTime));
+        setSTime((jobInfo.startTime == "-")?"09:00":jobInfo.startTime);
+        setETime((jobInfo.endTime == "-")?"16:00":jobInfo.endTime);
+        setRestTime(jobInfo.brkDure ?? 0);
         setSelectStime(-1);
     }, [dayJobInfo]);
     
     // 확인 버튼 클릭 이벤트
     const onPressConfirm = () => {
         if(eTime > sTime){
-            // 점주 호출
-            // exec PR_PLYB02_WRKMNG1 'JumjoWorkSave', 1014, 'mangdee22', '20240509', '07:00', '16:00', @jobCl
-            // @CLS 구분 : JumjoWorkSave
-            // @CSTCO : 점포코드
-            // @USERID : 알바ID
-            // @YMD : 일자 'YYYYMMDD'
-            // @CL1 : 시작시간 'HH:MM'
-            // @CL2 : 종료시간 'HH:MM'
-            // @P_JOBCL	nvarchar(20)
+            // 알바 호출
+            // exec PR_PLYC03_JOBCHECK 'AlbaJobSave', @ymd, '', @cstCo, @userId, @sTime, @eTime, @jobCl, @brkDure
+            // P_CLS		nvarchar(20)	-- 프로세스 구분
+            // , @P_YMDFR	nchar(8)	-- 조회시작일
+            // , @P_YMDTO	nchar(8)	-- 조회종료일
+            // , @P_CSTCO	int		-- 점포코드: 특정 점포만 재생성 할 때 입력
+            // , @P_USERID	nvarchar(20)	-- 사용자코드: 특정 사용자만 재생성 할 때 입력
+            // , @P_CL1	nvarchar(20)
+            // , @P_CL2	nvarchar(20)
+            // , @P_JOBCL	nvarchar(20)
+            // , @P_BRKDURE
             const param = {cstCo:_dayJobInfo.cstCo, userId:_dayJobInfo.userId, useId:_dayJobInfo.userId, ymd:_dayJobInfo.ymd, sTime:sTime, eTime:eTime, jobCl:type, brkDure:restTime};
             onConfirm(param);
             setIsOpen(false);
@@ -94,10 +100,7 @@ export default function  ChangeWorkTime ({dayJobInfo, setIsOpen, onConfirm}) {
         }else if (prev.eTime != eTime) {
             console.log('eTime has changed:', prev.eTime, '->', eTime);
             const time = adjustTime(eTime, workHour * -1);
-            console.log(time);
-            console.log(calculateTimeDifferenceStr(time.createTime, eTime));
             if(calculateTimeDifferenceStr(time.createTime, eTime) < 0){
-                console.log(sTime, eTime);
                 let time;
                 if(eTime == "00:00"){
                     time = adjustTime("00:00", workHour)
@@ -126,6 +129,17 @@ export default function  ChangeWorkTime ({dayJobInfo, setIsOpen, onConfirm}) {
             setSelectStime(num);
         }
     }
+
+    const changeType = (type) => {
+        jobInfo = dayJobInfo.find(el => el.jobCl == type);
+        setDayJobInfo(jobInfo);
+        setType(type);
+        setWorkHOur((jobInfo.startTime == "-")?"":calculateDifference(jobInfo.startTime, jobInfo.endTime));
+        setSTime((jobInfo.startTime == "-")?"09:00":jobInfo.startTime);
+        setETime((jobInfo.endTime == "-")?"16:00":jobInfo.endTime);
+        setRestTime(jobInfo.brkDure ?? 0);
+        setSelectStime(-1);
+    }
     
     return(
         <>
@@ -133,7 +147,7 @@ export default function  ChangeWorkTime ({dayJobInfo, setIsOpen, onConfirm}) {
                 <Text style={fonts.sheetTitle}>{(_dayJobInfo.cstNa)?_dayJobInfo.cstNa+" ":""}근무 시간 입력</Text>
                 <View style={{height:20}} />
                 {/*일반, 대타*/}
-                <TypeContainer type={type} setType={setType}/>
+                <TypeContainer type={type} changeType={changeType}/>
                 {/*근무시간*/}
                 <WorkTime workTime={workHour} setWorkTime={setWorkHOur} isSelectStime={isSelectStime} tapTouch={tapTouch}/>
                 {/*출근시간*/}
@@ -217,7 +231,7 @@ export default function  ChangeWorkTime ({dayJobInfo, setIsOpen, onConfirm}) {
 
             {/*하단버튼*/}
             <View style={styles.row}>
-                <TouchableOpacity onPress={()=>setIsOpen(false)} style={styles.cancel}>
+                <TouchableOpacity onPress={()=>{setType("G");setIsOpen(false);}} style={styles.cancel}>
                     <Text style={fonts.cancel}>취소</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={onPressConfirm} style={styles.confirm}>
@@ -229,7 +243,7 @@ export default function  ChangeWorkTime ({dayJobInfo, setIsOpen, onConfirm}) {
 }
 
 // 일반/대타
-const TypeContainer = ({type, setType}) => {
+const TypeContainer = ({type, changeType}) => {
     const gBoxColor = (type == "G")?"#555555":"#ddd";
     const gTextColor = (type == "G")?"#555555":"#999";
     const sBoxColor = (type == "S")?"#555555":"#ddd";
@@ -237,11 +251,11 @@ const TypeContainer = ({type, setType}) => {
     return (
         <View style={{justifyContent:"space-between", width:"100%"}}>
             <View style={{flexDirection:"row",}}>
-                <TouchableOpacity onPress={()=>setType("G")} style={[styles.row, styles.miniBtn2, {flex:1, justifyContent:"center", borderColor:gBoxColor}]}>
+                <TouchableOpacity onPress={()=>changeType("G")} style={[styles.row, styles.miniBtn2, {flex:1, justifyContent:"center", borderColor:gBoxColor}]}>
                     <Text style={[fonts.typeText, {color:gTextColor}]}>일반</Text>
                 </TouchableOpacity>
                 <View style={{width:8}} />
-                <TouchableOpacity onPress={()=>setType("S")} style={[styles.row, styles.miniBtn2, {flex:1, justifyContent:"center", borderColor:sBoxColor}]}>
+                <TouchableOpacity onPress={()=>changeType("S")} style={[styles.row, styles.miniBtn2, {flex:1, justifyContent:"center", borderColor:sBoxColor}]}>
                     <Text style={[fonts.typeText, {color:sTextColor}]}>대타</Text>
                 </TouchableOpacity>
             </View>
