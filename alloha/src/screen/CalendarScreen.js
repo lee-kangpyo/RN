@@ -49,9 +49,17 @@ export default function CalendarScreen() {
 
     
     const main0205 = async (ymd, isBottom) => {
+        console.log(ymd);
+        const newData = Object.keys(data)
+            .filter(key => key != ymd)
+            .reduce((obj, key) => {
+                obj[key] = data[key];
+                return obj;
+            }, {});
+        
         await HTTP("GET", "/v1/home/MAIN0205", {userId:userId, ymd:ymd.replaceAll("-", "")})
         .then((res)=>{
-            const result = Object.assign(data, res.data.data??{})
+            const result = Object.assign(newData, res.data.data??{})
             setData(result);
             if(first) {
                 setCstListColor(res.data.cstList??[]);
@@ -86,7 +94,7 @@ export default function CalendarScreen() {
     }, [data, today]);
 
     const onDayTap = useCallback( async (day, items) => {
-        console.log("onDayTap");
+        //console.log("onDayTap");
         const d = day.dateString;
         main0206(d);
         
@@ -141,8 +149,7 @@ export default function CalendarScreen() {
 
     
     const openBottomSheet = (item) => {
-        console.log("openBottomSheet");
-        console.log(bottomData2);
+        //console.log("openBottomSheet");
         const data = bottomData2.reduce((result, el)=>{
             if(el.CSTCO == item.CSTCO && el.cl == "JOB"){
                 return [...result, {startTime:convertTime(el.STARTTIME, {format:"HH:mm"}), endTime:convertTime(el.ENDTIME, {format:"HH:mm"}), brkDure:el.BRKDURE / 60, jobCl:el.JOBCL, cstCo:item.CSTCO, userId:item.USERID, ymd:item.YMD, cstNa:item.CSTNA}];
@@ -178,7 +185,9 @@ export default function CalendarScreen() {
     const openSelectJumpo = (ymd) => {
         setSelectYmd(ymd.replaceAll("-", ""));
         // {startTime:"09:00", endTime:"16:00", brkDure:0, jobCl:"S", cstCo:item.CSTCO, userId:item.USERID, ymd:item.YMD, cstNa:item.CSTNA}
-        setSheetData({startTime:"09:00", endTime:"16:00", brkDure:0, jobCl:"S", userId:userId, ymd:ymd.replaceAll("-", "")});
+        const params = [{startTime:"09:00", endTime:"16:00", brkDure:0, jobCl:"G", userId:userId, ymd:ymd.replaceAll("-", "")},
+                        {startTime:"09:00", endTime:"16:00", brkDure:0, jobCl:"S", userId:userId, ymd:ymd.replaceAll("-", "")}]
+        setSheetData(params);
         setIsOpen(false);
         setIsOpenJumpo(true);
     }
@@ -189,11 +198,13 @@ export default function CalendarScreen() {
         const cst = cstListColor.find(el => el.CSTCO == cstCo);
         setIsOpenJumpo(false);
         if(type == "계획"){
+            // 만약 계획이 추가되면 수정해야됨.. 데이터가 바뀌었다.
             const param = {cstCo:cst.CSTCO, userId:sheetData.userId, ymdFr:sheetData.ymd, ymdTo:"", jobCl:1, sTime:sheetData.startTime, eTime:sheetData.endTime}    
             setSheetSchData(param);
             setIsOpenSch(true);
         }else if(type == "근무"){
-            setSheetData({...sheetData, cstCo:cst.CSTCO, cstNa:cst.CSTNA})
+            const params = sheetData.map(it => { return {...it, cstCo:cst.CSTCO, cstNa:cst.CSTNA} });
+            setSheetData(params);
             setIsOpen(true);
         }
     }
