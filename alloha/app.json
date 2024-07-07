@@ -86,7 +86,7 @@
       "policy": "appVersion"
     },
     "ios": {
-      "buildNumber": "26",
+      "buildNumber": "27",
       "bundleIdentifier": "com.akmz.alloha",
       "supportsTablet": true,
       "infoPlist": {
@@ -110,7 +110,7 @@
       ],
       "googleServicesFile": "./google-services.json",
       "package": "com.akmz.alloha",
-      "versionCode": 24
+      "versionCode": 25
     },
     "web": {
       "favicon": "./assets/favicon.png"
