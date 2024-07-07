@@ -46,7 +46,7 @@ export default function  ChangeWorkTime ({dayJobInfo, setIsOpen, onConfirm}) {
     
     // 확인 버튼 클릭 이벤트
     const onPressConfirm = () => {
-        if(eTime > sTime){
+        if(eTime >= sTime){
             // 점주 호출
             // exec PR_PLYB02_WRKMNG1 'JumjoWorkSave', 1014, 'mangdee22', '20240509', '07:00', '16:00', @jobCl
             // @CLS 구분 : JumjoWorkSave

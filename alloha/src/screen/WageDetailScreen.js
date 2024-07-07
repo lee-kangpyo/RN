@@ -1,9 +1,10 @@
 
-import { StyleSheet, Text, View, ScrollView, Platform } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Platform, TouchableOpacity } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import { HTTP } from '../util/http';
 import { addComma, headerLeftComponent } from './../util/utils';
 import Loading from '../components/Loding';
+import { useAlert } from '../util/AlertProvider';
 
 export default function WageDetailScreen({navigation, route}) {
     const [loading, setisLoading] = useState(true)
@@ -54,19 +55,25 @@ export default function WageDetailScreen({navigation, route}) {
     }
 
     const DetailList = ({item}) => {
+        const {showAlert} = useAlert();
         const pillColor = ( ["승인", "자동승인"].includes(item.apvYn) )?"#3479EF":"#EEEEEE"
         const pillTextColor = ( ["승인", "자동승인"].includes(item.apvYn) )?"#FFF":"#999"
+        const mssg1 = (item.jobCl == "대타")?"해당 근무는 대타입니다.\n":(item.schDure == "-")?"근무계획이 없습니다.\n":"근무계획 : "+item.schDure+"시간\n";
+        const mssg2 = (item.dure == "-")?"근무시간 : 0":"근무시간 : "+item.dure+"시간";
         return(
             <>
                 <View style={styles.detailList}>
                     <View style={{flexDirection:"row", justifyContent:"space-between"}}>
                         <Text style={[fonts.date, {width:80}]}>{convertYMD(item.ymd)}</Text>
+                        <TouchableOpacity onPress={()=>showAlert("설명", mssg1+mssg2)} style={{flexDirection:"row"}}>
                         {
+                            (item.jobCl == "대타")?<Text style={fonts.time}>대타</Text>:
                             (item.schDure == "-")?<Text style={fonts.time}>없음</Text>:
                             <Text style={fonts.time}>{item.schDure}</Text>
                         }
                         <Text style={fonts.time}>|</Text>
                         <Text style={fonts.time}>{(item.dure == "-")?"0":item.dure}시간</Text>
+                        </TouchableOpacity>
                     </View>
                     <View style={{flex:1, alignItems:"flex-end"}}>
                         <Text style={fonts.wage}>{addComma(item.salary)}원</Text>

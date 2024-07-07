@@ -51,7 +51,7 @@ export default function  ChangeWorkTime2 ({dayJobInfo, setIsOpen, onConfirm}) {
     
     // 확인 버튼 클릭 이벤트
     const onPressConfirm = () => {
-        if(eTime > sTime){
+        if(eTime >= sTime){
             // 알바 호출
             // exec PR_PLYC03_JOBCHECK 'AlbaJobSave', @ymd, '', @cstCo, @userId, @sTime, @eTime, @jobCl, @brkDure
             // P_CLS		nvarchar(20)	-- 프로세스 구분
