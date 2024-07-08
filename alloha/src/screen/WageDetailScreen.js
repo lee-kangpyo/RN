@@ -1,6 +1,6 @@
 
 import { StyleSheet, Text, View, ScrollView, Platform, TouchableOpacity } from 'react-native';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import { HTTP } from '../util/http';
 import { addComma, headerLeftComponent } from './../util/utils';
 import Loading from '../components/Loding';
@@ -11,7 +11,7 @@ export default function WageDetailScreen({navigation, route}) {
     const [detailInfo, setDetailInfo] = useState([])
     const [salaryWeek, setSalaryWeek] = useState([])
     const [total, setTotal] = useState({})
-    
+    const {target} = route.params
 
     const getSalaryDetail = async () => {
         setisLoading(true);
@@ -30,7 +30,6 @@ export default function WageDetailScreen({navigation, route}) {
             }).finally(()=>{
                 setisLoading(false);
             })
-            
     }
 
     useEffect(()=>{
@@ -71,7 +70,7 @@ export default function WageDetailScreen({navigation, route}) {
                             (item.schDure == "-")?<Text style={fonts.time}>없음</Text>:
                             <Text style={fonts.time}>{item.schDure}</Text>
                         }
-                        <Text style={fonts.time}>|</Text>
+                        <Text style={fonts.time}> | </Text>
                         <Text style={fonts.time}>{(item.dure == "-")?"0":item.dure}시간</Text>
                         </TouchableOpacity>
                     </View>
@@ -145,6 +144,44 @@ export default function WageDetailScreen({navigation, route}) {
         return result;
     }
     
+    // 스크롤 이동 추가 - 해당 기능을 제외 할려면 const {target} = route.params 이거 제외 후 스크롤 불럭 삭제
+    const scrollRef = useRef(null);
+    const refArray = useRef([]);
+    
+    const initScrollTo = async () => {
+        let idx = 0
+        const measurePromises = refArray.current.map((item, index) => {
+            if(target.firstDay == item.item.YMDFR || target.lastDay == item.item.YMDTO ){
+                idx = index;
+            }
+            return new Promise((resolve) => {
+                if (item.ref) {
+                    item.ref.measure((x, y, width, height) => {
+                        //console.log(`Element with value ${item.value} at index ${index} has height: ${height}`);
+                        resolve(height);
+                    });
+                } else {
+                    resolve(null);
+                }
+            });
+        });
+        const heights = await Promise.all(measurePromises);
+        //console.log('All heights measured:', heights);
+
+        const h = heights.reduce((result, next, i) => {
+            if( i < idx ){
+                return result + next;
+            }else{
+                return result;
+            }
+        }, 0)
+        scrollRef.current.scrollTo({ x: 0, y: h, animated: true })
+    };
+
+    useEffect(()=>{
+        if(refArray.current.length > 0) initScrollTo();
+    }, [loading])
+    // 스크롤 이동 추가
     return (
         <>
             {
@@ -157,12 +194,12 @@ export default function WageDetailScreen({navigation, route}) {
                     </View>
                 :
                 <>
-                    <ScrollView contentContainerStyle={styles.scrollContentStyle} style={styles.scrollContainer}>
+                    <ScrollView ref={scrollRef} contentContainerStyle={styles.scrollContentStyle} style={styles.scrollContainer}>
                         {
                             getDetailList().map((el, idx) => {
                                 return (
-                                    <View key={idx} style={styles.weekCard}>
-                                        <View style={{paddingTop:24, paddingHorizontal:22}}>
+                                    <View key={idx} style={styles.weekCard} ref={(ref) => refArray.current[idx] = {ref, item:el.week}}>
+                                        <View style={{paddingTop:24, paddingHorizontal:22, marginBottom:10}}>
                                             <Text style={fonts.endOfWeek_date}>{convertYMD(el.week.YMDFR)} ~ {convertYMD(el.week.YMDTO)}</Text>
                                         </View>
                                         {

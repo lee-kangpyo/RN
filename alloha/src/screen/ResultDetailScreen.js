@@ -35,7 +35,6 @@ export default function ResultDetailScreen({navigation, route}) {
     const monthAlbaSlySearch = async () => {
         
         const param = {cls:"MonthAlbaSlySearch", ymdFr:date.start, ymdTo:date.end, cstCo:cstCo, cstNa:"", userId:item.userId, userNa:"", rtCl:"0"};
-        console.log(param);
         await axios.get(URL+`/api/v1/rlt/monthCstSlySearch`, {params:param})
         .then((res)=>{
             const data = res.data.result.filter((el)=>el.userId == item.userId);
@@ -53,10 +52,11 @@ export default function ResultDetailScreen({navigation, route}) {
     }, [isFocused, cstCo, date]);
 
     const firstColTap = async (item) => {
+        // 주차별 열기
         const ymdarr = getFirstAndLastDayOfWeek(date.yyyy, date.mm, item.week1);
-        //const ymd = item.YMDNA.split("~");
-        //const ymdarr = getWeekRange(ymd[0]);
-        navigation.navigate("WageResultDetail", { title: `${item.userNa} (${item.week1}주차)`, cstCo:item.cstCo, userId:item.userId, ymdFr:ymdarr.firstDay, ymdTo:ymdarr.lastDay});
+        // navigation.navigate("WageResultDetail", { title: `${item.userNa} (${item.week1}주차)`, cstCo:item.cstCo, userId:item.userId, ymdFr:ymdarr.firstDay, ymdTo:ymdarr.lastDay});
+        // 한달 열기
+        navigation.navigate("WageResultDetail", { title: `${item.userNa} (${item.week1}주차)`, cstCo:item.cstCo, userId:item.userId, ymdFr:date.start, ymdTo:date.end, target:ymdarr});
     }
     
     const onDeataTap = async (info) => {
@@ -66,7 +66,7 @@ export default function ResultDetailScreen({navigation, route}) {
         .then((res)=>{
             monthAlbaSlySearch();
         }).catch(function (error) {
-            console.log(error);
+              (error);
             alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
         })
     }
