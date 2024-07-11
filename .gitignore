@@ -100,7 +100,7 @@ alloha/.metro-health-check*
 alloha/eas.json
 alloha/.env
 alloha/google-services.json
-
+alloha/sql/
 
 apiServer/static/jdbc.js
 apiServer/node_modules
