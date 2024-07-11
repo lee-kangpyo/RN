@@ -7,7 +7,7 @@ import { setAlbaList } from '../../redux/slices/schedule';
 import axios from 'axios';
 import { URL } from "@env";
 import { useIsFocused } from '@react-navigation/native';
-import { convertTime, getWeekList } from '../util/moment';
+import { checkTimeOverlap, convertTime, getWeekList } from '../util/moment';
 import { setAlba, nextWeek, prevWeek, setWorkAlbaInfo, moveWeek, disabledEditing, moveWeekDown, } from '../../redux/slices/work';
 import WorkAlba from './../components/work/WorkAlba';
 
@@ -20,6 +20,7 @@ import { theme } from '../util/color';
 import { CustomBottomSheet2 } from '../components/common/CustomBottomSheet2';
 import ChangeWorkTime2 from '../components/bottomSheetContents/ChangeWorkTime2';
 import { HTTP } from '../util/http';
+import { useAlert } from '../util/AlertProvider';
 
 export default function WorkScreen({navigation}) {
     //TODO 여기서 알바가 요청하는 근무 수정 페이지 이동
@@ -208,9 +209,19 @@ export default function WorkScreen({navigation}) {
         return {screen:"work", url:"/api/v1/work/workChedule", params:params};
     }
 
+    const {showAlert} = useAlert();
     //근무 결과 입력
     const onConfirm = async (params) => {
-        console.log(params);
+        const check = selectedAlba.filter(el => el.cstCo == params.cstCo && el.jobCl != params.jobCl);
+        if(check.length > 0){
+            const job = check[0];
+            const isProceed = checkTimeOverlap( job.startTime, job.endTime, params.sTime, params.eTime );
+            if(!isProceed){
+                showAlert("알림", "입력하신 시간이 중복됩니다.\n 일반, 대타 시간을 다시 한번 확인해주세요.");
+                return;
+            }
+        }
+        setIsOpen(false);
         await HTTP("POST", "/api/v2/commute/JumjuJobSave", params)
         .then((res)=>{
             getWeekSchedule();
@@ -218,6 +229,7 @@ export default function WorkScreen({navigation}) {
             console.log(error);
             alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
         })
+        setIsOpen(false);
     }
     //###############################################################
     return (

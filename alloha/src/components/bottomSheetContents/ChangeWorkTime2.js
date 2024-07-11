@@ -65,7 +65,7 @@ export default function  ChangeWorkTime2 ({dayJobInfo, setIsOpen, onConfirm}) {
             // , @P_BRKDURE
             const param = {cstCo:_dayJobInfo.cstCo, userId:_dayJobInfo.userId, useId:_dayJobInfo.userId, ymd:_dayJobInfo.ymd, sTime:sTime, eTime:eTime, jobCl:type, brkDure:restTime};
             onConfirm(param);
-            setIsOpen(false);
+            //setIsOpen(false);
         }else{
             showAlert("알림", "출근 시간은 퇴근 시간보다 나중일수 없습니다.")
         }

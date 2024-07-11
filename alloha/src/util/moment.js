@@ -124,13 +124,14 @@ export const getWeekNumber = (dateString) => {
     inputDate.day(4);
     
     // 시작일을 기준으로 월을 추출
+    const year = inputDate.format('YYYY');
     const month = inputDate.format('MM');
     
     // 해당 월의 첫째 주부터의 주차를 계산
     const startOfMonth = moment(inputDate).startOf('month');
 
     const weeksSinceStartOfMonth = inputDate.diff(startOfMonth, 'weeks') + 1;
-    return {"month":month, "number":weeksSinceStartOfMonth};
+    return {"year":year, "month":month, "number":weeksSinceStartOfMonth};
 }
 // 주차의 시작과 끝을 반환
 export const getWeekRange = (dateString) => {
@@ -434,4 +435,39 @@ export function isFutureDate (dateStr) {
     const date = moment(dateStr);
     // 주어진 날짜가 오늘보다 이후인지 확인합니다
     return date.isAfter(today, 'day')
+}
+
+// deadLine:2024-06-30 dateStr:2024-06-30 -> false
+// deadLine:2024-06-30 dateStr:2024-06-25 -> false
+// deadLine:2024-06-30 dateStr:2024-07-01 -> true
+export function isAfterDeadLine(deadLine, dateStr) {
+    const deadLineDate = moment(deadLine, 'YYYY-MM-DD');
+    const date = moment(dateStr, 'YYYY-MM-DD');
+    // 전달된 날짜가 마감 날짜 이후인지 확인합니다.
+    return date.isAfter(deadLineDate);
+}
+
+// start1 ~ end1과 start2 ~ end2 가 겹치는지 체크
+// 08:00 ~ 12:00 11:00 ~ 15:00 -> false
+// 08:00 ~ 12:00 12:00 ~ 15:00 -> true
+export function checkTimeOverlap(start1, end1, start2, end2) {
+    // 시간 형식을 분 단위로 변환하는 함수
+    function timeToMinutes(time) {
+        var hours = parseInt(time.substring(0, 2));
+        var minutes = parseInt(time.substring(3, 5));
+        return hours * 60 + minutes;
+    }
+
+    // 각 시간 문자열을 분으로 변환
+    var start1_minutes = timeToMinutes(start1);
+    var end1_minutes = timeToMinutes(end1);
+    var start2_minutes = timeToMinutes(start2);
+    var end2_minutes = timeToMinutes(end2);
+
+    // 두 시간 범위가 겹치는지 확인하는 조건문
+    if (start2_minutes < end1_minutes && end2_minutes > start1_minutes) {
+        return false; // 겹치는 경우
+    } else {
+        return true; // 겹치지 않는 경우
+    }
 }

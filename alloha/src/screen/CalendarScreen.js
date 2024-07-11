@@ -4,7 +4,7 @@ import React, {useCallback, useEffect, useState} from 'react';
 import MyCalendar from "../components/Calendar2";
 import { FontAwesome, MaterialIcons, MaterialCommunityIcons, AntDesign } from '@expo/vector-icons';
 import { HTTP } from '../util/http';
-import { YYYYMMDD2Obj, convertDateStr, convertTime, convertTime2, isFutureDate } from "../util/moment";
+import { YYYYMMDD2Obj, checkTimeOverlap, convertDateStr, convertTime, convertTime2, isAfterDeadLine, isFutureDate } from "../util/moment";
 import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
 import { theme } from "../util/color";
@@ -20,6 +20,10 @@ export default function CalendarScreen() {
     const { showAlert } = useAlert();
     const userId = useSelector((state)=>state.login.userId);
     const today = convertTime2(moment(), {format : 'YYYY-MM-DD'});
+    
+    // 점주 마감 날짜 현재는 이전달 말일까지 자동 제한
+    const [deadLine, setDeadLine] = useState(convertTime2(moment().subtract(1, 'months').endOf('month'), {format : 'YYYY-MM-DD'}));
+
     const isFocused = useIsFocused();
     // 결과 바텀시트 열기
     const [isOpen, setIsOpen] = useState(false);
@@ -35,7 +39,7 @@ export default function CalendarScreen() {
     const [bottomData2, setBottomData2] = useState(null);
     
     // 바텀 시트 데이터 - 근무 시간일정 입력
-    const [sheetData, setSheetData] = useState({})
+    const [sheetData, setSheetData] = useState({});
     //하단 카드 데이터 - 근무 계획 입력
     const [sheetSchData, setSheetSchData] = useState({});
     // [{"CSTCO": 1014, "CSTNA": "글로리맘", "color": "#C80000"}, ] 점포 정보
@@ -43,13 +47,12 @@ export default function CalendarScreen() {
     //선택한 날짜
     const [selectDay, setSelectDay] = useState(today);
     //초기 날짜
-    const [initDay, setInitDay] = useState(selectDay)
+    const [initDay, setInitDay] = useState(selectDay);
     // main0205에서 호출할때 사용하는 state
     const [first, setFirst] = useState(true);
 
     
     const main0205 = async (ymd, isBottom) => {
-        console.log(ymd);
         const newData = Object.keys(data)
             .filter(key => key != ymd)
             .reduce((obj, key) => {
@@ -94,7 +97,6 @@ export default function CalendarScreen() {
     }, [data, today]);
 
     const onDayTap = useCallback( async (day, items) => {
-        //console.log("onDayTap");
         const d = day.dateString;
         main0206(d);
         
@@ -114,6 +116,16 @@ export default function CalendarScreen() {
 
     //근무 결과 입력
     const onConfirm = async (params) => {
+        const check = bottomData2.filter(el => el.cl=="JOB" && el.CSTCO == params.cstCo && el.JOBCL != params.jobCl);
+        if(check.length > 0){
+            const job = check[0];
+            const isProceed = checkTimeOverlap( convertTime(job.STARTTIME, {format:"HH:mm"}), convertTime(job.ENDTIME, {format:"HH:mm"}), params.sTime, params.eTime );
+            if(!isProceed){
+                showAlert("알림", "입력하신 시간이 중복됩니다.\n 일반, 대타 시간을 다시 한번 확인해주세요.");
+                return;
+            }
+        }
+        setIsOpen(false);
         await HTTP("POST", "/api/v2/commute/AlbaJobSave", params)
         .then((res)=>{
             const dateObject = getDateObject(params.ymd);
@@ -149,7 +161,6 @@ export default function CalendarScreen() {
 
     
     const openBottomSheet = (item) => {
-        //console.log("openBottomSheet");
         const data = bottomData2.reduce((result, el)=>{
             if(el.CSTCO == item.CSTCO && el.cl == "JOB"){
                 return [...result, {startTime:convertTime(el.STARTTIME, {format:"HH:mm"}), endTime:convertTime(el.ENDTIME, {format:"HH:mm"}), brkDure:el.BRKDURE / 60, jobCl:el.JOBCL, cstCo:item.CSTCO, userId:item.USERID, ymd:item.YMD, cstNa:item.CSTNA}];
@@ -242,7 +253,7 @@ export default function CalendarScreen() {
                     (!bottomData || !bottomData2)?
                         null
                     :
-                        <BottomCards data={bottomData} data2={bottomData2} openBottomSheet={openBottomSheet} openSelectJumpo={openSelectJumpo} openSch={openSch}/>
+                        <BottomCards deadLine={deadLine} data={bottomData} data2={bottomData2} openBottomSheet={openBottomSheet} openSelectJumpo={openSelectJumpo} openSch={openSch}/>
                 }
             </ScrollView>
             {
@@ -385,7 +396,7 @@ function getDateObject(dateString) {
     };
 }
 
-const BottomCards = ({data, data2, openBottomSheet, openSelectJumpo, openSch}) => {
+const BottomCards = ({deadLine, data, data2, openBottomSheet, openSelectJumpo, openSch}) => {
     const navigation = useNavigation();
     const dispatch = useDispatch()
     const day = data.day;
@@ -393,6 +404,9 @@ const BottomCards = ({data, data2, openBottomSheet, openSelectJumpo, openSch}) =
     const ymdObj = YYYYMMDD2Obj(day.dateString.replaceAll("-", ""));
     const ymd = ymdObj.ymd.split(".");
     const isFuture = isFutureDate(day.dateString);
+    
+    //마감일 이후인지 체크
+    const isAfter = isAfterDeadLine(deadLine, day.dateString);
     return (
         <>
         {
@@ -431,7 +445,7 @@ const BottomCards = ({data, data2, openBottomSheet, openSelectJumpo, openSch}) =
                                 const it = data2.filter(dt2 => dt2.CSTCO == el.CSTCO);
                                 return (
                                     <View key={idx} style={{marginBottom:8, paddingTop:18}} >
-                                        <TouchableOpacity onPress={()=>{dispatch(setSelectedStore({data:el}));navigation.push("CommuteCheckDetail", {"ymd":el.YMD});}} activeOpacity={1}>
+                                        {/* {<TouchableOpacity onPress={()=>{dispatch(setSelectedStore({data:el}));navigation.push("CommuteCheckDetail", {"ymd":el.YMD});}} activeOpacity={1}>} */}
                                             <View style={{flexDirection:"row"}}>
                                                 <View style={{flex:10}}>
                                                     <View style={{flexDirection:"row", justifyContent:"space-between", alignItems:"center"}}>
@@ -454,12 +468,17 @@ const BottomCards = ({data, data2, openBottomSheet, openSelectJumpo, openSch}) =
                                                         </View>
                                                     </View>
                                                 </View>
-                                                <View style={{ flex:1, justifyContent:"center", alignItems:"flex-end"}}>
+                                                {/* <View style={{ flex:1, justifyContent:"center", alignItems:"flex-end"}}>
                                                     <MaterialIcons name="arrow-forward-ios" size={18} color="black" />
-                                                </View>
+                                                </View> */}
                                             </View> 
-                                        </TouchableOpacity>
-                                        <BtnSet isFuture={isFuture} fncLeft={()=>openSch(el)} fncRight={()=>{openBottomSheet(el)}} /> 
+                                        {/* {</TouchableOpacity>} */}
+                                        {   /*color가 없으면 퇴사일 확률이 높음(예외사항은 확인안해봄. isAfter는 현재는 이번달 이전은 입력 불가)*/
+                                            (el.color && isAfter)?
+                                                <BtnSet isFuture={isFuture} fncLeft={()=>openSch(el)} fncRight={()=>{openBottomSheet(el)}} /> 
+                                            :
+                                                null
+                                        }
                                     </View>
                                 )
                             })
@@ -495,7 +514,6 @@ const BottomCardContent = ({data}) =>{
 }
 
 const BtnSet = ({isFuture, fncLeft, fncRight, selected}) => {
-
     return (
         <>
         {

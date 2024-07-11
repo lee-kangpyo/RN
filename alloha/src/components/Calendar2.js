@@ -83,7 +83,6 @@ const Markers = ({items}) => {
   )
 }
 const Markers_circle = ({items}) => {
-  console.log(items.length);
   const test = [...items, ...items];
   //50 -> 45 ->  35 -> 
   const color = {0:'#C80000', 1:'#34A853', 2:'#3396FE', 3:'#1547FF'}
@@ -101,8 +100,8 @@ const Markers_circle = ({items}) => {
 const Marker = ({item}) => {
   const schDure = item.SCHDURE;
   const jobDure = item.JOBDURE;  
-  const backGourd = (jobDure > 0)?{backgroundColor:item.color}:{};
-  const border = {borderWidth:1, borderColor:item.color};
+  const backGourd = (jobDure > 0)?{backgroundColor:item.color??"black"}:{};
+  const border = {borderWidth:1, borderColor:item.color??"black"};
   return ( <View style={[styles.marker, backGourd, border]} /> );
 }
 
