@@ -15,10 +15,12 @@ import { useAlert } from "../util/AlertProvider";
 export default function ScheduleCreateScreen({navigation, route}) {
     const {cstCo} = route.params;
     const userId = useSelector((state)=>state.login.userId);
+    
     const [yyyymmdd, setyyyymmdd] = useState(convertTime2(moment(), {format : 'YYYYMMDD'}));
     const w = getWeekRange(yyyymmdd);
     const weekList = getWeekList(w.first);
     const weekNumber = getWeekNumber(yyyymmdd);
+    const initWeek = getWeekNumber(convertTime2(moment(), {format : 'YYYYMMDD'}));
 
     const [selected, setselected] = useState([false, false, false, false, false, false, false]);
 
@@ -66,7 +68,6 @@ export default function ScheduleCreateScreen({navigation, route}) {
         const param = {sTime, eTime, ymds, userId, cstCo}
         await HTTP("POST", "/api/v2/commute/AlbaSchsSave", param)
         .then((res)=>{
-            console.log(res.data.resultCode);
             if(res.data.resultCode == "00"){
                 showAlert("계획 입력 완료", "계획이 입력되었습니다.", {callBack:()=>{
                     navigation.goBack();
@@ -82,7 +83,7 @@ export default function ScheduleCreateScreen({navigation, route}) {
     return(
         <>
             <View style={styles.container}>
-                <WeekNumber weekNumber={weekNumber} yyyymmdd={yyyymmdd} setyyyymmdd={setyyyymmdd} setselected={setselected}/>
+                <WeekNumber initWeek={initWeek} weekNumber={weekNumber} yyyymmdd={yyyymmdd} setyyyymmdd={setyyyymmdd} setselected={setselected}/>
                 <WeekBoxs weeks={weekList} selectState={{selected, setselected}}/>
                 <WorkTime time={{sTime, eTime, hour}} tap={openSheen}/>
                 <View style={{flex:1, marginBottom:-16, paddingHorizontal:8, justifyContent:"flex-end",}}>
@@ -159,12 +160,14 @@ function WorkTime ({time, tap}){
     )
 }
 
-function WeekNumber({weekNumber , yyyymmdd, setyyyymmdd, setselected}) {
+function WeekNumber({initWeek, weekNumber , yyyymmdd, setyyyymmdd, setselected}) {
     const onTap = (type) => {
         if(type == "next"){
             setyyyymmdd(moveNextWeek(yyyymmdd));
         }else if(type == "prev"){
-            setyyyymmdd(movePrevWeek(yyyymmdd));
+            if(initWeek.year+initWeek.month+"1" < weekNumber.year+weekNumber.month+weekNumber.number){
+                setyyyymmdd(movePrevWeek(yyyymmdd));
+            }
         }
         setselected([false, false, false, false, false, false, false]);
     }
@@ -195,13 +198,20 @@ function WeekBoxs ({weeks, selectState}) {
             {
                 ["일", "월", "화", "수", "목", "금", "토"].map((el, idx) => {
                     const week = weeks[idx];
-                    const date = convertTime2(week, {format : 'MM/DD'})
-
+                    const date = convertTime2(week, {format : 'MM/DD'});
+                    const targetDay = convertTime2(week, {format : 'YYYYMMDD'});
+                    const today = convertTime2(moment(), {format : 'YYYYMMDD'}).slice(0, 6) + "01";
                     return(
-                        <TouchableOpacity onPress={()=>boxTap(idx)} key={idx} style={[styles.weekBox, (selected[idx])?styles.sel:null]}>
-                            <Text style={[fonts.week, (selected[idx])?styles.sel:null]}>{el}</Text>
-                            <Text style={fonts.weekSub}>{date}</Text>
-                        </TouchableOpacity>
+                        (today <= targetDay)?
+                            <TouchableOpacity onPress={()=>boxTap(idx)} key={idx} style={[styles.weekBox, (selected[idx])?styles.sel:null]}>
+                                <Text style={[fonts.week, (selected[idx])?styles.sel:null]}>{el}</Text>
+                                <Text style={fonts.weekSub}>{date}</Text>
+                            </TouchableOpacity>
+                        :
+                            <View onPress={()=>boxTap(idx)} key={idx} style={[styles.weekBox, (selected[idx])?styles.sel:null]}>
+                                <Text style={[fonts.week, (selected[idx])?styles.sel:null]}>{el}</Text>
+                                <Text style={fonts.weekSub}>{date}</Text>
+                            </View>
                     )
                 })
             }
