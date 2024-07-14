@@ -6,7 +6,8 @@ const { login, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMC
         getStoreListCrew, searchCrewList, changeCrewRTCL, searchMyAlbaList, jobChk, salary,
         insertJobChk, geofencingTest, checkJobChk, insert_Uuid_Token, autoLogin, getUUID, checkjobtotal, 
         getTermsDetail, updateTaxNo, modifyStoreInfo, easyAlbaMng, albaSchedulemanager2, albaSchedulemanager, changeCrewName, logOut, changeCrewRTCLAprov,
-        delUser, chekcUser} = require('./../query/auth'); 
+        delUser, chekcUser,
+        PR_PLYM02_USERMNG} = require('./../query/auth'); 
 const axios = require('axios');
 
 const dotenv = require('dotenv');
@@ -275,6 +276,33 @@ router.post("/v1/changeCrewName", async (req, res, next) => {
         res.status(200).json({result:"다녀옴", resultCode:"00"});
     } catch (err) {
         console.log(err.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+})
+
+router.get("/v1/searchChangeAlba", async(req, res, next)=>{
+    try {
+        console.log("[api.js] /api/v1/searchChangeAlba - 점주가 생성한 아이디가 있는지 체크");
+        const {cstCo, hpNo} = req.query;
+        console.log(`cstCo:${cstCo}, hpNo:${hpNo}`)
+        const result = await execSql(PR_PLYM02_USERMNG, {cls:"searchChangeAlba", cstCo, hpNo, userId:""});
+        console.log(result.recordset);
+        res.status(200).json({result:result.recordset, resultCode:"00"});
+    } catch (error) {
+        console.log(error.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+})
+router.post("/v1/changeAlbaUpdate", async(req, res, next)=>{
+    try {
+        console.log("[api.js] /api/v1/changeAlbaUpdate - 점주가 생성한 아이디와 병합 작업");
+        const {hpNo, cstCo, userId} = req.body;
+        console.log(`cstCo:${cstCo}, hpNo:${hpNo}, useId:${userId}`)
+        const result = await execSql(PR_PLYM02_USERMNG, {cls:"changeAlbaUpdate", cstCo, hpNo, userId});
+        //console.log(result.recordset);
+        res.status(200).json({result:"다녀옴", resultCode:"00"});
+    } catch (error) {
+        console.log(error.message)
         res.status(200).json({ resultCode:"-1"});
     }
 })

@@ -13,6 +13,7 @@ import { URL } from "@env";
 import { Confirm } from '../util/confirm';
 import { useFocusEffect } from '@react-navigation/native';
 import CustomModal from '../components/CustomModal';
+import { HTTP } from '../util/http';
 
 export default function ManageCrewScreen({navigation}) {
     const userId = useSelector((state) => state.login.userId);
@@ -26,13 +27,43 @@ export default function ManageCrewScreen({navigation}) {
 
 //    const [storeList, setStoreList] = useState([]);
 
-    const onApprov = (userNa, cstCo, userId) => {
+    const onApprov = async (userNa, cstCo, userId, hpNo) => {
+        console.log("onApprov");
+
+        // -- 1. 해당 점포와 전화번호에 매칭되는 사용자 조회
+        // exec PR_PLYM02_USERMNG 'searchChangeAlba', 1014, '', '', '01046072210', 'N'
+        // -- 2. 점포코드와 사용자코드, 변경코드를 입력받아 계획, 근무, 급여 항목을 업데이트 한다.
+        // exec PR_PLYM02_USERMNG 'changeAlbaUpdate', 1014, 'mangdee21_0357', '', '01046072210', 'N' 
+        const check = await HTTP("GET", "/api/v1/searchChangeAlba", {hpNo:hpNo, cstCo:cstCo});
+
         Confirm("승인", `지원 하신${userNa}님을 승인하시겠습니까?`, "아니오", "네", async ()=>{
+            // 승인처리
             await axios.post(URL+`/api/v1/changeCrew`, {cstCo:cstCo, userId:userId, rtCl:"N"})
             .then((res)=>{
                 if(res.data.result === 1){
-                    Alert.alert("알림", "승인 하였습니다..")
+                    Alert.alert("알림", "승인 하였습니다.")
                     searchCrewList();
+                    // 병합체크
+                    if(check.data.result.length ?? 0 > 0){
+                        const tmpId = check.data.result[0].USERID // 점주가 생성한 아이디
+                        Confirm("근무 병합", `승인된 [${userNa}]님과 동일한 전화 번호로 점주가 직접 생성한 아이디가 있습니다. 근무 기록을 병합 하시겠습니까?`, "아니오", "네", async ()=>{
+                            await axios.post(URL+`/api/v1/changeAlbaUpdate`, {hpNo:hpNo, cstCo:cstCo, userId:tmpId})
+                            .then((res)=>{
+                                if(res.data.resultCode === "00"){
+                                    Alert.alert("알림", "병합되었습니다.")
+                                    
+                                }else{
+                                    Alert.alert("알림", "근무 병합 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
+                                }
+                            }).catch(function (error) {
+                                console.log(error);
+                                Alert.alert("오류", "요청중 알수없는 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
+                            })
+                        })
+                    }else{
+                        Alert.alert("알림", "승인 하였습니다.")
+                        searchCrewList();
+                    }
                 }else{
                     Alert.alert("알림", "승인 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
                 }
@@ -40,7 +71,17 @@ export default function ManageCrewScreen({navigation}) {
                 console.log(error);
                 Alert.alert("오류", "요청중 알수없는 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
             })
+
+            
+            
+
+            
         })
+
+        
+    }
+    const aprov = async (cstCo, userId) => {
+        
     }
 
     const onRetirement = (userNa, cstCo, userId) => {
@@ -156,7 +197,6 @@ export default function ManageCrewScreen({navigation}) {
     const tapAction = (cstCo) => {
         setSelectCstCo(cstCo)
     }
-
     return (
         <>
             <View style={{padding:16, paddingBottom:10, backgroundColor:"#fff"}}>
@@ -186,11 +226,12 @@ export default function ManageCrewScreen({navigation}) {
                             <Text style={fonts.count}>총 {filterList.length}명</Text>
                             <ScrollView style={styles.scrollArea}>
                                 {filterList.map((el, idx)=>{
+                                    console.log(el);
                                     return <CrewCard 
                                                 key={idx} 
                                                 crew={el} 
                                                 applyBtntxt={"승인"} 
-                                                onApplyButtonPressed={(cstCo, userId)=>{onApprov(el.USERNA, cstCo, userId)}}
+                                                onApplyButtonPressed={(cstCo, userId)=>{onApprov(el.USERNA, cstCo, userId, el.HPNO)}}
                                                 retirementBtnTxt={"퇴직"}
                                                 onRetirementButtonPressed={(cstCo, userId)=>{onRetirement(el.USERNA, cstCo, userId)}}
                                                 denyBtnTxt={"거절"}

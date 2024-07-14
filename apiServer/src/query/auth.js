@@ -110,6 +110,7 @@ const searchCrewList = `
             , a.ROLECL
             , a.RTCL
             , CASE WHEN dbo.FN_GET_Split_Index(a.USERID , '_', 1) = @userId THEN 'Jumju' ELSE 'Alba' END whoCreate
+            , c.HPNO
             --, ISNULL(MIN(JOBFR) + '~' + MAX(JOBTO),'등록전') as JOBDUR
             --, ISNULL(SUM(DAYJOB),0) as WEEKJOB 
     FROM   PLYMCSTUSER a
@@ -119,7 +120,7 @@ const searchCrewList = `
     WHERE   a.CSTCO in (SELECT CSTCO FROM PLYMCSTUSER a WHERE a.USERID = @userId AND a.ROLECL in ('OWNR','MNGR'))      -- 거래처코드
     AND   a.USERID != @userId
     AND   a.RTCL not in ( 'Y', 'D' )        -- Y - 퇴직, N - 재직, R - 요청, D - 거절 <-- 추후 생성
-    GROUP   BY a.CSTCO, b.CSTNA, a.USERID, c.USERNA, ISNULL(c.NICKNA,''), a.JOBTYPE, a.WAGE, a.ROLECL, a.RTCL
+    GROUP   BY a.CSTCO, b.CSTNA, a.USERID, c.USERNA, ISNULL(c.NICKNA,''), a.JOBTYPE, a.WAGE, a.ROLECL, a.RTCL, c.HPNO
 `
 const changeCrewName = `
     UPDATE a set a.USERNA = @userNa
@@ -147,6 +148,9 @@ const searchMyAlbaList = `
     WHERE   a.USERID = @userId
     AND   a.RTCL not in ( @execptRtcl )      -- Y - 퇴직, N - 재직, R - 요청 <-- 추후 생성
     GROUP   BY a.CSTCO, b.CSTNA, a.USERID, c.USERNA, ISNULL(c.NICKNA,''), a.JOBTYPE, a.WAGE, a.ROLECL, a.RTCL, b.lat, b.lon
+`
+const PR_PLYM02_USERMNG=`
+    exec PR_PLYM02_USERMNG @cls, @cstCo, @userId, '', @hpNO, 'N'
 `
 const changeCrewRTCLAprov=`
     UPDATE a SET a.RTCL = @rtCl, a.MUSERID = @userId , a.MYMDHMD = getdate(), a.WAGE = @wage
@@ -237,4 +241,4 @@ const albaSchedulemanager2 = `
     exec PR_PLYA02_ALBASCHMNG @cls, @cstCo, @userId, @ymdFr, @ymdTo, @jobCl, @sTime, @eTime
 `
 
-module.exports = {login, logOut, delUser, chekcUser, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, changeCrewRTCLAprov, searchMyAlbaList, getSelStoreRecords, insertJobChk, geofencingTest, checkJobChk, insert_Uuid_Token, autoLogin, getUUID, jobChk, jobChk2, salary, getTermsDetail, updateTaxNo, modifyStoreInfo, easyAlbaMng, albaSchedulemanager, albaSchedulemanager2, changeCrewName}
+module.exports = {login, logOut, delUser, chekcUser, test, isIdDuplicate, saveUser, getStoreList, insertMCST, insertMCSTUSER, getStoreListCrew, searchCrewList, changeCrewRTCL, changeCrewRTCLAprov, searchMyAlbaList, getSelStoreRecords, insertJobChk, geofencingTest, checkJobChk, insert_Uuid_Token, autoLogin, getUUID, jobChk, jobChk2, salary, getTermsDetail, updateTaxNo, modifyStoreInfo, easyAlbaMng, albaSchedulemanager, albaSchedulemanager2, changeCrewName, PR_PLYM02_USERMNG}
