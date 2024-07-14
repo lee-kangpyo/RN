@@ -156,9 +156,9 @@ export default function WorkScreen({navigation}) {
             }
         }
         // G 타입이 없으면 추가
-        if (!hasG) it2.push({startTime:"09:00", endTime:"16:00", "brkDure": 0, "cstCo": cstCo, "cstNa": "",  "jobCl": "G", "userId": info.userId, "ymd": info.ymd});
+        if (!hasG) it2.push({startTime:"09:00", endTime:"16:00", "brkDure": 0, "cstCo": cstCo, "cstNa": "",  "jobCl": "G", "userId": info.userId, "ymd": info.ymd, "tmp":true});
         // S 타입이 없으면 추가
-        if (!hasS) it2.push({startTime:"09:00", endTime:"16:00", "brkDure": 0, "cstCo": cstCo, "cstNa": "",  "jobCl": "S", "userId": info.userId, "ymd": info.ymd});
+        if (!hasS) it2.push({startTime:"09:00", endTime:"16:00", "brkDure": 0, "cstCo": cstCo, "cstNa": "",  "jobCl": "S", "userId": info.userId, "ymd": info.ymd, "tmp":true});
 
         setSelectedAlba(it2);
         dispatch(setWorkAlbaInfo({data:info}));
@@ -212,10 +212,11 @@ export default function WorkScreen({navigation}) {
     const {showAlert} = useAlert();
     //근무 결과 입력
     const onConfirm = async (params) => {
-        const check = selectedAlba.filter(el => el.cstCo == params.cstCo && el.jobCl != params.jobCl);
+        const check = selectedAlba.filter(el => !el.tmp && el.cstCo == params.cstCo && el.jobCl != params.jobCl);
         if(check.length > 0){
             const job = check[0];
             const isProceed = checkTimeOverlap( job.startTime, job.endTime, params.sTime, params.eTime );
+            
             if(!isProceed){
                 showAlert("알림", "입력하신 시간이 중복됩니다.\n 일반, 대타 시간을 다시 한번 확인해주세요.");
                 return;
