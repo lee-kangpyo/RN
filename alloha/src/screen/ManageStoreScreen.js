@@ -56,7 +56,7 @@ export default function ManageStoreScreen({type, refresh, setRefresh}) {
                     ?
                         <ScrollView style={styles.scrollArea}>
                             {storeList.map((el, idx)=>{
-                                return <StoreCard key={idx} store={el}  btntxt={"수정하기"} onButtonPressed={(store)=>navigation.navigate('modifyStore', {store:el, key:Date.now()})}/>
+                                return <StoreCard type={"owner"} key={idx} store={el}  btntxt={"수정하기"} onButtonPressed={(store)=>navigation.navigate('modifyStore', {store:el, key:Date.now()})}/>
                             })}
                         </ScrollView>
                     :

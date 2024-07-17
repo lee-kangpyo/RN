@@ -4,9 +4,10 @@ import CustomBtn from '../components/CustomBtn';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useState } from 'react';
 
-export default function StoreCard({store, btntxt, onButtonPressed}) {
+export default function StoreCard({store, btntxt, onButtonPressed, type="crew"}) {
     const [mode, setMode] = useState(true);
-    console.log(store.STAT);
+    console.log(store);
+    
     return (
     
     <View style={[styles.card, styles.row, {justifyContent:"space-between"}]}>
@@ -31,12 +32,16 @@ export default function StoreCard({store, btntxt, onButtonPressed}) {
         }
         <View style={{width:4}}/>
         {
-            (store.STAT == "지원하기")?
+            (type == "owner")?
+                <TouchableOpacity style={[styles.btn]} onPress={()=>onButtonPressed(store.CSTCO)}>
+                    <Text style={fonts.btn_text}>수정</Text>
+                </TouchableOpacity>
+            :(store.STAT == "지원하기")?
                 <TouchableOpacity style={[styles.btn]} onPress={()=>onButtonPressed(store.CSTCO)}>
                     <Text style={fonts.btn_text}>지원</Text>
                 </TouchableOpacity>
             :
-                <View style={[styles.btn, {backgroundColor:theme.purple,}]}>
+                <View style={[styles.btn]}>
                     <Text style={fonts.btn_text}>{store.STAT}</Text>
                 </View>
         }
