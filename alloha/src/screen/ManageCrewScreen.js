@@ -28,8 +28,6 @@ export default function ManageCrewScreen({navigation}) {
 //    const [storeList, setStoreList] = useState([]);
 
     const onApprov = async (userNa, cstCo, userId, hpNo) => {
-        console.log("onApprov");
-
         // -- 1. 해당 점포와 전화번호에 매칭되는 사용자 조회
         // exec PR_PLYM02_USERMNG 'searchChangeAlba', 1014, '', '', '01046072210', 'N'
         // -- 2. 점포코드와 사용자코드, 변경코드를 입력받아 계획, 근무, 급여 항목을 업데이트 한다.
@@ -71,17 +69,7 @@ export default function ManageCrewScreen({navigation}) {
                 console.log(error);
                 Alert.alert("오류", "요청중 알수없는 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
             })
-
-            
-            
-
-            
         })
-
-        
-    }
-    const aprov = async (cstCo, userId) => {
-        
     }
 
     const onRetirement = (userNa, cstCo, userId) => {
@@ -187,6 +175,14 @@ export default function ManageCrewScreen({navigation}) {
         })
         
     }
+    //개인화된 정보 입력 화면으로 이동 
+    const modifyCrewInfo = (cstCo, userId, userNa) => {
+        console.log(cstCo, userId, userNa);
+        navigation.push("ManageCrewUpdate", {cstCo, userId, userNa});
+        //setModifyUser({name:userNa, userId:userId, cstCo:cstCo});
+        //setIsShow(true);
+    }
+    // 이름변경
     const modifyCrew = (cstCo, userId, userNa) => {
         setModifyUser({name:userNa, userId:userId, cstCo:cstCo});
         setIsShow(true);
@@ -236,8 +232,10 @@ export default function ManageCrewScreen({navigation}) {
                                                 onRetirementButtonPressed={(cstCo, userId)=>{onRetirement(el.USERNA, cstCo, userId)}}
                                                 denyBtnTxt={"거절"}
                                                 onDenyButtonPressed={(cstCo, userId)=>{onDeny(el.USERNA, cstCo, userId)}}    
+                                                //modifyBtnTxt={"수정"}
+                                                //onModifyButtonPressed={(cstCo, userId, userNa)=>modifyCrew(cstCo, userId, userNa)}
                                                 modifyBtnTxt={"수정"}
-                                                onModifyButtonPressed={(cstCo, userId, userNa)=>modifyCrew(cstCo, userId, userNa)}
+                                                onModifyButtonPressed={(cstCo, userId, userNa)=>modifyCrewInfo(cstCo, userId, userNa)}
                                             />
                                 })}
                             </ScrollView>

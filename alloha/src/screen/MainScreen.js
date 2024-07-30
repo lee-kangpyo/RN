@@ -48,6 +48,7 @@ import QuestionScreen from './QuestionScreen';
 import ChangePasswordScreen from './ChangePasswordScreen';
 import { theme } from '../util/color';
 import ScheduleCreateScreen from './ScheduleCreateScreen';
+import ManageCrewUpdateScreen from './ManageCrewUpdateScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -143,6 +144,7 @@ function OwnrScreen({}){
           <Stack.Navigator initialRouteName="etcScreen">
             <Stack.Screen name="etcScreen" component={EtcScreen} options={{ tabBarLabel: '기타' }}/>
             <Stack.Screen name="ManageCrew" component={ManageCrewScreen} options={{ headerLeft:()=>headerLeftComponent("알바관리"), title:"" }}/>
+            <Stack.Screen name="ManageCrewUpdate" component={ManageCrewUpdateScreen} options={{ headerLeft:()=>headerLeftComponent("수정"), title:"" }}/>
             <Stack.Screen name="modifyCrew" component={ModifyCrewScreen} options={{ tabBarLabel: '알바수정' }}/>
             <Stack.Screen name="storeList" options={storeOption} backBehavior={"none"}>
               {() => <ManageStoreScreen type={"ownr"} refresh={refresh} setRefresh={setRefresh} />}

@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import { Image, Text, TouchableOpacity } from 'react-native';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
 
 export const addComma = (number) => {
     const convertedNumber = number || 0;
@@ -13,7 +13,12 @@ export const headerTitleStyle = {
     color: "#111111",
     
 }
-
+export const headerLeftNon = () => {
+    const navigation = useNavigation();
+    return (
+        <View />
+    )
+}
 export const headerLeftComponent = (title) => {
     const navigation = useNavigation();
     return (

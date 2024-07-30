@@ -325,4 +325,6 @@ const styles = StyleSheet.create({
         backgroundColor: "#3479EF",
         alignItems:"center",
     },
+    
+
 })
