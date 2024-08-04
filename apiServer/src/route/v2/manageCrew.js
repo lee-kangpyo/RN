@@ -1,20 +1,63 @@
 const express = require('express')
 var router = express.Router();
 const {execSql} = require("../../utils/excuteSql");
-const { updateAlbaInfo, mergeAlbaWeekInfo, UseNAlbaWeekInfo, UseNAlbaWeeksInfo, searchAlbaWork, saveAlbaWork, saveAlbaJobTime, delAlbaJobTime, delAllAlbaJobTime } = require('../../query/v2/manageCrew');
+const { updateAlbaInfo, mergeAlbaWeekInfo, UseNAlbaWeekInfo, UseNAlbaWeeksInfo, searchAlbaWork, saveAlbaWork, saveAlbaJobTime, delAlbaJobTime, delAllAlbaJobTime, searchStoreByAlba, searchWeekByAlba } = require('../../query/v2/manageCrew');
 
+const getTime = (dateString) => {
+    // Date 객체로 변환
+    const date = new Date(dateString);
+    // 시간 추출
+    const hours = String(date.getUTCHours()).padStart(2, '0');
+    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+    // 시간 문자열 생성
+    const timeString = `${hours}:${minutes}`;
+    return timeString;
+};
+router.get("/searchAlbaWorkByAlba", async (req,res,next)=>{
+    console.log("POST v2.manageCrew.searchAlbaWork 알바가 점포 기본 정보 호출")
+    try {
+        const {cstCo, userId} = req.query;
+        console.log(cstCo, userId);
+        const result = await execSql(searchStoreByAlba, {userId});
+        const result2 = await execSql(searchWeekByAlba, {userId:"mangdee22"});
+        
+        const storeInfo = result.recordset ?? [];
+        //const storeInfo = [];
+        const albaWeeks = result2.recordset ?? [];
+        for (store of storeInfo){
+            const filtered = albaWeeks.filter(el => el.CSTCO == store.CSTCO);
+            const weeks = {0:[],1:[],2:[],3:[],4:[],5:[],6:[],6:[]}
+            //if(filtered.length > 0 && store.ISSCHYN && store.ISSCHYN == "Y"){
+            if(filtered.length > 0){
+                // 배열 생성
+                const arr = Array.from({ length: 7 }, (_, index) => index + 1);
+                // for 문을 사용하여 배열 순회
+                for (let i = 0; i < arr.length; i++) {
+                    const jobWeek = arr[i];
+                    const target = filtered.find(el => el.JOBWEEK == jobWeek);
+                    if(target){
+                        weeks[i] = [getTime(target.JOBSTARTTIME), getTime(target.JOBENDTIME), target.JOBDURE];
+                    }
+                }
+                console.log(weeks);
+                store["weeks"] = weeks;
+            }else{
+                store["weeks"] = weeks;
+            }
+            
+            //console.log("###");
+            //console.log(storeInfo);
+            //console.log("###");
+        }
+        res.status(200).json({resultCode:"00", storeInfo:storeInfo});
+
+    } catch (error) {
+        console.log(error.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+})
 router.get("/searchAlbaWork", async (req,res,next)=>{
     console.log("POST v2.manageCrew.searchAlbaWork 점주가 알바 관리에서 기본 정보 호출")
-    const getTime = (dateString) => {
-        // Date 객체로 변환
-        const date = new Date(dateString);
-        // 시간 추출
-        const hours = String(date.getUTCHours()).padStart(2, '0');
-        const minutes = String(date.getUTCMinutes()).padStart(2, '0');
-        // 시간 문자열 생성
-        const timeString = `${hours}:${minutes}`;
-        return timeString;
-    };
     try {
         const {cstCo, userId} = req.query;
         console.log(cstCo, userId);
@@ -75,7 +118,11 @@ router.post("/update", async (req,res,next)=>{
         }else{
             console.log("고정근무시간 없음")
             // PLYMCSTFIXEDSCH 모두 N 처리
-            await execSql(delAllAlbaJobTime, {cstCo, userId, iUserId});
+            const weeks = [1,2,3,4,5,6,7]
+            for (const week of weeks) {
+                await execSql(delAlbaJobTime, {cstCo, userId, week:week, iUserId});
+            }
+            //await execSql(delAllAlbaJobTime, {cstCo, userId, iUserId});
         }
         res.status(200).json({resultCode:"00"});
     } catch (error) {

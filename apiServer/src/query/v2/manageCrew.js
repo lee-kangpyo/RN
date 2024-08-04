@@ -8,11 +8,25 @@ const saveAlbaJobTime  = `
     exec PR_PLYM03_ALBAMNG 'saveAlbaJobTime', @cstCo, @userId, '', 0, '', '', 0, @week, @sTime, @eTime, @iUserId
 `
 const delAlbaJobTime  = `
-    DELETE FROM PLYMALBAWORKS WHERE CSTCO = @cstCo AND USERID = @userId and JOBWEEK = @week
+    --DELETE FROM PLYMALBAWORKS WHERE CSTCO = @cstCo AND USERID = @userId and JOBWEEK = @week
+    exec PR_PLYM03_ALBAMNG 'deleteAlbaJobTime', @cstCo, @userId, '', 0, '', '', 0, @week, '', '', @iUserId
+
 `
 const delAllAlbaJobTime  = `
     DELETE FROM PLYMALBAWORKS WHERE CSTCO = @cstCo AND USERID = @userId
 `
+
+const searchStoreByAlba = `
+    SELECT a.CSTCO, a.RTCL, b.CSTNA, b.ZIPNO, b.ZIPADDR, b.ADDR, b.LAT, b.LON, c.JOBTYPE, c.MEALALLOWANCE, c.WEEKWAGEYN, c.ISSCHYN, c.BASICWAGE
+    from PLYMCSTUSER a  
+    INNER JOIN PLYMCST b On a.cstco = b.cstco and b.USEYN ='Y'
+    left JOIN PLYMALBAWORKM c On a.USERID = c.USERID and a.CSTCO =c.CSTCO 
+    WHERE a.userid = @userId and a.ROLECL = 'CREW'
+`
+const searchWeekByAlba = `
+    select * from PLYMALBAWORKS where USERID = @userId
+`
+
 
 const updateAlbaInfo = `
     UPDATE a SET a.JOBTYPE = @jobType, a.WAGE = @wage, a.MEALALLOWANCE = @mealAllowance, a.ISWEEKWAGE = @isWeekWage, a.ISSCH = @isSch, MUSERID = @iUserId, MYMDHMD = GETDATE() 
@@ -42,4 +56,5 @@ const UseNAlbaWeeksInfo = `
 `
 
 module.exports = {searchAlbaWork, saveAlbaWork, saveAlbaJobTime, delAlbaJobTime, delAllAlbaJobTime,
+                    searchStoreByAlba, searchWeekByAlba,
                     updateAlbaInfo, mergeAlbaWeekInfo, UseNAlbaWeekInfo, UseNAlbaWeeksInfo}
