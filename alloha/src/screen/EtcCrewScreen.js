@@ -50,6 +50,11 @@ export default function EtcCrewScreen({navigation}) {
                     icon={{type:"Octicons", name:"paper-airplane", size:48, color:"black"}}
                 /> */}
                 <GridBox
+                    text={"내점포"}
+                    onPress={()=>navigation.push("myStore")}
+                    icon={{type:"MaterialCommunityIcons", name:"store", size:48, color:"black"}}
+                />
+                <GridBox
                     text={"카카오톡문의하기"}
                     onPress={()=>Linking.openURL("http://pf.kakao.com/_mxmjLG/chat")}
                     icon={{type:"MaterialCommunityIcons", name:"chat-question", size:48, color:"black"}}
@@ -58,11 +63,6 @@ export default function EtcCrewScreen({navigation}) {
                     text={"매뉴얼"}
                     onPress={()=>Linking.openURL("https://www.notion.so/f3112ad5877e4d05a08cc441b90a3eb8")}
                     icon={{type:"AntDesign", name:"book", size:48, color:"black"}}
-                />
-                <GridBox
-                    text={"점포검색"}
-                    onPress={()=>navigation.push("manageStore")}
-                    icon={{type:"MaterialCommunityIcons", name:"store", size:48, color:"black"}}
                 />
             </View>
             <View style={[styles.container, {flexDirection:"row"}]}>
