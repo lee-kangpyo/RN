@@ -44,6 +44,7 @@ export default function SearchStoreScreen({type, refresh, setRefresh}) {
                 .then((res)=>{
                     if(res.data.resultCode === "00"){
                         Alert.alert("알림", "해당 점포에 알바 지원이 완료되었습니다.")
+                        navigation.pop();
                     }else{
                         Alert.alert("알림", "이미 지원한 점포입니다.")
                     }
