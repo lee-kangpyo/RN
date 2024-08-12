@@ -171,12 +171,12 @@ export default function ManageCrewUpdateScreen({navigation, route}) {
                     <BlockContent label={"급여"} subLabel={(wageType==0)?"2024년 최저 시급 9,860원":""} component={<WageInput value={(wageType == 0)?wage:wage2} onChangeText={(v)=>{(wageType == 0)?setWage(v):setWage2(v)}} />}/>
                     {
                         (wageType==0)?
-                            <SwitchContent label={"주휴 수당 지급"} isOn={isWeekWage} setIsOn={setIsWeekWage}/>
+                            <SwitchContent label={"주휴 수당"} isOn={isWeekWage} setIsOn={setIsWeekWage}/>
                         :  
                             <BlockContent label={"식대"} component={<WageInput value={foodWage} onChangeText={(v)=>{setFoodWage(v)}} />}/>
 
                     }
-                    <SwitchContent label={"고정 근무 시간"} isOn={isSch} setIsOn={setIsSch}/>
+                    <SwitchContent label={"근무 시간"} isOn={isSch} setIsOn={setIsSch}/>
                     <View style={{height:12}} />
                     {
                         (isSch)?
@@ -251,22 +251,25 @@ const WageInput = ({value, onChangeText}) => {
 //요일
 function WeekBoxs ({weeks}) {
     return (
-        <View style={styles.weekLine}>
+        <View style={[styles.weekLine, {flexDirection:"column",}]}>
             {
                 ["일", "월", "화", "수", "목", "금", "토"].map((el, idx) => {
                     return(
-                        <View key={idx} style={{alignItems:"center"}}>
-                            <View key={idx} onPress={()=>boxTap(idx)}  style={[styles.weekBox]}>
-                                <Text style={[fonts.week]}>{el}</Text>
+                        <View key={idx} style={{alignItems:"center", flexDirection:"row", justifyContent:"space-between", borderBottomWidth:1, borderColor:"#ddd", padding:13, paddingHorizontal:48}}>
+                            <View key={idx} onPress={()=>boxTap(idx)}>
+                                <Text style={fonts.week}>{el}</Text>
                             </View>
-                            <View style={{height:4}}/>
                             {
                                 (weeks[idx].length > 0)?
-                                    <View style={{alignItems:"center"}}>
+                                    <View style={{alignItems:"center", flexDirection:"row"}}>
                                         <Text style={fonts.weekSub}>{weeks[idx][0]}</Text>
+                                        <Text style={[fonts.weekSub, {marginHorizontal:8}]}>~</Text>
                                         <Text style={fonts.weekSub}>{weeks[idx][1]}</Text>
                                     </View>
-                                :null
+                                :
+                                    <View style={{alignItems:"center", width:120}}>
+                                        <Text style={fonts.weekSub}>-</Text>
+                                    </View>
                             }
                             
                         </View>
@@ -508,13 +511,13 @@ const fonts = StyleSheet.create({
     },
     week:{
         color:"#111",
-        fontFamily:"SUIT-Bold",
-        fontSize:13
+        fontFamily:"SUIT-SemiBold",
+        fontSize:16
     },
     weekSub:{
-        color:"#555",
-        fontFamily:"SUIT-Regular",
-        fontSize:9
+        color:"#111",
+        fontFamily:"SUIT-SemiBold",
+        fontSize:16
     },
     weekSub2:{
         color:"#555",
