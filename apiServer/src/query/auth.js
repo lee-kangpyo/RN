@@ -86,6 +86,7 @@ const getStoreListCrew = `
     inner join PLYMCSTUSER c On a.CSTCO = c.CSTCO and c.ROLECL = 'ownr'
     left join PLYMCSTUSER d On a.CSTCO = d.CSTCO and d.USERID = @userId
     WHERE   a.CSTNA like '%'+@cstNa+'%'
+    AND     a.CSTCL not in ('tmp', 'dev', 'system', 'test', 'crew')
 `
 
 // 사업장 등록

@@ -17,7 +17,7 @@ const delAllAlbaJobTime  = `
 `
 
 const searchStoreByAlba = `
-    SELECT a.CSTCO, a.RTCL, b.CSTNA, b.ZIPNO, b.ZIPADDR, b.ADDR, b.LAT, b.LON, c.JOBTYPE, c.MEALALLOWANCE, c.WEEKWAGEYN, c.ISSCHYN, c.BASICWAGE
+    SELECT a.CSTCO, a.RTCL, b.CSTCL, b.CSTNA, b.ZIPNO, b.ZIPADDR, b.ADDR, b.LAT, b.LON, c.JOBTYPE, c.MEALALLOWANCE, c.WEEKWAGEYN, c.ISSCHYN, c.BASICWAGE
     from PLYMCSTUSER a  
     INNER JOIN PLYMCST b On a.cstco = b.cstco and b.USEYN ='Y'
     left JOIN PLYMALBAWORKM c On a.USERID = c.USERID and a.CSTCO =c.CSTCO 

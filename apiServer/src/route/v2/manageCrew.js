@@ -19,7 +19,7 @@ router.get("/searchAlbaWorkByAlba", async (req,res,next)=>{
         const {cstCo, userId} = req.query;
         console.log(cstCo, userId);
         const result = await execSql(searchStoreByAlba, {userId});
-        const result2 = await execSql(searchWeekByAlba, {userId:"mangdee22"});
+        const result2 = await execSql(searchWeekByAlba, {userId});
         
         const storeInfo = result.recordset ?? [];
         //const storeInfo = [];
