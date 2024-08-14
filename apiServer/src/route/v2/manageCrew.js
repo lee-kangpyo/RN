@@ -17,7 +17,7 @@ router.get("/searchAlbaWorkByAlba", async (req,res,next)=>{
     console.log("POST v2.manageCrew.searchAlbaWork 알바가 점포 기본 정보 호출")
     try {
         const {cstCo, userId} = req.query;
-        console.log(cstCo, userId);
+        //console.log(cstCo, userId);
         const result = await execSql(searchStoreByAlba, {userId});
         const result2 = await execSql(searchWeekByAlba, {userId});
         
@@ -39,7 +39,7 @@ router.get("/searchAlbaWorkByAlba", async (req,res,next)=>{
                         weeks[i] = [getTime(target.JOBSTARTTIME), getTime(target.JOBENDTIME), target.JOBDURE];
                     }
                 }
-                console.log(weeks);
+                //console.log(weeks);
                 store["weeks"] = weeks;
             }else{
                 store["weeks"] = weeks;
@@ -102,7 +102,6 @@ router.post("/update", async (req,res,next)=>{
             // true이면 merge
             // false 이면 존재하지 않으면 N처리
             for (const idx in weeks) {
-                console.log(idx);
                 const week = weeks[idx];
                 if(weeks[idx].length > 0){
                     console.log("체크됨")
