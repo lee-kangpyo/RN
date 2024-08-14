@@ -257,7 +257,6 @@ function CrewScreen(){
             <Stack.Screen name="myStore" component={MyStoreScreen} options={{headerLeft:()=>headerLeftComponent("내점포"), title:"",}}/>
             <Stack.Screen name="manageStore" component={SearchStoreScreen} options={{headerLeft:()=>headerLeftComponent("점포검색"), title:""}}/>
             <Stack.Screen name="createCrewStore" component={CrewStoreScreen} options={{headerLeft:()=>headerLeftComponent("점포추가"), title:""}}/>
-            
           </Stack.Navigator>
         )}
       </Tab.Screen>

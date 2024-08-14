@@ -148,21 +148,25 @@ const StoreCard = ({info}) => {
     return (
         <View style={styles.card}>
             <View style={{flexDirection:"row", alignItems:"center", justifyContent:"space-between", marginBottom:16}}>
-                <Text style={fonts.title}>{info.CSTNA}</Text>
+                <Text style={[fonts.title, {flex:1}]}>{info.CSTNA}</Text>
                 {
                     (info.CSTCL == "crew")?
-                        <TouchableOpacity onPress={()=>navigation.push("createCrewStore", {mode:"update", data:info})}>
-                            <Text>수정하기</Text>
+                        <TouchableOpacity style={[styles.pill, {borderColor:theme.primary}]} onPress={()=>navigation.push("createCrewStore", {mode:"update", data:info})}>
+                            <Text style={[fonts.pillText, {color:theme.primary}]}>내 점포 수정하기</Text>
                         </TouchableOpacity>
                     :
-                        null
+                        <View style={styles.pill}>
+                            <Text style={fonts.pillText}>{statNa}</Text>
+                        </View>
                 }
-                
-                <View style={styles.pill}>
-                    <Text style={fonts.pillText}>{statNa}</Text>
-                </View>
             </View>
-            <CardContent label={"주소"} content={info.ZIPADDR} />
+            {
+                (info.CSTCL == "crew")?
+                    null
+                :
+                    <CardContent label={"주소"} content={info.ZIPADDR} />
+            }
+            
             {
                 (info.RTCL == "N")?
                     <>
