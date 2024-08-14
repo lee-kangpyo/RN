@@ -96,12 +96,12 @@ export default function ManageCrewUpdateScreen({navigation, route}) {
         await HTTP("POST", "/api/v2/manageCrew/update", param)
         .then((res)=>{
             if(res.data.resultCode == "00"){
-                console.log("Asdf");    
+                showAlert("수정 하기", "수정 되었습니다.")
             }
         }).catch(function (error) {
             console.log(error);
+            //showAlert("수정 하기", "수정 되었습니다.")
         }).finally(()=>{
-            showAlert("수정 하기", "수정 되었습니다.")
             setIsSumbmit(false);
         })
     
