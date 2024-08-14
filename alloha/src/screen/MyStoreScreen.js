@@ -71,7 +71,6 @@ export default function MyStoreScreen({}) {
         searchAlbaWork()
         setIsModalOpen(false);
     }, [isFocused])
-    //console.log(sotres);
     return (
         <View style={styles.main}>
         {
@@ -105,11 +104,10 @@ const ModalView = () => {
     const navigation = useNavigation();
     const [type, setType] = useState(0);
     const next = () => {
-        console.log(type)
         if(type == 1){
-            navigation.push("manageStore", {transitionConfig:{Animation:"none"}});
+            navigation.push("manageStore");
         }else if(type == 0){
-
+            navigation.push("createCrewStore", {mode:"create"});
         }
     }
     return (
@@ -144,8 +142,7 @@ const ModalView = () => {
 }
 
 const StoreCard = ({info}) => {
-    console.log(info.CSTCL);
-
+    const navigation = useNavigation();
     const statNa = (info.RTCL == "N")?"근무중":(info.RTCL == "R")?"요청중":(info.RTCL == "Y")?"퇴직":(info.RTCL == "D")?"거절됨":"";
     const jobType = info.JOBTYPE || "H";
     return (
@@ -154,7 +151,9 @@ const StoreCard = ({info}) => {
                 <Text style={fonts.title}>{info.CSTNA}</Text>
                 {
                     (info.CSTCL == "crew")?
-                        <Text>수정하기</Text>
+                        <TouchableOpacity onPress={()=>navigation.push("createCrewStore", {mode:"update", data:info})}>
+                            <Text>수정하기</Text>
+                        </TouchableOpacity>
                     :
                         null
                 }

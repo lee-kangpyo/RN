@@ -1,0 +1,8 @@
+const getMinWage = `
+    SELECT TOP 1 WAGE, CONVERT(CHAR(10), VALIDFROM, 23) VALIDFROM
+    FROM MINWAGE
+    WHERE VALIDFROM <= GETDATE()
+    ORDER BY VALIDFROM DESC;
+`
+
+module.exports = {getMinWage}

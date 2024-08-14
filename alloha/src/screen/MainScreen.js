@@ -50,6 +50,7 @@ import { theme } from '../util/color';
 import ScheduleCreateScreen from './ScheduleCreateScreen';
 import ManageCrewUpdateScreen from './ManageCrewUpdateScreen';
 import MyStoreScreen from './MyStoreScreen';
+import CrewStoreScreen from './CrewStoreScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -255,6 +256,8 @@ function CrewScreen(){
             <Stack.Screen name="changePassword" component={ChangePasswordScreen} options={{headerLeft:()=>headerLeftComponent("비밀번호 변경"), title:""}}/>
             <Stack.Screen name="myStore" component={MyStoreScreen} options={{headerLeft:()=>headerLeftComponent("내점포"), title:"",}}/>
             <Stack.Screen name="manageStore" component={SearchStoreScreen} options={{headerLeft:()=>headerLeftComponent("점포검색"), title:""}}/>
+            <Stack.Screen name="createCrewStore" component={CrewStoreScreen} options={{headerLeft:()=>headerLeftComponent("점포추가"), title:""}}/>
+            
           </Stack.Navigator>
         )}
       </Tab.Screen>

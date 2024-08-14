@@ -24,6 +24,8 @@ const boardRouter = require("../route/board")
 const commuteRouter = require("../route/commute")
 const commuteRouter_V2 = require("../route/v2/commute")
 const manageCrew_V2 = require("../route/v2/manageCrew")
+const crew_V2 = require("../route/v2/crew")
+const common_V2 = require("../route/v2/common")
 const dailyReportRouter = require("../route/dailyReport");
 const mainRouter = require("../route/main");
 
@@ -35,6 +37,8 @@ router.use('/v1/board', boardRouter);
 router.use('/v1/commute', commuteRouter); 
 router.use('/v2/commute', commuteRouter_V2); 
 router.use('/v2/manageCrew', manageCrew_V2); 
+router.use('/v2/crew', crew_V2); 
+router.use('/v2/common', common_V2); 
 router.use('/v1/daily', dailyReportRouter); 
 router.use('/v1/main', mainRouter); 
 
