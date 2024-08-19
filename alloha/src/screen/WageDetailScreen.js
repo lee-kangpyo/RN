@@ -5,12 +5,15 @@ import { HTTP } from '../util/http';
 import { addComma, headerLeftComponent } from './../util/utils';
 import Loading from '../components/Loding';
 import { useAlert } from '../util/AlertProvider';
+import { result } from 'lodash';
 
 export default function WageDetailScreen({navigation, route}) {
     const [loading, setisLoading] = useState(true)
     const [detailInfo, setDetailInfo] = useState([])
     const [salaryWeek, setSalaryWeek] = useState([])
     const [total, setTotal] = useState({})
+    const [jobType, setJobType] = useState("");
+
     const {target} = route.params
 
     const getSalaryDetail = async () => {
@@ -24,6 +27,7 @@ export default function WageDetailScreen({navigation, route}) {
         
         await HTTP("GET", "/api/v1/getSalaryDetail", params)
             .then((res)=>{
+                setJobType(res.data.salaryTotal.jobType);
                 setDetailInfo(res.data.salaryDetail);
                 setSalaryWeek(res.data.slalryWeek);
                 setTotal(res.data.salaryTotal);
@@ -53,39 +57,76 @@ export default function WageDetailScreen({navigation, route}) {
         return formattedDate
     }
 
-    const DetailList = ({item}) => {
+    const DetailList = ({item, jobType}) => {
+        
         const {showAlert} = useAlert();
         const pillColor = ( ["승인", "자동승인"].includes(item.apvYn) )?"#3479EF":"#EEEEEE"
         const pillTextColor = ( ["승인", "자동승인"].includes(item.apvYn) )?"#FFF":"#999"
         const mssg1 = (item.jobCl == "대타")?"해당 근무는 대타입니다.\n":(item.schDure == "-")?"근무계획이 없습니다.\n":"근무계획 : "+item.schDure+"시간\n";
         const mssg2 = (item.dure == "-")?"근무시간 : 0":"근무시간 : "+item.dure+"시간";
         return(
+            
             <>
                 <View style={styles.detailList}>
                     <View style={{flexDirection:"row", justifyContent:"space-between"}}>
                         <Text style={[fonts.date, {width:80}]}>{convertYMD(item.ymd)}</Text>
-                        <TouchableOpacity onPress={()=>showAlert("설명", mssg1+mssg2)} style={{flexDirection:"row"}}>
-                        {
-                            (item.jobCl == "대타")?<Text style={fonts.time}>대타</Text>:
-                            (item.schDure == "-")?<Text style={fonts.time}>없음</Text>:
-                            <Text style={fonts.time}>{item.schDure}</Text>
-                        }
-                        <Text style={fonts.time}> | </Text>
-                        <Text style={fonts.time}>{(item.dure == "-")?"0":item.dure}시간</Text>
-                        </TouchableOpacity>
+                        <View onPress={()=>showAlert("설명", mssg1+mssg2)} style={{flexDirection:"row"}}>
+                            {/* {
+                                (item.jobCl == "대타")?<Text style={fonts.time}>대타</Text>:
+                                (item.schDure == "-")?<Text style={fonts.time}>없음</Text>:
+                                <Text style={fonts.time}>{item.schDure}</Text>
+                            }
+                            <Text style={fonts.time}> | </Text> */}
+                            <Text style={fonts.time}>{(item.dure == "-")?"0":item.dure}시간</Text>
+                        </View>
                     </View>
                     <View style={{flex:1, alignItems:"flex-end"}}>
-                        <Text style={fonts.wage}>{addComma(item.salary)}원</Text>
+                        {
+                            (jobType=="H")?
+                                <Text style={fonts.wage}>{addComma(item.salary)}원</Text>
+                            :
+                                <Text style={fonts.wage}>-</Text>
+
+                        }
+                        
                     </View>
-                    <View style={{justifyContent:"flex-end", width:85}}>
+                    {/* <View style={{justifyContent:"flex-end", width:85}}>
                         <View style={[styles.pill, {backgroundColor:pillColor}]}>
                             <Text style={[fonts.pillText, {color:pillTextColor}]}>{item.apvYn}</Text>
                         </View>
+                    </View> */}
+                </View>
+                <View style={styles.sepH}/>
+            </>
+        )
+    }
+    const DetailSum = ({items}) => {
+        console.log(items);
+        const sum = items.reduce((result, item) => {
+            console.log(result);
+            console.log(item.dure);
+            result.dure += Number(item.dure);
+            result.salary += Number(item.salary);
+            return result;
+        }, {"dure":0, "salary":0})
+
+        return (
+            <>
+                <View style={styles.detailList}>
+                    <View style={{flexDirection:"row", justifyContent:"space-between"}}>
+                        <Text style={[fonts.date, {width:80}]}>합계</Text>
+                        <View style={{flexDirection:"row"}}>
+                            <Text style={fonts.time}>{sum.dure.toFixed(1)}시간</Text>
+                        </View>
+                    </View>
+                    <View style={{flex:1, alignItems:"flex-end"}}>
+                        <Text style={fonts.wage}>{sum.salary.toLocaleString()}원</Text>
                     </View>
                 </View>
                 <View style={styles.sepH}/>
             </>
         )
+
     }
     const SumLine = ({items}) => {
         const sum = items.filter(el => ["승인", "자동승인"].includes(el.apvYn) ).reduce((result, next) => {
@@ -116,11 +157,13 @@ export default function WageDetailScreen({navigation, route}) {
     const EndOfWeek = ({item}) => {
         return(
             <>
-                <View style={styles.endOfWeek}>
-                    <View style={{flexDirection:"row"}}>
-                        <Text style={fonts.endOfWeek_hours}>{item.WEEKDURE}시간</Text>
-                        <Text style={fonts.endOfWeek_hours}>|</Text>
-                        <Text style={fonts.endOfWeek_plus}> 주휴수당 : {addComma(item.WEEKWAGE)}원</Text>
+                <View style={[styles.endOfWeek, {marginTop:16}]}>
+                    <View style={{flexDirection:"row", width:"100%", justifyContent:"space-between", alignItems:"center"}}>
+                        <View style={{flexDirection:"row", alignItems:"center"}}>
+                            <Text style={fonts.endOfWeek_hours}>{convertYMD(item.YMDFR)}~{convertYMD(item.YMDTO)}</Text>
+                            <Text style={fonts.time}>{item.WEEKDURE}시간</Text>
+                        </View>
+                        <Text style={fonts.wage}>{addComma(item.WEEKWAGE)}원</Text>
                     </View>
                 </View>
             </>
@@ -144,44 +187,86 @@ export default function WageDetailScreen({navigation, route}) {
         return result;
     }
     
-    // 스크롤 이동 추가 - 해당 기능을 제외 할려면 const {target} = route.params 이거 제외 후 스크롤 불럭 삭제
+    const TopComp = ({total, salaryWeek})=>{
+        const weekSum = salaryWeek.reduce((result, item) => {
+            result += item.WEEKWAGE;
+            return result;
+        }, 0)
+        console.log(total);
+        return (
+            <View style={{backgroundColor:"white", padding:24}}>
+                <View style={{flexDirection:"row"}}>
+                    <Text style={fonts.totalLabel}>총 급여</Text>
+                    <Text style={{marginLeft:4}}>({(jobType == "H")?"시급":(jobType == "M")?"월급":""})</Text>
+                </View>
+                <Text style={fonts.totalSalary}>{(jobType == "H")?addComma(total.salary + weekSum):addComma(total.salary + total.mealAllowance)}원</Text>
+                <View style={{flexDirection:"row", justifyContent:"space-between"}}>
+                    <View style={{flexDirection:"row", alignItems:"flex-end"}}>
+                        <Text style={fonts.main}>[ </Text>
+                        <View style={{alignItems:"center"}}>
+                            <Text style={fonts.top}>일반</Text>
+                            <Text style={fonts.main}>{addComma(total.salary)}</Text>
+                        </View>
+                        <Text> + </Text>
+                        {
+                            (jobType == "H")?
+                                <View style={{alignItems:"center"}}>
+                                    <Text style={fonts.top}>주휴</Text>
+                                    <Text style={fonts.main}>{addComma(weekSum)}</Text>
+                                </View>
+                            :(jobType == "M")?
+                                <View style={{alignItems:"center"}}>
+                                    <Text style={fonts.top}>식대</Text>
+                                    <Text style={fonts.main}>{addComma(total.mealAllowance)}</Text>
+                                </View>
+                            :
+                                null
+                        }
+                        <Text style={fonts.main}> ]</Text>
+                    </View>
+                </View>
+            </View>
+        )
+    }
+    
+    // // 스크롤 이동 추가 - 해당 기능을 제외 할려면 const {target} = route.params 이거 제외 후 스크롤 불럭 삭제
     const scrollRef = useRef(null);
     const refArray = useRef([]);
     
-    const initScrollTo = async () => {
-        let idx = 0
-        const measurePromises = refArray.current.map((item, index) => {
-            if(target.firstDay == item.item.YMDFR || target.lastDay == item.item.YMDTO ){
-                idx = index;
-            }
-            return new Promise((resolve) => {
-                if (item.ref) {
-                    item.ref.measure((x, y, width, height) => {
-                        //console.log(`Element with value ${item.value} at index ${index} has height: ${height}`);
-                        resolve(height);
-                    });
-                } else {
-                    resolve(null);
-                }
-            });
-        });
-        const heights = await Promise.all(measurePromises);
-        //console.log('All heights measured:', heights);
+    // const initScrollTo = async () => {
+    //     let idx = 0
+    //     const measurePromises = refArray.current.map((item, index) => {
+    //         if(target.firstDay == item.item.YMDFR || target.lastDay == item.item.YMDTO ){
+    //             idx = index;
+    //         }
+    //         return new Promise((resolve) => {
+    //             if (item.ref) {
+    //                 item.ref.measure((x, y, width, height) => {
+    //                     //console.log(`Element with value ${item.value} at index ${index} has height: ${height}`);
+    //                     resolve(height);
+    //                 });
+    //             } else {
+    //                 resolve(null);
+    //             }
+    //         });
+    //     });
+    //     const heights = await Promise.all(measurePromises);
+    //     //console.log('All heights measured:', heights);
 
-        const h = heights.reduce((result, next, i) => {
-            if( i < idx ){
-                return result + next;
-            }else{
-                return result;
-            }
-        }, 0)
-        scrollRef.current.scrollTo({ x: 0, y: h, animated: true })
-    };
+    //     const h = heights.reduce((result, next, i) => {
+    //         if( i < idx ){
+    //             return result + next;
+    //         }else{
+    //             return result;
+    //         }
+    //     }, 0)
+    //     scrollRef.current.scrollTo({ x: 0, y: h, animated: true })
+    // };
 
-    useEffect(()=>{
-        if(refArray.current.length > 0) initScrollTo();
-    }, [loading])
-    // 스크롤 이동 추가
+    // useEffect(()=>{
+    //     if(refArray.current.length > 0) initScrollTo();
+    // }, [loading])
+    // // 스크롤 이동 추가
     return (
         <>
             {
@@ -194,45 +279,37 @@ export default function WageDetailScreen({navigation, route}) {
                     </View>
                 :
                 <>
+                    
+                    <TopComp total={total} salaryWeek={salaryWeek} />
                     <ScrollView ref={scrollRef} contentContainerStyle={styles.scrollContentStyle} style={styles.scrollContainer}>
                         {
-                            getDetailList().map((el, idx) => {
-                                return (
-                                    <View key={idx} style={styles.weekCard} ref={(ref) => refArray.current[idx] = {ref, item:el.week}}>
-                                        <View style={{paddingTop:24, paddingHorizontal:22, marginBottom:10}}>
-                                            <Text style={fonts.endOfWeek_date}>{convertYMD(el.week.YMDFR)} ~ {convertYMD(el.week.YMDTO)}</Text>
-                                        </View>
-                                        {
-                                            el.items.map((item, idx) => <DetailList key={idx} item={item}/> )
-                                        }
-                                        <SumLine items = {el.items} />
-                                        <EndOfWeek item={el.week}/>
+                            (jobType == "H")?
+                                <View style={[styles.weekCard, {paddingVertical:24}]} >
+                                    <View style={{paddingHorizontal:22, marginBottom:10}}>
+                                        <Text style={fonts.endOfWeek_date}>주휴수당</Text>
                                     </View>
-                                    );
-                            })
-                        }
-                    </ScrollView>
-                    <View style={{backgroundColor:"#F6F6F8", paddingHorizontal:16, paddingBottom:14}}>
-                        <View style={styles.totalSalary}>
-                            <View style={[styles.rowLine, {marginBottom:8}]}>
-                                <View style={styles.row}>
-                                    <Text style={fonts.totalSalary}>근무시간</Text>
-                                    <View style={[styles.whitePill, {marginLeft:5}]}>
-                                        <Text style={fonts.totalSalary}>{total.aDure}/{total.nDure}시간</Text>
-                                    </View>
+                                    {
+                                        salaryWeek.map((el, idx) => {
+                                            return <EndOfWeek item={el}/>;
+                                        })
+                                    }
                                 </View>
-                                <Text style={fonts.totalSalary}>{addComma(total.gSalary)}원</Text>
+                            :
+                                null
+                        }
+                        
+                        
+                        <View style={[styles.weekCard, {paddingVertical:24}]} >
+                            <View style={{paddingHorizontal:22, marginBottom:10}}>
+                                <Text style={fonts.endOfWeek_date}>상세 내역</Text>
                             </View>
-                            <View style={[styles.rowLine, {marginBottom:18}]}>
-                                <Text style={fonts.totalSalary}>주휴시간</Text>
-                                <Text style={fonts.totalSalary}>{addComma(total.sSalary)}원</Text>
-                            </View>
-                            <View style={styles.rowLine}>
-                                <Text style={fonts.totalWage}>총급여</Text>
-                                <Text style={fonts.totalWage}>{addComma(total.salary)}원</Text>
-                            </View>
+                            {
+                                detailInfo.map((item, idx) => <DetailList key={idx} item={item} jobType={jobType}/> )
+                            }
+                            {/* <DetailSum items={detailInfo} /> */}
                         </View>
-                    </View>
+                    </ScrollView>
+                    
                 </>
             }
         </>
@@ -269,24 +346,41 @@ const fonts = StyleSheet.create({
         color: "#555"
     },
     endOfWeek_hours:{
-        fontFamily: "SUIT-SemiBold",
+        fontFamily: "SUIT-Medium",
         fontSize: 13,
-        color: "#FF6A6A"
+        color: "#555555"
     },
     endOfWeek_plus:{
         fontFamily: "SUIT-ExtraBold",
         fontSize: 13,
-        color: "#FF6A6A"
+        color: "#111"
     },
     totalSalary:{
-        fontFamily: "SUIT-Regular",
-        fontSize: 14,
-        color: "#FFFFFF"
+        fontFamily: "SUIT-Bold",
+        fontSize: 24,
+        color: "#111"
+    },
+    totalLabel:{
+        fontFamily: "SUIT-Medium",
+        fontSize: 16,
+        color: "#555",
+        marginBottom:10
     },
     totalWage:{
         fontFamily: "SUIT-ExtraBold",
         fontSize: 15,
         color: "#FFFFFF"
+    },
+    top:{
+        marginBottom:-1,
+        fontFamily: "SUIT-Regular",
+        fontSize: 13,
+        color: "#111"
+    },
+    main:{
+        fontFamily: "SUIT-Medium",
+        fontSize: 15,
+        color: "#111"
     }
 })
 
@@ -334,8 +428,6 @@ const styles = StyleSheet.create({
     endOfWeek:{
         flexDirection:'row',
         justifyContent:"flex-end",
-        paddingVertical:16,
-        paddingHorizontal:22
     },
     totalSalary:{
         borderRadius: 15,

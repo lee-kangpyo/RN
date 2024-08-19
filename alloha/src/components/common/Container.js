@@ -301,16 +301,20 @@ const NameBox2 = ({list, alignItems = "center", fontSize=11, backgroundColor="#E
 
 const PayLine = ({item, onNameTap, onIncentiveTap, underLine=false}) => {
     const [isEdit, setEdit] = useState(false);
+    const jobType = item.JOBTYPE
+    const wage = (jobType == "H")?item.jobWage:item.BASICWAGE;
     return(
         <>
         <View style={[styles.row, {justifyContent:"space-between", height:40, marginTop:-0.3}]}>
             <ContentBox text={item.userNa} onTap={()=>onNameTap(item)}/>
             <Sep />
-            <ContentBox text={item.jobWage.toLocaleString()}  subText={item.jobDure} alignItems='flex-end'/>
+            <ContentBox text={(jobType == "H")?"시급":"월급"} />
             <Sep />
-            <ContentBox text={item.weekWage.toLocaleString()} subText={item.weekWageNa}  alignItems='flex-end' />
+            <ContentBox text={wage.toLocaleString()}  subText={item.jobDure} alignItems='flex-end'/>
             <Sep />
-            {
+            <ContentBox text={(jobType == "H")?item.weekWage.toLocaleString():item.MEALALLOWANCE} subText={(jobType == "H")?item.weekWageNa:""}  alignItems='flex-end' />
+            <Sep />
+            {/*
                 (isEdit)?
                 <>
                     <EidtNumberBox text={item.incentive.toLocaleString()} onTap={(value)=>{onIncentiveTap({value, userId:item.userId});setEdit(false);}} />
@@ -321,9 +325,9 @@ const PayLine = ({item, onNameTap, onIncentiveTap, underLine=false}) => {
                     <ContentBox text={item.incentive.toLocaleString()} onTap={()=>setEdit(true)}  alignItems='flex-end' />
                     <Sep />
                 </>
-            }
+            */}
             
-            <ContentBox text={item.salary.toLocaleString()}  alignItems='flex-end'/>
+            <ContentBox text={(jobType == "H")?item.salary.toLocaleString():(wage+item.MEALALLOWANCE).toLocaleString()}  alignItems='flex-end'/>
         </View>
         {(underLine)?<Sep />:null}
         </>

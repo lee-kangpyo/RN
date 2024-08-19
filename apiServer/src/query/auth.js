@@ -198,7 +198,7 @@ const jobChk=`exec PR_PLYC01_JOBCHECK @cls, @ymd, @cstCo, @userId`
 
 const jobChk2=`exec PR_PLYC02_JOBCHECK @cls, @ymdFr, @ymdTo, @cstCo, @userId, @cl1, @cl2, @jobCl`
 
-const salary=`exec PR_PLYD01_SALARY @cls, @ymdFr, @ymdTo, @cstCo, '', @userId, '', ''`
+const salary=`exec PR_PLYD01_SALARY_VER2 @cls, @ymdFr, @ymdTo, @cstCo, '', @userId, '', ''`
 
 const getUUID = `
     select UUID from PLYMUSER WHERE USERID = @userId

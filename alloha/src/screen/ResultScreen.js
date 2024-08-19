@@ -17,38 +17,38 @@ export default function ResultScreen({navigation}) {
     const userId = useSelector((state) => state.login.userId);
     const cstCo = useSelector((state)=>state.common.cstCo);
     const isFocused = useIsFocused();
-    const date = useSelector((state) => state.result.month)
-    const items = useSelector((state) => state.result.workResultList)
+    const date = useSelector((state) => state.result.month);
+    const items = useSelector((state) => state.result.workResultList);
     //const cstCo = useSelector((state)=>state.common.cstCo);
     
     const storeList = useSelector((state)=>state.common.storeList);
-    const store = storeList.filter((el)=>el.CSTCO == cstCo)
+    const store = storeList.filter((el)=>el.CSTCO == cstCo);
     
     const [cstNa, setCstNa] = useState("");
    
     const [excelData, setExcelData] = useState([]);
     
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
 
     const total = items.reduce((result, next)=>{
-        result.jobWage = result.jobWage + next.jobWage;
-        result.weekWage = result.weekWage + next.weekWage;
-        result.incentive = result.incentive + next.incentive;
-        result.salary = result.salary + next.salary;
+        //console.log(next);
+        result.jobWage += (next.JOBTYPE == "M")?next.BASICWAGE:next.jobWage;
+        result.weekWage += (next.JOBTYPE == "M")?next.MEALALLOWANCE:next.weekWage;
+        result.incentive += next.incentive;
+        result.salary += (next.JOBTYPE == "M")?next.BASICWAGE:next.salary;
+        result.mealAllowance += (next.JOBTYPE == "M")?next.MEALALLOWANCE:0;
         return result; 
-    }, {jobWage:0, weekWage:0, incentive:0, salary:0})
-    
-
+    }, {jobWage:0, weekWage:0, incentive:0, salary:0, mealAllowance:0})
     
     const monthCstSlySearch = async () => {
         const param = {cls:"MonthCstSlySearch", ymdFr:date.start, ymdTo:date.end, cstCo:cstCo, cstNa:"", userId:userId, userNa:"", rtCl:"0"};
         await axios.get(URL+`/api/v1/rlt/monthCstSlySearch`, {params:param})
         .then((res)=>{
-            dispatch(setWorkResultList({data:res.data.result}))
+            dispatch(setWorkResultList({data:res.data.result}));
             getExcelData();
         }).catch(function (error) {
             console.log(error);
-            alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
+            alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
         })
     }
 
@@ -63,7 +63,11 @@ export default function ResultScreen({navigation}) {
         }
     }, [isFocused, cstCo, date]);
 
-    const onNameTap = (item) => {navigation.push("resultDetail", {item:item})}
+    const onNameTap = (item) => {
+        //console.log({ title: `${item.userNa}`, cstCo:item.cstCo, userId:item.userId, ymdFr:date.start, ymdTo:date.end});
+        //navigation.push("resultDetail", {item:item})
+        navigation.navigate("WageResultDetail", { title: `${item.userNa}`, cstCo:item.cstCo, userId:item.userId, ymdFr:date.start, ymdTo:date.end});
+    }
     const onIncentiveTap = async (incentive) => {
         var param = {cls:"IncentiveAmtUpdate", ymdFr:date.start, ymdTo:date.end, cstCo:cstCo, userId:incentive.userId, userNa:"", rtCl:incentive.value}
         await axios.get(URL+`/api/v1/rlt/monthCstSlySearch`, {params:param})
@@ -97,7 +101,6 @@ export default function ResultScreen({navigation}) {
             <View style={{...styles.card, marginTop:20, padding:5, width:"100%", overflow:"hidden"}}>
                 <View style={{marginBottom:20}}>
                     <HeaderControl title={`${date.mm}월`} onLeftTap={()=> dispatch(prevMonth())} onRightTap={()=> dispatch(nextMonth())} />
-
                 </View>
                 <Excel
                     custom={"result"}
@@ -106,10 +109,10 @@ export default function ResultScreen({navigation}) {
                     fileName={`${cstNa}_${date.mm}월_결과현황표`}
                     data={excelData}
                 />
-                <PayContainer header={["성명", "시급", "주휴", "플러스", "합계"]} contents={items} onNameTap={onNameTap} onIncentiveTap={onIncentiveTap}/>
+                <PayContainer header={["성명", "타입", "시급", "주휴/식대", "합계"]} contents={items} onNameTap={onNameTap} onIncentiveTap={onIncentiveTap}/>
             </View>
             <View style={{padding:5, width:"100%"}}>
-                <TotalContainer contents={["합계", total.jobWage.toLocaleString(), total.weekWage.toLocaleString(), total.incentive.toLocaleString(), total.salary.toLocaleString()]}/>
+                <TotalContainer contents={["합계", total.jobWage.toLocaleString(), total.weekWage.toLocaleString(), (total.salary+total.mealAllowance).toLocaleString()]}/>
             </View>
         </SafeAreaView>
     );
@@ -120,6 +123,4 @@ const styles = StyleSheet.create({
     card:{
         flex:1,
     },
-    
-
 });
