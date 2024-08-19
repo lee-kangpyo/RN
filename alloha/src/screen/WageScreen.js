@@ -74,10 +74,14 @@ export default function WageScreen({navigation, route}) {
 
 
     const navigateWageDetail = (item) => {
+        
         const ymdFr = date.getFullYear()+String(date.getMonth() + 1).padStart(2, '0')+String(date.getDate()).padStart(2, '0');
         const ymdTo = date2.getFullYear()+String(date2.getMonth() + 1).padStart(2, '0')+String(date2.getDate()).padStart(2, '0');
-        navigation.navigate("WageDetail", {item:item});
-        //navigation.navigate("WageDetail2", { title: item.title, cstCo:item.cstCo, userId:userId, ymdFr:ymdFr, ymdTo:ymdTo});
+        console.log(ymdFr);
+        console.log(ymdTo);
+        //navigation.navigate("WageDetail", {item:item});
+        
+        navigation.navigate("WageResultDetail", { title: `${item.userNa}`, cstCo:item.cstCo, userId:item.userId, ymdFr:ymdFr, ymdTo:ymdTo});
     }
 
     const openDateChanger = (mode) => {
