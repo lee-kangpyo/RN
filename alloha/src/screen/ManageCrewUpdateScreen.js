@@ -186,7 +186,7 @@ export default function ManageCrewUpdateScreen({navigation, route}) {
                         :null
                     }
                 </ScrollView>
-                <CustomStandardBtn style={{flex:1}} text={"수정 하기"} onPress={sumbmit}/>
+                <CustomStandardBtn style={{flex:1}} text={(wageType==0)?"시급 수정 하기":"월급 수정 하기"} onPress={sumbmit}/>
             </View>
             <CustomBottomSheet2
                 isOpen={isOpen}
@@ -212,16 +212,30 @@ export default function ManageCrewUpdateScreen({navigation, route}) {
         </>
     );
 }
-
 //급여형태
 const WageType = ({wageType, setWageType}) => {
+    const hColor = wageType === 0 && styles.sepSelected;
+    const mColor = wageType === 1 && styles.sepSelected;
+    const hTxt = wageType === 0 && styles.sepSelectedText;
+    const mTxt = wageType === 1 && styles.sepSelectedText;
+    const hCircle = (wageType === 0)?theme.primary:"#999";
+    const mCircle = (wageType === 1)?theme.primary:"#999";
     return(
-        <View style={styles.sep}>
+        <View style={[styles.sep, {height:50}]}>
             <TouchableWithoutFeedback onPress={()=>setWageType(0)}>
-                <Text style={[styles.sepTxt, wageType === 0 && styles.sepSelected]}>시급</Text>
+                <View style={[styles.sepTap, hColor]}>
+                    <AntDesign name="checkcircle" size={16} color={hCircle} />
+                    <View style={{width:8}}/>
+                    <Text style={[styles.sepTxt, hTxt]}>시급</Text>
+                </View>
             </TouchableWithoutFeedback>
+            <View style={{width:10}} />
             <TouchableWithoutFeedback onPress={()=>setWageType(1)}>
-                <Text style={[styles.sepTxt, wageType === 1 && styles.sepSelected]}>월급</Text>
+                <View style={[styles.sepTap, mColor]}>
+                    <AntDesign name="checkcircle" size={16} color={mCircle} />
+                    <View style={{width:8}}/>
+                    <Text style={[styles.sepTxt, mTxt]}>월급</Text>
+                </View>
             </TouchableWithoutFeedback>
         </View>
     )
@@ -568,22 +582,33 @@ const styles = StyleSheet.create({
     container:{flex:1, padding:15, backgroundColor:"white"},
     sep:{
         flexDirection:"row",
-        backgroundColor:"#F2F3F5",
         borderRadius:5,
-        padding:5,
+    },
+    sepTap:{
+        backgroundColor:"#fff",
+        borderWidth:1,
+        borderColor:"#ddd",
+        flexDirection:"row",
+        justifyContent:"center",
+        alignItems:"center",
+        textAlign:"center",
+        borderRadius:8,
+        flex:1,
     },
     sepTxt:{
-        textAlign:"center",
-        paddingVertical:8,
-        borderRadius:5,
+        fontFamily: "SUIT-Medium",
         color:"#999",
         fontSize:16,
-        fontWeight:"500",
-        width:"50%",
     },
     sepSelected:{
         backgroundColor:"#FFFFFF", 
+        borderColor:theme.primary,
+        borderWidth:1,
         color:"#111",
+    },
+    sepSelectedText:{
+        fontFamily:"SUIT-Bold",
+        color:theme.primary
     },
     inputContainer:{
         flexDirection:"row",
