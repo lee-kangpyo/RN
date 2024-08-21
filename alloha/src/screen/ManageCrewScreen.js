@@ -31,7 +31,11 @@ export default function ManageCrewScreen({navigation}) {
         // -- 1. 해당 점포와 전화번호에 매칭되는 사용자 조회
         // exec PR_PLYM02_USERMNG 'searchChangeAlba', 1014, '', '', '01046072210', 'N'
         // -- 2. 점포코드와 사용자코드, 변경코드를 입력받아 계획, 근무, 급여 항목을 업데이트 한다.
-        // exec PR_PLYM02_USERMNG 'changeAlbaUpdate', 1014, 'mangdee21_0357', '', '01046072210', 'N' 
+        // exec PR_PLYM02_USERMNG 'changeAlbaUpdate', 1014, 'mangdee21_0357', '', '01046072210', 'N'
+        
+        console.log(cstCo, userId, userNa);
+        navigation.push("ManageCrewUpdate", {cstCo, userId, userNa, mode:"create"});
+        /*
         const check = await HTTP("GET", "/api/v1/searchChangeAlba", {hpNo:hpNo, cstCo:cstCo});
 
         Confirm("승인", `지원 하신${userNa}님을 승인하시겠습니까?`, "아니오", "네", async ()=>{
@@ -70,6 +74,7 @@ export default function ManageCrewScreen({navigation}) {
                 Alert.alert("오류", "요청중 알수없는 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
             })
         })
+        */
     }
 
     const onRetirement = (userNa, cstCo, userId) => {

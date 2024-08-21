@@ -20,10 +20,11 @@ import TimePicker_24 from '../components/library/TimePicker_24';
 import { calculateDifference, formatTimeObject, parseTimeString } from '../util/timeParser';
 import { FontAwesome5, AntDesign  } from '@expo/vector-icons';
 import { headerLeftComponent, headerLeftNon } from '../util/utils';
+import { Confirm } from '../util/confirm';
 
 
 export default function ManageCrewUpdateScreen({navigation, route}) {
-    const {cstCo, userId, userNa} = route.params; 
+    const {cstCo, userId, userNa, mode} = route.params; 
     const {showAlert} = useAlert();
     const dispatch = useDispatch();
     const iUserId = useSelector((state)=>state.login.userId);
@@ -44,6 +45,7 @@ export default function ManageCrewUpdateScreen({navigation, route}) {
     const [weeks, setWeeks] = useState({0:[], 1:[], 2:[], 3:[], 4:[], 5:[],6:[],});             // 선택된 요일
 
     useEffect(()=>{
+        navigation.setOptions({ headerLeft:()=>headerLeftComponent((mode == "create")?"승인":"수정"), title:"" })
         searchAlbaWork();
     }, []);
 
@@ -96,16 +98,61 @@ export default function ManageCrewUpdateScreen({navigation, route}) {
         await HTTP("POST", "/api/v2/manageCrew/update", param)
         .then((res)=>{
             if(res.data.resultCode == "00"){
-                showAlert("수정 하기", "수정 되었습니다.")
+                if(mode == "create"){
+                    showAlert("승인", "승인 하였습니다.")
+                }else{
+                    showAlert("수정", "수정 되었습니다.")
+                }
             }
         }).catch(function (error) {
             console.log(error);
             //showAlert("수정 하기", "수정 되었습니다.")
         }).finally(()=>{
             setIsSumbmit(false);
+            navigation.pop();
         })
-    
     }
+
+    const create = async () => {
+        Confirm("승인", `지원 하신${userNa}님을 승인하시겠습니까?`, "아니오", "네", async ()=>{
+            setIsSumbmit(true);
+            // 승인처리
+            await HTTP("POST", `/api/v1/changeCrew`, {cstCo:cstCo, userId:userId, rtCl:"N"})
+            .then((res)=>{
+                if(res.data.result === 1){
+                    sumbmit()
+                    //searchCrewList();
+                    // 병합체크
+                    // if(check.data.result.length ?? 0 > 0){
+                    //     const tmpId = check.data.result[0].USERID // 점주가 생성한 아이디
+                    //     Confirm("근무 병합", `승인된 [${userNa}]님과 동일한 전화 번호로 점주가 직접 생성한 아이디가 있습니다. 근무 기록을 병합 하시겠습니까?`, "아니오", "네", async ()=>{
+                    //         await axios.post(URL+`/api/v1/changeAlbaUpdate`, {hpNo:hpNo, cstCo:cstCo, userId:tmpId})
+                    //         .then((res)=>{
+                    //             if(res.data.resultCode === "00"){
+                    //                 Alert.alert("알림", "병합되었습니다.")
+                                    
+                    //             }else{
+                    //                 Alert.alert("알림", "근무 병합 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
+                    //             }
+                    //         }).catch(function (error) {
+                    //             console.log(error);
+                    //             Alert.alert("오류", "요청중 알수없는 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
+                    //         })
+                    //     })
+                    // }else{
+                    //     Alert.alert("알림", "승인 하였습니다.")
+                    //     searchCrewList();
+                    // }
+                }else{
+                    Alert.alert("알림", "승인 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
+                }
+            }).catch(function (error) {
+                console.log(error);
+                Alert.alert("오류", "요청중 알수없는 오류가 발생했습니다. 잠시후 다시 시도해주세요.")
+            })
+        })
+    }
+
 
     const goWeeksTime = () => {// 고정 근무 시간 입력 화면으로 변경
         navigation.setOptions({
@@ -127,7 +174,7 @@ export default function ManageCrewUpdateScreen({navigation, route}) {
     }
     
     const backWeeksTime = () => {
-        navigation.setOptions({headerLeft:()=>headerLeftComponent("수정"), title:"", headerRight:()=>null})
+        navigation.setOptions({headerLeft:()=>headerLeftComponent((mode == "create")?"승인":"수정"), title:"", headerRight:()=>null})
         Animated.timing(animLeft, {
             toValue: -500, // 어떤 값으로 변경할지 - 필수
             duration: 200, // 애니메이션에 걸리는 시간(밀리세컨드) - 기본값 500
@@ -186,7 +233,7 @@ export default function ManageCrewUpdateScreen({navigation, route}) {
                         :null
                     }
                 </ScrollView>
-                <CustomStandardBtn style={{flex:1}} text={(wageType==0)?"시급 수정 하기":"월급 수정 하기"} onPress={sumbmit}/>
+                <CustomStandardBtn style={{flex:1}} text={(mode == "create")?(wageType==0)?"시급 승인 하기":"월급 승인 하기":(wageType==0)?"시급 수정 하기":"월급 수정 하기"} onPress={(mode == "create")?create:sumbmit}/>
             </View>
             <CustomBottomSheet2
                 isOpen={isOpen}
