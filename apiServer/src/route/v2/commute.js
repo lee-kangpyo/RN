@@ -73,7 +73,8 @@ router.post("/AlbaJobSave", async (req,res,next)=>{
     try {
         const { ymd, cstCo, userId, sTime, eTime, jobCl, brkDure, wage } = req.body;
         console.log(ymd, cstCo, userId, sTime, eTime, jobCl, brkDure, wage);
-        const result = await execSql(AlbaJobSave, {ymd, cstCo, userId, sTime, eTime, jobCl, brkDure, wage});
+        const w = (wage)?wage:9860;
+        const result = await execSql(AlbaJobSave, {ymd, cstCo, userId, sTime, eTime, jobCl, brkDure, wage:w});
         console.log(result);
         res.status(200).json({resultCode:"00"});
     } catch (error) {
