@@ -37,13 +37,16 @@ export default function WorkScreen({navigation}) {
 
     const [modalVisible, setModalVisible] = useState(false);
     const [modifyTimeShow, setModifyTimeShow] = useState(false);
+    const [wageInfo, setWageInfo] = useState({});
     
 
     const getWeekSchedule = async (callback) => {
         const param = {cls:"WeekWorkSearch", cstCo:cstCo, userId:userId, ymdFr:weekList[0].format("yyyyMMDD"), ymdTo:weekList[6].format("yyyyMMDD"), jobCl:"", jobDure:0};
         await axios.get(URL+`/api/v1/work/workChedule`, {params:param})
         .then((res)=>{
+            console.log(res.data.result);
             dispatch(setAlba({data:res.data.result}));
+            setWageInfo(res.data.wageInfo);
             if(callback) callback();
         }).catch(function (error) {
             console.log(error);
@@ -139,7 +142,7 @@ export default function WorkScreen({navigation}) {
     const onAlbaTap = (info, item) => {
         const it = item ?? [];
         const it2 = it.reduce((result, el) => {
-            const rlt = [...result, {startTime:convertTime(el.STARTTIME, {format:"HH:mm"}), endTime:convertTime(el.ENDTIME, {format:"HH:mm"}), "brkDure": el.BRKDURE, "cstCo": cstCo, "cstNa": "",  "jobCl": el.JOBCL, "userId": info.userId, "ymd": info.ymd}];
+            const rlt = [...result, {startTime:convertTime(el.STARTTIME, {format:"HH:mm"}), endTime:convertTime(el.ENDTIME, {format:"HH:mm"}), "brkDure": el.BRKDURE, "cstCo": cstCo, "cstNa": "",  "jobCl": el.JOBCL, "userId": info.userId, "ymd": info.ymd, "jobType":el.JOBTYPE, "wage":el.wage}];
             return rlt;
         }, []);
 
@@ -233,6 +236,7 @@ export default function WorkScreen({navigation}) {
         setIsOpen(false);
     }
     //###############################################################
+    
     return (
         <SafeAreaView style={styles.container}>
             <GestureHandlerRootView style={{paddingHorizontal:16, paddingTop:10}}>
@@ -330,14 +334,12 @@ export default function WorkScreen({navigation}) {
                     <CustomBottomSheet2
                         isOpen={isOpen} 
                         onClose={()=>setIsOpen(false)}
-                        content={<ChangeWorkTime2 dayJobInfo={selectedAlba} setIsOpen={setIsOpen} onConfirm={onConfirm}/>}
+                        content={<ChangeWorkTime2 wageInfo={wageInfo.filter(el => el.USERID == selectedAlba[0].userId)[0]} dayJobInfo={selectedAlba} setIsOpen={setIsOpen} onConfirm={onConfirm}/>}
                     />
                 :
                     null
             }
         </SafeAreaView>
-        
-
     );
     
 }

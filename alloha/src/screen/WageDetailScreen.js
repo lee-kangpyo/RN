@@ -58,14 +58,13 @@ export default function WageDetailScreen({navigation, route}) {
     }
 
     const DetailList = ({item, jobType}) => {
-        
+        console.log(item);
         const {showAlert} = useAlert();
         const pillColor = ( ["승인", "자동승인"].includes(item.apvYn) )?"#3479EF":"#EEEEEE"
         const pillTextColor = ( ["승인", "자동승인"].includes(item.apvYn) )?"#FFF":"#999"
         const mssg1 = (item.jobCl == "대타")?"해당 근무는 대타입니다.\n":(item.schDure == "-")?"근무계획이 없습니다.\n":"근무계획 : "+item.schDure+"시간\n";
         const mssg2 = (item.dure == "-")?"근무시간 : 0":"근무시간 : "+item.dure+"시간";
         return(
-            
             <>
                 <View style={styles.detailList}>
                     <View style={{flexDirection:"row", justifyContent:"space-between"}}>
@@ -77,7 +76,20 @@ export default function WageDetailScreen({navigation, route}) {
                                 <Text style={fonts.time}>{item.schDure}</Text>
                             }
                             <Text style={fonts.time}> | </Text> */}
-                            <Text style={fonts.time}>{(item.dure == "-")?"0":item.dure}시간</Text>
+                            {
+                                (item.jobType == "M")?
+                                    <Text style={fonts.time}>{(item.dure == "-")?"0":item.dure}시간</Text>
+                                :(item.jobType == "H")?
+                                    <>
+                                        <Text style={fonts.time}>(</Text>
+                                        <Text style={fonts.time}>{(item.dure == "-")?"0":item.dure}시간</Text>
+                                        <View style={{width:4}} />
+                                        <Text style={fonts.time}>{(item.salary / item.dure).toLocaleString()}원</Text>
+                                        <Text style={fonts.time}>)</Text>
+                                    </>
+                                :null
+                            }
+                            
                         </View>
                     </View>
                     <View style={{flex:1, alignItems:"flex-end"}}>
@@ -286,7 +298,7 @@ export default function WageDetailScreen({navigation, route}) {
                             (jobType == "H")?
                                 <View style={[styles.weekCard, {paddingVertical:24}]} >
                                     <View style={{paddingHorizontal:22, marginBottom:10}}>
-                                        <Text style={fonts.endOfWeek_date}>주휴수당</Text>
+                                        <Text style={fonts.endOfWeek_date}>주휴 수당</Text>
                                     </View>
                                     {
                                         salaryWeek.map((el, idx) => {

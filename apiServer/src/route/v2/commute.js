@@ -71,9 +71,9 @@ router.post("/reqCommuteChange", async (req,res,next)=>{
 router.post("/AlbaJobSave", async (req,res,next)=>{
     console.log("POST v2.commute.AlbaJobSave ")
     try {
-        const { ymd, cstCo, userId, sTime, eTime, jobCl, brkDure } = req.body;
-        console.log(ymd, cstCo, userId, sTime, eTime, jobCl, brkDure);
-        const result = await execSql(AlbaJobSave, {ymd, cstCo, userId, sTime, eTime, jobCl, brkDure});
+        const { ymd, cstCo, userId, sTime, eTime, jobCl, brkDure, wage } = req.body;
+        console.log(ymd, cstCo, userId, sTime, eTime, jobCl, brkDure, wage);
+        const result = await execSql(AlbaJobSave, {ymd, cstCo, userId, sTime, eTime, jobCl, brkDure, wage});
         console.log(result);
         res.status(200).json({resultCode:"00"});
     } catch (error) {
@@ -86,9 +86,9 @@ router.post("/AlbaJobSave", async (req,res,next)=>{
 router.post("/JumjuJobSave", async (req,res,next)=>{
     console.log("POST v2.commute.JumjuJobSave ")
     try {
-        const { ymd, cstCo, userId, sTime, eTime, jobCl, brkDure } = req.body;
-        console.log(ymd, cstCo, userId, sTime, eTime, jobCl, brkDure);
-        const result = await execSql(JumjuJobSave, {ymd, cstCo, userId, sTime, eTime, jobCl, brkDure});
+        const { ymd, cstCo, userId, sTime, eTime, jobCl, brkDure, wage } = req.body;
+        console.log(ymd, cstCo, userId, sTime, eTime, jobCl, brkDure, wage);
+        const result = await execSql(JumjuJobSave, {ymd, cstCo, userId, sTime, eTime, jobCl, brkDure, wage});
         console.log(result);
         res.status(200).json({resultCode:"00"});
     } catch (error) {

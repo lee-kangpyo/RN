@@ -3,6 +3,7 @@ var router = express.Router();
 const {execSql, execTranSql} = require("../../utils/excuteSql");
 const { question, questionList, questionDetail, answerList } = require('../../query/v1/qna');
 const { MAIN0205, getCstListColor, MAIN0206 } = require('../../query/v1/home');
+const { getWageById } = require('../../query/workResult');
 
 function formatDate(dateString) {
     // 날짜 문자열의 길이가 8인지 확인
@@ -32,7 +33,8 @@ router.get("/MAIN0205", async (req, res, next) => {
         console.log("월별 알바가 일한 내역 가져오기");
         const rslt = await execSql(MAIN0205, {userId, ymd:ymd});
         const dayResult = rslt.recordset??[];
-        
+        console.log("알바의 점포별 시급 가져오기");
+        const wageInfo = await execSql(getWageById, {userId});
         const result = {};
         if(dayResult.length > 0){
             console.log("결과 데이터를 정제");
@@ -42,9 +44,9 @@ router.get("/MAIN0205", async (req, res, next) => {
                 rlt[ymd].push(next);
                 return rlt;
             }, result);
-            res.status(200).json({data:result, cstList:cstList.recordset, resultCode:"00"});
+            res.status(200).json({data:result, cstList:cstList.recordset, wageInfo:wageInfo.recordset, resultCode:"00"});
         }else{
-            res.status(200).json({data:result, cstList:cstList.recordset, resultCode:"00"});
+            res.status(200).json({data:result, cstList:cstList.recordset, wageInfo:wageInfo.recordset, resultCode:"00"});
         }
         
     } catch (err) {

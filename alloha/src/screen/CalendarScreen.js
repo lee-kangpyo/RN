@@ -50,7 +50,7 @@ export default function CalendarScreen() {
     const [initDay, setInitDay] = useState(selectDay);
     // main0205에서 호출할때 사용하는 state
     const [first, setFirst] = useState(true);
-
+    const [wageInfo, setWageInfo] = useState([])
     
     const main0205 = async (ymd, isBottom) => {
         const newData = Object.keys(data)
@@ -71,6 +71,7 @@ export default function CalendarScreen() {
             }else{
                 setBottomData({day:getDateObject(selectDay), items:res.data.data[selectDay]??[]});
             }
+            setWageInfo(res.data.wageInfo);
         }).catch(function (error) {
             console.log(error);
         })
@@ -126,6 +127,7 @@ export default function CalendarScreen() {
             }
         }
         setIsOpen(false);
+        console.log(params);
         await HTTP("POST", "/api/v2/commute/AlbaJobSave", params)
         .then((res)=>{
             const dateObject = getDateObject(params.ymd);
@@ -161,17 +163,20 @@ export default function CalendarScreen() {
 
     
     const openBottomSheet = (item) => {
+
         const data = bottomData2.reduce((result, el)=>{
             if(el.CSTCO == item.CSTCO && el.cl == "JOB"){
-                return [...result, {startTime:convertTime(el.STARTTIME, {format:"HH:mm"}), endTime:convertTime(el.ENDTIME, {format:"HH:mm"}), brkDure:el.BRKDURE / 60, jobCl:el.JOBCL, cstCo:item.CSTCO, userId:item.USERID, ymd:item.YMD, cstNa:item.CSTNA}];
+                return [...result, {startTime:convertTime(el.STARTTIME, {format:"HH:mm"}), endTime:convertTime(el.ENDTIME, {format:"HH:mm"}), brkDure:el.BRKDURE / 60, jobCl:el.JOBCL, cstCo:item.CSTCO, userId:item.USERID, ymd:item.YMD, cstNa:item.CSTNA, wage:el.wage}];
             }
             return result;
         }, [])
-
-        const g = data.find(el => el.jobCl == "G") ?? {startTime:"09:00", endTime:"16:00", brkDure:0, jobCl:"G", cstCo:item.CSTCO, userId:item.USERID, ymd:item.YMD, cstNa:item.CSTNA};
-        const s = data.find(el => el.jobCl == "S") ?? {startTime:"09:00", endTime:"16:00", brkDure:0, jobCl:"S", cstCo:item.CSTCO, userId:item.USERID, ymd:item.YMD, cstNa:item.CSTNA};
+        console.log("onpenBottomSheet");
+        console.log(data);
+        const g = data.find(el => el.jobCl == "G") ?? {startTime:"09:00", endTime:"16:00", brkDure:0, jobCl:"G", tmp:true, cstCo:item.CSTCO, userId:item.USERID, ymd:item.YMD, cstNa:item.CSTNA};
+        const s = data.find(el => el.jobCl == "S") ?? {startTime:"09:00", endTime:"16:00", brkDure:0, jobCl:"S", tmp:true, cstCo:item.CSTCO, userId:item.USERID, ymd:item.YMD, cstNa:item.CSTNA};
         setSheetData([g, s]);
         setIsOpen(true);
+        
         //const data = bottomData2.filter(el => el.CSTCO == item.CSTCO && el.cl == "JOB")
 
         // const jobDure = item.JOBDURE;
@@ -225,6 +230,7 @@ export default function CalendarScreen() {
         setSheetSchData(param);
         setIsOpenSch(true);
     }
+    
     return(
         <>
             <View style={{paddingHorizontal:15, paddingVertical:8, backgroundColor:"white"}}>
@@ -261,7 +267,7 @@ export default function CalendarScreen() {
                     <CustomBottomSheet2
                         isOpen={isOpen} 
                         onClose={()=>setIsOpen(false)}
-                        content={<ChangeWorkTime2 dayJobInfo={sheetData} setIsOpen={setIsOpen} onConfirm={onConfirm}/>}
+                        content={<ChangeWorkTime2 wageInfo={wageInfo.filter(el => el.CSTCO == sheetData[0].cstCo)[0]} dayJobInfo={sheetData} setIsOpen={setIsOpen} onConfirm={onConfirm}/>}
                     />
                 :
                     null

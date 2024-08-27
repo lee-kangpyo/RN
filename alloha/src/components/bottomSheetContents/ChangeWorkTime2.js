@@ -1,5 +1,5 @@
 
-import { StyleSheet, TouchableOpacity, Text, View, ScrollView } from 'react-native';
+import { StyleSheet, TouchableOpacity, Text, View, ScrollView, TextInput, Keyboard } from 'react-native';
 import { theme } from '../../util/color';
 import React, { memo, useEffect, useRef, useState } from 'react';
 import { convertTime2, strToDate } from '../../util/moment';
@@ -9,17 +9,25 @@ import WheelPicker from '../library/WheelPicker';
 import TimePicker_24 from '../library/TimePicker_24';
 import { MaterialIcons } from '@expo/vector-icons';
 import { adjustTime, calculateDifference, calculateTimeDifferenceStr, formatTimeObject, parseTimeString } from '../../util/timeParser';
+import { safeToLocaleString } from '../../util/utils';
 
 // 알바 홈화면, 점주 결과화면에서 사용
 //[{"brkDure": 1, "cstCo": 1014, "cstNa": "글로리맘", "endTime": "16:00", "jobCl": "G", "startTime": "09:00", "userId": "Sksksksk", "ymd": "20240701"}, 
 // {"brkDure": 0, "cstCo": 1014, "cstNa": "글로리맘", "endTime": "16:00", "jobCl": "S", "startTime": "09:00", "userId": "Sksksksk", "ymd": "20240701"}]
-export default function  ChangeWorkTime2 ({dayJobInfo, setIsOpen, onConfirm}) {
+export default function  ChangeWorkTime2 ({wageInfo, dayJobInfo, setIsOpen, onConfirm}) {
+    
+
     const { showAlert } = useAlert();
     // 근무 정보
-    
     const [_dayJobInfo, setDayJobInfo] = useState(dayJobInfo.find(el => el.jobCl == "G"))
+    
+    
+    //
     // 대타 / 일반
     const [type, setType] = useState("G");
+    
+    // 시급
+    const [wage, setWage] = useState("");
     // 휴게시간
     const [restTime, setRestTime] = useState(_dayJobInfo.brkDure ?? 0);
     // 출근시간
@@ -37,9 +45,13 @@ export default function  ChangeWorkTime2 ({dayJobInfo, setIsOpen, onConfirm}) {
     const sColor = (isSelectStime == 1)?theme.primary:"#999";
     const eColor = (isSelectStime == 2)?theme.primary:"#999";
     const rColor = (isSelectStime == 3)?theme.primary:"#999";
+    
+    
+    
 
     useEffect(()=>{
         jobInfo = dayJobInfo.find(el => el.jobCl == type);
+        
         setDayJobInfo(jobInfo);
         setType(type);
         setWorkHOur((jobInfo.startTime == "-")?"7":calculateDifference(jobInfo.startTime, jobInfo.endTime));
@@ -47,6 +59,10 @@ export default function  ChangeWorkTime2 ({dayJobInfo, setIsOpen, onConfirm}) {
         setETime((jobInfo.endTime == "-")?"16:00":jobInfo.endTime);
         setRestTime(jobInfo.brkDure ?? 0);
         setSelectStime(-1);
+        setWage((jobInfo.tmp)?safeToLocaleString(wageInfo.WAGE, "0"):safeToLocaleString(jobInfo.wage, "0"))
+        console.log("$$$$");
+        console.log(wageInfo);
+        console.log(jobInfo);
     }, [dayJobInfo]);
     
     // 확인 버튼 클릭 이벤트
@@ -63,7 +79,8 @@ export default function  ChangeWorkTime2 ({dayJobInfo, setIsOpen, onConfirm}) {
             // , @P_CL2	nvarchar(20)
             // , @P_JOBCL	nvarchar(20)
             // , @P_BRKDURE
-            const param = {cstCo:_dayJobInfo.cstCo, userId:_dayJobInfo.userId, useId:_dayJobInfo.userId, ymd:_dayJobInfo.ymd, sTime:sTime, eTime:eTime, jobCl:type, brkDure:restTime};
+            const param = {cstCo:_dayJobInfo.cstCo, userId:_dayJobInfo.userId, useId:_dayJobInfo.userId, ymd:_dayJobInfo.ymd, sTime:sTime, eTime:eTime, jobCl:type, brkDure:restTime, wage:wage.replaceAll(",", "")};
+            
             onConfirm(param);
             //setIsOpen(false);
         }else{
@@ -140,6 +157,31 @@ export default function  ChangeWorkTime2 ({dayJobInfo, setIsOpen, onConfirm}) {
         setRestTime(jobInfo.brkDure ?? 0);
         setSelectStime(-1);
     }
+
+    const [shrink, setShrink] = useState(false)
+    const inputRef = useRef(null);
+
+    useEffect(() => {
+        const keyboardDidShowListener = Keyboard.addListener(
+          'keyboardDidShow',
+          ()=>{
+            setShrink(true)
+          }
+        );
+        const keyboardDidHideListener = Keyboard.addListener(
+          'keyboardDidHide',
+          ()=>{
+            setShrink(false)
+            inputRef.current.blur();
+          }
+        );
+    
+        // 컴포넌트가 언마운트 될 때 리스너 해제
+        return () => {
+          keyboardDidShowListener.remove();
+          keyboardDidHideListener.remove();
+        };
+      }, []);
     
     return(
         <>
@@ -148,84 +190,112 @@ export default function  ChangeWorkTime2 ({dayJobInfo, setIsOpen, onConfirm}) {
                 <View style={{height:20}} />
                 {/*일반, 대타*/}
                 <TypeContainer type={type} changeType={changeType}/>
-                {/*근무시간*/}
-                <WorkTime workTime={workHour} setWorkTime={setWorkHOur} isSelectStime={isSelectStime} tapTouch={tapTouch}/>
-                {/*출근시간*/}
-                <TouchableOpacity onPress={()=>tapTouch(1)} style={[styles.miniBtn, styles.row, {borderColor:sColor, flex:1, justifyContent:"space-between", alignItems:"center", paddingVertical:15}]}>
-                    <Text style={[fonts.sheetcontent]}>출근시간</Text>
-                    <View style={[styles.row, {alignItems:"center"}]}>
-                        <Text style={[fonts.sheetcontent2]}>{sTime}</Text>
-                        <View style={{width:4}}/>
-                        <MaterialIcons name="keyboard-arrow-down" size={22} color="black" />
-                    </View>
-                </TouchableOpacity>
                 {
-                    (isSelectStime == 1)?
-                        <View style={[styles.workBox, {marginVertical:15}]}>
-                            <TimePicker_24
-                                refresh={sRefresh}
-                                initValue={parseTimeString(sTime)}
-                                itemHeight={40}
-                                onTimeChange={(time) => {
-                                    const sTime = formatTimeObject(time);
-                                    setSTime(sTime);
-                                }}
-                            />
-                        </View>
-                    :
-                        null
-                }
-                {/*퇴근시간*/}
-                <TouchableOpacity onPress={()=>tapTouch(2)} style={[styles.miniBtn, styles.row, {borderColor:eColor, flex:1, justifyContent:"space-between", alignItems:"center", paddingVertical:15}]}>
-                    <Text style={[fonts.sheetcontent]}>퇴근시간</Text>
-                    <View style={[styles.row, {alignItems:"center"}]}>
-                        <Text style={[fonts.sheetcontent2]}>{eTime}</Text>
-                        <View style={{width:4}}/>
-                        <MaterialIcons name="keyboard-arrow-down" size={22} color="black" />
-                    </View>
-                </TouchableOpacity>
-                {
-                    (isSelectStime == 2)?
-                        <View style={[styles.workBox, {marginVertical:15}]}>
-                            <TimePicker_24
-                                refresh={eRefresh}
-                                initValue={parseTimeString(eTime)}
-                                itemHeight={40}
-                                onTimeChange={(time) => {
-                                    const eTime = formatTimeObject(time);
-                                    setETime(eTime);
-                                }}
-                            />
-                        </View>
-                        //<InlineTimeSelection date={sTime} setDate={setSTime} />
-                        // <TimeSelection date={sTime} setDate={setSTime}/>
-                    :
-                        null
-                }
-
-                {/*휴게시간*/}
-                <View style={{justifyContent:"space-between", width:"100%",}}>
-                    <TouchableOpacity onPress={()=>tapTouch(3)} style={[styles.miniBtn, styles.row, {borderColor:rColor, flex:1, justifyContent:"space-between", paddingVertical:15}]}>
-                        <Text style={[fonts.sheetcontent]}>휴게시간</Text>
-                        <View style={[styles.row, {alignItems:"center"}]}>
-                            <Text style={[fonts.sheetcontent2]}>{restTime} 시간</Text>
-                            <View style={{width:4}}/>
-                            <MaterialIcons name="keyboard-arrow-down" size={22} color="black" />
-                        </View>
-                        
-                    </TouchableOpacity>
-                </View>
-                {
-                    (isSelectStime == 3)?
-                    <>
-                        <View style={[styles.workBox, {marginVertical:15, padding:44}]}>
-                            <View style={{flex:1, flexDirection:"row"}}>
-                                <RestTimeSelection restTime={restTime} setRestTime={setRestTime} />
+                    (wageInfo.JOBTYPE == "M")?
+                        <View style={[styles.miniBtn, styles.row, {borderColor:sColor, flex:1, justifyContent:"space-between", alignItems:"center", paddingVertical:15}]}>
+                            <Text style={[fonts.sheetcontent]}>월급</Text>
+                            <View style={{ width:150, padding:4, flexDirection:"row"}}>
+                                <Text style={[fonts.sheetcontent2, {flex:1, textAlign:"right"}]}>{safeToLocaleString(wageInfo.WAGE, 0)}</Text>
+                                <Text style={[fonts.sheetcontent2, {alignSelf:"center", marginLeft:8}]}>원</Text>
                             </View>
                         </View>
-                    </>
-                    :null
+                    :
+                        <View style={[styles.miniBtn, styles.row, {borderColor:sColor, flex:1, justifyContent:"space-between", alignItems:"center", paddingVertical:15}]}>
+                            <Text style={[fonts.sheetcontent]}>시급</Text>
+                            <View style={{borderBottomWidth:1 , borderBottomColor:"#aaa", width:100, padding:4, flexDirection:"row"}}>
+                                <TextInput ref={inputRef} style={[fonts.sheetcontent2, {flex:1, textAlign:"right"}]} value={wage} onChange={(v)=>{console.log(safeToLocaleString(v.nativeEvent.text, "0"));setWage(safeToLocaleString(v.nativeEvent.text, "0"))}} keyboardType='number-pad' />
+                                <Text style={[fonts.sheetcontent2, {alignSelf:"center", marginLeft:8}]}>원</Text>
+                            </View>
+                        </View>
                 }
+                
+
+                {
+                    (shrink)?
+                        null
+                    :
+                        <>
+                        {/*근무시간*/}
+                        <WorkTime workTime={workHour} setWorkTime={setWorkHOur} isSelectStime={isSelectStime} tapTouch={tapTouch}/>
+                        {/*출근시간*/}
+                        <TouchableOpacity onPress={()=>tapTouch(1)} style={[styles.miniBtn, styles.row, {borderColor:sColor, flex:1, justifyContent:"space-between", alignItems:"center", paddingVertical:15}]}>
+                            <Text style={[fonts.sheetcontent]}>출근시간</Text>
+                            <View style={[styles.row, {alignItems:"center"}]}>
+                                <Text style={[fonts.sheetcontent2]}>{sTime}</Text>
+                                <View style={{width:4}}/>
+                                <MaterialIcons name="keyboard-arrow-down" size={22} color="black" />
+                            </View>
+                        </TouchableOpacity>
+                        {
+                            (isSelectStime == 1)?
+                                <View style={[styles.workBox, {marginVertical:15}]}>
+                                    <TimePicker_24
+                                        refresh={sRefresh}
+                                        initValue={parseTimeString(sTime)}
+                                        itemHeight={40}
+                                        onTimeChange={(time) => {
+                                            const sTime = formatTimeObject(time);
+                                            setSTime(sTime);
+                                        }}
+                                    />
+                                </View>
+                            :
+                                null
+                        }
+                        {/*퇴근시간*/}
+                        <TouchableOpacity onPress={()=>tapTouch(2)} style={[styles.miniBtn, styles.row, {borderColor:eColor, flex:1, justifyContent:"space-between", alignItems:"center", paddingVertical:15}]}>
+                            <Text style={[fonts.sheetcontent]}>퇴근시간</Text>
+                            <View style={[styles.row, {alignItems:"center"}]}>
+                                <Text style={[fonts.sheetcontent2]}>{eTime}</Text>
+                                <View style={{width:4}}/>
+                                <MaterialIcons name="keyboard-arrow-down" size={22} color="black" />
+                            </View>
+                        </TouchableOpacity>
+                        {
+                            (isSelectStime == 2)?
+                                <View style={[styles.workBox, {marginVertical:15}]}>
+                                    <TimePicker_24
+                                        refresh={eRefresh}
+                                        initValue={parseTimeString(eTime)}
+                                        itemHeight={40}
+                                        onTimeChange={(time) => {
+                                            const eTime = formatTimeObject(time);
+                                            setETime(eTime);
+                                        }}
+                                    />
+                                </View>
+                                //<InlineTimeSelection date={sTime} setDate={setSTime} />
+                                // <TimeSelection date={sTime} setDate={setSTime}/>
+                            :
+                                null
+                        }
+
+                        {/*휴게시간*/}
+                        <View style={{justifyContent:"space-between", width:"100%",}}>
+                            <TouchableOpacity onPress={()=>tapTouch(3)} style={[styles.miniBtn, styles.row, {borderColor:rColor, flex:1, justifyContent:"space-between", paddingVertical:15}]}>
+                                <Text style={[fonts.sheetcontent]}>휴게시간</Text>
+                                <View style={[styles.row, {alignItems:"center"}]}>
+                                    <Text style={[fonts.sheetcontent2]}>{restTime} 시간</Text>
+                                    <View style={{width:4}}/>
+                                    <MaterialIcons name="keyboard-arrow-down" size={22} color="black" />
+                                </View>
+                                
+                            </TouchableOpacity>
+                        </View>
+                        {
+                            (isSelectStime == 3)?
+                            <>
+                                <View style={[styles.workBox, {marginVertical:15, padding:44}]}>
+                                    <View style={{flex:1, flexDirection:"row"}}>
+                                        <RestTimeSelection restTime={restTime} setRestTime={setRestTime} />
+                                    </View>
+                                </View>
+                            </>
+                            :null
+                        }
+                        </>
+                }
+                
                 <View style={styles.mv} />
             </View>
 
@@ -285,8 +355,7 @@ const WorkTime = ({workTime, setWorkTime, isSelectStime, tapTouch}) => {
     for (let i = 0; i <= 23; i += 1) { items.push(i); }
     
     return (
-        <View style={{justifyContent:"space-between", width:"100%",}}>
-            <View style={{ marginVertical:8}} />
+        <View style={{justifyContent:"space-between", width:"100%"}}>
             <TouchableOpacity onPress={()=>tapTouch(0)} style={[styles.miniBtn, styles.row, {borderColor:hColor, flex:1, justifyContent:"space-between", paddingVertical:15}]}>
                 <Text style={[fonts.sheetcontent]}>근무시간</Text>
                 <View style={[styles.row, {alignItems:"center",}]}>

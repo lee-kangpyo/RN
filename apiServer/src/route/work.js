@@ -6,7 +6,7 @@ const axios = require('axios');
 
 const dotenv = require('dotenv');
 const transactionMiddleware = require('../utils/transactionMiddleware');
-const { albaWorkManager } = require('../query/workResult');
+const { albaWorkManager, getWage } = require('../query/workResult');
 dotenv.config();
 
 
@@ -15,13 +15,17 @@ router.all("/workChedule", async (req, res, next) => {
         console.log("work.workChedule");
         console.log("method : "+req.method)
         try {
-            const{cls, cstCo, userId, ymdFr, ymdTo, jobCl, jobDure} = (req.method === 'GET')?req.query:req.body;
+            const{cls, cstCo, userId, ymdFr, ymdTo, jobCl, jobDure, wage} = (req.method === 'GET')?req.query:req.body;
             console.log("cls : "+cls)
             // 초기화
-            const param = {cls:cls, cstCo:cstCo, userId:userId, ymdFr:ymdFr, ymdTo:ymdTo, jobCl:jobCl, jobDure:jobDure};
+            const param = {cls:cls, cstCo:cstCo, userId:userId, ymdFr:ymdFr, ymdTo:ymdTo, jobCl:jobCl, jobDure:jobDure, wage:wage};
             const result = await execSql(albaWorkManager, param)
-            //console.log(result);
-            res.status(200).json({result:result.recordset, resultCode:"00"});
+            if(cls == "WeekWorkSearch"){
+                const result2 = await execSql(getWage, {cstCo});
+                res.status(200).json({result:result.recordset, wageInfo:result2.recordset, resultCode:"00"});
+            }else{
+                res.status(200).json({result:result.recordset, resultCode:"00"});
+            }
         } catch (error) {
             console.log(error.message)
             res.status(200).json({ resultCode:"-1"});

@@ -21,12 +21,10 @@ export default function WeekAlba({alba, onTap, onDel, week}) {
                     if (filter.length > 0){
                         return (
                                 <ContentBox selected={selected} onTap={onTap} key={idx} item={filter} userId={alba.userId} userNa={alba.userNa} ymd={ymd} num={idx} />
-                                
                         )
                     }else{
                         return (
                                 <ContentBox selected={selected} onTap={onTap} key={idx} blank={true} userId={alba.userId} userNa={alba.userNa} ymd={ymd} num={idx} />
-                                
                         )
                     }
                     
