@@ -2,10 +2,11 @@
 import { StyleSheet, Text, View, ScrollView, Platform, TouchableOpacity } from 'react-native';
 import React, {useState, useEffect, useRef} from 'react';
 import { HTTP } from '../util/http';
-import { addComma, headerLeftComponent } from './../util/utils';
+import { addComma, headerLeftComponent, safeToLocaleString } from './../util/utils';
 import Loading from '../components/Loding';
 import { useAlert } from '../util/AlertProvider';
 import { result } from 'lodash';
+import { generateWeeklyRanges, isBetween, isBetweenDate } from '../util/moment';
 
 export default function WageDetailScreen({navigation, route}) {
     const [loading, setisLoading] = useState(true)
@@ -17,6 +18,7 @@ export default function WageDetailScreen({navigation, route}) {
     const {target} = route.params
 
     const getSalaryDetail = async () => {
+        
         setisLoading(true);
         const params = {
             "userId":route.params.userId, 
@@ -56,9 +58,8 @@ export default function WageDetailScreen({navigation, route}) {
         const formattedDate = `${month}/${day} (${dayOfWeek})`;
         return formattedDate
     }
-
+    
     const DetailList = ({item, jobType}) => {
-        console.log(item);
         const {showAlert} = useAlert();
         const pillColor = ( ["승인", "자동승인"].includes(item.apvYn) )?"#3479EF":"#EEEEEE"
         const pillTextColor = ( ["승인", "자동승인"].includes(item.apvYn) )?"#FFF":"#999"
@@ -113,7 +114,7 @@ export default function WageDetailScreen({navigation, route}) {
         )
     }
     const DetailSum = ({items}) => {
-        console.log(items);
+        
         const sum = items.reduce((result, item) => {
             console.log(result);
             console.log(item.dure);
@@ -169,7 +170,7 @@ export default function WageDetailScreen({navigation, route}) {
     const EndOfWeek = ({item}) => {
         return(
             <>
-                <View style={[styles.endOfWeek, {marginTop:16}]}>
+                <View style={styles.endOfWeek}>
                     <View style={{flexDirection:"row", width:"100%", justifyContent:"space-between", alignItems:"center"}}>
                         <View style={{flexDirection:"row", alignItems:"center"}}>
                             <Text style={fonts.endOfWeek_hours}>{convertYMD(item.YMDFR)}~{convertYMD(item.YMDTO)}</Text>
@@ -211,30 +212,32 @@ export default function WageDetailScreen({navigation, route}) {
                     <Text style={fonts.totalLabel}>총 급여</Text>
                     <Text style={{marginLeft:4}}>({(jobType == "H")?"시급":(jobType == "M")?"월급":""})</Text>
                 </View>
-                <Text style={fonts.totalSalary}>{(jobType == "H")?addComma(total.salary + weekSum):addComma(total.salary + total.mealAllowance)}원</Text>
-                <View style={{flexDirection:"row", justifyContent:"space-between"}}>
-                    <View style={{flexDirection:"row", alignItems:"flex-end"}}>
-                        <Text style={fonts.main}>[ </Text>
-                        <View style={{alignItems:"center"}}>
-                            <Text style={fonts.top}>일반</Text>
-                            <Text style={fonts.main}>{addComma(total.salary)}</Text>
+                <View style={{flexDirection:"row", justifyContent:"space-between", alignItems:"baseline"}}>
+                    <Text style={fonts.totalSalary}>{(jobType == "H")?addComma(total.salary + weekSum):addComma(total.salary + total.mealAllowance)}원</Text>
+                    <View style={{flexDirection:"row", justifyContent:"space-between"}}>
+                        <View style={{flexDirection:"row", alignItems:"flex-end"}}>
+                            <Text style={fonts.main}>[ </Text>
+                            <View style={{alignItems:"center"}}>
+                                <Text style={fonts.top}>일반</Text>
+                                <Text style={fonts.main}>{addComma(total.salary)}</Text>
+                            </View>
+                            <Text> + </Text>
+                            {
+                                (jobType == "H")?
+                                    <View style={{alignItems:"center"}}>
+                                        <Text style={fonts.top}>주휴</Text>
+                                        <Text style={fonts.main}>{addComma(weekSum)}</Text>
+                                    </View>
+                                :(jobType == "M")?
+                                    <View style={{alignItems:"center"}}>
+                                        <Text style={fonts.top}>식대</Text>
+                                        <Text style={fonts.main}>{addComma(total.mealAllowance)}</Text>
+                                    </View>
+                                :
+                                    null
+                            }
+                            <Text style={fonts.main}> ]</Text>
                         </View>
-                        <Text> + </Text>
-                        {
-                            (jobType == "H")?
-                                <View style={{alignItems:"center"}}>
-                                    <Text style={fonts.top}>주휴</Text>
-                                    <Text style={fonts.main}>{addComma(weekSum)}</Text>
-                                </View>
-                            :(jobType == "M")?
-                                <View style={{alignItems:"center"}}>
-                                    <Text style={fonts.top}>식대</Text>
-                                    <Text style={fonts.main}>{addComma(total.mealAllowance)}</Text>
-                                </View>
-                            :
-                                null
-                        }
-                        <Text style={fonts.main}> ]</Text>
                     </View>
                 </View>
             </View>
@@ -279,6 +282,11 @@ export default function WageDetailScreen({navigation, route}) {
     //     if(refArray.current.length > 0) initScrollTo();
     // }, [loading])
     // // 스크롤 이동 추가
+    const makeDetails = (start, end) => {
+        const weeklyRanges = generateWeeklyRanges(start, end);
+        
+        return weeklyRanges;
+    }
     return (
         <>
             {
@@ -296,32 +304,67 @@ export default function WageDetailScreen({navigation, route}) {
                     <ScrollView ref={scrollRef} contentContainerStyle={styles.scrollContentStyle} style={styles.scrollContainer}>
                         {
                             (jobType == "H")?
-                                <View style={[styles.weekCard, {paddingVertical:24}]} >
+                                <>
                                     <View style={{paddingHorizontal:22, marginBottom:10}}>
                                         <Text style={fonts.endOfWeek_date}>주휴 수당</Text>
                                     </View>
-                                    {
-                                        salaryWeek.map((el, idx) => {
-                                            return <EndOfWeek item={el}/>;
-                                        })
-                                    }
-                                </View>
+                                    <View style={[styles.weekCard, {paddingVertical:16}]} >
+                                        {
+                                            salaryWeek.map((el, idx) => {
+                                                return (
+                                                    <View style={{paddingVertical:8}}>
+                                                        <EndOfWeek item={el}/>
+                                                    </View>
+                                                );
+                                            })
+                                        }
+                                    </View>
+                                </>
                             :
                                 null
                         }
                         
                         
-                        <View style={[styles.weekCard, {paddingVertical:24}]} >
+                        <View style={[{paddingVertical:24}]} >
                             <View style={{paddingHorizontal:22, marginBottom:10}}>
                                 <Text style={fonts.endOfWeek_date}>상세 내역</Text>
                             </View>
                             {
-                                detailInfo.map((item, idx) => <DetailList key={idx} item={item} jobType={jobType}/> )
+                                makeDetails(route.params.ymdFr, route.params.ymdTo).map((item, idx)=>{
+                                    const details = detailInfo.filter((it)=> isBetweenDate(it.ymd, item.start, item.end))
+                                    const sum = details.reduce((result, detail)=>{
+                                        result += detail.salary;
+                                        return result;
+                                    }, 0)
+                                    return (
+                                        <>
+                                        {
+                                            (details.length > 0)?
+                                                <View style={[styles.weekCard, {paddingVertical:24}]} >
+                                                    <Text style={fonts.main}>{item.start} ~ {item.end}</Text>
+                                                    {
+                                                        details.map((el, idx) => {
+                                                            return (
+                                                                <DetailList key={idx} item={el} jobType={jobType}/>
+                                                            )
+                                                        } )
+                                                    }
+                                                    <View style={{flexDirection:"row", justifyContent:"space-between", marginTop:16}}>
+                                                        <Text style={fonts.date}>합계</Text>
+                                                        <Text style={fonts.wage}>{safeToLocaleString(sum, "-")}원</Text>
+                                                    </View>
+                                                    
+                                                </View>
+                                            :null
+                                        }
+                                        </>
+                                    )
+                                })
+                                //detailInfo.map((item, idx) => <DetailList key={idx} item={item} jobType={jobType}/> )
                             }
                             {/* <DetailSum items={detailInfo} /> */}
                         </View>
                     </ScrollView>
-                    
                 </>
             }
         </>
