@@ -353,6 +353,21 @@ export function isBetween(c, s, e) {
     return currentTime >= startTime && currentTime <= endTime;
 }
 
+// c가 s와 e 사이의 날짜인지 체크 하는 함수
+export function isBetweenDate(c, s, e) {
+    // c, s, e를 "YYYYMMDD" 형식에서 "YYYY-MM-DD" 형식으로 변환
+    const formatDateString = (dateStr) => {
+        return `${dateStr.slice(0, 4)}-${dateStr.slice(4, 6)}-${dateStr.slice(6, 8)}`;
+    };
+
+    const currentTime = new Date(formatDateString(c));
+    const startTime = new Date(formatDateString(s));
+    const endTime = new Date(formatDateString(e));
+    
+    // c가 s와 e 사이에 있는지 여부 판단
+    return currentTime >= startTime && currentTime <= endTime;
+}
+
 // 숫자를 시간으로 치환 1 -> 1시간 1.5 -> 1시간 30분
 export function formatTime(number) {
     const hours = Math.floor(number);
@@ -470,4 +485,47 @@ export function checkTimeOverlap(start1, end1, start2, end2) {
     } else {
         return true; // 겹치지 않는 경우
     }
+}
+
+// 20240801, 20240831 을전달하면 아래 같은 데이터 구조를 리턴
+// [{start:"20240801", end:"20240803"}, {start:"20240804", end:"20240810"}...]
+export 
+function generateWeeklyRanges(startDateStr, endDateStr) {
+    const startDate = moment(startDateStr, 'YYYYMMDD');
+    const endDate = moment(endDateStr, 'YYYYMMDD');
+
+    // 결과를 저장할 배열
+    const dateRanges = [];
+
+    // 주 시작일 계산 (시작일이 속한 주의 첫 날)
+    let currentStartDate = startDate.clone().startOf('week');
+
+    // 종료일이 포함된 주까지 반복
+    while (currentStartDate.isBefore(endDate) || currentStartDate.isSame(endDate, 'week')) {
+        // 현재 주의 종료일 계산
+        const currentEndDate = currentStartDate.clone().endOf('week');
+
+        // 범위가 종료일보다 커지면 종료일로 설정
+        const rangeEnd = currentEndDate.isAfter(endDate) ? endDate : currentEndDate;
+
+        // 날짜 범위를 배열에 추가
+        dateRanges.push({ 
+            start: currentStartDate.format('YYYYMMDD'), 
+            end: rangeEnd.format('YYYYMMDD') 
+        });
+
+        // 다음 주로 이동
+        currentStartDate.add(1, 'week');
+    }
+
+    // 시작일이 주의 시작일로 오기 때문에 필요 없는 경우 제거
+    dateRanges.forEach(range => {
+        const rangeStart = moment(range.start, 'YYYYMMDD');
+        const initialStart = moment(startDateStr, 'YYYYMMDD');
+        if (rangeStart.isBefore(initialStart, 'day')) {
+            range.start = initialStart.format('YYYYMMDD');
+        }
+    });
+
+    return dateRanges;
 }

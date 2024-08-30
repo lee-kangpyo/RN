@@ -10,14 +10,16 @@ import TimePicker_24 from '../library/TimePicker_24';
 import { MaterialIcons } from '@expo/vector-icons';
 import { adjustTime, calculateDifference, calculateTimeDifferenceStr, formatTimeObject, parseTimeString } from '../../util/timeParser';
 import { safeToLocaleString } from '../../util/utils';
+import { useSelector } from 'react-redux';
+import { HTTP } from '../../util/http';
 
 // 알바 홈화면, 점주 결과화면에서 사용
 //[{"brkDure": 1, "cstCo": 1014, "cstNa": "글로리맘", "endTime": "16:00", "jobCl": "G", "startTime": "09:00", "userId": "Sksksksk", "ymd": "20240701"}, 
 // {"brkDure": 0, "cstCo": 1014, "cstNa": "글로리맘", "endTime": "16:00", "jobCl": "S", "startTime": "09:00", "userId": "Sksksksk", "ymd": "20240701"}]
-export default function  ChangeWorkTime2 ({wageInfo, dayJobInfo, setIsOpen, onConfirm}) {
-    
+export default function  ChangeWorkTime2 ({wageInfo, dayJobInfo, setIsOpen, onConfirm, reload}) {
 
-    const { showAlert } = useAlert();
+    const userId = useSelector((state) => state.login.userId);
+    const { showAlert, showConfirm } = useAlert();
     // 근무 정보
     const [_dayJobInfo, setDayJobInfo] = useState(dayJobInfo.find(el => el.jobCl == "G"))
     
@@ -51,7 +53,6 @@ export default function  ChangeWorkTime2 ({wageInfo, dayJobInfo, setIsOpen, onCo
 
     useEffect(()=>{
         jobInfo = dayJobInfo.find(el => el.jobCl == type);
-        
         setDayJobInfo(jobInfo);
         setType(type);
         setWorkHOur((jobInfo.startTime == "-")?"7":calculateDifference(jobInfo.startTime, jobInfo.endTime));
@@ -60,9 +61,6 @@ export default function  ChangeWorkTime2 ({wageInfo, dayJobInfo, setIsOpen, onCo
         setRestTime(jobInfo.brkDure ?? 0);
         setSelectStime(-1);
         setWage((jobInfo.tmp)?safeToLocaleString(wageInfo.WAGE, "0"):safeToLocaleString(jobInfo.wage, "0"))
-        console.log("$$$$");
-        console.log(wageInfo);
-        console.log(jobInfo);
     }, [dayJobInfo]);
     
     // 확인 버튼 클릭 이벤트
@@ -182,14 +180,27 @@ export default function  ChangeWorkTime2 ({wageInfo, dayJobInfo, setIsOpen, onCo
           keyboardDidHideListener.remove();
         };
       }, []);
-    
+    const dayAbsent = () => {
+        showConfirm("결근", "선택하신 날짜를 결근을 입력하시겠습니까?", async () => {
+            const dayJob = dayJobInfo[0];
+            const param = {ymd:dayJob.ymd, userId:dayJob.userId, cstCo:dayJob.cstCo, iUserId:userId, useYn:"Y"};
+            await HTTP("POST", "/api/v2/commute/absent", param)
+            .then((res)=>{
+                reload();
+            }).catch(function (error) {
+                console.log(error);
+            })            
+            
+        });
+    }
     return(
         <>
             <View style={[{padding:8}]}>
                 <Text style={fonts.sheetTitle}>{(_dayJobInfo.cstNa)?_dayJobInfo.cstNa+" ":""}근무 시간 입력</Text>
                 <View style={{height:20}} />
-                {/*일반, 대타*/}
+                {/*일반, 대타, 결근*/}
                 <TypeContainer type={type} changeType={changeType}/>
+                
                 {
                     (wageInfo.JOBTYPE == "M")?
                         <View style={[styles.miniBtn, styles.row, {borderColor:sColor, flex:1, justifyContent:"space-between", alignItems:"center", paddingVertical:15}]}>
@@ -280,6 +291,11 @@ export default function  ChangeWorkTime2 ({wageInfo, dayJobInfo, setIsOpen, onCo
                                     <MaterialIcons name="keyboard-arrow-down" size={22} color="black" />
                                 </View>
                                 
+                            </TouchableOpacity>
+                        </View>
+                        <View style={{flexDirection:"row", justifyContent:"flex-end"}}>
+                            <TouchableOpacity onPress={dayAbsent}>
+                                <Text style={{textDecorationLine:"underline", color:theme.primary, }}>결근 입력</Text>
                             </TouchableOpacity>
                         </View>
                         {

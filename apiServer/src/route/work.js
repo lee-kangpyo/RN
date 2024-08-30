@@ -6,7 +6,7 @@ const axios = require('axios');
 
 const dotenv = require('dotenv');
 const transactionMiddleware = require('../utils/transactionMiddleware');
-const { albaWorkManager, getWage } = require('../query/workResult');
+const { albaWorkManager, getWage, getAbsent } = require('../query/workResult');
 dotenv.config();
 
 
@@ -22,7 +22,8 @@ router.all("/workChedule", async (req, res, next) => {
             const result = await execSql(albaWorkManager, param)
             if(cls == "WeekWorkSearch"){
                 const result2 = await execSql(getWage, {cstCo});
-                res.status(200).json({result:result.recordset, wageInfo:result2.recordset, resultCode:"00"});
+                const absentInfo = await execSql(getAbsent, {cstCo, ymdFr, ymdTo})
+                res.status(200).json({result:result.recordset, wageInfo:result2.recordset, absentInfo:absentInfo.recordset, resultCode:"00"});
             }else{
                 res.status(200).json({result:result.recordset, resultCode:"00"});
             }

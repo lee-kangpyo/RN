@@ -37,16 +37,17 @@ export default function WorkScreen({navigation}) {
 
     const [modalVisible, setModalVisible] = useState(false);
     const [modifyTimeShow, setModifyTimeShow] = useState(false);
-    const [wageInfo, setWageInfo] = useState({});
+    const [wageInfo, setWageInfo] = useState([]);
+    const [absentInfo, setAbsentInfo] = useState([]);
     
 
     const getWeekSchedule = async (callback) => {
         const param = {cls:"WeekWorkSearch", cstCo:cstCo, userId:userId, ymdFr:weekList[0].format("yyyyMMDD"), ymdTo:weekList[6].format("yyyyMMDD"), jobCl:"", jobDure:0};
         await axios.get(URL+`/api/v1/work/workChedule`, {params:param})
         .then((res)=>{
-            console.log(res.data.result);
             dispatch(setAlba({data:res.data.result}));
             setWageInfo(res.data.wageInfo);
+            setAbsentInfo(res.data.absentInfo);
             if(callback) callback();
         }).catch(function (error) {
             console.log(error);
@@ -235,6 +236,10 @@ export default function WorkScreen({navigation}) {
         })
         setIsOpen(false);
     }
+    const reload = () => {
+        setIsOpen(false);
+        getWeekSchedule();
+    }
     //###############################################################
     
     return (
@@ -283,7 +288,7 @@ export default function WorkScreen({navigation}) {
                                     return (
                                         <View key={idx} style={{flexDirection:"row"}}>
                                             <Animated.View style={{width:widthValue}} >
-                                                <WorkAlba alba={item} week={week} onTap={onAlbaTap} onDel={()=>delAlba(item.userId, item.userNa)} />
+                                                <WorkAlba absentInfo={absentInfo} alba={item} week={week} onTap={onAlbaTap} onDel={()=>delAlba(item.userId, item.userNa)} />
                                             </Animated.View>
                                             <TouchableOpacity onPress={()=>delAlba(item.userId, item.userNa)} style={{...styles.btnMini, alignItems:"center", backgroundColor:"red", justifyContent:"center", width:50}}>
                                                 <Text style={{color:"white"}}>삭제</Text>
@@ -334,7 +339,7 @@ export default function WorkScreen({navigation}) {
                     <CustomBottomSheet2
                         isOpen={isOpen} 
                         onClose={()=>setIsOpen(false)}
-                        content={<ChangeWorkTime2 wageInfo={wageInfo.filter(el => el.USERID == selectedAlba[0].userId)[0]} dayJobInfo={selectedAlba} setIsOpen={setIsOpen} onConfirm={onConfirm}/>}
+                        content={<ChangeWorkTime2 wageInfo={wageInfo.filter(el => el.USERID == selectedAlba[0].userId)[0]} dayJobInfo={selectedAlba} setIsOpen={setIsOpen} onConfirm={onConfirm} reload={reload}/>}
                     />
                 :
                     null

@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import React from 'react';
 import { theme } from '../../util/color';
 
-export default function WeekAlba({alba, onTap, onDel, week}) {
+export default function WeekAlba({absentInfo, alba, onTap, onDel, week}) {
     const cstCo = useSelector((state)=>state.common.cstCo);
     const weekList = getWeekList(week);
     const navigator = useNavigation();
@@ -18,7 +18,12 @@ export default function WeekAlba({alba, onTap, onDel, week}) {
                     const ymd = item.format("YYYYMMDD");
                     const selected = (workInfo.isEditing && workInfo.ymd == ymd && workInfo.userId == alba.userId)?true:false;
                     const filter = alba.list.filter((item)=>item.YMD == ymd)
-                    if (filter.length > 0){
+                    const ab = absentInfo.find(el => el.YMD == ymd && el.USERID == alba.userId);
+                    if(ab){
+                        return(
+                            <Absent selected={selected} key={idx} ymd={ymd} num={idx}/>
+                        )
+                    }else if (filter.length > 0){
                         return (
                                 <ContentBox selected={selected} onTap={onTap} key={idx} item={filter} userId={alba.userId} userNa={alba.userNa} ymd={ymd} num={idx} />
                         )
@@ -35,8 +40,19 @@ export default function WeekAlba({alba, onTap, onDel, week}) {
   );
 }
 
+const Absent = ({selected, num, ymd}) => {
+    const boxWidth = Dimensions.get('window').width / 9; // 박스의 너비
+    return (
+        <>
+            <TouchableOpacity onPress={()=>console.log("asdf")} style={{...styles.box, width:boxWidth, borderRadius:5, borderColor:"red", borderWidth:(selected)?1:0}}>
+                <Text>결근</Text>
+            </TouchableOpacity>
+            {(num < 6)?<View style={styles.sep}/>:null}
+        </>
+    )
+}
 
-const ContentBox = React.memo(({item, userId, userNa, ymd, num, onTap, blank=false, selected}) => {
+const ContentBox = React.memo(({item, userId, userNa, ymd, num, onTap, blank=false, absent=false, selected}) => {
     const boxWidth = Dimensions.get('window').width / 9; // 박스의 너비
     var gg = [];
     var ss = [];

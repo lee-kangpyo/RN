@@ -10,6 +10,9 @@ const approve = `
 const jobClose = `
     exec PR_JOB_CLOSE 'jobToSalary', @ymdFr, @ymdTo, @cstCo, '', 'Y'
 `
+const jobClose2 = `
+    exec PR_JOB_CLOSE 'jobToSalary2', @ymdFr, @ymdTo, @cstCo, @userId, 'Y'
+`
 const JumjoWorkSave = `
     exec PR_PLYB02_WRKMNG @cls, @cstCo, @useId, @ymd, @sTime, @eTime, @jobCl, @brkDure
 `
@@ -48,4 +51,4 @@ const sendMsg_Z0110_11 = `
     AND USEYN = 'Y'
 `
 
-module.exports = { DailyReport1, approve, jobClose, JumjoWorkSave, sendMsg_Z0110_11, useN_DayJob }
+module.exports = { DailyReport1, approve, jobClose, jobClose2, JumjoWorkSave, sendMsg_Z0110_11, useN_DayJob }

@@ -8,8 +8,8 @@ const { monthCstSlySearch } = require('../../query/workResult');
 const { insertManualJobChk, daySchedule, reqCommuteChange, initCommuteChange, getReqCommuteList, updateJobReq, updateDayJob, getDAYJOBREQ, getReqCommuteListForDay, insertPLYADAYJOB, updateJobReqAbsence, getJobNo, updatePLYADAYJOB, getReqCommuteListForMonth } = require('../../query/commute');
 const { reverseGeocode } = require('../../utils/kakao');
 const { sendPush_GoToWork, sendPush_GetOffWork } = require('../../utils/templatePush');
-const { sendMsg_Z0110_11, useN_DayJob } = require('../../query/dailyReport');
-const { AlbaJobSave, JumjuJobSave } = require('../../query/v2/commute');
+const { sendMsg_Z0110_11, useN_DayJob, jobClose2 } = require('../../query/dailyReport');
+const { AlbaJobSave, JumjuJobSave, absent, delDSalary, deldJob } = require('../../query/v2/commute');
 dotenv.config();
 
 
@@ -124,6 +124,25 @@ router.post("/AlbaSchsSave", async (req,res,next)=>{
             console.log(ymd)
             await execSql(albaSchedulemanager2, {cls:"WeekAlbaScheduleSave", ymdFr:ymd, ymdTo:"", cstCo, userId, sTime, eTime, jobCl});
         })
+
+        res.status(200).json({resultCode:"00"});
+    } catch (error) {
+        console.log(error.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+})
+
+router.post("/absent", async (req,res,next)=>{
+    console.log("POST v2.commute.absent - 결근 입력")
+    try {
+        const { ymd, cstCo, userId, iUserId, useYn } = req.body;
+        console.log(ymd, cstCo, userId, iUserId, useYn);
+        await execSql(absent, {ymd, cstCo, userId, iUserId, useYn});
+        
+        await execSql(delDSalary, {ymd, cstCo, userId});
+        await execSql(deldJob, {ymd, cstCo, userId})
+        // 아직 주휴에서 빼는건 적용안됨.
+        await execSql(jobClose2, {ymdFr:ymd, ymdTo:ymd, userId, cstCo})
 
         res.status(200).json({resultCode:"00"});
     } catch (error) {
