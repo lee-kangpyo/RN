@@ -52,7 +52,7 @@ export default function  ChangeWorkTime2 ({wageInfo, dayJobInfo, setIsOpen, onCo
     
 
     useEffect(()=>{
-        jobInfo = dayJobInfo.find(el => el.jobCl == type);
+        const jobInfo = dayJobInfo.find(el => el.jobCl == type);
         setDayJobInfo(jobInfo);
         setType(type);
         setWorkHOur((jobInfo.startTime == "-")?"7":calculateDifference(jobInfo.startTime, jobInfo.endTime));
@@ -203,6 +203,7 @@ export default function  ChangeWorkTime2 ({wageInfo, dayJobInfo, setIsOpen, onCo
                 
                 {
                     (wageInfo.JOBTYPE == "M")?
+                    //(false)?
                         <View style={[styles.miniBtn, styles.row, {borderColor:sColor, flex:1, justifyContent:"space-between", alignItems:"center", paddingVertical:15}]}>
                             <Text style={[fonts.sheetcontent]}>월급</Text>
                             <View style={{ width:150, padding:4, flexDirection:"row"}}>

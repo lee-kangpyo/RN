@@ -351,7 +351,7 @@ export default function WageDetailScreen({navigation, route}) {
                                         {
                                             salaryWeek.map((el, idx) => {
                                                 return (
-                                                    <View style={{paddingVertical:8}}>
+                                                    <View key={idx} style={{paddingVertical:8}}>
                                                         <EndOfWeek item={el}/>
                                                     </View>
                                                 );

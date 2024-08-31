@@ -29,6 +29,14 @@ const getAbsent = `
 	AND USEYN = 'Y'
 	and YMD between @ymdFr AND @ymdTo
 `
+const getAbsentById = `
+    -- 알바 결근 데이터 가져오기
+	select CSTCO, YMD, USERID, ISNULL(MUSERID, IUSERID) WHO
+	from PLYADAYABSENT 
+	where USERID = @userId
+	AND USEYN = 'Y'
+	and YMD between @ymdFr AND @ymdTo
+`
 const getWageById = `
 		WITH MinWageCTE AS (
             SELECT TOP 1 WAGE
@@ -44,5 +52,5 @@ const getWageById = `
 `
 
 
-module.exports = { albaWorkManager, monthCstSlySearch, getWage, getAbsent, getWageById}
+module.exports = { albaWorkManager, monthCstSlySearch, getWage, getAbsent, getAbsentById, getWageById}
 

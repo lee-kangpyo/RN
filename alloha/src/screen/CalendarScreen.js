@@ -38,12 +38,16 @@ export default function CalendarScreen() {
     // 달력 터치했을때 가져올 데이터.
     const [bottomData2, setBottomData2] = useState(null);
     
+    // 바텀 시트 데이터 - 임시로 셋팅 아직 점포를 선택안했을때 여기에 담고 선택 완료 한순간 sheetData에 옮긴다.
+    const [tmpSheetData, setTmpSheetData] = useState({});
     // 바텀 시트 데이터 - 근무 시간일정 입력
     const [sheetData, setSheetData] = useState({});
     //하단 카드 데이터 - 근무 계획 입력
     const [sheetSchData, setSheetSchData] = useState({});
-    // [{"CSTCO": 1014, "CSTNA": "글로리맘", "color": "#C80000"}, ] 점포 정보
+    //내 모든 점포 정보 [{"CSTCO": 1014, "CSTNA": "글로리맘", "color": "#C80000"}, ] 점포 정보
     const [cstListColor, setCstListColor] = useState([]);
+    //결근 정보 [{CSTCO: 1021, YMD: '20240815', USERID: 'Sksksksk', WHO: 'Qpqpqpqp'},{CSTCO: 1034, YMD: '20240816', USERID: 'Sksksksk', WHO: 'Qpqpqpqp'}]
+    const [absentInfo, setAbsentInfo] = useState([]);
     //선택한 날짜
     const [selectDay, setSelectDay] = useState(today);
     //초기 날짜
@@ -65,10 +69,12 @@ export default function CalendarScreen() {
             const result = Object.assign(newData, res.data.data??{})
             setData(result);
             if(first) {
+                setAbsentInfo(res.data.absentInfo??[]);
                 setCstListColor(res.data.cstList??[]);
                 setBottomData({day:getDateObject(today), items:res.data.data[today]??[]});
                 setFirst(false);
             }else{
+                setAbsentInfo(res.data.absentInfo??[]);
                 setBottomData({day:getDateObject(selectDay), items:res.data.data[selectDay]??[]});
             }
             setWageInfo(res.data.wageInfo);
@@ -142,8 +148,9 @@ export default function CalendarScreen() {
     }
 
     const reload = () => {
-        console.log("reload");
-        //setIsOpen(false);
+        main0205(initDay);
+        main0206(initDay)
+        setIsOpen(false);
     }
     
     //근무 계획 입력
@@ -167,37 +174,17 @@ export default function CalendarScreen() {
 
     
     const openBottomSheet = (item) => {
-
         const data = bottomData2.reduce((result, el)=>{
             if(el.CSTCO == item.CSTCO && el.cl == "JOB"){
                 return [...result, {startTime:convertTime(el.STARTTIME, {format:"HH:mm"}), endTime:convertTime(el.ENDTIME, {format:"HH:mm"}), brkDure:el.BRKDURE / 60, jobCl:el.JOBCL, cstCo:item.CSTCO, userId:item.USERID, ymd:item.YMD, cstNa:item.CSTNA, wage:el.wage}];
             }
             return result;
         }, [])
-        console.log("onpenBottomSheet");
-        console.log(data);
-        const g = data.find(el => el.jobCl == "G") ?? {startTime:"09:00", endTime:"16:00", brkDure:0, jobCl:"G", tmp:true, cstCo:item.CSTCO, userId:item.USERID, ymd:item.YMD, cstNa:item.CSTNA};
-        const s = data.find(el => el.jobCl == "S") ?? {startTime:"09:00", endTime:"16:00", brkDure:0, jobCl:"S", tmp:true, cstCo:item.CSTCO, userId:item.USERID, ymd:item.YMD, cstNa:item.CSTNA};
+
+        const g = data.find(el => el.jobCl == "G") ?? {startTime:"09:00", endTime:"16:00", brkDure:0, jobCl:"G", tmp:true, cstCo:item.CSTCO, userId:item.USERID, ymd:item.YMD, cstNa:item.CSTNA, tmp:true};
+        const s = data.find(el => el.jobCl == "S") ?? {startTime:"09:00", endTime:"16:00", brkDure:0, jobCl:"S", tmp:true, cstCo:item.CSTCO, userId:item.USERID, ymd:item.YMD, cstNa:item.CSTNA, tmp:true};
         setSheetData([g, s]);
         setIsOpen(true);
-        
-        //const data = bottomData2.filter(el => el.CSTCO == item.CSTCO && el.cl == "JOB")
-
-        // const jobDure = item.JOBDURE;
-        // const schDure = item.SCHDURE;
-        // const brkDure = item.BRKDURE ?? 0;
-        
-        // if(jobDure > 0){
-        //     const param = {startTime:convertTime(item.STARTTIME, {format:"HH:mm"}), endTime:convertTime(item.ENDTIME, {format:"HH:mm"}), cstCo:item.CSTCO, userId:item.USERID, ymd:item.YMD, cstNa:item.CSTNA, brkDure:brkDure};
-        //     setSheetData(param);
-        //     setIsOpen(true);
-        // }else if(schDure > 0 ){
-        //     setSheetData({startTime:convertTime(item.SCHSTART, {format:"HH:mm"}), endTime:convertTime(item.SCHEND, {format:"HH:mm"}), cstCo:item.CSTCO, userId:item.USERID, ymd:item.YMD, cstNa:item.CSTNA, brkDure:brkDure})
-        //     setIsOpen(true);
-        // }else{
-        //     setSheetData({startTime:"09:00", endTime:"16:00", cstCo:item.CSTCO, userId:item.USERID, ymd:item.YMD, cstNa:item.CSTNA, brkDure:brkDure})
-        //     setIsOpen(true);
-        // }
     }
 
     const [selectYmd, setSelectYmd] = useState("");
@@ -205,9 +192,9 @@ export default function CalendarScreen() {
     const openSelectJumpo = (ymd) => {
         setSelectYmd(ymd.replaceAll("-", ""));
         // {startTime:"09:00", endTime:"16:00", brkDure:0, jobCl:"S", cstCo:item.CSTCO, userId:item.USERID, ymd:item.YMD, cstNa:item.CSTNA}
-        const params = [{startTime:"09:00", endTime:"16:00", brkDure:0, jobCl:"G", userId:userId, ymd:ymd.replaceAll("-", "")},
-                        {startTime:"09:00", endTime:"16:00", brkDure:0, jobCl:"S", userId:userId, ymd:ymd.replaceAll("-", "")}]
-        setSheetData(params);
+        const params = [{startTime:"09:00", endTime:"16:00", brkDure:0, jobCl:"G", userId:userId, ymd:ymd.replaceAll("-", ""), tmp:true},
+                        {startTime:"09:00", endTime:"16:00", brkDure:0, jobCl:"S", userId:userId, ymd:ymd.replaceAll("-", ""), tmp:true}]
+        setTmpSheetData(params);
         setIsOpen(false);
         setIsOpenJumpo(true);
     }
@@ -223,7 +210,7 @@ export default function CalendarScreen() {
             setSheetSchData(param);
             setIsOpenSch(true);
         }else if(type == "근무"){
-            const params = sheetData.map(it => { return {...it, cstCo:cst.CSTCO, cstNa:cst.CSTNA} });
+            const params = tmpSheetData.map(it => { return {...it, cstCo:cst.CSTCO, cstNa:cst.CSTNA} });
             setSheetData(params);
             setIsOpen(true);
         }
@@ -280,7 +267,7 @@ export default function CalendarScreen() {
                 isOpen={isOpenJumpo}
                 onClose={()=>setIsOpenJumpo(false)}
                 content={
-                    <SelJumPoList ymd={selectYmd} item={data[convertDateStr(selectYmd)]??[]} cstListColor={cstListColor} closeSelectJumpo={closeSelectJumpo} next={nextStep}/>
+                    <SelJumPoList ymd={selectYmd} item={data[convertDateStr(selectYmd)]??[]} absentInfo={absentInfo} cstListColor={cstListColor} closeSelectJumpo={closeSelectJumpo} next={nextStep} />
                 }
             />
             {
@@ -297,11 +284,14 @@ export default function CalendarScreen() {
     );
 }
 
-const SelJumPoList = ({ymd, item, cstListColor, closeSelectJumpo, next}) => {
+const SelJumPoList = ({ymd, item, cstListColor, absentInfo, closeSelectJumpo, next}) => {
     const data = cstListColor.reduce((rslt, next)=>{
         const itm = item.find(el => el.CSTCO == next.CSTCO);
+        const absent = absentInfo.find(el => el.CSTCO == next.CSTCO && el.YMD == ymd)
         if(itm){
-            rslt.push({...next, disabled:true});
+            rslt.push({...next, disabled:true, text:"추가됨"});
+        }else if(absent){
+            rslt.push({...next, disabled:true, text:"결근"});
         }else{
             rslt.push({...next, disabled:false});
         }
@@ -343,12 +333,20 @@ const SelJumPoList = ({ymd, item, cstListColor, closeSelectJumpo, next}) => {
                                 (el.disabled)?
                                     <AntDesign name="closecircle" size={16} color={el.color} />
                                 :(cstCo == el.CSTCO)?
-                                <MaterialCommunityIcons name="checkbox-marked-circle" size={16} color={el.color} />
+                                    <MaterialCommunityIcons name="checkbox-marked-circle" size={16} color={el.color} />
                                 :
-                                <FontAwesome name="circle" size={16} color={el.color} />
+                                    <FontAwesome name="circle" size={16} color={el.color} />
                             }
                             <View style={{width:6}} />
                             <Text style={[fonts.sheetcontent, {color:(el.disabled)?"#ddd":"#111"}]}>{el.CSTNA}</Text>
+                            <View style={{flex:1, alignItems:"flex-end"}}>
+                            {
+                                (el.disabled)?
+                                    <Text style={[fonts.sheetcontent, {color:"#999"}]}>{el.text}</Text>
+
+                                :null
+                            }
+                            </View>
                         </TouchableOpacity>
                     )
                 })
