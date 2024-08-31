@@ -7,12 +7,17 @@ import Loading from '../components/Loding';
 import { useAlert } from '../util/AlertProvider';
 import { result } from 'lodash';
 import { generateWeeklyRanges, isBetween, isBetweenDate } from '../util/moment';
+import { useSelector } from 'react-redux';
+import { useIsFocused } from '@react-navigation/native';
 
 export default function WageDetailScreen({navigation, route}) {
+    const isFocused = useIsFocused();
     const [loading, setisLoading] = useState(true)
     const [detailInfo, setDetailInfo] = useState([])
     const [salaryWeek, setSalaryWeek] = useState([])
     const [total, setTotal] = useState({})
+    const [absentInfo, setAbsentInfo] = useState([])
+    const userId = useSelector((state) => state.login.userId);
     const [jobType, setJobType] = useState("");
 
     const {target} = route.params
@@ -33,6 +38,7 @@ export default function WageDetailScreen({navigation, route}) {
                 setDetailInfo(res.data.salaryDetail);
                 setSalaryWeek(res.data.slalryWeek);
                 setTotal(res.data.salaryTotal);
+                setAbsentInfo(res.data.absentInfo)
             }).finally(()=>{
                 setisLoading(false);
             })
@@ -44,7 +50,7 @@ export default function WageDetailScreen({navigation, route}) {
 
     useEffect(()=>{
         getSalaryDetail();
-    }, [])
+    }, [isFocused])
 
 
     const convertYMD = (ymd) => {
@@ -58,7 +64,33 @@ export default function WageDetailScreen({navigation, route}) {
         const formattedDate = `${month}/${day} (${dayOfWeek})`;
         return formattedDate
     }
-    
+    const AbsentLine = ({item, jobType}) => {
+        const { showConfirm } = useAlert();
+        const delAbsent = () => {
+            showConfirm("결근 취소", "결근을 취소하시겠습니까?", async () => {
+                const param = {ymd:item.YMD, userId:item.USERID, cstCo:item.CSTCO, iUserId:userId, useYn:"N"};
+                await HTTP("POST", "/api/v2/commute/absent", param)
+                .then((res)=>{
+                    getSalaryDetail();
+                }).catch(function (error) {
+                   console.log(error);
+                })            
+            });
+        }
+        return (
+            <View style={styles.detailList}>
+                <View style={{flexDirection:"row", flex:1}}>
+                    <Text style={[fonts.date, {width:80}]}>{convertYMD(item.YMD)}</Text>
+                    <View style={{flexDirection:"row", justifyContent:"space-between", flex:1}}>
+                        <Text style={fonts.time}>결근</Text>
+                        <TouchableOpacity onPress={delAbsent} style={{borderWidth:1, borderColor:"#111",  borderRadius:5, justifyContent:"center", padding:1}}>
+                            <Text style={[fonts.pillText, {color:"#111"}]}>결근 취소</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </View>
+        )
+    }
     const DetailList = ({item, jobType}) => {
         const {showAlert} = useAlert();
         const pillColor = ( ["승인", "자동승인"].includes(item.apvYn) )?"#3479EF":"#EEEEEE"
@@ -116,8 +148,8 @@ export default function WageDetailScreen({navigation, route}) {
     const DetailSum = ({items}) => {
         
         const sum = items.reduce((result, item) => {
-            console.log(result);
-            console.log(item.dure);
+            // console.log(result);
+            // console.log(item.dure);
             result.dure += Number(item.dure);
             result.salary += Number(item.salary);
             return result;
@@ -176,7 +208,15 @@ export default function WageDetailScreen({navigation, route}) {
                             <Text style={fonts.endOfWeek_hours}>{convertYMD(item.YMDFR)}~{convertYMD(item.YMDTO)}</Text>
                             <Text style={fonts.time}>{item.WEEKDURE}시간</Text>
                         </View>
-                        <Text style={fonts.wage}>{addComma(item.WEEKWAGE)}원</Text>
+                        {
+                            (item.isAbsent == "Y")?
+                                <Text style={fonts.wage}>결근</Text>
+                            :(item.isAbsent == "N")?
+                                <Text style={fonts.wage}>{addComma(item.WEEKWAGE)}원</Text>
+                            :
+                            null
+                        }
+                        
                     </View>
                 </View>
             </>
@@ -202,10 +242,9 @@ export default function WageDetailScreen({navigation, route}) {
     
     const TopComp = ({total, salaryWeek})=>{
         const weekSum = salaryWeek.reduce((result, item) => {
-            result += item.WEEKWAGE;
+            result += (item.isAbsent == "Y")?0:item.WEEKWAGE;
             return result;
         }, 0)
-        console.log(total);
         return (
             <View style={{backgroundColor:"white", padding:24}}>
                 <View style={{flexDirection:"row"}}>
@@ -284,7 +323,7 @@ export default function WageDetailScreen({navigation, route}) {
     // // 스크롤 이동 추가
     const makeDetails = (start, end) => {
         const weeklyRanges = generateWeeklyRanges(start, end);
-        
+        // console.log(weeklyRanges);
         return weeklyRanges;
     }
     return (
@@ -332,10 +371,13 @@ export default function WageDetailScreen({navigation, route}) {
                             {
                                 makeDetails(route.params.ymdFr, route.params.ymdTo).map((item, idx)=>{
                                     const details = detailInfo.filter((it)=> isBetweenDate(it.ymd, item.start, item.end))
+                                    const absents = absentInfo.filter((it)=> isBetweenDate(it.YMD, item.start, item.end))
                                     const sum = details.reduce((result, detail)=>{
                                         result += detail.salary;
                                         return result;
                                     }, 0)
+                                    const merged = [...absents, ...details]
+                                    merged.sort((a, b) => a.ymd.localeCompare(b.ymd));
                                     return (
                                         <>
                                         {
@@ -343,9 +385,17 @@ export default function WageDetailScreen({navigation, route}) {
                                                 <View style={[styles.weekCard, {paddingVertical:24}]} >
                                                     <Text style={fonts.main}>{item.start} ~ {item.end}</Text>
                                                     {
-                                                        details.map((el, idx) => {
+                                                        merged.map((el, idx) => {
                                                             return (
-                                                                <DetailList key={idx} item={el} jobType={jobType}/>
+                                                                <>
+                                                                {
+                                                                    (el.isAbsent)?
+
+                                                                        <AbsentLine key={idx} item={el} jobType={jobType}/>
+                                                                    :
+                                                                        <DetailList key={idx} item={el} jobType={jobType}/>
+                                                                }
+                                                                </>
                                                             )
                                                         } )
                                                     }

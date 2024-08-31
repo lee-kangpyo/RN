@@ -4,12 +4,16 @@ import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import React from 'react';
 import { theme } from '../../util/color';
+import { useAlert } from '../../util/AlertProvider';
+import { HTTP } from '../../util/http';
 
-export default function WeekAlba({absentInfo, alba, onTap, onDel, week}) {
+export default function WeekAlba({absentInfo, alba, onTap, onDel, week, reload}) {
+    const userId = useSelector((state) => state.login.userId);
     const cstCo = useSelector((state)=>state.common.cstCo);
     const weekList = getWeekList(week);
     const navigator = useNavigation();
     const workInfo = useSelector((state)=>state.work.workAlbaInfo);
+   
   return (
         <View style={styles.container}>
             <NameBox name={alba.userNa} onDel={onDel}/>
@@ -21,7 +25,7 @@ export default function WeekAlba({absentInfo, alba, onTap, onDel, week}) {
                     const ab = absentInfo.find(el => el.YMD == ymd && el.USERID == alba.userId);
                     if(ab){
                         return(
-                            <Absent selected={selected} key={idx} ymd={ymd} num={idx}/>
+                            <Absent selected={selected} key={idx} ymd={ymd} cstCo={cstCo} userId={alba.userId} iUserId={userId} num={idx} reload={reload}/>
                         )
                     }else if (filter.length > 0){
                         return (
@@ -40,11 +44,27 @@ export default function WeekAlba({absentInfo, alba, onTap, onDel, week}) {
   );
 }
 
-const Absent = ({selected, num, ymd}) => {
+const Absent = ({selected, num, ymd, cstCo, userId, iUserId, reload}) => {
+    const { showConfirm } = useAlert();
     const boxWidth = Dimensions.get('window').width / 9; // 박스의 너비
+    const delAbsent = () => {
+        showConfirm("결근 취소", "결근을 취소하시겠습니까?", async () => {
+            console.log(ymd, cstCo, userId)
+            // const dayJob = dayJobInfo[0];
+            const param = {ymd:ymd, userId:userId, cstCo:cstCo, iUserId:iUserId, useYn:"N"};
+            console.log(param)
+            await HTTP("POST", "/api/v2/commute/absent", param)
+            .then((res)=>{
+               reload();
+            }).catch(function (error) {
+               console.log(error);
+            })            
+            
+        });
+    }
     return (
         <>
-            <TouchableOpacity onPress={()=>console.log("asdf")} style={{...styles.box, width:boxWidth, borderRadius:5, borderColor:"red", borderWidth:(selected)?1:0}}>
+            <TouchableOpacity onPress={delAbsent} style={{...styles.box, width:boxWidth, borderRadius:5, borderColor:"red", borderWidth:(selected)?1:0}}>
                 <Text>결근</Text>
             </TouchableOpacity>
             {(num < 6)?<View style={styles.sep}/>:null}

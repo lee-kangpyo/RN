@@ -544,6 +544,7 @@ router.get("/v1/getSalary", async (req, res, next) => {
 })
 
 router.get("/v1/getSalaryDetail", async (req, res, next) => {
+    console.log("GET v1.getSalaryDetail")
     const {ymdFr, ymdTo, userId, cstCo} = req.query
     const result = await execSql(salary, {userId:userId, cls:"salaryDetail", ymdFr:ymdFr, ymdTo:ymdTo, cstCo:cstCo});
     const salaryDetail = result.recordset.map(item => {
@@ -553,8 +554,9 @@ router.get("/v1/getSalaryDetail", async (req, res, next) => {
     });
     const result3 = await execSql(salary, {userId:userId, cls:"salaryWeek", ymdFr:ymdFr, ymdTo:ymdTo, cstCo:cstCo});
     const result2 = await execSql(salary, {userId:userId, cls:"salaryTotal", ymdFr:ymdFr, ymdTo:ymdTo, cstCo:cstCo});
-    console.log(salaryDetail);
-    res.status(200).json({resultCode:"00", salaryDetail:salaryDetail, slalryWeek:result3.recordset, salaryTotal:result2.recordset[0]});
+    const absentInfo = await execSql(salary, {userId:userId, cls:"absentOfWork", ymdFr:ymdFr, ymdTo:ymdTo, cstCo:cstCo});
+    // console.log(salaryDetail);
+    res.status(200).json({resultCode:"00", salaryDetail:salaryDetail, slalryWeek:result3.recordset, salaryTotal:result2.recordset[0], absentInfo:absentInfo.recordset});
 })
 
 router.post("/v1/easyAlbaMng", async (req, res, next) => {

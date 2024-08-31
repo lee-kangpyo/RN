@@ -288,7 +288,7 @@ export default function WorkScreen({navigation}) {
                                     return (
                                         <View key={idx} style={{flexDirection:"row"}}>
                                             <Animated.View style={{width:widthValue}} >
-                                                <WorkAlba absentInfo={absentInfo} alba={item} week={week} onTap={onAlbaTap} onDel={()=>delAlba(item.userId, item.userNa)} />
+                                                <WorkAlba absentInfo={absentInfo} alba={item} week={week} onTap={onAlbaTap} onDel={()=>delAlba(item.userId, item.userNa)} reload={reload}/>
                                             </Animated.View>
                                             <TouchableOpacity onPress={()=>delAlba(item.userId, item.userNa)} style={{...styles.btnMini, alignItems:"center", backgroundColor:"red", justifyContent:"center", width:50}}>
                                                 <Text style={{color:"white"}}>삭제</Text>

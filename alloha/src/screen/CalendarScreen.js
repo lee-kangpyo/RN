@@ -127,7 +127,6 @@ export default function CalendarScreen() {
             }
         }
         setIsOpen(false);
-        console.log(params);
         await HTTP("POST", "/api/v2/commute/AlbaJobSave", params)
         .then((res)=>{
             const dateObject = getDateObject(params.ymd);
@@ -140,6 +139,11 @@ export default function CalendarScreen() {
             console.log(error);
             alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
         })
+    }
+
+    const reload = () => {
+        console.log("reload");
+        //setIsOpen(false);
     }
     
     //근무 계획 입력
@@ -267,7 +271,7 @@ export default function CalendarScreen() {
                     <CustomBottomSheet2
                         isOpen={isOpen} 
                         onClose={()=>setIsOpen(false)}
-                        content={<ChangeWorkTime2 wageInfo={wageInfo.filter(el => el.CSTCO == sheetData[0].cstCo)[0]} dayJobInfo={sheetData} setIsOpen={setIsOpen} onConfirm={onConfirm}/>}
+                        content={<ChangeWorkTime2 wageInfo={wageInfo.filter(el => el.CSTCO == sheetData[0].cstCo)[0]} dayJobInfo={sheetData} setIsOpen={setIsOpen} onConfirm={onConfirm} reload={reload}/>}
                     />
                 :
                     null

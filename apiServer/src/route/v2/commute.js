@@ -138,10 +138,11 @@ router.post("/absent", async (req,res,next)=>{
         const { ymd, cstCo, userId, iUserId, useYn } = req.body;
         console.log(ymd, cstCo, userId, iUserId, useYn);
         await execSql(absent, {ymd, cstCo, userId, iUserId, useYn});
-        
-        await execSql(delDSalary, {ymd, cstCo, userId});
-        await execSql(deldJob, {ymd, cstCo, userId})
-        // 아직 주휴에서 빼는건 적용안됨.
+        if(useYn == "Y"){
+            await execSql(delDSalary, {ymd, cstCo, userId});
+            await execSql(deldJob, {ymd, cstCo, userId})
+            // 아직 주휴에서 빼는건 적용안됨.
+        }
         await execSql(jobClose2, {ymdFr:ymd, ymdTo:ymd, userId, cstCo})
 
         res.status(200).json({resultCode:"00"});
