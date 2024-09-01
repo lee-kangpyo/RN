@@ -5,7 +5,15 @@ import { useNavigation } from '@react-navigation/native';
 import { addComma } from './../util/utils';
 import { AntDesign } from '@expo/vector-icons';
 
-export default function WageCard({item, userType, onPress}) {
+export default function WageCard({item, salaryWeek, userType, onPress}) {
+    const getWeekWage = () => {
+        return salaryWeek.reduce((result, next) => {
+            if(next.isAbsent == "N"){
+                result += next.WEEKWAGE;
+            }
+            return result;
+        }, 0)
+    }
     const navigation = useNavigation();
     const title = (userType == "crew")?item.cstNa:item.userNa;
     const rtCl = item.rtCl;
@@ -24,28 +32,55 @@ export default function WageCard({item, userType, onPress}) {
                     <View style={styles.sepH} />
                     <View style={styles.contentBox}>
                         <View style={[styles.card_block, styles.mb12]}>
-                            <Text style={fonts.content}>시간당 수당</Text>
-                            <Text style={fonts.content2}>{addComma(item.wage)}원</Text>
+                            <Text style={fonts.content}>기본급</Text>
+                            <View style={{flexDirection:"row"}}>
+                                <Text style={fonts.content2}>{(item.JOBTYPE == "H")?"시급":"월급"}</Text>
+                                <View style={{width:4}} />
+                                <Text style={fonts.content2}>{addComma(item.BASICWAGE)}원</Text>
+
+                            </View>
                         </View>
                         <View style={[styles.card_block, styles.mb12]}>
-                            <Text style={fonts.content}>근무시간</Text>
-                            <Text style={fonts.content2}>{item.jobDure} - {addComma(item.jobWage)}원</Text>
+                            <Text style={fonts.content}>근무</Text>
+                            <Text style={fonts.content2}>{item.jobDure}시간 - {addComma(item.jobWage)}원</Text>
                         </View>
 
                         <View style={[styles.card_block, styles.mb12]}>
-                            <Text style={fonts.content}>특근시간</Text>
-                            <Text style={fonts.content2}>{item.spcDure} - {addComma(item.spcWage)}원</Text>
+                            <Text style={fonts.content}>대타</Text>
+                            <Text style={fonts.content2}>{item.spcDure}시간 - {addComma(item.spcWage)}원</Text>
                         </View>
-
-                        <View style={[styles.card_block, styles.mb12]}>
-                            <Text style={fonts.content}>주휴수당</Text>
-                            <Text style={fonts.content2}>{addComma(item.weekWage)}원</Text>
-                        </View>
-
-                        <View style={styles.card_block}>
-                            <Text style={fonts.content}>총급여</Text>
-                            <Text style={fonts.content2}>{addComma(item.salary)}원(추가수당 : {addComma(item.incentive)}원)</Text>
-                        </View>
+                        {
+                            (item.JOBTYPE == "H" && item.WEEKWAGEYN == 'Y')?
+                                <View style={[styles.card_block, styles.mb12]}>
+                                    <Text style={fonts.content}>주휴수당</Text>
+                                    <Text style={fonts.content2}>{addComma(getWeekWage())}원</Text>
+                                </View>
+                            :(item.JOBTYPE == "M")?
+                                <View style={[styles.card_block, styles.mb12]}>
+                                    <Text style={fonts.content}>식대</Text>
+                                    <Text style={fonts.content2}>{addComma(item.MEALALLOWANCE)}원</Text>
+                                </View>
+                            :null
+                        }
+                        {
+                            (item.JOBTYPE == "H" && item.WEEKWAGEYN == 'Y')?
+                                <View style={styles.card_block}>
+                                    <Text style={fonts.content}>총급여</Text>
+                                    <Text style={fonts.content2}>{addComma(item.jobWage + item.spcWage + getWeekWage())}원</Text>
+                                </View>
+                            :(item.JOBTYPE == "H" && item.WEEKWAGEYN == 'N')?
+                                <View style={styles.card_block}>
+                                    <Text style={fonts.content}>총급여</Text>
+                                    <Text style={fonts.content2}>{addComma(item.jobWage + item.spcWage)}원</Text>
+                                </View>
+                            :(item.JOBTYPE == "M")?
+                                <View style={styles.card_block}>
+                                    <Text style={fonts.content}>총급여</Text>
+                                    <Text style={fonts.content2}>{addComma(item.BASICWAGE + item.MEALALLOWANCE)}원</Text>
+                                </View>
+                            :null
+                        }
+                        
                     </View>
                 </View>
             </TouchableOpacity>

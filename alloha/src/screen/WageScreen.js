@@ -20,6 +20,8 @@ export default function WageScreen({navigation, route}) {
     const userType = route.params.userType
     const userId = useSelector((state)=>state.login.userId)
     const [myStore, setMyStore] = useState([]);
+    const [salaryWeek, setSalaryWeek] = useState([]);
+    
     const [selectLIst, setSelectList] = useState([]);
     const [selectedStore, setSelectedStore] = useState({});
     const [selCstCo, setSelCstco] = useState();
@@ -53,6 +55,7 @@ export default function WageScreen({navigation, route}) {
         const ymdTo = date2.getFullYear()+String(date2.getMonth() + 1).padStart(2, '0')+String(date2.getDate()).padStart(2, '0');
         await HTTP("GET", "/api/v1/getSalary", {"userType":userType, "ymdFr":ymdFr, "ymdTo":ymdTo, "userId":userId, "cstCo":cstCo})
             .then((res)=>{
+                setSalaryWeek(res.data.salaryWeek);
                 setMyStore(res.data.salary)
             }
         )
@@ -160,7 +163,7 @@ export default function WageScreen({navigation, route}) {
                 {
                     (myStore.length > 0)?
                         myStore.filter(el=>el.cstNa.includes(searchWrd)).map((el, idx)=>{
-                            return( <WageCard key={idx} item={el} userType={userType} onPress = {navigateWageDetail} /> )
+                            return( <WageCard key={idx} item={el} salaryWeek={salaryWeek.filter(sw => sw.CSTCO == el.cstCo)} userType={userType} onPress = {navigateWageDetail} /> )
                         })
                     :
                         <View style={{flex:1, justifyContent:"center", alignItems:"center"}}>

@@ -241,6 +241,7 @@ export default function WageDetailScreen({navigation, route}) {
     }
     
     const TopComp = ({total, salaryWeek})=>{
+        const weekWageYn = total.WEEKWAGEYN;
         const weekSum = salaryWeek.reduce((result, item) => {
             result += (item.isAbsent == "Y")?0:item.WEEKWAGE;
             return result;
@@ -252,7 +253,7 @@ export default function WageDetailScreen({navigation, route}) {
                     <Text style={{marginLeft:4}}>({(jobType == "H")?"시급":(jobType == "M")?"월급":""})</Text>
                 </View>
                 <View style={{flexDirection:"row", justifyContent:"space-between", alignItems:"baseline"}}>
-                    <Text style={fonts.totalSalary}>{(jobType == "H")?addComma(total.salary + weekSum):addComma(total.salary + total.mealAllowance)}원</Text>
+                    <Text style={fonts.totalSalary}>{(jobType == "H")?(weekWageYn=="Y")?addComma(total.salary + weekSum):addComma(total.salary):addComma(total.salary + total.mealAllowance)}원</Text>
                     <View style={{flexDirection:"row", justifyContent:"space-between"}}>
                         <View style={{flexDirection:"row", alignItems:"flex-end"}}>
                             <Text style={fonts.main}>[ </Text>
@@ -265,7 +266,7 @@ export default function WageDetailScreen({navigation, route}) {
                                 (jobType == "H")?
                                     <View style={{alignItems:"center"}}>
                                         <Text style={fonts.top}>주휴</Text>
-                                        <Text style={fonts.main}>{addComma(weekSum)}</Text>
+                                        <Text style={fonts.main}>{(weekWageYn=="Y")?addComma(weekSum):"주휴없음"}</Text>
                                     </View>
                                 :(jobType == "M")?
                                     <View style={{alignItems:"center"}}>
@@ -341,29 +342,23 @@ export default function WageDetailScreen({navigation, route}) {
                     
                     <TopComp total={total} salaryWeek={salaryWeek} />
                     <ScrollView ref={scrollRef} contentContainerStyle={styles.scrollContentStyle} style={styles.scrollContainer}>
+                        <View style={{paddingHorizontal:22, marginBottom:10}}>
+                            <Text style={fonts.endOfWeek_date}>주휴 수당</Text>
+                        </View>
+                        <View style={[styles.weekCard, {paddingVertical:16}]} >
                         {
-                            (jobType == "H")?
-                                <>
-                                    <View style={{paddingHorizontal:22, marginBottom:10}}>
-                                        <Text style={fonts.endOfWeek_date}>주휴 수당</Text>
-                                    </View>
-                                    <View style={[styles.weekCard, {paddingVertical:16}]} >
-                                        {
-                                            salaryWeek.map((el, idx) => {
-                                                return (
-                                                    <View key={idx} style={{paddingVertical:8}}>
-                                                        <EndOfWeek item={el}/>
-                                                    </View>
-                                                );
-                                            })
-                                        }
-                                    </View>
-                                </>
+                            (jobType == "H" && total.WEEKWAGEYN == "Y")?
+                                salaryWeek.map((el, idx) => {
+                                    return (
+                                        <View key={idx} style={{paddingVertical:8}}>
+                                            <EndOfWeek item={el}/>
+                                        </View>
+                                    );
+                                })
                             :
-                                null
+                                <Text>주휴 수당이 없습니다.</Text>
                         }
-                        
-                        
+                        </View>
                         <View style={[{paddingVertical:24}]} >
                             <View style={{paddingHorizontal:22, marginBottom:10}}>
                                 <Text style={fonts.endOfWeek_date}>상세 내역</Text>

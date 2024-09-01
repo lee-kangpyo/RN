@@ -310,9 +310,9 @@ const PayLine = ({item, onNameTap, onIncentiveTap, underLine=false}) => {
             <Sep />
             <ContentBox text={(jobType == "H")?"시급":"월급"} />
             <Sep />
-            <ContentBox text={wage}  subText={item.jobDure} alignItems='flex-end'/>
+            <ContentBox text={wage} subText={item.jobDure} alignItems='flex-end'/>
             <Sep />
-            <ContentBox text={(jobType == "H")?item.weekWage:item.MEALALLOWANCE} subText={(jobType == "H")?item.weekWageNa:""}  alignItems='flex-end' />
+            <ContentBox text={(jobType == "H")?(item.WEEKWAGEYN == "Y")?item.weekWage:"주휴제외":item.MEALALLOWANCE} subText={(jobType == "H" && item.WEEKWAGEYN == "Y")?item.weekWageNa:""}  alignItems='flex-end' />
             <Sep />
             {/*
                 (isEdit)?
@@ -326,7 +326,7 @@ const PayLine = ({item, onNameTap, onIncentiveTap, underLine=false}) => {
                     <Sep />
                 </>
             */}
-            <ContentBox text={(jobType == "H")?item.salary:(wage+item.MEALALLOWANCE)}  alignItems='flex-end'/>
+            <ContentBox text={(jobType == "H")?(item.WEEKWAGEYN == "Y")?item.salary:wage:(wage+item.MEALALLOWANCE)}  alignItems='flex-end'/>
         </View>
         {(underLine)?<Sep />:null}
         </>

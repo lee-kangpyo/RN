@@ -223,7 +223,7 @@ export default function ManageCrewUpdateScreen({navigation, route}) {
                             <BlockContent label={"식대"} component={<WageInput value={foodWage} onChangeText={(v)=>{setFoodWage(v)}} />}/>
 
                     }
-                    <SwitchContent label={"근무 시간"} isOn={isSch} setIsOn={setIsSch}/>
+                    {/* <SwitchContent label={"근무 시간"} isOn={isSch} setIsOn={setIsSch}/> */}
                     <View style={{height:12}} />
                     {
                         (isSch)?

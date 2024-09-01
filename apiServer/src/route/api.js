@@ -540,7 +540,13 @@ router.get("/v1/getSalary", async (req, res, next) => {
     const cls = (userType === "crew")?"salary2":(userType === "owner")?"salary1":"";
 
     const result = await execSql(salary, {userId:userId, cls:cls, ymdFr:ymdFr, ymdTo:ymdTo, cstCo:cstCo});
-    res.status(200).json({resultCode:"00", salary:result.recordset});
+    if(userType =="crew"){
+        // 알바는 주휴 수당 주별로 가져오기
+        const result2 = await execSql(salary, {userId:userId, cls:"salaryWeek2", ymdFr:ymdFr, ymdTo:ymdTo, cstCo:cstCo});
+        res.status(200).json({resultCode:"00", salary:result.recordset, salaryWeek:result2.recordset});
+    }else{
+        res.status(200).json({resultCode:"00", salary:result.recordset});
+    }
 })
 
 router.get("/v1/getSalaryDetail", async (req, res, next) => {
