@@ -75,7 +75,6 @@ router.post("/AlbaJobSave", async (req,res,next)=>{
         console.log(ymd, cstCo, userId, sTime, eTime, jobCl, brkDure, wage);
         const w = (wage)?wage:9860;
         const result = await execSql(AlbaJobSave, {ymd, cstCo, userId, sTime, eTime, jobCl, brkDure, wage:w});
-        console.log(result);
         res.status(200).json({resultCode:"00"});
     } catch (error) {
         console.log(error.message)
@@ -90,7 +89,6 @@ router.post("/JumjuJobSave", async (req,res,next)=>{
         const { ymd, cstCo, userId, sTime, eTime, jobCl, brkDure, wage } = req.body;
         console.log(ymd, cstCo, userId, sTime, eTime, jobCl, brkDure, wage);
         const result = await execSql(JumjuJobSave, {ymd, cstCo, userId, sTime, eTime, jobCl, brkDure, wage});
-        console.log(result);
         res.status(200).json({resultCode:"00"});
     } catch (error) {
         console.log(error.message)
@@ -119,9 +117,7 @@ router.post("/AlbaSchsSave", async (req,res,next)=>{
     try {
         const { ymds, cstCo, userId, sTime, eTime, jobCl } = req.body;
         console.log(ymds, cstCo, userId, sTime, eTime, jobCl);
-
         ymds.forEach(async (ymd) => {
-            console.log(ymd)
             await execSql(albaSchedulemanager2, {cls:"WeekAlbaScheduleSave", ymdFr:ymd, ymdTo:"", cstCo, userId, sTime, eTime, jobCl});
         })
 
