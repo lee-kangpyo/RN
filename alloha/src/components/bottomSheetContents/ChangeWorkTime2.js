@@ -180,8 +180,8 @@ export default function  ChangeWorkTime2 ({wageInfo, dayJobInfo, setIsOpen, onCo
           keyboardDidHideListener.remove();
         };
       }, []);
-    const dayAbsent = () => {
-        showConfirm("결근", "선택하신 날짜를 결근을 입력하시겠습니까?", async () => {
+    const dayAbsent = async () => {
+        // showConfirm("결근", "선택하신 날짜를 결근을 입력하시겠습니까?", async () => {
             const dayJob = dayJobInfo[0];
             const param = {ymd:dayJob.ymd, userId:dayJob.userId, cstCo:dayJob.cstCo, iUserId:userId, useYn:"Y"};
             await HTTP("POST", "/api/v2/commute/absent", param)
@@ -190,8 +190,7 @@ export default function  ChangeWorkTime2 ({wageInfo, dayJobInfo, setIsOpen, onCo
             }).catch(function (error) {
                 console.log(error);
             })            
-            
-        });
+        // });
     }
     return(
         <>
@@ -220,8 +219,7 @@ export default function  ChangeWorkTime2 ({wageInfo, dayJobInfo, setIsOpen, onCo
                             </View>
                         </View>
                 }
-                
-
+                <View style={styles.sep} />
                 {
                     (shrink)?
                         null
@@ -294,11 +292,6 @@ export default function  ChangeWorkTime2 ({wageInfo, dayJobInfo, setIsOpen, onCo
                                 
                             </TouchableOpacity>
                         </View>
-                        <View style={{flexDirection:"row", justifyContent:"flex-end"}}>
-                            <TouchableOpacity onPress={dayAbsent}>
-                                <Text style={{textDecorationLine:"underline", color:theme.primary, }}>결근 입력</Text>
-                            </TouchableOpacity>
-                        </View>
                         {
                             (isSelectStime == 3)?
                             <>
@@ -310,7 +303,14 @@ export default function  ChangeWorkTime2 ({wageInfo, dayJobInfo, setIsOpen, onCo
                             </>
                             :null
                         }
+                        <View style={styles.sep} />
+                        <View style={{flexDirection:"row", justifyContent:"flex-start", marginTop:8}}>
+                            <TouchableOpacity onPress={dayAbsent}>
+                                <Text style={{textDecorationLine:"underline", color:theme.primary, }}>결근 입력</Text>
+                            </TouchableOpacity>
+                        </View>
                         </>
+                        
                 }
                 
                 <View style={styles.mv} />
@@ -383,7 +383,7 @@ const WorkTime = ({workTime, setWorkTime, isSelectStime, tapTouch}) => {
             </TouchableOpacity>
             {
                 (isSelectStime == 0)?
-                    <View style={[styles.workBox, {marginVertical:15}]}>
+                    <View style={[styles.workBox,]}>
                         <View style={[styles.row,]}>
                             <WheelPicker
                                 initValue={Number(hour)}
@@ -647,6 +647,11 @@ const styles = StyleSheet.create({
     },
     mv:{
         marginVertical:7
+    },
+    sep:{
+        width:"100%",
+        height:1,
+        backgroundColor:"#999"
     }
 });
   
