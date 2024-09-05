@@ -367,10 +367,11 @@ export default function WageDetailScreen({navigation, route}) {
                                 makeDetails(route.params.ymdFr, route.params.ymdTo).map((item, idx)=>{
                                     const details = detailInfo.filter((it)=> isBetweenDate(it.ymd, item.start, item.end))
                                     const absents = absentInfo.filter((it)=> isBetweenDate(it.YMD, item.start, item.end))
-                                    const sum = details.reduce((result, detail)=>{
-                                        result += detail.salary;
+                                    const {sum, dure} = details.reduce((result, detail)=>{
+                                        result["sum"] += detail.salary;
+                                        result["dure"] += Number(detail.dure);
                                         return result;
-                                    }, 0)
+                                    }, {"sum":0, "dure":0})
                                     const merged = [...absents, ...details]
                                     merged.sort((a, b) => a.ymd.localeCompare(b.ymd));
                                     return (
@@ -396,6 +397,7 @@ export default function WageDetailScreen({navigation, route}) {
                                                     }
                                                     <View style={{flexDirection:"row", justifyContent:"space-between", marginTop:16}}>
                                                         <Text style={fonts.date}>합계</Text>
+                                                        <Text style={fonts.time}>{dure.toFixed(1)}시간</Text>
                                                         <Text style={fonts.wage}>{safeToLocaleString(sum, "-")}원</Text>
                                                     </View>
                                                     
