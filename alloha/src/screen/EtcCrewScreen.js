@@ -54,18 +54,17 @@ export default function EtcCrewScreen({navigation}) {
                     onPress={()=>navigation.push("myStore")}
                     icon={{type:"MaterialCommunityIcons", name:"store", size:48, color:"black"}}
                 />
-                <GridBox
+                {/* <GridBox
                     text={"카카오톡문의하기"}
                     onPress={()=>Linking.openURL("http://pf.kakao.com/_mxmjLG/chat")}
                     icon={{type:"MaterialCommunityIcons", name:"chat-question", size:48, color:"black"}}
-                />
+                /> 
                 <GridBox
                     text={"매뉴얼"}
                     onPress={()=>Linking.openURL("https://www.notion.so/f3112ad5877e4d05a08cc441b90a3eb8")}
                     icon={{type:"AntDesign", name:"book", size:48, color:"black"}}
                 />
-            </View>
-            <View style={[styles.container, {flexDirection:"row"}]}>
+                */}
                 <GridBox
                     text={"비밀번호변경하기"}
                     onPress={()=>navigation.push("changePassword")}
@@ -76,6 +75,14 @@ export default function EtcCrewScreen({navigation}) {
                     text={"로그아웃"}
                     onPress={logOut}
                     icon={{type:"MaterialCommunityIcons", name:"logout", size:48, color:"red"}}
+                />
+            </View>
+            <View style={[styles.container, {flexDirection:"row"}]}>
+                <GridBox
+                    hide={true}
+                />
+                <GridBox
+                    hide={true}
                 />
                 <GridBox
                     // text={"커뮤니티"}
@@ -92,30 +99,37 @@ export default function EtcCrewScreen({navigation}) {
     );
 }
 
-function GridBox({color = "black", text, onPress, icon}){
+function GridBox({color = "black", text, onPress, icon, hide=false}){
     return(
-        <TouchableOpacity onPress={onPress} style={styles.grid}>
-            {
-                (icon)?
-                    (icon.type == "FontAwesome5")?
-                        <FontAwesome5 name={icon.name} size={icon.size} color={color} />
-                    :(icon.type == "MaterialCommunityIcons")?
-                        <MaterialCommunityIcons name={icon.name} size={icon.size} color={color}/>
-                    :(icon.type == "Ionicons")?
-                        <Ionicons name={icon.name} size={icon.size} color={color}/>
-                    :(icon.type == "AntDesign")?
-                        <AntDesign name={icon.name} size={icon.size} color={color}/>
-                    :(icon.type == "Octicons")?    
-                        <Octicons name={icon.name} size={icon.size} color={color} />
-                    :(icon.type == "MaterialIcons")?    
-                        <MaterialIcons name={icon.name} size={icon.size} color={color} />
+        <>
+        {
+            (hide)?
+                <View style={[styles.grid, {borderWidth:0}]}/>
+            :
+            <TouchableOpacity onPress={onPress} style={styles.grid}>
+                {
+                    (icon)?
+                        (icon.type == "FontAwesome")?
+                            <FontAwesome name={icon.name} size={icon.size} color={color} />
+                        :(icon.type == "FontAwesome5")?
+                            <FontAwesome5 name={icon.name} size={icon.size} color={color} />
+                        :(icon.type == "MaterialCommunityIcons")?
+                            <MaterialCommunityIcons name={icon.name} size={icon.size} color={color}/>
+                        :(icon.type == "Ionicons")?
+                            <Ionicons name={icon.name} size={icon.size} color={color}/>
+                        :(icon.type == "AntDesign")?
+                            <AntDesign name={icon.name} size={icon.size} color={color}/>
+                        :(icon.type == "MaterialIcons")?    
+                            <MaterialIcons name={icon.name} size={icon.size} color={color} />
+                        :
+                            null
                     :
                         null
-                :
-                    null
-            }
-            <Text style={[styles.gridTxt, {color:color}]}>{text}</Text>
-        </TouchableOpacity>
+                }
+                <Text style={[styles.gridTxt, {color:color}]}>{text}</Text>
+            </TouchableOpacity>
+        }
+        </>
     )
 }
 

@@ -1,5 +1,5 @@
 //import * as React from 'react';
-import { Text, View, TouchableOpacity, StyleSheet, Button, Image } from 'react-native';
+import { Text, View, TouchableOpacity, StyleSheet, Button, Image, Linking } from 'react-native';
 import { Ionicons, MaterialCommunityIcons, FontAwesome5, MaterialIcons, FontAwesome   } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -140,7 +140,8 @@ function OwnrScreen({}){
       <Tab.Screen name="work" component={WorkStack} options={{ headerShown:false, tabBarLabel: '근무결과' }}/>
       <Tab.Screen name="result" component={ResultStack} options={{ headerShown:false, tabBarLabel: '결과현황표'}}/>
       {/* <Tab.Screen name="profitAndLoss" component={ProfitAndLossScreen} options={{ tabBarLabel: '매출현황' }}/> */}
-      
+      <Tab.Screen name="qna" component={QnAScreen}  options={{headerTitleAlign: 'center', headerTitleStyle:headerTitleStyle, title:"문의하기"}}/>
+      {/* <Tab.Screen name="qna" component={QnAScreen} listeners={{tabPress: () => Linking.openURL('http://pf.kakao.com/_mxmjLG/chat'),}} options={{headerTitleAlign: 'center', headerTitleStyle:headerTitleStyle, title:"문의하기"}}/> */}
       <Tab.Screen name="etc" options={{ headerShown: false, tabBarLabel: '기타'}}>
         {() => (
           <Stack.Navigator initialRouteName="etcScreen">
@@ -186,6 +187,7 @@ function ResultStack(){
   return(
     <Stack.Navigator>
       <Stack.Screen name="resultMain" component={ResultScreen} options={{headerTitleAlign: 'center', headerTitleStyle:headerTitleStyle, title:"결과 현황표"}}/>
+      {/* resultDetail은 안씀 */}
       <Stack.Screen name="resultDetail" component={ResultDetailScreen} options={{headerLeft:()=>headerLeftComponent("결과 상세 보기"), title:""}} />
       <Stack.Screen  name="WageResultDetail" component={WageDetailScreen} options={{title:""}}/>
     </Stack.Navigator>
@@ -241,6 +243,7 @@ function CrewScreen(){
         {() => (
           <Stack.Navigator>
             <Stack.Screen name="WageList" component={WageScreen} options={{ title: '급여', headerTitleStyle:headerTitleStyle, headerTitleAlign:"center" }} initialParams={{userType:"crew"}}/>
+            {/* resultDetail은 안씀 */}
             <Stack.Screen name="WageDetail" component={ResultDetailScreen} options={{title:""}} />
             <Stack.Screen  name="WageResultDetail" component={WageDetailScreen} options={{title:""}}/>
           </Stack.Navigator>

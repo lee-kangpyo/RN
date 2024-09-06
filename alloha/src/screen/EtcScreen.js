@@ -55,9 +55,9 @@ export default function EtcScreen({navigation}) {
                 icon={{type:"MaterialIcons", name:"payments", size:48, color:"black"}} 
             />   
             <GridBox
-                text={"카카오톡 문의하기"}
-                onPress={()=>Linking.openURL("http://pf.kakao.com/_mxmjLG/chat")}
-                icon={{type:"MaterialCommunityIcons", name:"chat-question", size:48, color:"black"}}
+                text={"비밀번호 변경하기"}
+                onPress={()=>navigation.push("changePassword")}
+                icon={{type:"MaterialIcons", name:"password", size:48, color:"black"}}
             />
         </View>
         <View style={[styles.container, {flexDirection:"row"}]}>
@@ -71,22 +71,20 @@ export default function EtcScreen({navigation}) {
                 onPress={()=>navigation.push("ManageCrew")}
                 icon={{type:"MaterialCommunityIcons", name:"badge-account-horizontal", size:48, color:"black"}}
             />   
-            
-            <GridBox
-                hide={true}
-            />
-        </View>
-        <View style={[styles.container, {flexDirection:"row"}]}>
-            <GridBox
-                text={"비밀번호 변경하기"}
-                onPress={()=>navigation.push("changePassword")}
-                icon={{type:"MaterialIcons", name:"password", size:48, color:"black"}}
-            />
             <GridBox
                 color="red"
                 text={"로그아웃"}
                 onPress={logOut}
                 icon={{type:"MaterialCommunityIcons", name:"logout", size:48, color:"red"}}
+            />
+            
+        </View>
+        <View style={[styles.container, {flexDirection:"row"}]}>
+            <GridBox
+                hide={true}
+            />
+            <GridBox
+                hide={true}
             />
             <GridBox
                 text={"회원탈퇴"}
