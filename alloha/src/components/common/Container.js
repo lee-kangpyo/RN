@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, Text, Touchable, TouchableOpacity, Keyboard, ScrollView, TextInput } from 'react-native';
 
 import { FontAwesome5 } from '@expo/vector-icons';
+import { safeToLocaleString } from '../../util/utils';
 
 
 const ProfitLossSubLine = ({type, items, text, isOpen, onChangeValue}) => {
@@ -310,9 +311,9 @@ const PayLine = ({item, onNameTap, onIncentiveTap, underLine=false}) => {
             <Sep />
             <ContentBox text={(jobType == "H")?"시급":"월급"} />
             <Sep />
-            <ContentBox text={wage} subText={item.jobDure} alignItems='flex-end'/>
+            <ContentBox text={safeToLocaleString(wage, wage)} subText={item.jobDure} alignItems='flex-end'/>
             <Sep />
-            <ContentBox text={(jobType == "H")?(item.WEEKWAGEYN == "Y")?item.weekWage:"주휴제외":item.MEALALLOWANCE} subText={(jobType == "H" && item.WEEKWAGEYN == "Y")?item.weekWageNa:""}  alignItems='flex-end' />
+            <ContentBox text={(jobType == "H")?(item.WEEKWAGEYN == "Y")?safeToLocaleString(item.weekWage, item.weekWage):"주휴제외":safeToLocaleString(item.MEALALLOWANCE, item.MEALALLOWANCE)} subText={(jobType == "H" && item.WEEKWAGEYN == "Y")?item.weekWageNa:""}  alignItems='flex-end' />
             <Sep />
             {/*
                 (isEdit)?
@@ -326,7 +327,7 @@ const PayLine = ({item, onNameTap, onIncentiveTap, underLine=false}) => {
                     <Sep />
                 </>
             */}
-            <ContentBox text={(jobType == "H")?(item.WEEKWAGEYN == "Y")?item.salary:wage:(wage+item.MEALALLOWANCE)}  alignItems='flex-end'/>
+            <ContentBox text={(jobType == "H")?(item.WEEKWAGEYN == "Y")?safeToLocaleString(item.salary, item.salary):safeToLocaleString(wage, wage):safeToLocaleString(wage+item.MEALALLOWANCE, wage+item.MEALALLOWANCE)}  alignItems='flex-end'/>
         </View>
         {(underLine)?<Sep />:null}
         </>
