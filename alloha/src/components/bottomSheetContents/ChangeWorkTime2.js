@@ -306,7 +306,7 @@ export default function  ChangeWorkTime2 ({wageInfo, dayJobInfo, setIsOpen, onCo
                         <View style={styles.sep} />
                         <View style={{flexDirection:"row", justifyContent:"flex-start", marginTop:8}}>
                             <TouchableOpacity onPress={dayAbsent}>
-                                <Text style={{textDecorationLine:"underline", color:theme.primary, }}>결근 입력</Text>
+                                <Text style={{textDecorationLine:"underline", color:theme.primary, }}>결근입력</Text>
                             </TouchableOpacity>
                         </View>
                         </>

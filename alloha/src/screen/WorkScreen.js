@@ -141,6 +141,8 @@ export default function WorkScreen({navigation}) {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedAlba, setSelectedAlba] = useState([]);
     const onAlbaTap = (info, item) => {
+        // console.log(item)
+        // console.log(info)
         const it = item ?? [];
         const it2 = it.reduce((result, el) => {
             const rlt = [...result, {startTime:convertTime(el.STARTTIME, {format:"HH:mm"}), endTime:convertTime(el.ENDTIME, {format:"HH:mm"}), "brkDure": el.BRKDURE, "cstCo": cstCo, "cstNa": "",  "jobCl": el.JOBCL, "userId": info.userId, "ymd": info.ymd, "jobType":el.JOBTYPE, "wage":el.wage}];
@@ -274,9 +276,15 @@ export default function WorkScreen({navigation}) {
                     </View>
                     </>
                     : null}
-                    <Animated.View style={{width:widthValue, paddingTop:20, marginBottom:5}}>
+                    
+                    <Animated.View style={{width:widthValue, marginBottom:5, paddingTop:20}}>
                         <WeekDate sBlank={1.3} eBlank={1} week={week}/>
                     </Animated.View>
+                    <TouchableOpacity onPress={()=>{setModalVisible(true);}} style={{ flexDirection:"row", justifyContent:"flex-end", alignItems:"center", marginBottom:15}}>
+                        {/* <View style={{...styles.box, flexDirection:"row"}}> */}
+                            <Text style={[fonts.add, {textDecorationLine:"underline", color:theme.primary}]}>알바 입력하기</Text>
+                        {/* </View> */}
+                    </TouchableOpacity>
                     <ScrollView contentContainerStyle={{paddingBottom:0, }}>
                         {
                             (albas.length == 0)?
@@ -297,13 +305,9 @@ export default function WorkScreen({navigation}) {
                                     )
                                 })
                         }
-                        <TouchableOpacity onPress={()=>{setModalVisible(true);}} style={{marginTop:12}}>
-                            <View style={{...styles.box, width:Dimensions.get('window').width - 22, flexDirection:"row",}}>
-                                <Image source={require('../../assets/icons/cross.png')} style={styles.crossIcon} />
-                                <Text style={fonts.add}>추가하기</Text>
-                            </View>
-                        </TouchableOpacity>
+                        
                     </ScrollView>
+                    
                 </View>
                 <AlbaModal
                     execptAlbaId={albas.map(item => item.userId)}
