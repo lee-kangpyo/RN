@@ -34,7 +34,7 @@ export default function WorkScreen({navigation}) {
 
     const owrBadge = useSelector((state) => state.owner.reqAlbaChangeCnt);
     const dispatch = useDispatch();
-
+    //알바 추가하는 바텀 시트
     const [modalVisible, setModalVisible] = useState(false);
     const [modifyTimeShow, setModifyTimeShow] = useState(false);
     const [wageInfo, setWageInfo] = useState([]);
@@ -202,7 +202,7 @@ export default function WorkScreen({navigation}) {
                         }).catch(function (error) {
                             console.log(error);
                         })
-                        sheetRef.current.close();
+                        //sheetRef.current.close();
                     }
                 },
                 {text:"아니오", onPress:()=>console.log("취소")},
@@ -236,7 +236,6 @@ export default function WorkScreen({navigation}) {
             console.log(error);
             alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
         })
-        setIsOpen(false);
     }
     const reload = () => {
         setIsOpen(false);
@@ -276,15 +275,15 @@ export default function WorkScreen({navigation}) {
                     </View>
                     </>
                     : null}
-                    
-                    <Animated.View style={{width:widthValue, marginBottom:5, paddingTop:20}}>
-                        <WeekDate sBlank={1.3} eBlank={1} week={week}/>
-                    </Animated.View>
-                    <TouchableOpacity onPress={()=>{setModalVisible(true);}} style={{ flexDirection:"row", justifyContent:"flex-end", alignItems:"center", marginBottom:15}}>
+                    <TouchableOpacity onPress={()=>{setModalVisible(true);}} style={{ flexDirection:"row", justifyContent:"center", alignItems:"center"}}>
                         {/* <View style={{...styles.box, flexDirection:"row"}}> */}
-                            <Text style={[fonts.add, {textDecorationLine:"underline", color:theme.primary}]}>알바 입력하기</Text>
+                            <Text style={[fonts.add, {textDecorationLine:"underline", color:theme.primary}]}>알바 추가하기</Text>
                         {/* </View> */}
                     </TouchableOpacity>
+                    <Animated.View style={{width:widthValue, marginBottom:5}}>
+                        <WeekDate sBlank={1.3} eBlank={1} week={week}/>
+                    </Animated.View>
+                    
                     <ScrollView contentContainerStyle={{paddingBottom:0, }}>
                         {
                             (albas.length == 0)?
