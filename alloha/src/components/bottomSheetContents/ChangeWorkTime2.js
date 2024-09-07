@@ -52,6 +52,7 @@ export default function  ChangeWorkTime2 ({wageInfo, dayJobInfo, setIsOpen, onCo
     
 
     useEffect(()=>{
+        const type = "G";
         const jobInfo = dayJobInfo.find(el => el.jobCl == type);
         setDayJobInfo(jobInfo);
         setType(type);
