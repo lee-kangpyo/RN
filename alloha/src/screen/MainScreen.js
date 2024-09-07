@@ -140,8 +140,7 @@ function OwnrScreen({}){
       <Tab.Screen name="work" component={WorkStack} options={{ headerShown:false, tabBarLabel: '근무결과' }}/>
       <Tab.Screen name="result" component={ResultStack} options={{ headerShown:false, tabBarLabel: '결과현황표'}}/>
       {/* <Tab.Screen name="profitAndLoss" component={ProfitAndLossScreen} options={{ tabBarLabel: '매출현황' }}/> */}
-      <Tab.Screen name="qna" component={QnAScreen}  options={{headerTitleAlign: 'center', headerTitleStyle:headerTitleStyle, title:"문의하기"}}/>
-      {/* <Tab.Screen name="qna" component={QnAScreen} listeners={{tabPress: () => Linking.openURL('http://pf.kakao.com/_mxmjLG/chat'),}} options={{headerTitleAlign: 'center', headerTitleStyle:headerTitleStyle, title:"문의하기"}}/> */}
+      <Tab.Screen name="qna" component={QnAScreen} listeners={{tabPress: () => Linking.openURL('http://pf.kakao.com/_mxmjLG/chat'),}} options={{headerTitleAlign: 'center', headerTitleStyle:headerTitleStyle, title:"문의하기"}}/>
       <Tab.Screen name="etc" options={{ headerShown: false, tabBarLabel: '기타'}}>
         {() => (
           <Stack.Navigator initialRouteName="etcScreen">
@@ -249,6 +248,7 @@ function CrewScreen(){
           </Stack.Navigator>
         )}
       </Tab.Screen>
+      <Tab.Screen name="qna" component={QnAScreen} listeners={{tabPress: () => Linking.openURL('http://pf.kakao.com/_mxmjLG/chat'),}} options={{headerTitleAlign: 'center', headerTitleStyle:headerTitleStyle, title:"문의하기"}}/>
       {/* <Tab.Screen name="manageStore" component={SearchStoreScreen} backBehavior={"none"} options={{ tabBarLabel: '점포검색', headerTitleStyle:headerTitleStyle, headerTitleAlign:"center"}} /> */}
       <Tab.Screen name="etc" options={{ headerShown: false, tabBarLabel: '기타'}}>
         {() => (
