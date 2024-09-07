@@ -324,7 +324,6 @@ export default function WageDetailScreen({navigation, route}) {
     // // 스크롤 이동 추가
     const makeDetails = (start, end) => {
         const weeklyRanges = generateWeeklyRanges(start, end);
-        // console.log(weeklyRanges);
         return weeklyRanges;
     }
     return (
@@ -339,7 +338,6 @@ export default function WageDetailScreen({navigation, route}) {
                     </View>
                 :
                 <>
-                    
                     <TopComp total={total} salaryWeek={salaryWeek} />
                     <ScrollView ref={scrollRef} contentContainerStyle={styles.scrollContentStyle} style={styles.scrollContainer}>
                         <View style={{paddingHorizontal:22, marginBottom:10}}>
@@ -365,14 +363,14 @@ export default function WageDetailScreen({navigation, route}) {
                             </View>
                             {
                                 makeDetails(route.params.ymdFr, route.params.ymdTo).map((item, idx)=>{
-                                    const details = detailInfo.filter((it)=> isBetweenDate(it.ymd, item.start, item.end))
-                                    const absents = absentInfo.filter((it)=> isBetweenDate(it.YMD, item.start, item.end))
+                                    const details = detailInfo.filter((it)=> isBetweenDate(it.ymd, item.start, item.end));
+                                    const absents = absentInfo.filter((it)=> isBetweenDate(it.YMD, item.start, item.end));
                                     const {sum, dure} = details.reduce((result, detail)=>{
                                         result["sum"] += detail.salary;
                                         result["dure"] += Number(detail.dure);
                                         return result;
-                                    }, {"sum":0, "dure":0})
-                                    const merged = [...absents, ...details]
+                                    }, {"sum":0, "dure":0});
+                                    const merged = [...absents, ...details];
                                     merged.sort((a, b) => a.ymd.localeCompare(b.ymd));
                                     return (
                                         <>
@@ -400,7 +398,6 @@ export default function WageDetailScreen({navigation, route}) {
                                                         <Text style={fonts.time}>{dure.toFixed(1)}시간</Text>
                                                         <Text style={fonts.wage}>{safeToLocaleString(sum, "-")}원</Text>
                                                     </View>
-                                                    
                                                 </View>
                                             :null
                                         }
@@ -424,17 +421,17 @@ const fonts = StyleSheet.create({
     date:{
         width:80,
         fontFamily: "SUIT-Medium",
-        fontSize: 13,
+        fontSize: 14,
         color: "#555555"
     },
     time:{
         fontFamily: "SUIT-SemiBold",
-        fontSize: 13,
+        fontSize: 14,
         color: "#999999"
     },
     wage:{
         fontFamily: "SUIT-ExtraBold",
-        fontSize: 13,
+        fontSize: 14,
         color: "#111111"
     },
     pillText:{
@@ -449,12 +446,12 @@ const fonts = StyleSheet.create({
     },
     endOfWeek_hours:{
         fontFamily: "SUIT-Medium",
-        fontSize: 13,
+        fontSize: 14,
         color: "#555555"
     },
     endOfWeek_plus:{
         fontFamily: "SUIT-ExtraBold",
-        fontSize: 13,
+        fontSize: 14,
         color: "#111"
     },
     totalSalary:{
@@ -476,7 +473,7 @@ const fonts = StyleSheet.create({
     top:{
         marginBottom:-1,
         fontFamily: "SUIT-Regular",
-        fontSize: 13,
+        fontSize: 14,
         color: "#111"
     },
     main:{
