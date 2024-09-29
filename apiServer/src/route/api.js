@@ -592,8 +592,8 @@ router.get("/v1/getWeekSchedule", async(req, res, next) => {
 router.get("/v1/DayScheduleSearch", async(req, res, next) => {
     try{
         console.log("DayScheduleSearch");
-        const { cstCo, ymd} = req.query;
-        const param = {cls:"DayScheduleSearch", cstCo:cstCo, userId:'', ymdFr:ymd, ymdTo:ymd, wCnt:0};
+        const { cstCo, ymd, ymdTo, ymdFr} = req.query;
+        const param = {cls:"DayScheduleSearch", cstCo:cstCo, userId:'', ymdFr:(ymdFr)?ymdFr:ymd, ymdTo:(ymdTo)?ymdTo:ymd, wCnt:0};
         const result = await execSql(albaSchedulemanager, param);
         console.log(result)
         res.status(200).json({result:result.recordset, resultCode:"00"});
