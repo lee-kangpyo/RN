@@ -134,13 +134,14 @@ function OwnrScreen({}){
         tabBarInactiveTintColor: 'gray',
       })}
     >
-      <Tab.Screen name="home" component={HomeOwnerScreen} options={{ headerShown:false, tabBarLabel: '홈'}}/>
+      <Tab.Screen name="home" component={HomeOwnerStack} options={{ headerShown:false, tabBarLabel: '홈'}}/>
       {/* <Tab.Screen name="daylyReport" component={DailyStack} options={{ headerShown:false, tabBarLabel: '일일보고서', tabBarBadge: owrBadge,}}/> */}
       <Tab.Screen name="schedule" component={ScheduleStack} options={{ headerShown:false, tabBarLabel: '근무계획'}}/>
       <Tab.Screen name="work" component={WorkStack} options={{ headerShown:false, tabBarLabel: '근무결과' }}/>
-      <Tab.Screen name="result" component={ResultStack} options={{ headerShown:false, tabBarLabel: '결과현황표'}}/>
-      {/* <Tab.Screen name="profitAndLoss" component={ProfitAndLossScreen} options={{ tabBarLabel: '매출현황' }}/> */}
+      <Tab.Screen name="result" component={ResultStack} options={{ headerShown:false, tabBarLabel: '급여'}}/>
+      {/* <Tab.Screen name="profitAndLoss" component={ProfitAndLossScreen} options={{ tabBarLabel: '매출현황' }}/> 
       <Tab.Screen name="qna" component={QnAScreen} listeners={{tabPress: () => Linking.openURL('http://pf.kakao.com/_mxmjLG/chat'),}} options={{headerTitleAlign: 'center', headerTitleStyle:headerTitleStyle, title:"문의하기"}}/>
+      */}
       <Tab.Screen name="etc" options={{ headerShown: false, tabBarLabel: '기타'}}>
         {() => (
           <Stack.Navigator initialRouteName="etcScreen">
@@ -174,6 +175,41 @@ function OwnrScreen({}){
   )
 }
 
+function HomeOwnerStack () {
+  const navigation = useNavigation();
+  const [refresh, setRefresh] = useState("false")
+  const storeOption = () => {
+    return(
+      {
+        headerLeft:()=>headerLeftComponent("점포관리"), title:"",
+        headerRight: () => (
+          <TouchableOpacity
+            onPress={() => navigation.navigate('addStore', { setRefresh }) }
+            style={styles.header_btn}
+          >
+            <MaterialCommunityIcons name="store-plus" size={24} color="black" />
+            <Text style={styles.header_txt}>추가</Text>
+          </TouchableOpacity>
+        ),
+        
+      }
+    )
+  }
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="HomeScreen" component={HomeOwnerScreen} options={{headerShown:false}}/>
+      <Stack.Screen name="ManageCrew" component={ManageCrewScreen} options={{ headerLeft:()=>headerLeftComponent("알바관리"), title:"" }}/>
+      <Stack.Screen name="ManageCrewUpdate" component={ManageCrewUpdateScreen} />
+      <Stack.Screen name="modifyCrew" component={ModifyCrewScreen} options={{ tabBarLabel: '알바수정' }}/>
+      <Stack.Screen name="storeList" options={storeOption} backBehavior={"none"}>
+        {() => <ManageStoreScreen type={"ownr"} refresh={refresh} setRefresh={setRefresh} />}
+      </Stack.Screen>
+      <Stack.Screen name="addStore" component={AddStoreScreen} options={{ headerLeft:()=>headerLeftComponent("점포추가"), title:"" }}/>
+      <Stack.Screen name="modifyStore" component={ModifyStoreScreen} options={{ title: '점포수정' }}/>
+      <Stack.Screen  name="SearchAddress" component={SearchAddress} options={{title:"주소 검색"}}/>
+    </Stack.Navigator>
+  )
+}
 function DailyStack(){
   return(
     <Stack.Navigator>
@@ -185,7 +221,7 @@ function DailyStack(){
 function ResultStack(){
   return(
     <Stack.Navigator>
-      <Stack.Screen name="resultMain" component={ResultScreen} options={{headerTitleAlign: 'center', headerTitleStyle:headerTitleStyle, title:"결과 현황표"}}/>
+      <Stack.Screen name="resultMain" component={ResultScreen} options={{headerTitleAlign: 'center', headerTitleStyle:headerTitleStyle, title:"급여"}}/>
       {/* resultDetail은 안씀 */}
       <Stack.Screen name="resultDetail" component={ResultDetailScreen} options={{headerLeft:()=>headerLeftComponent("결과 상세 보기"), title:""}} />
       <Stack.Screen  name="WageResultDetail" component={WageDetailScreen} options={{title:""}}/>
@@ -248,8 +284,9 @@ function CrewScreen(){
           </Stack.Navigator>
         )}
       </Tab.Screen>
+      {/* 
       <Tab.Screen name="qna" component={QnAScreen} listeners={{tabPress: () => Linking.openURL('http://pf.kakao.com/_mxmjLG/chat'),}} options={{headerTitleAlign: 'center', headerTitleStyle:headerTitleStyle, title:"문의하기"}}/>
-      {/* <Tab.Screen name="manageStore" component={SearchStoreScreen} backBehavior={"none"} options={{ tabBarLabel: '점포검색', headerTitleStyle:headerTitleStyle, headerTitleAlign:"center"}} /> */}
+      <Tab.Screen name="manageStore" component={SearchStoreScreen} backBehavior={"none"} options={{ tabBarLabel: '점포검색', headerTitleStyle:headerTitleStyle, headerTitleAlign:"center"}} /> */}
       <Tab.Screen name="etc" options={{ headerShown: false, tabBarLabel: '기타'}}>
         {() => (
           <Stack.Navigator initialRouteName="etc2">
@@ -280,6 +317,9 @@ function HomeCrewStack(){
     <Stack.Navigator>
       <Stack.Screen name="HomeScreen" component={HomeCrewScreen} options={{headerShown:false}}/>
       <Stack.Screen name="CommuteCheckDetail" component={CommuteCheckDetailScreen} options={{headerLeft:()=>headerLeftComponent("근무내역"), title:""}}/>
+      <Stack.Screen name="myStore" component={MyStoreScreen} options={{headerLeft:()=>headerLeftComponent("내점포"), title:"",}}/>
+      <Stack.Screen name="manageStore" component={SearchStoreScreen} options={{headerLeft:()=>headerLeftComponent("점포검색"), title:""}}/>
+      <Stack.Screen name="createCrewStore" component={CrewStoreScreen} options={{headerLeft:()=>headerLeftComponent("점포추가"), title:""}}/>
     </Stack.Navigator>
   )
 }

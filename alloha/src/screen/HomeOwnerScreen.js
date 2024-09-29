@@ -1,5 +1,5 @@
 
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View} from 'react-native';
+import { ActivityIndicator, Linking, ScrollView, StyleSheet, Text, View} from 'react-native';
 import React, {useState, useEffect, useCallback} from 'react';
 
 import { StatusBar, setStatusBarStyle } from 'expo-status-bar';
@@ -13,6 +13,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { setOwnerCstco } from '../../redux/slices/common';
 import StoreChange from '../components/home/owner/StoreChange';
 import { isEqual } from 'lodash';
+import IconBtn from '../components/home/IconBtn';
 
 
 export default function HomeOwnerScreen({navigation}) {
@@ -52,6 +53,18 @@ export default function HomeOwnerScreen({navigation}) {
             alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
         })
     }
+    /*
+                <GridBox 
+                text={"점포관리"} 
+                onPress={()=>navigation.push("storeList")} 
+                icon={{type:"FontAwesome5", name:"store", size:48, color:"black"}} 
+            />   
+            <GridBox 
+                text={"알바관리"} 
+                onPress={()=>navigation.push("ManageCrew")}
+                icon={{type:"MaterialCommunityIcons", name:"badge-account-horizontal", size:48, color:"black"}}
+            />  
+    */
     return (
         (Object.keys(datas).length == 0)?
         <View style={{flex:1, justifyContent:"center"}}>
@@ -60,7 +73,14 @@ export default function HomeOwnerScreen({navigation}) {
         :
         <View style={styles.container}>
             <StatusBar style='dark'/>
-            <HomeHeader data={datas.top} />
+            <HomeHeader 
+                data={datas.top} 
+                leftIcons={[
+                    <IconBtn text={"점포관리"} onPress={()=>navigation.push("storeList")} icon={{type:"FontAwesome5", name:"store"}}/>,
+                    <IconBtn text={"알바관리"} onPress={()=>navigation.push("ManageCrew")} icon={{type:"MaterialCommunityIcons", name:"badge-account-horizontal"}}/>,
+                    <IconBtn text={"문의"} onPress={()=>Linking.openURL('http://pf.kakao.com/_mxmjLG/chat')} icon={{type:"MaterialCommunityIcons", name:"chat-question"}}/>
+                ]} 
+            />
             {
                 (datas.storeList.length > 0)?
                 <ScrollView style={styles.container2}>

@@ -48,13 +48,13 @@ export default function EtcCrewScreen({navigation}) {
                     text={"문의하기"}
                     onPress={()=>navigation.push("question")}
                     icon={{type:"Octicons", name:"paper-airplane", size:48, color:"black"}}
-                /> */}
+                /> 
                 <GridBox
                     text={"내점포"}
                     onPress={()=>navigation.push("myStore")}
                     icon={{type:"MaterialCommunityIcons", name:"store", size:48, color:"black"}}
                 />
-                {/* <GridBox
+                <GridBox
                     text={"카카오톡문의하기"}
                     onPress={()=>Linking.openURL("http://pf.kakao.com/_mxmjLG/chat")}
                     icon={{type:"MaterialCommunityIcons", name:"chat-question", size:48, color:"black"}}
@@ -76,14 +76,6 @@ export default function EtcCrewScreen({navigation}) {
                     onPress={logOut}
                     icon={{type:"MaterialCommunityIcons", name:"logout", size:48, color:"red"}}
                 />
-            </View>
-            <View style={[styles.container, {flexDirection:"row"}]}>
-                <GridBox
-                    hide={true}
-                />
-                <GridBox
-                    hide={true}
-                />
                 <GridBox
                     // text={"커뮤니티"}
                     // onPress={()=>navigation.push("Comunity")}
@@ -92,6 +84,15 @@ export default function EtcCrewScreen({navigation}) {
                     onPress={checkDelUser}
                     icon={{type:"FontAwesome5", name:"user-slash", size:48, color:"red"}}
                 />
+            </View>
+            <View style={[styles.container, {flexDirection:"row"}]}>
+                <GridBox
+                    hide={true}
+                />
+                <GridBox
+                    hide={true}
+                />
+                
             </View>
         </View>
         <DelUser isVisible = {checkDelUserModalmodalVisible} setIsVisible = {setCheckDelUserModalVisible}/>

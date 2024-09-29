@@ -1,5 +1,5 @@
 
-import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, View} from 'react-native';
+import { ActivityIndicator, Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useState, useEffect} from 'react';
 
 import { StatusBar } from 'expo-status-bar';
@@ -13,7 +13,7 @@ import { useSelector } from 'react-redux';
 import { HTTP } from '../util/http';
 import HomeHeader from '../components/home/HomeHeader';
 import CalendarScreen from './CalendarScreen';
-
+import IconBtn from '../components/home/IconBtn';
 
 export default function HomeCrewScreen({navigation}) {
     const userId = useSelector((state)=>state.login.userId);
@@ -40,9 +40,20 @@ export default function HomeCrewScreen({navigation}) {
                 <ActivityIndicator color={"black"}/>
             </View>
         :
+    //     <GridBox
+    //     text={"내점포"}
+    //     onPress={()=>navigation.push("myStore")}
+    //     icon={{type:"MaterialCommunityIcons", name:"store", size:48, color:"black"}}
+    // />
             <View style={styles.container}>
                 <StatusBar style='light'/>
-                <HomeHeader data={datas.top} />
+                <HomeHeader 
+                    data={datas.top} 
+                    leftIcons={[
+                        <IconBtn text={"내점포"} onPress={()=>navigation.push("myStore")} icon={{type:"MaterialCommunityIcons", name:"store"}}/>, 
+                        <IconBtn text={"문의"} onPress={()=>Linking.openURL('http://pf.kakao.com/_mxmjLG/chat')} icon={{type:"MaterialCommunityIcons", name:"chat-question"}}/>
+                    ]} 
+                />
                 <CalendarScreen />    
             </View>
         
@@ -56,6 +67,7 @@ export default function HomeCrewScreen({navigation}) {
         // </View>
     )
 }
+
 
 const styles = StyleSheet.create({
     container:{flex:1, backgroundColor:"#F6F6F8"},

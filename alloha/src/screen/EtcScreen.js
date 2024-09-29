@@ -44,24 +44,31 @@ export default function EtcScreen({navigation}) {
         <>
         <View style={{padding:15}}>
         <View style={[styles.container, {flexDirection:"row"}]}>
-            <GridBox
+            {/* <GridBox
                 text={"일일보고서"}
                 onPress={()=>navigation.push("DailyReport")}
                 icon={{type:"FontAwesome", name:"file-text", size:48, color:"black"}}
-            />
-            <GridBox 
-                text={"매출현황"} 
-                onPress={()=>navigation.push("profitAndLoss")} 
-                icon={{type:"MaterialIcons", name:"payments", size:48, color:"black"}} 
-            />   
+            /> */}
+
             <GridBox
                 text={"비밀번호 변경하기"}
                 onPress={()=>navigation.push("changePassword")}
                 icon={{type:"MaterialIcons", name:"password", size:48, color:"black"}}
             />
+            <GridBox
+                color="red"
+                text={"로그아웃"}
+                onPress={logOut}
+                icon={{type:"MaterialCommunityIcons", name:"logout", size:48, color:"red"}}
+            />
+            <GridBox
+                text={"회원탈퇴"}
+                onPress={checkDelUser}
+                icon={{type:"FontAwesome5", name:"user-slash", size:48, color:"red"}}
+            />
         </View>
         <View style={[styles.container, {flexDirection:"row"}]}>
-            <GridBox 
+            {/* <GridBox 
                 text={"점포관리"} 
                 onPress={()=>navigation.push("storeList")} 
                 icon={{type:"FontAwesome5", name:"store", size:48, color:"black"}} 
@@ -70,14 +77,18 @@ export default function EtcScreen({navigation}) {
                 text={"알바관리"} 
                 onPress={()=>navigation.push("ManageCrew")}
                 icon={{type:"MaterialCommunityIcons", name:"badge-account-horizontal", size:48, color:"black"}}
+            />    */}
+            <GridBox 
+                text={"매출현황"} 
+                onPress={()=>navigation.push("profitAndLoss")} 
+                icon={{type:"MaterialIcons", name:"payments", size:48, color:"black"}} 
             />   
-            <GridBox
-                color="red"
-                text={"로그아웃"}
-                onPress={logOut}
-                icon={{type:"MaterialCommunityIcons", name:"logout", size:48, color:"red"}}
-            />
-            
+                            <GridBox
+                    hide={true}
+                />
+                <GridBox
+                    hide={true}
+                />
         </View>
         <View style={[styles.container, {flexDirection:"row"}]}>
             <GridBox
@@ -87,9 +98,7 @@ export default function EtcScreen({navigation}) {
                 hide={true}
             />
             <GridBox
-                text={"회원탈퇴"}
-                onPress={checkDelUser}
-                icon={{type:"FontAwesome5", name:"user-slash", size:48, color:"red"}}
+                hide={true}
             />
         </View>
     </View>
