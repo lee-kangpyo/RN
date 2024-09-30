@@ -1,5 +1,5 @@
 
-import { ActivityIndicator, Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import { ActivityIndicator, Image, Keyboard, KeyboardAvoidingView, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View} from 'react-native';
 import React, {useState, useEffect} from 'react';
 
 import { StatusBar } from 'expo-status-bar';
@@ -45,18 +45,19 @@ export default function HomeCrewScreen({navigation}) {
     //     onPress={()=>navigation.push("myStore")}
     //     icon={{type:"MaterialCommunityIcons", name:"store", size:48, color:"black"}}
     // />
-            <View style={styles.container}>
-                <StatusBar style='light'/>
-                <HomeHeader 
-                    data={datas.top} 
-                    leftIcons={[
-                        <IconBtn text={"내점포"} onPress={()=>navigation.push("myStore")} icon={{type:"MaterialCommunityIcons", name:"store"}}/>, 
-                        <IconBtn text={"문의"} onPress={()=>Linking.openURL('http://pf.kakao.com/_mxmjLG/chat')} icon={{type:"MaterialCommunityIcons", name:"chat-question"}}/>
-                    ]} 
-                />
-                <CalendarScreen />    
-            </View>
-        
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <View style={styles.container}>
+                    <StatusBar style='light'/>
+                    <HomeHeader 
+                        data={datas.top} 
+                        leftIcons={[
+                            <IconBtn text={"내점포"} onPress={()=>navigation.push("myStore")} icon={{type:"MaterialCommunityIcons", name:"store"}}/>, 
+                            <IconBtn text={"문의"} onPress={()=>Linking.openURL('http://pf.kakao.com/_mxmjLG/chat')} icon={{type:"MaterialCommunityIcons", name:"chat-question"}}/>
+                        ]} 
+                    />
+                    <CalendarScreen />    
+                </View>
+            </TouchableWithoutFeedback>
         // <View style={styles.container}>
         //     <StatusBar style='light'/>
         //     <HomeHeader data={datas.top} />

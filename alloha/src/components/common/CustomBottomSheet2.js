@@ -1,5 +1,5 @@
-import { Animated, Dimensions, StyleSheet, View } from "react-native";
-import React, { useEffect } from 'react';
+import { Animated, Dimensions, Keyboard, Platform, StyleSheet, TouchableWithoutFeedback, View } from "react-native";
+import React, { useEffect, useState } from 'react';
 import { useRef } from "react";
 
 const screen = Dimensions.get("screen")
@@ -30,10 +30,13 @@ export const CustomBottomSheet2 = ({isOpen, onClose, content}) => {
         } else {
           slideDown();
         }
-      }, [isOpen]);
+    }, [isOpen]);
+
+   
+
     return (
         <>
-        <View style={backDrop}/>
+        <View style={backDrop} />
         {
             <Animated.View style={[sheet.container, {
                 transform: [{ translateY: slideAnim }],

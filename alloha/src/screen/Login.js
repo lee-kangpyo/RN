@@ -223,21 +223,14 @@ const font = StyleSheet.create({
   btn:{
     fontFamily: "SUIT-Bold",
     fontSize: 15,
-    fontWeight: "700",
-    fontStyle: "normal",
-    letterSpacing: -1,
     textAlign: "center",
     color: "#FFFFFF"
   },
   createAcc:{
     fontFamily: "SUIT-Bold",
     fontSize: 15,
-    fontWeight: "700",
-    fontStyle: "normal",
-    lineHeight: 15,
-    letterSpacing: -1,
-    textAlign: "center",
     color: "#555555",
+    textAlign: "center",
     textDecorationLine:'underline',
   },
 })
@@ -266,7 +259,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#3479EF",
     marginTop:10,
   },  
-        
   inputContainer:{
     flexDirection:"row",
     alignItems:"center",
@@ -279,8 +271,6 @@ const styles = StyleSheet.create({
   },
   input: {
     flex:1,
-    
-    
   },
   inputIcon:{
     width:18,

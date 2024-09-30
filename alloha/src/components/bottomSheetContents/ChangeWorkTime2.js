@@ -1,5 +1,5 @@
 
-import { StyleSheet, TouchableOpacity, Text, View, ScrollView, TextInput, Keyboard } from 'react-native';
+import { StyleSheet, TouchableOpacity, Text, View, ScrollView, TextInput, Keyboard, Platform } from 'react-native';
 import { theme } from '../../util/color';
 import React, { memo, useEffect, useRef, useState } from 'react';
 import { convertTime2, strToDate } from '../../util/moment';
@@ -17,7 +17,6 @@ import { HTTP } from '../../util/http';
 //[{"brkDure": 1, "cstCo": 1014, "cstNa": "글로리맘", "endTime": "16:00", "jobCl": "G", "startTime": "09:00", "userId": "Sksksksk", "ymd": "20240701"}, 
 // {"brkDure": 0, "cstCo": 1014, "cstNa": "글로리맘", "endTime": "16:00", "jobCl": "S", "startTime": "09:00", "userId": "Sksksksk", "ymd": "20240701"}]
 export default function  ChangeWorkTime2 ({wageInfo, dayJobInfo, setIsOpen, onConfirm, reload}) {
-
     const userId = useSelector((state) => state.login.userId);
     const { showAlert, showConfirm } = useAlert();
     // 근무 정보
@@ -48,8 +47,6 @@ export default function  ChangeWorkTime2 ({wageInfo, dayJobInfo, setIsOpen, onCo
     const eColor = (isSelectStime == 2)?theme.primary:"#999";
     const rColor = (isSelectStime == 3)?theme.primary:"#999";
     
-    
-    
 
     useEffect(()=>{
         const type = "G";
@@ -66,6 +63,7 @@ export default function  ChangeWorkTime2 ({wageInfo, dayJobInfo, setIsOpen, onCo
     
     // 확인 버튼 클릭 이벤트
     const onPressConfirm = () => {
+        inputRef.current.blur();
         if(eTime >= sTime){
             // 알바 호출
             // exec PR_PLYC03_JOBCHECK 'AlbaJobSave', @ymd, '', @cstCo, @userId, @sTime, @eTime, @jobCl, @brkDure
@@ -157,20 +155,30 @@ export default function  ChangeWorkTime2 ({wageInfo, dayJobInfo, setIsOpen, onCo
         setSelectStime(-1);
     }
 
+
+     // 키보드 높이를 저장하는 스테이트(IOS 적용)
+    const [keyboardHeight, setKeyboardHeight] = useState(0);
+    const os = Platform.OS;
     const [shrink, setShrink] = useState(false)
     const inputRef = useRef(null);
 
     useEffect(() => {
         const keyboardDidShowListener = Keyboard.addListener(
           'keyboardDidShow',
-          ()=>{
+          (event)=>{
             setShrink(true)
+            if(os == "ios"){
+                setKeyboardHeight(event.endCoordinates.height - 50);
+            }
           }
         );
         const keyboardDidHideListener = Keyboard.addListener(
           'keyboardDidHide',
           ()=>{
             setShrink(false)
+            if(os == "ios"){
+                setKeyboardHeight(0);
+            }
             inputRef.current.blur();
           }
         );
@@ -326,6 +334,7 @@ export default function  ChangeWorkTime2 ({wageInfo, dayJobInfo, setIsOpen, onCo
                     <Text style={fonts.confirm}>확인</Text>
                 </TouchableOpacity>
             </View>
+            <View style={{height:keyboardHeight}} />
         </>
     )
 }
