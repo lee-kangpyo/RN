@@ -327,7 +327,7 @@ export default function  ChangeWorkTime2 ({wageInfo, dayJobInfo, setIsOpen, onCo
 
             {/*하단버튼*/}
             <View style={styles.row}>
-                <TouchableOpacity onPress={()=>{setType("G");setIsOpen(false);}} style={styles.cancel}>
+                <TouchableOpacity onPress={()=>{inputRef.current.blur();setType("G");setIsOpen(false);}} style={styles.cancel}>
                     <Text style={fonts.cancel}>취소</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={onPressConfirm} style={styles.confirm}>
