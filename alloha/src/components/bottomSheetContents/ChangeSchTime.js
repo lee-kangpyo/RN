@@ -5,9 +5,9 @@ import React, { memo, useEffect, useRef, useState } from 'react';
 import { useAlert } from '../../util/AlertProvider';
 import moment from 'moment';
 import WheelPicker from '../library/WheelPicker';
-import TimePicker_24 from '../library/TimePicker_24';
 import { MaterialIcons } from '@expo/vector-icons';
 import { adjustTime, calculateDifference, calculateTimeDifferenceStr, formatTimeObject, parseTimeString } from '../../util/timeParser';
+import TimePicker_24 from '../library/TimePicker_24';
 
 
 export default function  ChangeSchTime ({item, setIsOpen, onConfirm}) {

@@ -45,7 +45,7 @@ export default function HomeCrewScreen({navigation}) {
     //     onPress={()=>navigation.push("myStore")}
     //     icon={{type:"MaterialCommunityIcons", name:"store", size:48, color:"black"}}
     // />
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            
                 <View style={styles.container}>
                     <StatusBar style='light'/>
                     <HomeHeader 
@@ -57,7 +57,7 @@ export default function HomeCrewScreen({navigation}) {
                     />
                     <CalendarScreen />    
                 </View>
-            </TouchableWithoutFeedback>
+            
         // <View style={styles.container}>
         //     <StatusBar style='light'/>
         //     <HomeHeader data={datas.top} />

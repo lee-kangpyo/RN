@@ -6,12 +6,12 @@ import { convertTime2, strToDate } from '../../util/moment';
 import { useAlert } from '../../util/AlertProvider';
 import moment from 'moment';
 import WheelPicker from '../library/WheelPicker';
-import TimePicker_24 from '../library/TimePicker_24';
 import { MaterialIcons } from '@expo/vector-icons';
 import { adjustTime, calculateDifference, calculateTimeDifferenceStr, formatTimeObject, parseTimeString } from '../../util/timeParser';
 import { safeToLocaleString } from '../../util/utils';
 import { useSelector } from 'react-redux';
 import { HTTP } from '../../util/http';
+import TimePicker_24 from '../library/TimePicker_24';
 
 // 알바 홈화면, 점주 결과화면에서 사용
 //[{"brkDure": 1, "cstCo": 1014, "cstNa": "글로리맘", "endTime": "16:00", "jobCl": "G", "startTime": "09:00", "userId": "Sksksksk", "ymd": "20240701"}, 

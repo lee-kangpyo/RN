@@ -65,7 +65,7 @@ const WheelPicker2 = ({ items, onItemChange, itemHeight, initValue, containerSty
   const ref = useRef();
 
   useEffect(()=>{
-    console.log(initValueIndex, idx)
+    //console.log(initValueIndex, idx)
     //if(initValueIndex != idx){
       if(refresh > 1){
         ref.current?.scrollToIndex({animated: true, index: idx});

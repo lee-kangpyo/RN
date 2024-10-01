@@ -96,6 +96,25 @@ router.post("/JumjuJobSave", async (req,res,next)=>{
     }
 })
 
+router.post("/MoveAlbaSch", async (req,res,next)=>{
+    console.log("POST v2.commute.MoveAlbaSch - 알바 근무 계획이동")
+    try {
+        // exec PR_PLYA02_ALBASCHMNG @cls, @cstCo, @userId, @ymdFr, @ymdTo, @jobCl, @sTime, @eTime
+        // exec PR_PLYA02_ALBASCHMNG ‘WeekAlbaScheduleSave’, ‘1021’, ‘Sksksksk’, ‘20240617’, ‘’, ‘2’, ‘07:00’, ‘12:00’
+        const { ymdFr, ymdTo, cstCo, userId, sTime, eTime, jobCl, changeDay } = req.body;
+        console.log(ymdFr, ymdTo, cstCo, userId, sTime, eTime, jobCl, changeDay);
+        // 일단 삭제 sTime, eTime 을 0으로 삭제
+        //sTime":"00:00","eTime":"00:00"
+        await execSql(albaSchedulemanager2, {cls:"WeekAlbaScheduleSave", ymdFr, ymdTo, cstCo, userId, sTime:"00:00", eTime:"00:00", jobCl});
+        //changeDay를 ymdFr로 변경, 해서 프로시저 호출
+        await execSql(albaSchedulemanager2, {cls:"WeekAlbaScheduleSave", ymdFr:changeDay, ymdTo, cstCo, userId, sTime, eTime, jobCl});
+        // const result = await execSql(albaSchedulemanager2, {cls:"WeekAlbaScheduleSave", ymdFr, ymdTo, cstCo, userId, sTime, eTime, jobCl});
+        res.status(200).json({resultCode:"00"});
+    } catch (error) {
+        console.log(error.message)
+        res.status(200).json({ resultCode:"-1"});
+    }
+})
 
 router.post("/AlbaSchSave", async (req,res,next)=>{
     console.log("POST v2.commute.AlbaSchSave - 알바 근무 계획입력")
