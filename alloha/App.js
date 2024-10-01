@@ -230,7 +230,7 @@ function Index({version}) {
 
 
 function App(){
-  const version = '1.0.13';
+  const version = '1.0.14';
   // loading -> 로딩중 P -> 버전 일치 , D -> 버전이 안맞음 링크로 안내
   const [versionInfo, setVersionInfo] = useState("loading");
   const [versionData, setVersionData] = useState({});
