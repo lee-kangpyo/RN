@@ -13,6 +13,7 @@ import LayerPopUP from '../components/common/LayerPopUP';
 import { calculateDifference, formatTimeObject, parseTimeString } from '../util/timeParser';
 import { HTTP } from '../util/http';
 import TimePicker_24 from '../components/library/TimePicker_24';
+import DragAndDropCard from '../components/library/Draggerble';
 
 export default function ScheduleTimeLineScreen({navigation, route}) {
     const cstCo = useSelector((state)=>state.common.cstCo);
@@ -102,11 +103,36 @@ export default function ScheduleTimeLineScreen({navigation, route}) {
         setSelectUser(user);
         setStep(0);
     }
-    // 막대 그래프 탭
+    // 막대 그래프 롱 프레스
+    const [position, setPosition] = useState({x:0, y:0});
+    const [showDragEl, setDragEl] = useState(false)
+    const LongTap = (el, x, y) => {
+        setPosition({x:x-80, y:y - 150})
+        setTrace({x:x, y:y})
+        setSelectUser(el);
+        setDragEl(true);
+    }
+    // 드래그 위치 추적
+    const [trace, setTrace] = useState({x:0, y:0})
+    const [traceYmd, setTraceYmd] = useState("")
+    useEffect(()=>{
+        if(!showDragEl){
+            console.log(traceYmd);
+            console.log(selectUser);
+        }
+    }, [showDragEl])
     return(
         <>
+            {
+                (showDragEl)?
+                    <View style={{ position:"absolute", height:"100%", width:"100%", zIndex:10 }}>
+                        <DragAndDropCard user={selectUser} pos={position} setTrace={setTrace} hide={showDragEl} setHide={setDragEl} />
+                    </View>
+                :null
+            }
+            
            <Layer step={step} setStep={setStep} users={data} selectUser={selectUser} week={week} reload={getdaySchedule}/>
-            <View style={styles.container}>
+            <View style={[styles.container]}>
                 <Text style={fonts.title}>{yyyyMMDD.slice(4,6)}월 근무 계획</Text>
                 {
                     (userInfo.length == 0)?
@@ -115,7 +141,8 @@ export default function ScheduleTimeLineScreen({navigation, route}) {
                         </View>
                     :   
                     <>
-                    <WeekDate2 week={week} selectDay={yyyyMMDD} onTap={(ymd)=>setyyyyMMDD(ymd)}/>
+                    
+                    <WeekDate2 week={week} selectDay={yyyyMMDD} onTap={(ymd)=>setyyyyMMDD(ymd)} position={trace} enterEl={setTraceYmd} isAnime={showDragEl}/>
                     <TimeLineMargin />
                     <View style={styles.card}>
                         <View style={{marginTop:8}}>
@@ -136,7 +163,7 @@ export default function ScheduleTimeLineScreen({navigation, route}) {
                                                 return (
                                                     <>
                                                         {(idx == 0)?<View style={[ styles.topLine, {alignItems:"center", margin:0}]}></View>:null}
-                                                        <TimeLineContents key={idx} contents={contents} userInfo={userInfo} onTap={(el)=>openLayer(el)} />
+                                                        <TimeLineContents key={idx} contents={contents} userInfo={userInfo} onTap={(el)=>openLayer(el)} onLongTap={(el, x, y)=>LongTap(el, x, y)}/>
                                                     </>
                                                 );
                                             })
@@ -145,6 +172,7 @@ export default function ScheduleTimeLineScreen({navigation, route}) {
                                     </View>
                                 </ScrollView>
                             </ScrollView>
+                            
                             </View>
                     </View>
                 </View>
@@ -373,7 +401,7 @@ const TimeLineHeader = ({contents, color="", onTap}) => {
         </View>
     )
 }
-const TimeLineContents = ({contents, userInfo, onTap}) => {
+const TimeLineContents = ({contents, userInfo, onTap, onLongTap}) => {
     return(
         <View style={{flexDirection:"row"}}>
             {contents.map((el, idx)=>{
@@ -381,11 +409,12 @@ const TimeLineContents = ({contents, userInfo, onTap}) => {
                 const color = { "2":theme.open, "5":theme.middle, "9":theme.close, "1":theme.etc, }
                 return (
                     <View key={idx} style={[styles.timeLineEl, styles.bottomLine,, {width:60, alignItems:"center", margin:0}]}>
-                        { (el[0] == 0)?<View style={styles.noLine}/>:<TouchableOpacity onPress={()=>onTap(user)} activeOpacity={1} style={[styles.line, {borderColor:color[el[0]]}]} /> }
-                        { (el[1] == 0)?<View style={styles.noLine}/>:<TouchableOpacity onPress={()=>onTap(user)} activeOpacity={1} style={[styles.line, {borderColor:color[el[1]]}]} /> }
+                        { (el[0] == 0)?<View style={styles.noLine}/>:<TouchableOpacity onPress={()=>onTap(user)} onLongPress={(e)=>onLongTap(user, e.nativeEvent.pageX, e.nativeEvent.pageY)} activeOpacity={1} style={[styles.line, {borderColor:color[el[0]]}]} /> }
+                        { (el[1] == 0)?<View style={styles.noLine}/>:<TouchableOpacity onPress={()=>onTap(user)} onLongPress={(e)=>onLongTap(user, e.nativeEvent.pageX, e.nativeEvent.pageY)} activeOpacity={1} style={[styles.line, {borderColor:color[el[1]]}]} /> }
                     </View>
                 )
             })}
+            
         </View>
     )
 }
