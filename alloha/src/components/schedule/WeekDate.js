@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions , Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Dimensions , Text, View, TouchableOpacity, Platform } from 'react-native';
 import { useSelector } from 'react-redux';
 import { getWeekList } from '../../util/moment';
 import { lightenColor } from '../../util/color';
@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 export default function WeekDate({sBlank, eBlank, week}) {
     const weekList = getWeekList(week);
     const dateEng = {"일":"Sun", "월":"Mon", "화":"Tue", "수":"Wed", "목":"Thu", "금":"Fri", "토":"Sat"};
+    
     return (
     <View style={styles.container}>
         {
@@ -31,7 +32,7 @@ export default function WeekDate({sBlank, eBlank, week}) {
     );
 }
 
-export function WeekDate2({week, selectDay, onTap, position, enterEl, isAnime}) {
+export function WeekDate2({week, selectDay, onTap, position, selYmd, enterEl, isAnime}) {
     const weekList = getWeekList(week);
     const dateEng = {"일":"Sun", "월":"Mon", "화":"Tue", "수":"Wed", "목":"Thu", "금":"Fri", "토":"Sat"};
     return (
@@ -39,7 +40,7 @@ export function WeekDate2({week, selectDay, onTap, position, enterEl, isAnime}) 
         {
             weekList.map((el, idx)=>{
                 return (
-                    <TouchableWeekBox key={idx} position={position} item={el} dateEng={dateEng} mode={"sel"} selectDay={selectDay} onDateTap={(ymd)=>onTap(ymd)} enterEl={enterEl} isAnime={isAnime}/>
+                    <TouchableWeekBox key={idx} position={position} item={el} dateEng={dateEng} mode={"sel"} selectDay={selectDay} onDateTap={(ymd)=>onTap(ymd)} selYmd={selYmd} enterEl={enterEl} isAnime={isAnime}/>
                 )
             })
         }
@@ -47,7 +48,7 @@ export function WeekDate2({week, selectDay, onTap, position, enterEl, isAnime}) 
     );
 }
 
-function TouchableWeekBox({item, dateEng, selectDay, onDateTap, position, enterEl, isAnime}){
+function TouchableWeekBox({item, dateEng, selectDay, onDateTap, position, selYmd, enterEl, isAnime}){
     const boxWidth = Dimensions.get('window').width / 9; // 박스의 너비
     const ymd = item.format("yyyyMMDD");
     const dd = item.format('dd');
@@ -59,19 +60,21 @@ function TouchableWeekBox({item, dateEng, selectDay, onDateTap, position, enterE
     const ref = useRef(null)
     const getCoordinates = () => {
         ref.current.measure((fx, fy, width, height, px, py) => {
+            let adjustmentHeight = 0;
+            if(Platform.OS == "ios"){
+                adjustmentHeight = 88;
+            }
             setElSize({
                 fX: px,  // 왼쪽 상단 X 좌표
-                fY: py,  // 왼쪽 상단 Y 좌표
+                fY: py + adjustmentHeight + 10,  // 왼쪽 상단 Y 좌표
                 lX: px + width,  // 오른쪽 하단 X 좌표
-                lY: py + height  // 오른쪽 하단 Y 좌표
+                lY: py + height + adjustmentHeight + 50  // 오른쪽 하단 Y 좌표
             });
         });
     };
-
+    
     const isPointInObjectBounds = (bounds, point) => {
-        // bounds 객체에서 좌표 추출
         const { fX, fY, lX, lY } = bounds;
-        // point 객체에서 좌표 추출
         const { x, y } = point;
         // 좌표가 범위 안에 있는지 체크
         return (
@@ -81,15 +84,17 @@ function TouchableWeekBox({item, dateEng, selectDay, onDateTap, position, enterE
     }
 
     useEffect(()=>{
-        const active = isPointInObjectBounds(elSize, position)
+        const active = isPointInObjectBounds(elSize, position);
+        if(active) enterEl(ymd);
+        if(!active && selYmd == ymd) enterEl("");
         if(isActive != active){
-            setIsactive(active)
+            setIsactive(active);
         }
     }, [position])
     return (
         <TouchableOpacity onLayout={getCoordinates} ref={ref} onPress={()=>onDateTap(ymd)} style={[styles.box2, {width:boxWidth, transform: [{ scale: (isActive && isAnime)?1.3:1}, {translateY: (isActive && isAnime)?-40:0}] }]}>
-            <Text style={[fonts.date, {fontSize:boxWidth*0.4, color:(selectDay == ymd)?color:lightenColor(color, 80)}]}>{item.format('DD')}</Text>
-            <Text style={[fonts.dateStr, {fontSize:boxWidth*0.2, color:(selectDay == ymd)?color2:lightenColor(color2, 80)}]}>{dateEng[dd]}</Text>
+            <Text style={[fonts.date, {fontSize:boxWidth*0.4, color:(selectDay == ymd || isActive)?color:lightenColor(color, 80)}]}>{item.format('DD')}</Text>
+            <Text style={[fonts.dateStr, {fontSize:boxWidth*0.2, color:(selectDay == ymd || isActive)?color2:lightenColor(color2, 80)}]}>{dateEng[dd]}</Text>
         </TouchableOpacity>
     );
 }

@@ -58,9 +58,6 @@ export default function ProfitAndLossScreen({navigation}) {
     }
 
     useEffect(()=>{
-        navigation.setOptions({ headerShown:false, title:"매출현황"})
-    }, [navigation])
-    useEffect(()=>{
         setExcelData(getExcelData())
     }, [monthCstPl, albaFeeList])
     useEffect(()=>{
@@ -114,7 +111,8 @@ export default function ProfitAndLossScreen({navigation}) {
 
     return (
         <KeyboardAvoidingView style={[styles.container, { flex: 1}]} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-            <StoreSelectBoxWithTitle titleText={"매출 현황"} titleflex={4} selectBoxFlex={8} />
+            <StoreSelectBoxWithTitle titleText={""} titleflex={4} selectBoxFlex={8} />
+            <View style={{height:16}}/>
             <View style={[styles.card, {padding:10}]}>
                 <View style={{flexDirection:"row", justifyContent:"space-between", marginBottom:5}}>
                     <HeaderControl title={`${date.mm}월`} onLeftTap={() => headerControl("left")} onRightTap={() =>  headerControl("right")} />
@@ -126,20 +124,19 @@ export default function ProfitAndLossScreen({navigation}) {
                         data={excelData} 
                     />
                 </View>
-                
                 <ProfitLossPl data={monthCstPl} albaList={albaFeeList} onChangeValue={onChangeValue}/>
             </View>
-            
         </KeyboardAvoidingView>
     );
 }
 
 const styles = StyleSheet.create({
-    container:{ flex: 1, alignItems: 'center', padding:5, marginTop:40, marginVertical:10},
+    container:{ flex: 1, alignItems: 'center', padding:5, marginTop:10, marginVertical:10},
     card:{
+        backgroundColor:"white",
         flex:1,
         borderWidth: 1, // 테두리 두께
-        borderColor: 'black', // 테두리 색상
+        borderColor: '#ddd', // 테두리 색상
         borderRadius: 10, // 테두리 모서리 둥글게 
         padding:5,
         width:"100%"

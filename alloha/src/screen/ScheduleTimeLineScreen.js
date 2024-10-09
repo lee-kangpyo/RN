@@ -1,5 +1,5 @@
 
-import { ScrollView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View,} from 'react-native';
+import { Animated, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View,} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { getWeekList } from '../util/moment';
@@ -14,8 +14,10 @@ import { calculateDifference, formatTimeObject, parseTimeString } from '../util/
 import { HTTP } from '../util/http';
 import TimePicker_24 from '../components/library/TimePicker_24';
 import DragAndDropCard from '../components/library/Draggerble';
+import LongPressCatchExample from '../components/test/LongPressCatchExample';
 
 export default function ScheduleTimeLineScreen({navigation, route}) {
+    const {showConfirm} = useAlert();
     const cstCo = useSelector((state)=>state.common.cstCo);
     const { ymd } = route.params;
     
@@ -116,21 +118,64 @@ export default function ScheduleTimeLineScreen({navigation, route}) {
     const [trace, setTrace] = useState({x:0, y:0})
     const [traceYmd, setTraceYmd] = useState("")
     useEffect(()=>{
-        if(!showDragEl){
-            console.log(traceYmd);
-            console.log(selectUser);
+        if(!showDragEl && traceYmd != ""){
+            const dulpleCheck = data.filter( el => el.YMD == traceYmd && el.USERID == selectUser.userId );
+            if(selectUser.ymdFr == traceYmd){ //이미 저장된 날짜 insert 안함
+                setStep(-1);
+            }else if( dulpleCheck.length > 0){
+                const duple = dulpleCheck[0];
+                showConfirm("중복", `선택한 요일에 ${duple.USERNA}님의 계획이 이미 존재합니다. 선택한 요일의 계획을 덮어쓰시겠습니까?`, ()=>{
+                        moveAlba();  
+                    })
+            }else{
+                moveAlba();  
+            }
         }
     }, [showDragEl])
+    const moveAlba = async() => {
+        await HTTP("POST", "/api/v2/commute/MoveAlbaSch", {...selectUser, changeDay:traceYmd})
+        .then((res)=>{
+            getdaySchedule()
+        }).catch(function (error) {
+            console.log(error);
+            alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
+        })
+    }
+    // 요소 애니매이션 적용
+    const scaleValue = useRef(new Animated.Value(0)).current;
+    useEffect(() => {
+        if (showDragEl) {
+            Animated.sequence([
+                Animated.timing(scaleValue, {
+                    toValue: 1.3, // 살짝 커지기
+                    duration: 200,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(scaleValue, {
+                    toValue: 1, // 원래 크기로 줄어들기
+                    duration: 100,
+                    useNativeDriver: true,
+                }),
+            ]).start();
+        } else {
+            Animated.timing(scaleValue, {
+                toValue: 0,
+                duration: 200,
+                useNativeDriver: true,
+            }).start();
+        }
+    }, [showDragEl, scaleValue]);
     return(
         <>
             {
                 (showDragEl)?
-                    <View style={{ position:"absolute", height:"100%", width:"100%", zIndex:10 }}>
-                        <DragAndDropCard user={selectUser} pos={position} setTrace={setTrace} hide={showDragEl} setHide={setDragEl} />
-                    </View>
+                    <TouchableOpacity activeOpacity={1} onPress={()=>setDragEl(false)} style={styles.dragContainer}>
+                        <Animated.View style={[styles.dragContainer, {transform: [{ scale: scaleValue }]}]}>
+                            <DragAndDropCard user={selectUser} pos={position} setTrace={setTrace} hide={showDragEl} setHide={setDragEl} />
+                        </Animated.View>
+                    </TouchableOpacity>
                 :null
             }
-            
            <Layer step={step} setStep={setStep} users={data} selectUser={selectUser} week={week} reload={getdaySchedule}/>
             <View style={[styles.container]}>
                 <Text style={fonts.title}>{yyyyMMDD.slice(4,6)}월 근무 계획</Text>
@@ -141,8 +186,7 @@ export default function ScheduleTimeLineScreen({navigation, route}) {
                         </View>
                     :   
                     <>
-                    
-                    <WeekDate2 week={week} selectDay={yyyyMMDD} onTap={(ymd)=>setyyyyMMDD(ymd)} position={trace} enterEl={setTraceYmd} isAnime={showDragEl}/>
+                    <WeekDate2 week={week} selectDay={yyyyMMDD} onTap={(ymd)=>setyyyyMMDD(ymd)} position={trace} selYmd = {traceYmd} enterEl={setTraceYmd} isAnime={showDragEl}/>
                     <TimeLineMargin />
                     <View style={styles.card}>
                         <View style={{marginTop:8}}>
@@ -150,26 +194,26 @@ export default function ScheduleTimeLineScreen({navigation, route}) {
                             <View>
                                 <ScrollView scrollEnabled={false} ref={scrollViewRef} scrollEventThrottle={16} showsVerticalScrollIndicator={false} contentContainerStyle={{width:60}}  stickyHeaderIndices={[0]}>
                                     <View style={[styles.timeLineEl, {backgroundColor:"white"}]}></View>
-                                    <TimeLineClock ref={scrollViewRef} />
+                                    <TimeLineClock/>
                                 </ScrollView>
                             </View>
-                            <ScrollView onScroll={handleScrollH} horizontal={true} bounces={false}>
-                                <ScrollView onScroll={handleScroll} scrollEventThrottle={16}  stickyHeaderIndices={[0]} bounces={false} contentOffset={{ x: 0, y: 210 }}>
+                            <ScrollView onScroll={handleScrollH} scrollEventThrottle={16} horizontal={true} bounces={false}>
+                                <ScrollView onScroll={handleScroll} scrollEventThrottle={16}  stickyHeaderIndices={[0]} bounces={false} contentOffset={{ x: 0, y: 210 }} >
                                     <TimeLineHeader color='white' contents={userInfo} onTap={(user)=>openLayer(user)}/>
+                                    <TimeLineMargin />
                                     <View>
-                                        <TimeLineMargin />
-                                        {
-                                            daySchedule.map((contents, idx)=>{
-                                                return (
-                                                    <>
-                                                        {(idx == 0)?<View style={[ styles.topLine, {alignItems:"center", margin:0}]}></View>:null}
-                                                        <TimeLineContents key={idx} contents={contents} userInfo={userInfo} onTap={(el)=>openLayer(el)} onLongTap={(el, x, y)=>LongTap(el, x, y)}/>
-                                                    </>
-                                                );
-                                            })
-                                        }
-                                        <TimeLineMargin />
+                                    {
+                                        daySchedule.map((contents, idx)=>{
+                                            return (
+                                                <View key={idx}>
+                                                    {(idx == 0)?<View style={[ styles.topLine, {alignItems:"center", margin:0}]}></View>:null}
+                                                    <TimeLineContents key={"TimeLineContents"+idx} contents={contents} userInfo={userInfo} onTap={(el)=>openLayer(el)} onLongTap={(el, x, y)=>LongTap(el, x, y)}/>
+                                                </View>
+                                            );
+                                        })
+                                    }
                                     </View>
+                                    <TimeLineMargin />
                                 </ScrollView>
                             </ScrollView>
                             
@@ -235,9 +279,10 @@ const Layer = ({step, users, selectUser, setStep, week, reload}) => {
             }else if( dulpleCheck.length > 0){
                 const duple = dulpleCheck[0];
                 showConfirm("중복", `선택한 요일에 ${duple.USERNA}님의 계획이 이미 존재합니다. 선택한 요일의 계획을 덮어쓰시겠습니까?`, ()=>{
-                    albaSch("/api/v2/commute/MoveAlbaSch", {...selectUser, changeDay:selectDay});
+                        albaSch("/api/v2/commute/MoveAlbaSch", {...selectUser, changeDay:selectDay});
                     })
             }else{
+                
                 albaSch("/api/v2/commute/MoveAlbaSch", {...selectUser, changeDay:selectDay});
             }
         }
@@ -378,11 +423,9 @@ const TimeLineBottom = ({contents}) => {
         <View style={{flexDirection:"row", backgroundColor:"rgba(0,0,0,0.8)", borderRadius:5}}>
             {contents.map((el, idx)=>{
                 return (
-                    <>
-                        <View key={idx} style={[styles.timeLineEl, {width:60, alignItems:"center"}]}>
-                            <Text ellipsizeMode="tail" numberOfLines={1} style={fonts.bottom}>{el.jobDure}</Text>
-                        </View>
-                    </>
+                    <View key={idx} style={[styles.timeLineEl, {width:60, alignItems:"center"}]}>
+                        <Text ellipsizeMode="tail" numberOfLines={1} style={fonts.bottom}>{el.jobDure}</Text>
+                    </View>
                 )
             })}
         </View>
@@ -408,13 +451,12 @@ const TimeLineContents = ({contents, userInfo, onTap, onLongTap}) => {
                 const user = userInfo[idx] 
                 const color = { "2":theme.open, "5":theme.middle, "9":theme.close, "1":theme.etc, }
                 return (
-                    <View key={idx} style={[styles.timeLineEl, styles.bottomLine,, {width:60, alignItems:"center", margin:0}]}>
+                    <View key={"content"+idx} style={[styles.timeLineEl, styles.bottomLine,, {width:60, alignItems:"center", margin:0}]}>
                         { (el[0] == 0)?<View style={styles.noLine}/>:<TouchableOpacity onPress={()=>onTap(user)} onLongPress={(e)=>onLongTap(user, e.nativeEvent.pageX, e.nativeEvent.pageY)} activeOpacity={1} style={[styles.line, {borderColor:color[el[0]]}]} /> }
                         { (el[1] == 0)?<View style={styles.noLine}/>:<TouchableOpacity onPress={()=>onTap(user)} onLongPress={(e)=>onLongTap(user, e.nativeEvent.pageX, e.nativeEvent.pageY)} activeOpacity={1} style={[styles.line, {borderColor:color[el[1]]}]} /> }
                     </View>
                 )
             })}
-            
         </View>
     )
 }
@@ -472,6 +514,23 @@ const fonts = StyleSheet.create({
 })
 const styles = StyleSheet.create({
     container:{ flex: 1, justifyContent:"flex-start", margin:15},
+    dragContainer:{ 
+        position:"absolute", height:"100%", width:"100%", zIndex:10, 
+        ...Platform.select({
+            ios:{
+                shadowColor: "rgba(0, 0, 0, 0.2)",
+                shadowOffset: {
+                    width: 0,
+                    height: 0
+                },
+                shadowRadius: 10,
+                shadowOpacity: 1,
+            },
+            android:{
+                elevation :2,
+            }
+        })
+    },
     card:{borderWidth:0, borderRadius:5, flex:1, backgroundColor:"white", paddingTop:3, margin:5},
     timeLineEl:{
         justifyContent:"center",

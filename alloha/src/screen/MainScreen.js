@@ -167,7 +167,7 @@ function OwnrScreen({}){
             )}
             <Stack.Screen name="DailyReport" component={DailyReportScreen} options={{headerLeft:()=>headerLeftComponent("일일보고서"), title:""}} />
             <Stack.Screen name="DailyReportDetail" component={DailyReportDetilaScreen} />
-            <Stack.Screen name="profitAndLoss" component={ProfitAndLossScreen} />
+            <Stack.Screen name="profitAndLoss" component={ProfitAndLossScreen} options={{headerLeft:()=>headerLeftComponent("매출현황"), title:""}}/>
           </Stack.Navigator>
         )}
       </Tab.Screen>

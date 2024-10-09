@@ -68,7 +68,7 @@ function ProfitLossMainLine ({item, subItems, albaList, onChangeValue}) {
 export function ProfitLossPl({data, albaList, onChangeValue}){
     const mainData = data.filter((el)=>el.ORDBY % 100 == 0);
     return (
-        <ScrollView contentContainerStyle={{padding:5}} style={[styles.card, {marginBottom:0, padding:0}]}>
+        <ScrollView contentContainerStyle={{padding:5}} style={[styles.card, {marginBottom:0, padding:10}]}>
             {
                 (mainData.length > 0)?
                     mainData.map((item, idx)=>{
