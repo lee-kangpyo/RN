@@ -68,7 +68,7 @@ function TouchableWeekBox({item, dateEng, selectDay, onDateTap, position, selYmd
                 fX: px,  // 왼쪽 상단 X 좌표
                 fY: py + adjustmentHeight + 10,  // 왼쪽 상단 Y 좌표
                 lX: px + width,  // 오른쪽 하단 X 좌표
-                lY: py + height + adjustmentHeight + 50  // 오른쪽 하단 Y 좌표
+                lY: py + height + adjustmentHeight + 100  // 오른쪽 하단 Y 좌표
             });
         });
     };
@@ -92,7 +92,7 @@ function TouchableWeekBox({item, dateEng, selectDay, onDateTap, position, selYmd
         }
     }, [position])
     return (
-        <TouchableOpacity onLayout={getCoordinates} ref={ref} onPress={()=>onDateTap(ymd)} style={[styles.box2, {width:boxWidth, transform: [{ scale: (isActive && isAnime)?1.3:1}, {translateY: (isActive && isAnime)?-40:0}] }]}>
+        <TouchableOpacity onLayout={getCoordinates} ref={ref} onPress={()=>onDateTap(ymd)} style={[styles.box2, {width:boxWidth, transform: [{ scale: (isActive && isAnime)?1.3:1}, {translateY: (isActive && isAnime)?0:0}] }]}>
             <Text style={[fonts.date, {fontSize:boxWidth*0.4, color:(selectDay == ymd || isActive)?color:lightenColor(color, 80)}]}>{item.format('DD')}</Text>
             <Text style={[fonts.dateStr, {fontSize:boxWidth*0.2, color:(selectDay == ymd || isActive)?color2:lightenColor(color2, 80)}]}>{dateEng[dd]}</Text>
         </TouchableOpacity>

@@ -15,6 +15,7 @@ import { HTTP } from '../util/http';
 import TimePicker_24 from '../components/library/TimePicker_24';
 import DragAndDropCard from '../components/library/Draggerble';
 import LongPressCatchExample from '../components/test/LongPressCatchExample';
+import { headerLeftComponent } from '../util/utils';
 
 export default function ScheduleTimeLineScreen({navigation, route}) {
     const {showConfirm} = useAlert();
@@ -133,6 +134,7 @@ export default function ScheduleTimeLineScreen({navigation, route}) {
         }
     }, [showDragEl])
     const moveAlba = async() => {
+        setTrace({x:0, y:0})
         await HTTP("POST", "/api/v2/commute/MoveAlbaSch", {...selectUser, changeDay:traceYmd})
         .then((res)=>{
             getdaySchedule()
@@ -165,6 +167,15 @@ export default function ScheduleTimeLineScreen({navigation, route}) {
             }).start();
         }
     }, [showDragEl, scaleValue]);
+    // 상단 앱바 타이틀
+    useEffect(()=>{
+        const mm = yyyyMMDD.slice(4,6);
+        const mmView = (mm.length == 0)?'':mm+"월 "
+        navigation.setOptions({headerLeft:()=>headerLeftComponent(`${mmView}근무 계획`)})
+    }, [yyyyMMDD])
+    // 0부터 7시까지 숨기기
+    const [hideDawn, setIsHideDaum] = useState(true);
+    const toggleDawn = () => setIsHideDaum(!hideDawn);
     return(
         <>
             {
@@ -178,7 +189,6 @@ export default function ScheduleTimeLineScreen({navigation, route}) {
             }
            <Layer step={step} setStep={setStep} users={data} selectUser={selectUser} week={week} reload={getdaySchedule}/>
             <View style={[styles.container]}>
-                <Text style={fonts.title}>{yyyyMMDD.slice(4,6)}월 근무 계획</Text>
                 {
                     (userInfo.length == 0)?
                         <View style={[{justifyContent:"center", alignItems:"center", flex:1}]}>
@@ -187,36 +197,60 @@ export default function ScheduleTimeLineScreen({navigation, route}) {
                     :   
                     <>
                     <WeekDate2 week={week} selectDay={yyyyMMDD} onTap={(ymd)=>setyyyyMMDD(ymd)} position={trace} selYmd = {traceYmd} enterEl={setTraceYmd} isAnime={showDragEl}/>
-                    <TimeLineMargin />
-                    <View style={styles.card}>
+                    <View style={[{margin:5, backgroundColor:"white", borderRadius:5, justifyContent:"center", flex:null, padding:10}]}>
+                    {
+                        (showDragEl)?
+                            <Text style={fonts.hint}>이동시키고 싶은 날짜로 드래그 해주세요</Text>
+                        :
+                            <>
+                                <Text style={fonts.hint}>터치 또는 길게 눌러 시간, 요일을 수정하세요.</Text>
+                                <TouchableOpacity onPress={toggleDawn} style={{alignItems:"center", marginTop:8}}>
+                                    <Text style={fonts.dawnBtnTxt}>00:00 - 07:00 시간대 {(hideDawn)?"열기":"닫기"}</Text>    
+                                </TouchableOpacity>
+                            </>
+                            
+                    }
+                    </View>
+                    <View style={[styles.card]}>
                         <View style={{marginTop:8}}>
                             <View style={{flexDirection:"row"}}>
-                            <View>
-                                <ScrollView scrollEnabled={false} ref={scrollViewRef} scrollEventThrottle={16} showsVerticalScrollIndicator={false} contentContainerStyle={{width:60}}  stickyHeaderIndices={[0]}>
-                                    <View style={[styles.timeLineEl, {backgroundColor:"white"}]}></View>
-                                    <TimeLineClock/>
+                                <View>
+                                    <ScrollView scrollEnabled={false} ref={scrollViewRef} scrollEventThrottle={16} showsVerticalScrollIndicator={false} contentContainerStyle={{width:60}}  stickyHeaderIndices={[0]}>
+                                        <View style={[styles.timeLineEl, {backgroundColor:"white"}]}></View>
+                                        <TimeLineClock hideDawn={hideDawn}/>
+                                    </ScrollView>
+                                </View>
+                                <ScrollView onScroll={handleScrollH} scrollEventThrottle={16} horizontal={true} bounces={false}>
+                                    <ScrollView onScroll={handleScroll} scrollEventThrottle={16}  stickyHeaderIndices={[0]} bounces={false} >
+                                        <TimeLineHeader color='white' contents={userInfo} onTap={(user)=>openLayer(user)} onLongTap={(el, x, y)=>LongTap(el, x, y)}/>
+                                        <TimeLineMargin />
+                                        <View>
+                                        {
+                                            (!hideDawn)?
+                                                daySchedule.slice(0, 7).map((contents, idx)=>{
+                                                    return (
+                                                        <View key={idx}>
+                                                            {(idx == 0)?<View style={[ styles.topLine, {alignItems:"center", margin:0}]}></View>:null}
+                                                            <TimeLineContents key={"TimeLineContents"+idx} contents={contents} userInfo={userInfo} onTap={(el)=>openLayer(el)} onLongTap={(el, x, y)=>LongTap(el, x, y)}/>
+                                                        </View>
+                                                    );
+                                                })
+                                            :null
+                                        }
+                                        {
+                                            daySchedule.slice(7).map((contents, idx)=>{
+                                                return (
+                                                    <View key={idx}>
+                                                        {(hideDawn && idx == 0)?<View style={[ styles.topLine, {alignItems:"center", margin:0}]}></View>:null}
+                                                        <TimeLineContents key={"TimeLineContents"+idx} contents={contents} userInfo={userInfo} onTap={(el)=>openLayer(el)} onLongTap={(el, x, y)=>LongTap(el, x, y)}/>
+                                                    </View>
+                                                );
+                                            })
+                                        }
+                                        </View>
+                                        <TimeLineMargin />
+                                    </ScrollView>
                                 </ScrollView>
-                            </View>
-                            <ScrollView onScroll={handleScrollH} scrollEventThrottle={16} horizontal={true} bounces={false}>
-                                <ScrollView onScroll={handleScroll} scrollEventThrottle={16}  stickyHeaderIndices={[0]} bounces={false} contentOffset={{ x: 0, y: 210 }} >
-                                    <TimeLineHeader color='white' contents={userInfo} onTap={(user)=>openLayer(user)}/>
-                                    <TimeLineMargin />
-                                    <View>
-                                    {
-                                        daySchedule.map((contents, idx)=>{
-                                            return (
-                                                <View key={idx}>
-                                                    {(idx == 0)?<View style={[ styles.topLine, {alignItems:"center", margin:0}]}></View>:null}
-                                                    <TimeLineContents key={"TimeLineContents"+idx} contents={contents} userInfo={userInfo} onTap={(el)=>openLayer(el)} onLongTap={(el, x, y)=>LongTap(el, x, y)}/>
-                                                </View>
-                                            );
-                                        })
-                                    }
-                                    </View>
-                                    <TimeLineMargin />
-                                </ScrollView>
-                            </ScrollView>
-                            
                             </View>
                     </View>
                 </View>
@@ -297,12 +331,12 @@ const Layer = ({step, users, selectUser, setStep, week, reload}) => {
                         const color = (dd == "일")?"#ff0000":(dd == "토")?"#0000ff":"#111111";
                         const color2 = (dd == "일")?"#ff0000":(dd == "토")?"#0000ff":"#111111";
                         return (
-                            <>
-                            <TouchableOpacity key={idx} onPress={()=>setSelectDay(ymd)} style={[styles.selBtn, {borderColor:(selectDay == ymd)?color:lightenColor(color, 80)}]}>
+                            <View key={idx}>
+                            <TouchableOpacity onPress={()=>setSelectDay(ymd)} style={[styles.selBtn, {borderColor:(selectDay == ymd)?color:lightenColor(color, 80)}]}>
                                 <Text style={[fonts.date, {color:(selectDay == ymd)?color:lightenColor(color, 80)}]}>{el.format('yyyy년 MM월 DD일')}{dateList[idx]}</Text>
                             </TouchableOpacity>
                             <View style={{height:8}}/>
-                            </>
+                            </View>
                         )
                     })
                 }
@@ -431,12 +465,12 @@ const TimeLineBottom = ({contents}) => {
         </View>
     )
 }
-const TimeLineHeader = ({contents, color="", onTap}) => {
+const TimeLineHeader = ({contents, color="", onTap, onLongTap}) => {
     return(
         <View style={{flexDirection:"row"}}>
             {contents.map((el, idx)=>{
                 return (
-                    <TouchableOpacity key={idx} onPress={()=>onTap(el)} style={[styles.timeLineEl, {width:60, alignItems:"center", backgroundColor:color,}]}>
+                    <TouchableOpacity key={idx} onPress={()=>onTap(el)} onLongPress={(e)=>onLongTap(el, e.nativeEvent.pageX, e.nativeEvent.pageY)} style={[styles.timeLineEl, {width:60, alignItems:"center", backgroundColor:color,}]}>
                         <Text ellipsizeMode="tail" numberOfLines={1} style={fonts.alba}>{el.userNa}</Text>
                     </TouchableOpacity>
                 )
@@ -460,8 +494,8 @@ const TimeLineContents = ({contents, userInfo, onTap, onLongTap}) => {
         </View>
     )
 }
-const TimeLineClock = () => {
-    let startTime = 0;  // 시작 시간
+const TimeLineClock = ({hideDawn}) => {
+    let startTime = (!hideDawn)?0:7;  // 시작 시간
     let endTime = 24;  // 종료 시간
     let timeList = [];
     for (let hour = startTime; hour <= endTime; hour++) {
@@ -509,8 +543,19 @@ const fonts = StyleSheet.create({
     },
     date:{
         fontFamily: "SUIT-ExtraBold",
-        fontWeight: "800",
     },
+    dawnBtnTxt:{
+        fontSize: 16,
+        textDecorationLine:"underline", 
+        fontFamily: "SUIT-SemiBold",
+        color:theme.link
+    },
+    hint:{
+        fontSize: 16,
+        fontFamily: "SUIT-SemiBold",
+        color:"#111",
+        alignSelf:"center"
+    }
 })
 const styles = StyleSheet.create({
     container:{ flex: 1, justifyContent:"flex-start", margin:15},

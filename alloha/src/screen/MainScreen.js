@@ -246,7 +246,7 @@ function ScheduleStack() {
       <Stack.Screen name="scheduleView" component={ScheduleViewScreen} options={{headerTitleAlign: 'center', headerTitleStyle:headerTitleStyle, title:"근무계획"}} />
       <Stack.Screen name="scheduleInsert" component={ScheduleScreen}  options={{headerLeft:()=>headerLeftComponent("근무 계획 입력"), title:""}} />
       <Stack.Screen name="scheduleModify" component={ScheduleModifyScreen} />
-      <Stack.Screen name="scheduleTimeLine" component={ScheduleTimeLineScreen} />
+      <Stack.Screen name="scheduleTimeLine" component={ScheduleTimeLineScreen} options={{headerLeft:()=>headerLeftComponent("근무 계획"), title:""}}/>
       <Stack.Screen name="registerAlba" component={EasyRegisterAlbaScreen} />
     </Stack.Navigator>
   );
