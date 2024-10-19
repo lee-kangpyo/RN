@@ -23,7 +23,7 @@ const ProfitLossSubLine = ({type, items, text, isOpen, onChangeValue}) => {
                                     text={el.CONA} 
                                     text2={el.AMT.toLocaleString()} 
                                     style={{flexDirection:"row", justifyContent:"space-between", height:25}} 
-                                    onTapToEdit={(value)=>onChangeValue({plItCo:el.PLITCO, value:value})}
+                                    onTapToEdit={(value)=>onChangeValue({plItCo:el.PLITCO, categoryNo:el.CATEGORYNO, value:value})}
                                     fontSize={13}
                                 />
                             :
@@ -68,7 +68,7 @@ function ProfitLossMainLine ({item, subItems, albaList, onChangeValue}) {
 export function ProfitLossPl({data, albaList, onChangeValue}){
     const mainData = data.filter((el)=>el.ORDBY % 100 == 0);
     return (
-        <ScrollView contentContainerStyle={{padding:5}} style={[styles.card, {marginBottom:0, padding:10}]}>
+        <ScrollView contentContainerStyle={{padding:5}} style={[styles.card, {marginBottom:0, padding:10, borderColor:"#aaa"}]}>
             {
                 (mainData.length > 0)?
                     mainData.map((item, idx)=>{
@@ -384,24 +384,20 @@ const Sep = ({style}) => {
     return <View style={[styles.sep, style]} />
 }
 
-
 const fonts = StyleSheet.create({
     main:{
         fontFamily: "SUIT-Bold",
         fontSize: 13,
-        fontWeight: "700",
         color: "#FFFFFF"
     },
     content:{
         fontFamily: "SUIT-Bold",
         fontSize: 13,
-        fontWeight: "700",
         color: "#333333"
     },
     subContnet:{
         fontFamily: "SUIT-Bold",
         fontSize: 13,
-        fontWeight: "700",
         color: "#3479EF"
     }
 })
@@ -409,7 +405,6 @@ const table = StyleSheet.create({
     contentText:{
         fontFamily: "SUIT-Bold",
         fontSize: 13,
-        fontWeight: "700",
         color: "#333333"
     }
 })

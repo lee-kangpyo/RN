@@ -8,9 +8,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { nextMonth, prevMonth, setAlbaFeeList, setMonthCstPl } from '../../redux/slices/result';
 import HeaderControl from '../components/common/HeaderControl';
 import Excel from '../components/common/Excel';
-import { StatusBar } from 'expo-status-bar';
+import { useIsFocused } from '@react-navigation/native';
 
 export default function ProfitAndLossScreen({navigation}) {
+    const isfocesed = useIsFocused()
+    const userId = useSelector((state)=>state.login.userId);
     const cstCo = useSelector((state)=>state.common.cstCo);
     const date = useSelector((state) => state.result.month);
     const monthCstPl = useSelector((state) => state.result.monthCstPl);
@@ -51,29 +53,28 @@ export default function ProfitAndLossScreen({navigation}) {
         const index = data.findIndex(item => item.구분 === '인건비');
         if(index > -1) data.splice(index + 1, 0, ...alba);
         // 디버그 로그
-        // for (idx in data){
-        //     console.log(data[idx]);
-        // }
+        // for (idx in data){console.log(data[idx]);}
         return data;
     }
 
     useEffect(()=>{
         setExcelData(getExcelData())
     }, [monthCstPl, albaFeeList])
+
     useEffect(()=>{
         getData();
         getAlbaData();
         if(store.length > 0){
             setCstNa(store[0].CSTNA);
         }
-    }, [cstCo, date])
+    }, [cstCo, date, isfocesed])
 
     const getData = async () => {
         var params = {cls:"MonCstPlSearch", ymdFr:date.start, ymdTo:date.end, cstCo:cstCo, plItCo:"", amt:0}
         await HTTP("GET", "/api/v1/profitAndLoss/execPL", params)
         .then((res)=>{
             const data = res.data.result.sort((a, b) => a.ORDBY - b.ORDBY);
-            dispatch(setMonthCstPl({data:data}));
+            dispatch(setMonthCstPl({data:data, customPl:res.data.customPl}));
         }).catch(function (error) {
             console.log(error);
             alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
@@ -97,15 +98,28 @@ export default function ProfitAndLossScreen({navigation}) {
         getData();
     }
     const onChangeValue = async (chg) => {
+        
         if(chg.value != ""){
-            var params = {cls:"CstPlSave", ymdFr:date.start, ymdTo:date.end, cstCo:cstCo, plItCo:chg.plItCo, amt:chg.value}
-            await HTTP("GET", "/api/v1/profitAndLoss/execPL", params)
-            .then((res)=>{
-                getData();
-            }).catch(function (error) {
-                console.log(error);
-                alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
-            })
+            if(chg.plItCo){
+                var params = {cls:"CstPlSave", ymdFr:date.start, ymdTo:date.end, cstCo:cstCo, plItCo:chg.plItCo, amt:chg.value}
+                await HTTP("GET", "/api/v1/profitAndLoss/execPL", params)
+                .then((res)=>{
+                    getData();
+                }).catch(function (error) {
+                    console.log(error);
+                    alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
+                })
+            }else if(chg.categoryNo){
+                var params = {ymdFr:date.start, ymdTo:date.end, cstCo, categoryNo:chg.categoryNo, amt:chg.value, userId}
+                await HTTP("GET", "/api/v1/profitAndLoss/execCustomPL", params)
+                .then((res)=>{
+                    getData();
+                }).catch(function (error) {
+                    console.log(error);
+                    alert("서버 통신 중 오류가 발생했습니다. 잠시후 다시 시도해주세요.");
+                })
+            }
+            
         }
     }
 
@@ -124,6 +138,9 @@ export default function ProfitAndLossScreen({navigation}) {
                         data={excelData} 
                     />
                 </View>
+                <TouchableOpacity onPress={()=>navigation.navigate("ProfitCategory")} style={styles.box}>
+                    <Text style={styles.boxTxt}>매출 항목 편집</Text>
+                </TouchableOpacity>
                 <ProfitLossPl data={monthCstPl} albaList={albaFeeList} onChangeValue={onChangeValue}/>
             </View>
         </KeyboardAvoidingView>
@@ -141,4 +158,16 @@ const styles = StyleSheet.create({
         padding:5,
         width:"100%"
     },
+    box:{
+        alignItems:"center",
+        borderWidth: 1,
+        borderColor:"#aaa",
+        borderRadius: 10,
+        padding:5,
+        marginBottom:5
+    },
+    boxTxt:{
+        fontFamily:"SUIT-Medium",
+        fontSize:14
+    }
 });

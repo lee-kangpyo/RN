@@ -2,7 +2,7 @@
 import { Text, View, TouchableOpacity, StyleSheet, Button, Image, Linking } from 'react-native';
 import { Ionicons, MaterialCommunityIcons, FontAwesome5, MaterialIcons, FontAwesome   } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createNativeStackNavigator, TransitionPresets } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, {useEffect, useRef, useState} from 'react';
 import SearchAddress from '../components/SearchAddress';
@@ -51,6 +51,7 @@ import ScheduleCreateScreen from './ScheduleCreateScreen';
 import ManageCrewUpdateScreen from './ManageCrewUpdateScreen';
 import MyStoreScreen from './MyStoreScreen';
 import CrewStoreScreen from './CrewStoreScreen';
+import ProfitCategoryScreen from './ProfitCategoryScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -168,6 +169,7 @@ function OwnrScreen({}){
             <Stack.Screen name="DailyReport" component={DailyReportScreen} options={{headerLeft:()=>headerLeftComponent("일일보고서"), title:""}} />
             <Stack.Screen name="DailyReportDetail" component={DailyReportDetilaScreen} />
             <Stack.Screen name="profitAndLoss" component={ProfitAndLossScreen} options={{headerLeft:()=>headerLeftComponent("매출현황"), title:""}}/>
+            <Stack.Screen name="ProfitCategory" component={ProfitCategoryScreen} options={{ headerShown: false, tabBarVisible: false}}/>
           </Stack.Navigator>
         )}
       </Tab.Screen>
