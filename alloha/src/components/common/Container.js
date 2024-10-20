@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, Text, Touchable, TouchableOpacity, Keyboard, ScrollView, TextInput } from 'react-native';
 
-import { FontAwesome5 } from '@expo/vector-icons';
+import { FontAwesome5, FontAwesome } from '@expo/vector-icons';
 import { safeToLocaleString } from '../../util/utils';
+import { theme } from '../../util/color';
 
 
 const ProfitLossSubLine = ({type, items, text, isOpen, onChangeValue}) => {
     const style = (text)?styles.borderBox:{width:40}
+    const lastIdx = items.length - 1;
     return(
         (isOpen)?
             <View style={{flexDirection:"row"}}>
@@ -25,6 +27,7 @@ const ProfitLossSubLine = ({type, items, text, isOpen, onChangeValue}) => {
                                     style={{flexDirection:"row", justifyContent:"space-between", height:25}} 
                                     onTapToEdit={(value)=>onChangeValue({plItCo:el.PLITCO, categoryNo:el.CATEGORYNO, value:value})}
                                     fontSize={13}
+                                    isLast = {lastIdx == idx}
                                 />
                             :
                                 <ProfitBox 
@@ -33,6 +36,7 @@ const ProfitLossSubLine = ({type, items, text, isOpen, onChangeValue}) => {
                                     text2={el.salary.toLocaleString()} 
                                     style={{flexDirection:"row", justifyContent:"space-between", height:25}} 
                                     fontSize={13}
+                                    isLast = {lastIdx == idx}
                                 />
                         )
                     })
@@ -114,14 +118,13 @@ export function ProfitLossAlbaList({data}){
 
 // onTapToEdit:function 이 있으면 터치로 텍스트 인풋을 열수있다.
 // isSub:bool, isOpen:bool, setIsOpen:function 터치로 subLine을 열수있다. 
-function ProfitBox({style={}, onTapToEdit, isSub, isOpen, setIsOpen, text, text2, fontSize=16}){
+function ProfitBox({style={}, onTapToEdit, isSub, isOpen, setIsOpen, text, text2, fontSize=16, isLast = false}){
     const [isText, setIsText] = useState(true);
     const fontWeight = (text == "손익")?"bold":"normal";
     const Accodion = () => {
         const name = (isOpen)?"chevron-up":"chevron-down"
-        return <FontAwesome5 style={{marginLeft:5}} name={name} size={fontSize} color="red"/>;
+        return <FontAwesome5 style={{marginLeft:5}} name={name} size={fontSize} color="black"/>;
     }
-    
     return(
         (isSub)?
             <TouchableOpacity activeOpacity={1} onPress={()=>setIsOpen(!isOpen)} style={[styles.borderBox, {flexDirection:"row", justifyContent:"space-between", height:40}, style]}>
@@ -129,31 +132,41 @@ function ProfitBox({style={}, onTapToEdit, isSub, isOpen, setIsOpen, text, text2
                 <View style={[styles.row, {alignItems:"center"}]}>
                     <Text style={{fontSize:fontSize, fontWeight:fontWeight}}>{text2}</Text>
                     <Accodion />
-                </View>
+                </View> 
             </TouchableOpacity>
         :
         (onTapToEdit)?
-            <TouchableOpacity onPress={()=>{setIsText(false);}} style={[styles.borderBox, {flexDirection:"row", justifyContent:"space-between", height:40,}, style]}>
-                <Text style={{fontSize:fontSize, fontWeight:fontWeight}}>{text}</Text>
-                {
-                    (isText)?
-                        <View>
-                            <Text style={{fontSize:fontSize, fontWeight:fontWeight, marginRight:20}}>{text2}</Text>
-                        </View>
-                    :
-                        <EidtNumberBox
-                            initvalue={text2}
-                            onTap={(value)=>{onTapToEdit(value);setIsText(true);}}
-                            hasBox={false}
-                        />
-                }
-                
-            </TouchableOpacity>
+            <>
+                <TouchableOpacity onPress={()=>{setIsText(false);}} style={[styles.borderBox, {flexDirection:"row", justifyContent:"space-between", height:40,}, style]}>
+                    <View style={{flexDirection:"row", alignItems:"center"}}>
+                        <FontAwesome name="pencil-square-o" size={13} color={theme.primary}/>
+                        <View style={{width:2}}/>
+                        <Text numberOfLines={1} ellipsizeMode='tail' style={{fontSize:fontSize, fontWeight:fontWeight, color:theme.primary, width:100}}>{text}</Text>
+                    </View>
+                    {
+                        (isText)?
+                            <View>
+                                <Text style={{fontSize:fontSize, fontWeight:fontWeight, marginRight:20}}>{text2}</Text>
+                            </View>
+                        :
+                            <EidtNumberBox
+                                initvalue={text2}
+                                onTap={(value)=>{onTapToEdit(value);setIsText(true);}}
+                                hasBox={false}
+                            />
+                    }
+                    
+                </TouchableOpacity>
+                {(isLast)?<View style={{height:8}}/>:null}
+            </>
         :
-            <View style={[styles.borderBox, {flexDirection:"row", justifyContent:"space-between", height:40}, style]}>
-                <Text style={{fontSize:fontSize, fontWeight:fontWeight}}>{text}</Text>
-                <Text style={{fontSize:fontSize, fontWeight:fontWeight, marginRight:20}}>{text2}</Text>
-            </View>
+            <>
+                <View style={[styles.borderBox, {flexDirection:"row", justifyContent:"space-between", height:40}, style]}>
+                    <Text style={{fontSize:fontSize, fontWeight:fontWeight}}>{text}</Text>
+                    <Text style={{fontSize:fontSize, fontWeight:fontWeight, marginRight:20}}>{text2}</Text>
+                </View>
+                {(isLast)?<View style={{height:16}}/>:null}
+            </>  
     )
 }
 
@@ -455,8 +468,8 @@ const styles = StyleSheet.create({
         paddingHorizontal:10,
         paddingVertical:1,
         alignItems:"center",
-        borderWidth:1,
-        borderColor:"grey",
+        borderBottomWidth:1,
+        borderColor:"#ddd",
         justifyContent:"center",
         
     },

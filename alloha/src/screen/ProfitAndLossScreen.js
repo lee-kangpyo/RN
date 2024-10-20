@@ -9,12 +9,16 @@ import { nextMonth, prevMonth, setAlbaFeeList, setMonthCstPl } from '../../redux
 import HeaderControl from '../components/common/HeaderControl';
 import Excel from '../components/common/Excel';
 import { useIsFocused } from '@react-navigation/native';
+import { theme } from '../util/color';
+import {Feather} from '@expo/vector-icons';
+import { setProfitHint } from '../../redux/slices/common';
 
 export default function ProfitAndLossScreen({navigation}) {
     const isfocesed = useIsFocused()
     const userId = useSelector((state)=>state.login.userId);
     const cstCo = useSelector((state)=>state.common.cstCo);
     const date = useSelector((state) => state.result.month);
+    const isShow = useSelector((state)=> state.common.profitScreenHint);
     const monthCstPl = useSelector((state) => state.result.monthCstPl);
     const albaFeeList = useSelector((state) => state.result.albaFeeList);
     const [excelData, setExcelData] = useState([]);
@@ -38,7 +42,7 @@ export default function ProfitAndLossScreen({navigation}) {
                     return {"구분":el.CONA, [month+"월"]:"계", "금액":el.AMT, "비율":"100.00",}
                 }else if(sep == "인건비"){
                     totalAlbaFee = el.AMT
-                    return {"구분":el.CONA, [month+"월"]:"계", "금액":el.AMT, "비율":(el.AMT / totalSales * 100).toFixed(2),}
+                    return {"구분":el.CONA, [month+"월"]:"계", "금액":el.AMT, "비율":"100.00",}
                 }else {
                     return {"구분":el.CONA, [month+"월"]:"계", "금액":el.AMT, "비율":(el.AMT / totalSales * 100).toFixed(2),}
                 }
@@ -64,9 +68,7 @@ export default function ProfitAndLossScreen({navigation}) {
     useEffect(()=>{
         getData();
         getAlbaData();
-        if(store.length > 0){
-            setCstNa(store[0].CSTNA);
-        }
+        if(store.length > 0) setCstNa(store[0].CSTNA);
     }, [cstCo, date, isfocesed])
 
     const getData = async () => {
@@ -95,7 +97,6 @@ export default function ProfitAndLossScreen({navigation}) {
     const headerControl = (tap) => {
         if(tap === "left") dispatch(prevMonth());
         if(tap === "right")dispatch(nextMonth());
-        getData();
     }
     const onChangeValue = async (chg) => {
         
@@ -122,7 +123,6 @@ export default function ProfitAndLossScreen({navigation}) {
             
         }
     }
-
     return (
         <KeyboardAvoidingView style={[styles.container, { flex: 1}]} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
             <StoreSelectBoxWithTitle titleText={""} titleflex={4} selectBoxFlex={8} />
@@ -138,10 +138,24 @@ export default function ProfitAndLossScreen({navigation}) {
                         data={excelData} 
                     />
                 </View>
-                <TouchableOpacity onPress={()=>navigation.navigate("ProfitCategory")} style={styles.box}>
-                    <Text style={styles.boxTxt}>매출 항목 편집</Text>
-                </TouchableOpacity>
+                {
+                    (isShow)?
+                        <View style={{justifyContent:"space-between", flexDirection:"row", borderWidth:0, borderColor:"#ddd", marginBottom:8, borderRadius:5, padding:8, backgroundColor:theme.backSky}}>
+                            <Feather name="x-square" size={20} color={theme.backSky} />
+                            <View style={{flexDirection:"row"}}>
+                                <Text style={{color:theme.primary}}>파란색 </Text>
+                                <Text style={{color:"#111"}}>항목은 터치해서 입력 가능합니다.</Text>
+                            </View>
+                            <TouchableOpacity onPress={()=>dispatch(setProfitHint({isShow:false}))}>
+                                <Feather name="x-square" size={20} color="#111" />
+                            </TouchableOpacity>
+                        </View>
+                    :<TouchableOpacity onPress={()=>dispatch(setProfitHint({isShow:true}))}><Text>디버그 버튼</Text></TouchableOpacity>
+                }
                 <ProfitLossPl data={monthCstPl} albaList={albaFeeList} onChangeValue={onChangeValue}/>
+                <TouchableOpacity onPress={()=>navigation.navigate("ProfitCategory")} style={styles.box}>
+                    <Text style={styles.boxTxt}>매출 하위 항목 추가</Text>
+                </TouchableOpacity>
             </View>
         </KeyboardAvoidingView>
     );
@@ -161,13 +175,14 @@ const styles = StyleSheet.create({
     box:{
         alignItems:"center",
         borderWidth: 1,
-        borderColor:"#aaa",
+        borderColor:theme.primary,
         borderRadius: 10,
-        padding:5,
-        marginBottom:5
+        padding:16,
+        marginTop:12
     },
     boxTxt:{
-        fontFamily:"SUIT-Medium",
-        fontSize:14
+        fontFamily:"SUIT-SemiBold",
+        fontSize:15,
+        color:theme.primary
     }
 });

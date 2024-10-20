@@ -3,6 +3,8 @@ import {createSlice} from '@reduxjs/toolkit';
 const initialState = {
     cstCo:"",
     storeList:[],
+    // 점주 매출 현황 - 파란색 항목은 터치해서 입력가능합니다. 보여주는지 여부.
+    profitScreenHint:true,
 };
 
 const commonSlice = createSlice({
@@ -19,12 +21,14 @@ const commonSlice = createSlice({
             state.cstCo = action.payload.storeList[0].CSTCO;
           }
         }
-        
     },
+    setProfitHint(state, action){
+      state.profitScreenHint = action.payload.isShow;
+    }
   },
 });
 
 //외부에서 reducer를 사용하기위해 export
-export let { setOwnerCstco, setOwnerStoreList } = commonSlice.actions
+export let { setOwnerCstco, setOwnerStoreList, setProfitHint } = commonSlice.actions
 
 export default commonSlice;

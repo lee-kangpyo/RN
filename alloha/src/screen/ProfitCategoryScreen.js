@@ -55,34 +55,37 @@ export default function ProfitCategoryScreen({navigation, route}) {
         <>
             <SafeAreaView style={styles.container}>
                 <View style={{flex:1, width:"100%"}}>
-                    <View style={{alignItems:"center", marginBottom:16}}>
+                    <View style={{justifyContent:"space-between", alignItems:"baseline", marginBottom:8, flexDirection:"row", padding:16}}>
                         <Text style={[fonts.info]}>{store[0].CSTNA} 매출 항목</Text>
+                        <TouchableOpacity style={styles.appBarBtn} onPress={()=>openLayer("add")}>
+                            <Text style={fonts.appBarText}>항목 추가</Text>
+                        </TouchableOpacity>
                     </View>
-                    <ScrollView>
-                        <View style={styles.card}>
-                            <Text>현금</Text>
-                        </View>
-                        <View style={styles.card}>
-                            <Text>카드</Text>
-                        </View>
-                        {
-                            (data.length > 0)?
-                                data.map((el, idx)=>{
-                                    return (
-                                        <Card key={idx} item={el} openLayer={openLayer} reload={reload}/>
-                                    )
-                                })
-                            :null
-                        }
-                    </ScrollView>
+                    <View style={{borderWidth:1, flex:1, borderRadius:10, borderColor:"#ddd", padding:16}}>
+                        <ScrollView>
+                            <View style={styles.card}>
+                                <Text style={fonts.cardText}>현금</Text>
+                                <Text style={fonts.cardText}>기본값</Text>
+                            </View>
+                            <View style={styles.card}>
+                                <Text style={fonts.cardText}>카드</Text>
+                                <Text style={fonts.cardText}>기본값</Text>
+                            </View>
+                            {
+                                (data.length > 0)?
+                                    data.map((el, idx)=>{
+                                        return (
+                                            <Card key={idx} item={el} openLayer={openLayer} reload={reload}/>
+                                        )
+                                    })
+                                :null
+                            }
+                        </ScrollView>
+                    </View>
                 </View>
-                <View style={{flexDirection:"row", padding:30}}>
-                    <TouchableOpacity style={styles.btn} onPress={()=>openLayer("add")}>
-                        <Text style={fonts.info}>항목 추가</Text>
-                    </TouchableOpacity>
-                    <View style={{width:16}} />
+                <View style={{paddingVertical:20, width:"100%"}}>
                     <TouchableOpacity style={styles.btn} onPress={()=>navigation.goBack()}>
-                        <Text style={fonts.info}>닫기</Text>
+                        <Text style={fonts.colseBtnText}>닫기</Text>
                     </TouchableOpacity>
                 </View>
             </SafeAreaView>
@@ -139,7 +142,7 @@ const Add = ({reload}) => {
             <Text style={fonts.confirmText}>매출 항목을 입력하세요</Text>
             <View style={{height:8}} />
             <View style={{borderWidth:1, borderRadius:5}}>
-                <TextInput value={cName} onChangeText={(text) => {setCName(text);}} />
+                <TextInput maxLength={20} value={cName} onChangeText={(text) => {setCName(text);}} />
             </View>
             {
                 (showBlank)?
@@ -219,14 +222,14 @@ const Card = ({item, openLayer, reload}) => {
     }
     return (
         <View style={styles.card}>
-            <Text>{item.CNAME}</Text>
-            <View style={{flexDirection:"row"}}>
+            <Text style={[fonts.cardText, {flex:1}]}>{item.CNAME}</Text>
+            <View style={{flexDirection:"row", marginLeft:16}}>
                 <TouchableOpacity onPress={()=>openLayer("update", item)}>
-                    <Text>수정</Text>
+                    <Text style={fonts.cardText}>수정</Text>
                 </TouchableOpacity>
                 <View style={{width:8}} />
                 <TouchableOpacity onPress={delAction}>
-                    <Text>삭제</Text>
+                    <Text style={fonts.cardText}>삭제</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -236,6 +239,10 @@ const fonts = StyleSheet.create({
     info:{
         fontFamily: "SUIT-Medium",
         fontSize: 16,
+    },
+    appBarText:{
+        fontFamily: "SUIT-Medium",
+        fontSize: 13,
     },
     btnText:{
         fontFamily: "SUIT-Bold",
@@ -251,11 +258,21 @@ const fonts = StyleSheet.create({
         fontFamily: "SUIT-Regular",
         fontSize: 13,
         color:"red"
+    },
+    cardText:{
+        fontFamily: "SUIT-Medium",
+        fontSize: 13,
+    },
+    colseBtnText:{
+        fontFamily: "SUIT-SemiBold",
+        fontSize: 16,
+        color:theme.primary
     }
 })
 const styles = StyleSheet.create({
     container:{ flex: 1, alignItems: 'center', backgroundColor:"white", padding:16},
-    btn:{borderColor:"#ddd", borderWidth:1, padding:16, borderRadius:10, flex:1, alignItems:"center"},
+    btn:{borderColor:theme.primary, borderWidth:1, padding:16, borderRadius:10, alignItems:"center"},
+    appBarBtn:{borderColor:"#ddd", borderWidth:1, padding:8, borderRadius:5, alignItems:"center"},
     card:{borderColor:"#ddd", borderWidth:1, padding:16, borderRadius:10, marginBottom:8, flexDirection:"row", justifyContent:"space-between"},
     layer:{
         position:"absolute",
