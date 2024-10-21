@@ -21,7 +21,9 @@ export const theme = {
     sky:"#4CB9E7",
     lightgrey:"#EDEDED",
     backGround:"rgb(242, 242, 242)",
-    selectBox:"rgba(221, 221, 221, 1.0)"
+    selectBox:"rgba(221, 221, 221, 1.0)",
+    backYellow:"#FEFFA7",
+    backSky:"#e6f7fa"
 }
 
 // 색을 연하게 만드는 함수 (HSL 색상 모델 사용)
