@@ -150,7 +150,7 @@ export default function ProfitAndLossScreen({navigation}) {
                                 <Feather name="x-square" size={20} color="#111" />
                             </TouchableOpacity>
                         </View>
-                    :<TouchableOpacity onPress={()=>dispatch(setProfitHint({isShow:true}))}><Text>디버그 버튼</Text></TouchableOpacity>
+                    :null
                 }
                 <ProfitLossPl data={monthCstPl} albaList={albaFeeList} onChangeValue={onChangeValue}/>
                 <TouchableOpacity onPress={()=>navigation.navigate("ProfitCategory")} style={styles.box}>

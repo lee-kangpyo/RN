@@ -14,7 +14,6 @@ import { calculateDifference, formatTimeObject, parseTimeString } from '../util/
 import { HTTP } from '../util/http';
 import TimePicker_24 from '../components/library/TimePicker_24';
 import DragAndDropCard from '../components/library/Draggerble';
-import LongPressCatchExample from '../components/test/LongPressCatchExample';
 import { headerLeftComponent } from '../util/utils';
 
 export default function ScheduleTimeLineScreen({navigation, route}) {
