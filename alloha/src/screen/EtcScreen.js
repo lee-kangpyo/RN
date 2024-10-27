@@ -78,17 +78,20 @@ export default function EtcScreen({navigation}) {
                 onPress={()=>navigation.push("ManageCrew")}
                 icon={{type:"MaterialCommunityIcons", name:"badge-account-horizontal", size:48, color:"black"}}
             />    */}
-            <GridBox 
+            {/* <GridBox 
                 text={"매출현황"} 
                 onPress={()=>navigation.push("profitAndLoss")} 
                 icon={{type:"MaterialIcons", name:"payments", size:48, color:"black"}} 
-            />   
-                            <GridBox
-                    hide={true}
-                />
-                <GridBox
-                    hide={true}
-                />
+            />    */}
+            <GridBox
+                hide={true}
+            />
+            <GridBox
+                hide={true}
+            />
+            <GridBox
+                hide={true}
+            />
         </View>
         <View style={[styles.container, {flexDirection:"row"}]}>
             <GridBox
